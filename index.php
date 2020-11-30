@@ -6,14 +6,18 @@ include_once $_SERVER['DOCUMENT_ROOT'].'/uploads/includes/helpers.inc.php';
 $base = 'Log In';
 $error = '';
 $tmpl_error = '/uploads/includes/error.html.php';
-
+$myip = '86.133.121.115.';
+function getRemoteAddr(){
+    $ipAddress = $_SERVER['REMOTE_ADDR'];
+if (array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER)) {
+    $ipAddress = array_pop(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']));
+}
+    return $ipAddress;
+}
 
 $mefiles = function($arg){
     return $_FILES['upload'][$arg];
 };
-
-
-
 if(isset($_GET['action']) && $_GET['action'] == 'download') {;}
 else{
 //include $_SERVER['DOCUMENT_ROOT'] . '/uploads/templates/base.html.php';
@@ -48,8 +52,10 @@ exit();
 $uploadfile = $mefiles('tmp_name');
 $realname = $mefiles('name');
 $ext = preg_replace('/(.*)(\.[^0-9.]+$)/i', '$2', $realname);
-$uploadname = time() . $_SERVER['REMOTE_ADDR'] . $ext ;
+
 $time = time();
+$uploadname = $time . getRemoteAddr() .$ext;
+
 $path = '../../filestore/';  
 $filedname =  $path . $uploadname;
 // Copy the file (if it is deemed safe)
@@ -58,12 +64,13 @@ $error = "Could not  save file as $filedname!";
 include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
 exit();
 }
-
+echo $key;
 if($priv=='Admin' and !empty($_POST['user'])){//ie Admin selects user
 $key=$_POST['user'];
 include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/db.inc.php';
 $sql="SELECT domain FROM client WHERE domain='$key'";//will either return empty set(no error) or produce count. Test to see if a client has been selected.
- $row = doSafeFetch($link, $sql);
+$row = doSafeFetch($link, $sql);
+    
 if(count($row[0])>0){
 $sql="SELECT employer.user_name, employer.user_id FROM (SELECT user.name AS user_name, user.id AS user_id, client.domain FROM user INNER JOIN client ON $domain =client.domain) AS employer WHERE employer.domain='$key' LIMIT 1";//RETURNS one user, as relationship between file and user is one to one.
 //exit($sql);
@@ -78,10 +85,8 @@ $key=$row['id'];
 }//END OF COUNT
 }
 
-
 // Prepare user-submitted values for safe database insert
 include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/db.inc.php';
-    echo $realname;
 $realname = doSanitize($link,  $realname);
 $size = doSanitize($link, $mefiles('size'));
 $uploadname = doSanitize($link, $uploadname);
@@ -90,7 +95,6 @@ $uploaddesc = doSanitize($link,  isset($_POST['desc']) ? $_POST['desc'] : '');
 $path = doSanitize($link,  $path);
 $time = doSanitize($link,  $time);
     
-$realname = doSanitize($link, $realname);
 $sql = "INSERT INTO upload SET
 filename = '$realname',
 mimetype = '$uploadtype',
@@ -113,7 +117,6 @@ $row = doSafeFetch($link, $sql);
 $email = $row['email'];
 $file = $row['filename'];
 $name = $row['name'];
-
 
 if($priv=='Admin'){
 $body =  'We have just uploaded the file' . $file . 'for checking.'; 
@@ -142,9 +145,8 @@ exit();
 
 
 if (isset($_GET['action']) and isset($_GET['id'])){
-    echo 'wild';
 include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/db.inc.php';
-$id = mysqli_real_escape_string($link,  $_GET['id']);
+$id = doSanitize($link,  $_GET['id']);
 $sql = "SELECT filename, mimetype, filepath, file, size FROM upload WHERE id = '$id'";
 $result = mysqli_query($link, $sql);
 if (!$result){
@@ -191,22 +193,17 @@ $call ="confirm";
 $pos="Yes";
 $neg="No";
 $action =''; 
-
-//include $_SERVER['DOCUMENT_ROOT'] . '/uploads/templates/prompt.html.php';
-//exit(); 
 }
 
 if (isset($_POST['confirm']) and $_POST['confirm'] == 'Yes' ){
 $prompt = "Select the extent of deletions";
 $id = $_POST['id'];
 $del ="proceed";
-//include $_SERVER['DOCUMENT_ROOT'] . '/uploads/templates/prompt.html.php';
-//exit()
 }
 
 if (isset($_POST['proceed']) and $_POST['proceed'] == 'remove' ){
 include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/db.inc.php';
-$id = mysqli_real_escape_string($link, $_POST['id']);
+$id = doSanitize($link, $_POST['id']);
 
 $path = '../../filestore/';  
 
@@ -250,9 +247,6 @@ header('Location: .');
 exit();
 }//________________________end of confirm/delete
 
-
-
-
 if (isset($_POST['confirm']) and $_POST['confirm'] == 'No'){//swap
 $prompt = "Change ownership on ALL files?";
 $id = $_POST['id'];
@@ -260,15 +254,13 @@ $swap ="swap";
 $call ="swap";
 $pos="Yes";
 $neg="No";
-//include $_SERVER['DOCUMENT_ROOT'] . '/uploads/prompt.html.php';
-//exit();
+$action = '';
 }
 
-
-
 if (isset($_POST['swap'])) {//SWITCH OWNER OF FILE OR JUST UPDATE DESCRIPTION (FILE AMEND BLOCK)
+$colleagues = '';
 include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/db.inc.php';
-$id = mysqli_real_escape_string($link,  $_POST['id']);
+$id = doSanitize($link,  $_POST['id']);
 $answer = $_POST['swap'];
 $email="{$_SESSION['email']}";
 
@@ -325,18 +317,25 @@ exit();
 
 if (isset($_POST['original'])) {//CAN ONLY BE SET BY ADMIN, 'original' is common to both options of file amend block
 include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/db.inc.php';
-$fid = mysqli_real_escape_string($link,  $_POST['fileid']);
-$fname = mysqli_real_escape_string($link,  $_POST['filename']);
-$orig = mysqli_real_escape_string($link,  $_POST['original']);
-$user = mysqli_real_escape_string($link,  $_POST['user']);
+
+$fid = doSanitize($link,  $_POST['fileid']);
+$fname = doSanitize($link,  $_POST['filename']);
+$orig = doSanitize($link,  $_POST['original']);
+$user = doSanitize($link,  $_POST['user']);
 if($_POST['colleagues']){
-$user = mysqli_real_escape_string($link,  $_POST['colleagues']);
+$user = doSanitize($link,  $_POST['colleagues']);
 }
-$diz = mysqli_real_escape_string($link,  $_POST['description']);
-if(!$user) $user = $orig;
-if($_POST['answer']=='Yes') $sql="UPDATE upload SET userid='$user' WHERE userid='$orig'";
-else $sql="UPDATE upload SET userid='$user', description='$diz', filename='$fname' WHERE id ='$fid'";
-if (!mysqli_query($sql)) {
+$diz = doSanitize($link,  $_POST['description']);
+if(!$user) {
+    $user = $orig;
+}
+if($_POST['answer']=='Yes') {
+    $sql="UPDATE upload SET userid='$user' WHERE userid='$orig'";
+}
+else {
+    $sql="UPDATE upload SET userid='$user', description='$diz', filename='$fname' WHERE id ='$fid'";
+}
+if (!mysqli_query($link, $sql)) {
 $error = 'error updating details';
 include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
 exit();
@@ -381,18 +380,18 @@ else {
 $start = 0;
 }
 
-$meswitch = array( 'f' =>'filename ASC', 'ff' =>'filename DESC', 'u' =>'user ASC', 'uu' =>'user DESC', 'uf' =>'user ASC, filename ASC', 'uuf' =>'user DESC, filename ASC',  'uff' =>'user ASC, filename DESC',  'uuff' =>'user DESC, filename DESC', 'ut' =>'user ASC, time ASC', 'utt' =>'user ASC, time DESC', 'uut' =>'user DESC, time ASC', 'uutt' =>'user DESC, time DESC', 't' =>'time ASC');
-$so = (isset($_GET['sort']) ? $_GET['sort'] : '1');
+$meswitch = array( 'f' =>'filename ASC', 'ff' =>'filename DESC', 'u' =>'user ASC', 'uu' =>'user DESC', 'uf' =>'user ASC, filename ASC', 'uuf' =>'user DESC, filename ASC',  'uff' =>'user ASC, filename DESC',  'uuff' =>'user DESC, filename DESC', 'ut' =>'user ASC, time ASC', 'utt' =>'user ASC, time DESC', 'uut' =>'user DESC, time ASC', 'uutt' =>'user DESC, time DESC', 't' =>'time ASC', 'tt' =>'time DESC');
+$sort = (isset($_GET['sort']) ? $_GET['sort'] : '1');
 foreach ($meswitch as $ix => $u){
-if ($ix == $so) break;
+if ($ix == $sort) break;
 }
-switch ($so) {
+switch ($sort) {
 case $ix : 
 $order_by = $meswitch[$ix];
 break;
 default:
 $order_by = 'time DESC';
-$so = 'tt';
+$sort = 'tt';
 break;
 }
 //D I S P L A Y_______________________________________________________________
@@ -480,7 +479,7 @@ if (isset($_GET['action']) and $_GET['action'] == 'search'){
 include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/db.inc.php';
 $tel = '';
 $from .=" INNER JOIN userrole ON user.id=userrole.userid";
-$user_id =  mysqli_real_escape_string($link, $_GET['user']);
+$user_id =  doSanitize($link, $_GET['user']);
 if ($priv =='Admin' ){
 $sql="SELECT domain FROM client WHERE domain='".$user_id."'";//will either return empty set(no error) or produce count. Test to see if a client has been selected.
 $result = mysqli_query($link, $sql);
@@ -500,11 +499,11 @@ $where .=" WHERE user.email='$email' ";
 if ($user_id != '') { // A user is selected 
 if(!isset($check)) $where .= " AND user.id=$user_id";
 }
-$text = mysqli_real_escape_string($link, $_GET['text']);
+$text = doSanitize($link, $_GET['text']);
 if ($text != '') { // Some search text was specified 
 $where .= " AND upload.filename LIKE '%$text%'";
 }
-$suffix= mysqli_real_escape_string($link, $_GET['suffix']);
+$suffix= doSanitize($link, $_GET['suffix']);
 if (isset($suffix)){ 
 if($suffix =='owt'){
 $where .= " AND (upload.filename NOT LIKE '%pdf' AND upload.filename NOT LIKE '%zip')"; 
@@ -563,19 +562,19 @@ if ($priv =='Admin' ){
 $select .= ", user.name as user";//append to line 465(ish)
 $from .=" INNER JOIN userrole ON user.id=userrole.userid";
 $where  = ' WHERE TRUE';
-if(isset($_GET['ext']) && $ext=mysqli_real_escape_string($link, $_GET['ext'])) {
+if(isset($_GET['ext']) && $ext=doSanitize($link, $_GET['ext'])) {
 if($ext =='owt') {
 $where .= " AND (upload.filename NOT LIKE '%pdf' AND upload.filename NOT LIKE '%zip')"; 
 }
 else $where .=" AND upload.filename LIKE '%$ext'";
 }
 if( isset($useroo) && is_numeric($useroo)){//CLIENTS USE EMAIL DOMAIN AS ID THERFORE NOT A NUMBER
-if($useroo=mysqli_real_escape_string($_GET['u'])) $where .= " AND user.id=$useroo";
+if($useroo=doSanitize($_GET['u'])) $where .= " AND user.id=$useroo";
 }
 else {
-if(isset($_GET['u']) && $useroo=mysqli_real_escape_string($link, $_GET['u'])) $where .= " AND $domain='$useroo'";
+if(isset($_GET['u']) && $useroo=doSanitize($link, $_GET['u'])) $where .= " AND $domain='$useroo'";
 }
-if(isset($_GET['t'])  && $textme=mysqli_real_escape_string($link, $_GET['t'])) $where .= " AND upload.filename LIKE '%$textme%'";
+if(isset($_GET['t'])  && $textme=doSanitize($link, $_GET['t'])) $where .= " AND upload.filename LIKE '%$textme%'";
 }//admin
 
 else {
@@ -586,18 +585,13 @@ $where =" WHERE user.email='$email' ";
 }
 
 //$sql= $select . $from . $where . $order; //DEFAULT; TELEPHONE BLOCK REQUIRED TO OBTAIN CLIENT PHONE NUMBER
-$sql= $select;
+$sql = $select;
 $select_tel = ", client.tel";
 $from .=" LEFT JOIN client ON user.client_id=client.id";//note LEFT join to include just 'users' also
 $sql .= $select_tel . $from. $where . $order;
 //____________________________________________________________________________________________END OF TELEPHONE
 
-$result = mysqli_query($link, $sql);
-if (!$result){
-$error = 'Database error fetching files. ' . $sql;
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
-exit();
-}
+$result = doFetch($link, $sql, 'Database error fetching files. ' . $sql);
 
 $files = array();
 while ($row = mysqli_fetch_array($result)){

@@ -124,6 +124,7 @@ function doFetch($lnk, $sql, $msg)
         include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
         exit();
     }
+    return $result;
 }
 
 function formatFileSize($size)

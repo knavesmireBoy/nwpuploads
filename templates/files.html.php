@@ -29,20 +29,35 @@
 <?php 
 $tel = '';
 $sort = '';
-
+$toggle = ['f', 'u', 't'];
+                    
 // TABLE ORDERING...
 $q = $_SERVER['QUERY_STRING'];
 $q = preg_replace('/(\?[a-z0-9=&]*)(&sort|&flag)(=?[a-z]*)/','$1','?'.$q);
-if($q=='?') {
+                
+if($q=='?') {//first run
     $sort='sort='; 
 }
-elseif (substr($q,1,4)=='sort') {
+elseif (substr($q,-3, 1)=='=') {//double
+   if(substr($q,-2, 1) != substr($q,-1, 1)){
+       $q = substr($q,-2, 1);
+       $sort = '&sort=' . substr($q,-1, 1); 
+   }
+    else {
+        $q='?sort='; 
+    }
+       
+}
+//elseif (substr($q,1,4)=='sort') {//single
+elseif (substr($q,-2, 1)=='='){
+    $sort = substr($q,-1);
     $q='?sort='; 
 }
+
 else {
     $sort='&sort='; 
 }
-
+/*
 if ((substr($sort,0,2)=='uu' and strlen($sort)<=3)) {
     $toggle=array($sort.'f',  'u', $sort. 't' );
 }
@@ -53,9 +68,9 @@ elseif (!$sort or strlen($sort)>1 ){
     $toggle=array('f','u','t');
 }
 else {
-    $toggle = array($sort.'f', $sort. 'u', $sort. 't' );//append to existing sort
+    $toggle = array($sort .'f', $sort . 'u', $sort . 't' );//append to existing sort
 }
-
+*/
 ?>
 
 <th><a href="<?php echo $q . $sort . $toggle[0]; ?>">File name</a></th>
@@ -70,7 +85,7 @@ else {
 <tbody>
 			
 <?php foreach($files as $f): ?>
-<tr valign="top" class="<?php if($f['origin'] == '86.133.121.115.') echo 'admin';?>">
+<tr valign="top" class="<?php if($f['origin'] == $myip) echo 'admin';?>">
 <?php 
 $fsize = formatFileSize($f['size']);
 ?>
@@ -136,6 +151,7 @@ if(isset($_GET['ext'])) $suffix=$ext;
 if(isset($_GET['u'])) $user_id=$useroo;
 if(isset($_GET['u'])) $text= $textme;
 if ($pages > 1) {
+    
 $current_page = ($start/$display) + 1;
 if ($current_page != 1) { ?>
 <a href="?s=<?php echo $start-$display; ?>&p=<?php echo ($pages); ?>&u=<?php echo $user_id; ?>&t=<?php echo $text; ?>&ext=<?php echo $suffix; ?>&sort=<?php echo $sort; ?>">Previous</a>
@@ -146,7 +162,8 @@ if ($i != $current_page) { ?>
 <a href="?s=<?php echo ($display * ($i-1)); ?>&p=<?php echo ($pages);?>&u=<?php echo $user_id; ?>&t=<?php echo $text; ?>&ext=<?php echo $suffix; ?>&sort=<?php echo $sort; ?>"><?php echo $i ?></a>
 <?php
 }
-else { ?>
+else {  ?>
+    
 <span class="current"><?php echo($i); ?></span>
 <?php
 }
