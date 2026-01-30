@@ -1,4 +1,4 @@
-<?php include_once $_SERVER['DOCUMENT_ROOT'].'/uploads/includes/helpers.inc.php'; ?>
+<?php include_once $_SERVER['DOCUMENT_ROOT'].'/nwp_uploads/includes/helpers.inc.php'; ?>
 
 		<h1>Search Files</h1>
 <form action="?" method="get" name="searchFiles">

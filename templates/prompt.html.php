@@ -1,4 +1,4 @@
-<?php include_once $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/helpers.inc.php';?>
+<?php include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php';?>
 
 <?php 
 /*NOT REQUIRED : WAS USED TO PROVIDE A CLIENT LIST DROP DOWN MENU

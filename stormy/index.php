@@ -1,5 +1,5 @@
 <?php
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/db.inc.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 if (isset($_POST['action']) and $_POST['action'] == 'split'){
 $length = count($_POST)+1;
 for ($i=0; $i < $length; $i++) {
@@ -10,7 +10,7 @@ $sql = "INSERT INTO fchar SET nameid=$i, letter='$letter' ";
 $result = mysql_query($sql, $linkst);
 if (!$result) {
 $error = "Error adding letters to fchar!" . mysql_error();
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
 exit();
 }
 }
@@ -20,12 +20,12 @@ exit();
 }
 
 
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/db.inc.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 $sql="SELECT fchar.letter, fname.id from fchar INNER JOIN fname ON fchar.nameid = fname.id";
 $result = mysql_query($sql, $linkst);
 if (!$result ) {
 $error = "Error retrieving stuff!";
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
 exit();
 }
 $words = array();
@@ -36,12 +36,12 @@ $words[] = array(
 }
 
 
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/db.inc.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 $sql2 = "SELECT id, name FROM fname";
 $result = mysql_query($sql2, $linkst);
 if (!$result ) {
 $error = "Error retrieving names from database!";
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
   exit();
   }
   $users = array();

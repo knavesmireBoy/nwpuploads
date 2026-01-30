@@ -1,4 +1,4 @@
-<?php include_once $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/helpers.inc.php'; ?>
+<?php include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php'; ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head><meta http-equiv="content-type" content="text/html; charset=utf-8" />
@@ -45,9 +45,9 @@ endif;
 
 <?php 
 if (isset($prompt)) {
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/templates/prompt.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/prompt.html.php';
 }
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/logout.inc.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/logout.inc.html.php';
 exit(); 
 ?>
 hello</div>

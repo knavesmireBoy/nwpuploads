@@ -1,4 +1,43 @@
 <?php
+
+function doQuery($pdo, $sql, $msg)
+{
+    try {
+        return $pdo->query($sql);
+    } catch (PDOException $e) {
+        $error = $msg . ' ' . $e->getMessage();
+        $root =  $_SERVER['DOCUMENT_ROOT'] . '/api/';
+        include $root . '/../templates/error.html.php';
+        exit();
+    }
+}
+
+function doPreparedQuery($st, $msg, $flag = false)
+{
+    try {
+        if ($flag) {
+            $st->execute();
+            $count = $st->RowCount();
+            if ($count) {
+                return $st->fetchAll();
+            } else {
+                return false;
+            }
+        }
+        return $st->execute();
+    } catch (PDOException $e) {
+        $error = $msg . ' ' . $e->getMessage();
+        $root =  $_SERVER['DOCUMENT_ROOT'] . '/api/';
+        include __DIR__ . '/../templates/output.html.php';
+        exit();
+    }
+}
+
+function dump($arg)
+{
+    var_dump($arg);
+    exit;
+}
 function seek()
 {
     $arr = array(
@@ -10,49 +49,14 @@ function seek()
         'textme'
     );
     $i = count($arr);
-    while ($i--)
-    {
-        if (isset($GLOBALS[$arr[$i]]))
-        {
+    while ($i--) {
+        if (isset($GLOBALS[$arr[$i]])) {
             return '.';
         }
     }
     return '?find';
 }
 
-if (!function_exists("GetSQLValueString"))
-{
-    function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDefinedValue = "")
-    {
-        if (PHP_VERSION < 6)
-        {
-            $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
-        }
-
-        $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
-
-        switch ($theType)
-        {
-            case "text":
-                $theValue = ($theValue != "") ? "'" . $theValue . "'" : "NULL";
-            break;
-            case "long":
-            case "int":
-                $theValue = ($theValue != "") ? intval($theValue) : "NULL";
-            break;
-            case "double":
-                $theValue = ($theValue != "") ? doubleval($theValue) : "NULL";
-            break;
-            case "date":
-                $theValue = ($theValue != "") ? "'" . $theValue . "'" : "NULL";
-            break;
-            case "defined":
-                $theValue = ($theValue != "") ? $theDefinedValue : $theNotDefinedValue;
-            break;
-        }
-        return $theValue;
-    }
-}
 
 function bbcode2html($text)
 {
@@ -90,12 +94,9 @@ function add_querystring_var($url, $key, $value)
 {
     $url = preg_replace('/(.*)(\?|&)' . $key . '=[^&]+?(&)(.*)/i', '$1$2$4', $url . '&');
     $url = substr($url, 0, -1);
-    if (strpos($url, '?') === false)
-    {
+    if (strpos($url, '?') === false) {
         return ($url . '?' . $key . '=' . $value);
-    }
-    else
-    {
+    } else {
         return ($url . '&' . $key . '=' . $value);
     }
 }
@@ -118,10 +119,9 @@ function doSafeFetch($lnk, $sql)
 function doFetch($lnk, $sql, $msg)
 {
     $result = mysqli_query($lnk, $sql);
-    if (!$result)
-    {
+    if (!$result) {
         $error = $msg;
-        include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+        include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
         exit();
     }
     return $result;
@@ -129,11 +129,8 @@ function doFetch($lnk, $sql, $msg)
 
 function formatFileSize($size)
 {
-    if ($size > 1024)
-    {
+    if ($size > 1024) {
         return number_format($size / 1024, 2, '.', '') . 'mb';
     }
     return ceil($size) . 'kb';
 }
-
-?>

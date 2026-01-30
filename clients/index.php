@@ -1,17 +1,16 @@
 <?php
-/*mysql_real_escape_string\(([^,]+),([^)]+\);)
+/*mysqli_real_escape_string\(([^,]+),([^)]+\);)
 mysqli_real_escape_string($2, $1);*/
-include_once $_SERVER['DOCUMENT_ROOT'] .    '/uploads/includes/magicquotes.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/access.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
 if (!userIsLoggedIn()){
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/login.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/login.html.php';
 exit();
 }
 //clients page
 
 if (!$roleplay=userHasWhatRole()){
 $error = 'Only Account Administrators may access this page!!';
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/accessdenied.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/accessdenied.html.php';
 exit();
 }
 else {
@@ -19,7 +18,7 @@ foreach ($roleplay as $key => $priv){// $roleplay is an array, use foreach to ob
 }
 if($priv!='Admin'){
 $error = 'Only Account Administrators may access this page!!';
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/accessdenied.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/accessdenied.html.php';
 exit();
 }
 }
@@ -33,7 +32,7 @@ $call ="confirm";
 $pos="Yes";
 $neg="No";
 $action =''; 
-//include $_SERVER['DOCUMENT_ROOT'] . '/uploads/prompt.html.php';
+//include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/prompt.html.php';
 //exit(); 
 }
 
@@ -43,13 +42,13 @@ exit();
 }
 
 if (isset($_POST['confirm']) and $_POST['confirm'] == 'Yes') {
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/db.inc.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 $id = mysqli_real_escape_string($link, $_POST['id']);
 $result = mysqli_query($link, "DELETE FROM client WHERE id = $id");
 if (!$result){
 echo mysqli_errno($link) . ": " . mysqli_error($link) . "\n";
 $error = 'Error deleting client.';
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
 exit(); 
 }
 header('Location: . ');
@@ -58,13 +57,13 @@ exit();
 
 
 if (isset ($_POST['action']) and $_POST['action'] == 'Edit'){ 
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/db.inc.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 $id = mysqli_real_escape_string($link, $_POST['id']);
 $sql= "SELECT id, name, domain, tel FROM client WHERE id =$id";
 $result = mysqli_query($link, $sql);
 if(!$result) {
 $error = 'Error fetching user details.';
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
 exit();
 }
 
@@ -83,7 +82,7 @@ exit();
 
 if (isset($_GET['editform']))
 {
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/db.inc.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 $id = mysqli_real_escape_string($link, $_POST['id']);
 $name = mysqli_real_escape_string($link, $_POST['name']);
 $domain = mysqli_real_escape_string($link, $_POST['domain']);
@@ -91,7 +90,7 @@ $tel = isset($_POST['tel']) ? mysqli_real_escape_string($link, $_POST['tel']) : 
 $sql = "UPDATE client SET name='$name', domain='$domain', tel='$tel' WHERE id=$id";
 if (!mysqli_query($link, $sql)) {
 $error = 'bloody client details.';
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
 exit();
 }
 
@@ -100,7 +99,7 @@ exit();
 }
 
 if (isset($_GET['add'])){
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/db.inc.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 $id='';
 $pagetitle = 'New Client';
 $action = 'addform';
@@ -113,7 +112,7 @@ exit();
 }//////////////END OF ADD
 
 if (isset($_GET['addform'])) {
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/db.inc.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 
 $name = mysqli_real_escape_string($link, $_POST['name']);
 $domain= mysqli_real_escape_string($link, $_POST['domain']);
@@ -126,7 +125,7 @@ $sql= "INSERT INTO client VALUES ('?', '$name', '$domain', '$tel')";
 if(!mysqli_query($link, $sql)) {
 echo mysqli_errno($link) . ": " . mysqli_error($link). "\n";
 $error = 'Error adding client.';
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
 exit();
 }
 header('Location: . ');
@@ -134,7 +133,7 @@ exit();
 }//end of addform
 
 
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/db.inc.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 $sql = "SELECT id, name, domain from client"; // THE DEFAULT QUERY
 
 if (isset($_POST['act']) and $_POST['act'] == 'Choose'  and $_POST['client'] !=''){
@@ -145,12 +144,12 @@ $sql .=" WHERE id=$id";
 $sql .= " ORDER BY name";
 
 //display clients
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/db.inc.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 $result = mysqli_query($link, $sql);
 if (!$result ) {
 echo mysqli_errno($link) . ": " . mysqli_error($link). "\n";
 $error = "Error retrieving clients from database!";
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
   exit();
   }
 //$clients = array();

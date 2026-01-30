@@ -1,4 +1,4 @@
-<?php include_once $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/helpers.inc.php'; ?>
+<?php include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php'; ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -58,11 +58,11 @@ endforeach;
 endif;
 ?>
 <p><a href="..">Return to uploads</a></p>
-<!--<p><a href="<?php //include $_SERVER['DOCUMENT_ROOT'] . '/uploads/index.php';?>">Return to uploads</a></p>-->
+<!--<p><a href="<?php //include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/index.php';?>">Return to uploads</a></p>-->
 		
 <?php
 if (isset($prompt)) {
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/templates/prompt.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/prompt.html.php';
 }
 include '../includes/logout.inc.html.php'; 
 //include $_SERVER['DOCUMENT_ROOT'] . '/includes/logout.inc.html.php'; 

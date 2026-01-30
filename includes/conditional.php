@@ -6,7 +6,7 @@ function getKey($priv, $user){
     }
     
 $key=$_POST['user'];
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/db.inc.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 $sql="SELECT domain FROM client WHERE domain='$key'";//will either return empty set(no error) or produce count. Test to see if a client has been selected.
 $row = doSafeFetch($link, $sql);
     
@@ -26,7 +26,7 @@ $key=$row['id'];
 
 if($priv=='Admin' and !empty($_POST['user'])){//ie Admin selects user
 $key=$_POST['user'];
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/db.inc.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 $sql="SELECT domain FROM client WHERE domain='$key'";//will either return empty set(no error) or produce count. Test to see if a client has been selected.
 $row = doSafeFetch($link, $sql);
     

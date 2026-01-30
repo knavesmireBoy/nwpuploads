@@ -1,4 +1,4 @@
-<?php include_once $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/helpers.inc.php';
+<?php include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php';
 //ob_start('ob_postprocess');
 //ob_start('ob_gzhandler');
 ?>
@@ -132,7 +132,7 @@ echo date("g:i a F j ", strtotime($stamp)) ;?></td>
 <?php 
 endif; 
 
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/logout.inc.html.php'; 
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/logout.inc.html.php'; 
 if ($priv =='Admin' or $priv =='Client') : ?>
 <p><a href="admin/">Admin Pages</a></p>
 
@@ -175,13 +175,13 @@ if ($current_page <> $pages) { ?>
 }//If Pages > 1
 
 if (isset($prompt)) {
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/templates/prompt.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/prompt.html.php';
 if (!isset($filename)) { 
 echo '</div></body></html>';
 exit();
 }
 }//prompt
 if (isset($filename)) {
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/templates/update.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/update.html.php';
 echo '</div></body></html>';
 }

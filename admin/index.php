@@ -1,12 +1,11 @@
 <?php
-/*mysql_real_escape_string\(([^,]+),([^)]+\);)
+/*mysqli_real_escape_string\(([^,]+),([^)]+\);)
 mysqli_real_escape_string($2, $1);*/
-include_once $_SERVER['DOCUMENT_ROOT'] .    '/uploads/includes/magicquotes.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/access.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
 $users = [];
 $id ='';
 if (!userIsLoggedIn()){
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/templates/login.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/login.html.php';
 exit();
 }
 //admin page
@@ -32,17 +31,17 @@ $call ="confirm";
 $pos="Yes";
 $neg="No";
 $action =''; 
-//include $_SERVER['DOCUMENT_ROOT'] . '/uploads/prompt.html.php';
+//include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/prompt.html.php';
 //exit(); 
 }
 
 if (isset($_POST['confirm']) and $_POST['confirm'] == 'Yes') {
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/db.inc.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 $id = mysqli_real_escape_string($link, $_POST['id']);
 $result = mysqli_query($link, "DELETE FROM user WHERE id = $id");
 if (!$result){
 $error = 'Error deleting user.';
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
 exit(); 
 }
 header('Location: . ');
@@ -57,7 +56,7 @@ exit();
 FOR PRE-SELECTING A DOMAIN PRIOR TO ADDING A NEW USER TO AN EXISITING CLIENT
 NOT REALLY USED IN PRACTICE*/
 if (isset($_GET['add'])){
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/db.inc.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 $title='Prompt';
 $prompt = 'Employer:';
 $prompt = false;
@@ -66,19 +65,19 @@ $sql= "SELECT id, name FROM client ORDER BY name";
 $result = mysqli_query($link, $sql);
 if (!$result) {
 $error = "Error retrieving clients from database!";
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
 exit();
 }
 while ($row = mysqli_fetch_array($result)) {
 $clientlist[$row['id']] = $row['name'];
 }
-//include $_SERVER['DOCUMENT_ROOT'] . '/uploads/prompt.html.php';
+//include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/prompt.html.php';
 //exit();
 }//////////////END OF ADD
 
 //if (isset($_POST['action']) and $_POST['action'] == 'continue'){
 if (isset($_GET['add'])){
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/db.inc.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 $pagetitle = 'New User';
 $action = 'addform';
 $name = '';
@@ -90,7 +89,7 @@ $sql = "SELECT id, description FROM role";
 $result = mysqli_query($link, $sql);
 if (!$result)  { 
 $error = 'Error fetching list of roles.'; 
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
 exit();
 }
 while ($row = mysqli_fetch_array($result))  {
@@ -105,7 +104,7 @@ $result = mysqli_query($link, $sql);
 }
 if (!$result ) {
 $error = "Error retrieving clients from database!";
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
 exit();
 }
 $row = mysqli_fetch_array($result);
@@ -116,7 +115,7 @@ $sql= "SELECT id, name FROM client ORDER BY name";
 $result = mysqli_query($link, $sql);
 if (!$result ) {
 $error = "Error retrieving clients from database!";
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
 exit();
 }
 while ($row = mysqli_fetch_array($result)) {
@@ -128,13 +127,13 @@ exit();
 
 
 if (isset($_GET['addform'])) {
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/db.inc.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 $name = mysqli_real_escape_string($link, $_POST['name']);
 $email = mysqli_real_escape_string($link, $_POST['email']);
 $sql= "INSERT INTO user SET name='$name', email='$email' ";
 if(!mysqli_query($link, $sql)) {
 $error = 'Error adding user.';
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
 exit();
 }
 $aid = mysqli_insert_id($link);
@@ -144,7 +143,7 @@ $password = mysqli_real_escape_string($link, $password);
 $sql = "UPDATE user SET password = '$password'  WHERE id = '$aid'";
 if (!mysqli_query($link, $sql)) {
 $error = 'Error setting user password.';
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
 exit();
 }
 }
@@ -154,7 +153,7 @@ $cid = mysqli_real_escape_string($link, $client);
 $sql = "UPDATE user SET client_id=$cid WHERE id=$aid";
 if (!mysqli_query($link, $sql)) {
 $error = 'Error setting client id 152.';
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
 exit();
 }
 }
@@ -164,7 +163,7 @@ $roleid = mysqli_real_escape_string($link, $role);
 $sql = "INSERT INTO userrole SET userid='$aid', roleid='$roleid'";
 if (!mysqli_query($link, $sql)){
 $error = 'Error assigning selected role to user.';
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
 exit(); 
 }
 }
@@ -174,13 +173,13 @@ exit();
 }//end of addform
 
 if (isset ($_POST['action']) and $_POST['action'] == 'Edit'){ 
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/db.inc.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 $id = mysqli_real_escape_string($link, $_POST['id']);
 $thename = "SELECT id, name, email FROM user WHERE id =$id";
 $result1 = mysqli_query($link, $thename);
 if(!$result1) {
 $error = 'Error fetching user details.';
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
 exit();
 }
 $row = mysqli_fetch_array($result1);
@@ -196,7 +195,7 @@ $sql = "SELECT roleid FROM userrole WHERE userid='$id'";
 $result = mysqli_query($link, $sql);
 if (!$result)  {
 $error = 'Error fetching list of assigned roles.';
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
 exit();
 }
 $selectedRoles = array();
@@ -208,7 +207,7 @@ $sql = "SELECT id, description FROM role";
 $result = mysqli_query($link, $sql);
 if (!$result) {
  $error = 'Error fetching list of roles.';
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
 exit(); 
   }
   while ($row = mysqli_fetch_array($result)){
@@ -219,7 +218,7 @@ $sql= "SELECT id, name FROM client ORDER BY name";
 $result = mysqli_query($link, $sql);
 if (!$result) {
 $error = "Error retrieving clients from database!";
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
 exit();
 }
 while ($row = mysqli_fetch_array($result)) {
@@ -229,7 +228,7 @@ $sql= "SELECT client_id FROM user WHERE id=$id";
 $result = mysqli_query($link, $sql);
 if (!$result ) {
 $error = "Error retrieving client id from user!";
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
 exit();
 }
 $row = mysqli_fetch_array($result);
@@ -241,14 +240,14 @@ exit();
 
 if (isset($_GET['editform']))
 {
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/db.inc.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 $id = mysqli_real_escape_string($link, $_POST['id']);
 $name = mysqli_real_escape_string($link, $_POST['name']);
 $email = mysqli_real_escape_string($link, $_POST['email']);
 $sql = "UPDATE user SET name='$name', email='$email' WHERE id='$id'";
 if (!mysqli_query($link, $sql)) {
 $error = 'Error setting user details.';
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
 exit();
 }
 
@@ -258,7 +257,7 @@ $password = mysqli_real_escape_string($link, $password);
 $sql = "UPDATE user SET password = '$password' WHERE id = '$id'";
 if (!mysqli_query($link, $sql)){
 $error = 'Error setting user password.';
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
 exit();
 }
 }
@@ -267,7 +266,7 @@ if ($priv && $priv =='Admin'){
 $sql = "DELETE FROM userrole WHERE userid='$id'";
 if (!mysqli_query($link, $sql)) {
 $error = 'Error removing obsolete user role entries.';
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
 exit();
 }
 }
@@ -277,7 +276,7 @@ $roleid = mysqli_real_escape_string($link, $role);
 $sql = "INSERT INTO userrole SET userid='$id', roleid='$roleid'";
 if (!mysqli_query($link, $sql)){
 $error = 'Error assigning selected role to user.';
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
 exit();
 }
 }//end foreach
@@ -289,7 +288,7 @@ $cid = mysqli_real_escape_string($link, $client);
 $sql = "UPDATE user SET client_id=$cid WHERE id = $id";
 if (!mysqli_query($link, $sql)) {
 $error = 'Error setting client id 287.';
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
 exit();
 }
 }
@@ -303,7 +302,7 @@ $sql ="SELECT user.id, user.name FROM user LEFT JOIN (SELECT user.name, client.d
 
 $sql ="SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS NULL";//USING ID NOT DOMAIN
 
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/db.inc.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 //_______________________________________________________________________________
 
 if (isset($_POST['act']) and $_POST['act'] == 'Choose'  and isset($_POST['user']) && $_POST['user'] !=''){
@@ -324,7 +323,7 @@ $result = mysqli_query($link, $sqlc);
 if (!$result)
 {
 $error = 'Database error fetching users.' .$sql;
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
 exit();
 }
 while ($row = mysqli_fetch_array($result)){
@@ -346,7 +345,7 @@ if(!isset($flag)){
 $result = mysqli_query($link, $sql);
 if (!$result ) {
 $error = "Error retrieving users from t'database!";
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
 exit();
 }
 while ($row = mysqli_fetch_array($result)) {
@@ -356,7 +355,7 @@ $users[$row['id']] =$row['name'];
 
 if($priv && $priv != "Admin") {
 $email="{$_SESSION['email']}";
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/db.inc.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 $sqlc="SELECT $domain FROM user WHERE user.email='$email'";
 $result = mysqli_query($link, $sqlc);
 $row = mysqli_fetch_array($result);
@@ -372,7 +371,7 @@ $result = mysqli_query($link, $sql);
 
 if (!$result){
 $error = 'Database error fetching client list.' .$sql;
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
 exit();
 }
 while ($row = mysqli_fetch_array($result)){
@@ -389,7 +388,7 @@ $result = mysqli_query($link, $sqlc);
 if (!$result)
 {
 $error = 'Database error fetching clients.';
-include $_SERVER['DOCUMENT_ROOT'] . '/uploads/includes/error.html.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
 exit();
 }
 while ($row = mysqli_fetch_array($result)){
