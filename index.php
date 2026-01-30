@@ -591,10 +591,12 @@ $from .= " LEFT JOIN client ON user.client_id=client.id"; //note LEFT join to in
 $sql .= $select_tel . $from . $where . $order;
 //____________________________________________________________________________________________END OF TELEPHONE
 
-$result = doFetch($link, $sql, 'Database error fetching files. ' . $sql);
+$st = doQuery($pdo, $sql, 'Database error fetching files. ');
+
+$result = $st->fetchAll(PDO::FETCH_ASSOC);
 
 $files = array();
-while ($row = mysqli_fetch_array($result)) {
+foreach ($result as $row) {
     $files[] = array(
         'id' => $row['id'],
         'user' => (isset($row['user'])) ? $row['user'] : '',
