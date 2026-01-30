@@ -1,4 +1,6 @@
 <?php
+include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php';
+
 function databaseContainsUser($email, $password)
 {
     include 'db.inc.php';

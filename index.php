@@ -1,11 +1,14 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
 
 $base = 'Log In';
 $error = '';
 $tmpl_error = '/nwp_uploads/includes/error.html.php';
 $myip = '86.160.57.166';
+$user_id = 0;
+$text = '';
+$suffix = '';
 function getRemoteAddr()
 {
     $ipAddress = $_SERVER['REMOTE_ADDR'];
@@ -316,6 +319,8 @@ if (isset($_POST['original'])) { //CAN ONLY BE SET BY ADMIN, 'original' is commo
     $fname = doSanitize($link,  $_POST['filename']);
     $orig = doSanitize($link,  $_POST['original']);
     $user = doSanitize($link,  $_POST['user']);
+
+    
     if ($_POST['colleagues']) {
         $user = doSanitize($link,  $_POST['colleagues']);
     }
@@ -345,9 +350,7 @@ if (isset($_GET['p']) and is_numeric($_GET['p'])) {
     $pages = $_GET['p'];
 } else { // counts all files
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-
     $sql = "SELECT COUNT(upload.id) as total from upload ";
-
     if ($priv == 'Client') {
         $sql .= " INNER JOIN user on upload.userid = user.id WHERE user.email=:email";
     }
@@ -400,7 +403,7 @@ if (!$result) {
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
     exit();
 }
-foreach($result as $row){
+foreach ($result as $row) {
     $users[$row['id']] = $row['name'];
 }
 
@@ -421,7 +424,7 @@ if (!$result) {
     exit();
 }
 
-foreach($result as $row){
+foreach ($result as $row) {
     $client[$row['domain']] = $row['name'];
 }
 
@@ -564,17 +567,28 @@ if ($priv == 'Admin') {
     $select .= ", user.name as user"; //append to line 465(ish)
     $from .= " INNER JOIN userrole ON user.id=userrole.userid";
     $where  = ' WHERE TRUE';
-    if (isset($_GET['ext']) && $ext = doSanitize($link, $_GET['ext'])) {
+    $ext = isset($_GET['ext']) ? $_GET['ext'] : null;
+    $getuser = isset($_GET['u']) ? $_GET['u'] : '';
+    $textme = isset($_GET['t']) ? $_GET['t'] : '';
+    $useroo = isset($useroo) ? $useroo : $getuser;
+    if ($ext) {
         if ($ext == 'owt') {
             $where .= " AND (upload.filename NOT LIKE '%pdf' AND upload.filename NOT LIKE '%zip')";
         } else $where .= " AND upload.filename LIKE '%$ext'";
     }
+
     if (isset($useroo) && is_numeric($useroo)) { //CLIENTS USE EMAIL DOMAIN AS ID THERFORE NOT A NUMBER
-        if ($useroo = doSanitize($link, $_GET['u'])) $where .= " AND user.id=$useroo";
+        if ($useroo = $getuser) {
+            $where .= " AND user.id=$useroo";
+        }
     } else {
-        if (isset($_GET['u']) && $useroo = doSanitize($link, $_GET['u'])) $where .= " AND $domain='$useroo'";
+        if ($getuser) {
+            $where .= " AND $domain='$getuser'";
+        }
     }
-    if (isset($_GET['t'])  && $textme = doSanitize($link, $_GET['t'])) $where .= " AND upload.filename LIKE '%$textme%'";
+    if ($textme) {
+        $where .= " AND upload.filename LIKE '%$textme%'";
+    }
 } //admin
 
 else {
