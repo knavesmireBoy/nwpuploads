@@ -4,17 +4,13 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php'
 function databaseContainsUser($email, $password)
 {
     include 'db.inc.php';
-
-    $sql = "SELECT COUNT(*) FROM user INNER JOIN userrole ON user.id=userrole.userid WHERE email='$email' AND password='$password' ";
-
     $sql = "SELECT COUNT(*) FROM user INNER JOIN userrole ON user.id=userrole.userid WHERE email=:email AND password=:pwd";
-
     $st = $pdo->prepare($sql);
     $st->bindValue(":email", $email);
     $st->bindValue(":pwd", $password);
     doPreparedQuery($st, "<p>Error retrieving user:</p>");
-    $result = $st->fetch()[0];
-    if (!$result) {
+    $result = $st->fetch(PDO::FETCH_NUM);
+    if (empty($result)) {
         $error = 'Error retrieving user';
         include 'error.html.php';
         exit();

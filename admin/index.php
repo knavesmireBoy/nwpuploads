@@ -37,13 +37,10 @@ if (isset($_POST['action']) and $_POST['action'] == 'Delete') {
 
 if (isset($_POST['confirm']) and $_POST['confirm'] == 'Yes') {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-  $id = mysqli_real_escape_string($link, $_POST['id']);
-  $result = mysqli_query($link, "DELETE FROM user WHERE id = $id");
-  if (!$result) {
-    $error = 'Error deleting user.';
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
-    exit();
-  }
+  $st = $pdo->prepare("DELETE FROM user WHERE id =:id");
+  $st->bindValue(':id', $_POST['id']);
+  //dump($_POST);
+  doPreparedQuery($st, 'Error deleting user.');
   header('Location: . ');
   exit();
 }
@@ -77,7 +74,6 @@ if (isset($_GET['add'])) {
   //exit();
 } //////////////END OF ADD
 
-//if (isset($_POST['action']) and $_POST['action'] == 'continue'){
 if (isset($_GET['add'])) {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
   $pagetitle = 'New User';
@@ -100,33 +96,32 @@ if (isset($_GET['add'])) {
   foreach ($rows as $row) {
     $roles[] = array('id' => $row['id'], 'description' => $row['description'], 'selected' => FALSE);
   }
-
+  //cannot see how we have $_POST here
   if (isset($_POST['employer']) && !empty($_POST['employer'])) {
-    $id = mysqli_real_escape_string($link, $_POST['employer']);
-    $sql = "SELECT id, domain FROM client WHERE id=$id";
-    $result = mysqli_query($link, $sql);
-
-
-    if (!$result) {
+    $st = doQuery($pdo, "SELECT id, domain FROM client WHERE id=$id", "Error retrieving clients from database!");
+    if (!$st) {
       $error = "Error retrieving clients from database!";
       include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
       exit();
     }
-
-    $row = mysqli_fetch_array($result);
+    $row = $st->fetch(PDO::FETCH_ASSOC);
     $cid = $row['id'];
     $email = $row['domain'];
 
     $sql = "SELECT id, name FROM client ORDER BY name";
-    $result = mysqli_query($link, $sql);
-    if (!$result) {
-      $error = "Error retrieving clients from database!";
+    $st = doQuery($pdo, $sql, "<p>Error retrieving client from database!</p>");
+    $row = $st->fetch(PDO::FETCH_ASSOC);
+
+    if (!$row) {
+      $error = "Error retrieving client from database!";
       include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
       exit();
     }
+    /*
     while ($row = mysqli_fetch_array($result)) {
       $clientlist[$row['id']] = $row['name'];
     }
+      */
   }
   include 'form.html.php';
   exit();
@@ -134,41 +129,57 @@ if (isset($_GET['add'])) {
 
 
 if (isset($_GET['addform'])) {
+
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-  $name = mysqli_real_escape_string($link, $_POST['name']);
-  $email = mysqli_real_escape_string($link, $_POST['email']);
-  $sql = "INSERT INTO user SET name='$name', email='$email' ";
-  if (!mysqli_query($link, $sql)) {
+  $sql = "INSERT INTO user (name, email, password, client_id) VALUES(:nom, :email,:pwd, :clientid)";
+  $st = $pdo->prepare($sql);
+  $st->bindValue(':nom', $_POST['name']);
+  $st->bindValue(':email', $_POST['email']);
+  $st->bindValue(':pwd', $_POST['password']);
+  $st->bindValue(':clientid', $_POST['employer']);
+  $res = doPreparedQuery($st, 'Error adding user.');
+
+  if (!$res) {
     $error = 'Error adding user.';
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
     exit();
   }
-  $aid = mysqli_insert_id($link);
+  $aid = $pdo->lastInsertId();
   if (isset($_POST['password']) && $_POST['password'] != '') {
     $password = md5($_POST['password'] . 'uploads');
-    $password = mysqli_real_escape_string($link, $password);
-    $sql = "UPDATE user SET password = '$password'  WHERE id = '$aid'";
-    if (!mysqli_query($link, $sql)) {
+    $sql = "UPDATE user SET password =:pwd  WHERE id =:id";
+    $st = $pdo->prepare($sql);
+    $st->bindValue(':pwd', $password);
+    $st->bindValue(':id', $aid);
+    $res = doPreparedQuery($st, 'Error setting user password.');
+
+    if (!$res) {
       $error = 'Error setting user password.';
       include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
       exit();
     }
   }
   if (isset($_POST['employer']) && $_POST['employer'] != '') {
-    $client = $_POST['employer'];
-    $cid = mysqli_real_escape_string($link, $client);
-    $sql = "UPDATE user SET client_id=$cid WHERE id=$aid";
-    if (!mysqli_query($link, $sql)) {
-      $error = 'Error setting client id 152.';
+
+    $sql = "UPDATE user SET client_id=:cid WHERE id=:aid";
+    $st = $pdo->prepare($sql);
+    $st->bindValue(':cid', intval($_POST['employer']));
+    $st->bindValue(':aid', $aid);
+    $res = doPreparedQuery($st, 'Error setting client id.');
+    if (!$res) {
+      $error = 'Error setting client id.';
       include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
       exit();
     }
   }
   if (isset($_POST['roles'])) {
     foreach ($_POST['roles'] as $role) {
-      $roleid = mysqli_real_escape_string($link, $role);
-      $sql = "INSERT INTO userrole SET userid='$aid', roleid='$roleid'";
-      if (!mysqli_query($link, $sql)) {
+      $sql = "INSERT INTO userrole SET userid=:aid, roleid=:roleid";
+      $st = $pdo->prepare($sql);
+      $st->bindValue(':aid', $aid);
+      $st->bindValue(':roleid', $role);
+      $res = doPreparedQuery($st, 'Error assigning selected role to user.');
+      if (!$res) {
         $error = 'Error assigning selected role to user.';
         include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
         exit();
@@ -230,10 +241,7 @@ if (isset($_POST['action']) and $_POST['action'] == 'Edit') {
 
 
 if (isset($_GET['editform'])) {
-
-
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-
   $sql = "UPDATE user SET name=:name, email=:email WHERE id=:id";
   $st = $pdo->prepare($sql);
   $st->bindValue(":name", $_POST['name']);
@@ -243,7 +251,6 @@ if (isset($_GET['editform'])) {
 
   if (isset($_POST['password']) && $_POST['password'] != '') {
     $password = md5($_POST['password'] . 'uploads');
-    $password = mysqli_real_escape_string($link, $password);
     $sql = "UPDATE user SET password =:password WHERE id =:id";
     $st = $pdo->prepare($sql);
     $st->bindValue(":password", $_POST['password']);
@@ -271,15 +278,15 @@ if (isset($_GET['editform'])) {
     $st = $pdo->prepare($sql);
     $st->bindValue(":cid", $_POST['employer']);
     $st->bindValue(":id", $_POST['id']);
-    doPreparedQuery($st, '<p>Error setting client id </p>');
+    doPreparedQuery($st, '<p>Error setting client id innit</p>');
   }
   header('Location: . ');
   exit();
 } ///END OF EDIT
 
 //display users___________________________________________________________________
-$domain = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
-$sql = "SELECT user.id, user.name FROM user LEFT JOIN (SELECT user.name, client.domain FROM user INNER JOIN client ON $domain=client.domain) AS employer ON $domain=employer.domain WHERE employer.domain IS NULL"; //this overwrites above query to filter out users as employees
+$domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
+$sql = "SELECT user.id, user.name FROM user LEFT JOIN (SELECT user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer ON $domainstr=employer.domain WHERE employer.domain IS NULL"; //this overwrites above query to filter out users as employees
 
 $sql = "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS NULL"; //USING ID NOT DOMAIN
 
@@ -290,8 +297,6 @@ if (isset($_POST['act']) and $_POST['act'] == 'Choose' && isset($_POST['user']) 
   $return = "Return to users";
   $manage = "Manage Users";
   $key = $_POST['user'];
-
-  // $key =  mysqli_real_escape_string($link, $_POST['user']);
   $sqlc = "SELECT domain FROM client WHERE domain=:domain";
   $st = $pdo->prepare($sqlc);
   $st->bindValue(":domain", $key);
@@ -299,13 +304,12 @@ if (isset($_POST['act']) and $_POST['act'] == 'Choose' && isset($_POST['user']) 
   $row = $st->fetch(PDO::FETCH_ASSOC);
 
   if (strrpos($key, "@")) { // some clients need full domain for identification, in which case the query is simplified to a straight match to a users email address which corresponds to the client domain.
-    $domain = "user.email";
+    $domainstr = "user.email";
   }
   if ($row) {
-    $sqlc = "SELECT employer.user_name, employer.user_id FROM (SELECT user.name AS user_name, user.id AS user_id, client.domain FROM user INNER JOIN client ON $domain=client.domain) AS employer WHERE employer.domain=:domain"; //
+    $sqlc = "SELECT employer.user_name, employer.user_id FROM (SELECT user.name AS user_name, user.id AS user_id, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer WHERE employer.domain=:domain"; //
     $st = $pdo->prepare($sqlc);
     $st->bindValue(":domain", $row['domain']);
-
     doPreparedQuery($st, "<p>'Database error fetching users.'</p>");
     $rows = $st->fetchAll(PDO::FETCH_ASSOC);
     if (empty($rows)) {
@@ -342,30 +346,43 @@ if (!isset($flag)) {
   }
 }
 
-if ($priv && $priv != "Admin") {
-  $email = "{$_SESSION['email']}";
+if ($priv && $priv !== "Admin") {
+  $email = $_SESSION['email'];
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-  $sqlc = "SELECT $domain FROM user WHERE user.email='$email'";
-  $result = mysqli_query($link, $sqlc);
-  $row = mysqli_fetch_array($result);
-  $dom = $row[0];
-  $sqlc = "SELECT COUNT(*) AS dom FROM user INNER JOIN client ON $domain=client.domain WHERE $domain='$dom' AND client.domain='$dom'";
+  $st = $pdo->prepare("SELECT $domainstr FROM user WHERE user.email=:email");
+  $st->bindValue(":email", $email);
+  $res = doPreparedQuery($st, 'Error retrieving list:');
+  $row = $res ? $st->fetch(PDO::FETCH_NUM) : null;
+  $dom = isset($row) ? $row[0] : null;
+  if ($dom) {
+    //https://stackoverflow.com/questions/18511645/use-bound-parameter-multiple-times
+    $sqlc = "SELECT COUNT(*) AS dom FROM user INNER JOIN client ON $domainstr=client.domain WHERE $domainstr=:dom AND client.domain=:dommo";
+    $st = $pdo->prepare($sqlc);
+    $st->bindValue(":dom", $dom);
+    $st->bindValue(":dommo", $dom);
+    doPreparedQuery($st, 'Error retrieving list:');
+    $row = $st->fetch(PDO::FETCH_ASSOC);
+    $count = $row['dom'];
 
-  $result = doQuery($pdo, $sqlc, 'Error retrieving list:');
-  $row = $result->fetch();
-  $count = $row['dom'];
-  if ($count == 0) $domain = "user.email"; //full domain
-  if (count($count) > 0) {
-    $sql = "SELECT employer.id, employer.name FROM user INNER JOIN (SELECT user.id, user.name, client.domain FROM user INNER JOIN client ON $domain=client.domain) AS employer ON $domain=employer.domain WHERE user.email='$email'";
-    $result = mysqli_query($link, $sql);
+    if ($count == 0) {
+      $domainstr = "user.email";
+    } //full domain
 
-    if (!$result) {
-      $error = 'Database error fetching client list.' . $sql;
-      include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
-      exit();
-    }
-    while ($row = mysqli_fetch_array($result)) {
-      $users[$row['id']] = $row['name'];
+    if ($count > 0) {
+      $sql = "SELECT employer.id, employer.name FROM user INNER JOIN (SELECT user.id, user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer ON $domainstr=employer.domain WHERE user.email=:email";
+
+      $st = $pdo->prepare($sql);
+      $st->bindValue(":email", $email);
+      $res = doPreparedQuery($st, 'Error retrieving list:');
+      if (!$res) {
+        $error = 'Database error fetching client list.' . $sql;
+        include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
+        exit();
+      }
+      $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+      foreach ($rows as $row) {
+        $users[$row['id']] = $row['name'];
+      }
     }
     include 'users.html.php';
   }

@@ -17,7 +17,7 @@ function doPreparedQuery($st, $msg, $flag = false)
     try {
         if ($flag) {
             $st->execute();
-            $count = $st->RowCount();
+            $count = $st->rowCount();
             if ($count) {
                 return $st->fetchAll();
             } else {

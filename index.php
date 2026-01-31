@@ -39,7 +39,7 @@ if (!$roleplay = userHasWhatRole()) {
 } else {
     foreach ($roleplay as $key => $priv) { // $roleplay is an array, use foreach to obtain value and index
     }
-    $domain = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))"; //!!?!! V. USEFUL VARIABLE IN GLOBAL SPACE
+    $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))"; //!!?!! V. USEFUL VARIABLE IN GLOBAL SPACE
 }
 
 
@@ -53,11 +53,13 @@ if (isset($_POST['action']) and $_POST['action'] == 'upload') {
 
     $uploadfile = $mefiles('tmp_name');
     $realname = $mefiles('name');
+
+
     $ext = preg_replace('/(.*)(\.[^0-9.]+$)/i', '$2', $realname);
 
     $time = time();
-    $uploadname = $time . getRemoteAddr() . $ext;
-
+    //$uploadname = $time . getRemoteAddr() . $ext;
+    $uploadname = $time . $ext;
     $path = '../../filestore/';
     $filedname =  $path . $uploadname;
     // Copy the file (if it is deemed safe)
@@ -66,22 +68,26 @@ if (isset($_POST['action']) and $_POST['action'] == 'upload') {
         include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
         exit();
     }
-    echo $key;
+    //echo $key;
     if ($priv == 'Admin' and !empty($_POST['user'])) { //ie Admin selects user
         $key = $_POST['user'];
         include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-        $sql = "SELECT domain FROM client WHERE domain='$key'"; //will either return empty set(no error) or produce count. Test to see if a client has been selected.
-        $row = doSafeFetch($link, $sql);
-
-        if (count($row[0]) > 0) {
-            $sql = "SELECT employer.user_name, employer.user_id FROM (SELECT user.name AS user_name, user.id AS user_id, client.domain FROM user INNER JOIN client ON $domain =client.domain) AS employer WHERE employer.domain='$key' LIMIT 1"; //RETURNS one user, as relationship between file and user is one to one.
+        $sql = "SELECT domain FROM client WHERE domain='$key'";
+        $st = doQuery($pdo, $sql, 'no domain');
+        $row = $st->fetch(PDO::FETCH_NUM);
+        if (count($row) > 0) {
+            $sql = "SELECT employer.user_name, employer.user_id FROM (SELECT user.name AS user_name, user.id AS user_id, client.domain FROM user INNER JOIN client ON $domainstr =client.domain) AS employer WHERE employer.domain='$key' LIMIT 1"; //RETURNS one user, as relationship between file and user is one to one.
             //exit($sql);
-            $row = doSafeFetch($link, $sql);
+            $st = doQuery($pdo, $sql, 'error retrieving details');
+            $row = $st->fetch(PDO::FETCH_ASSOC);
+
             $key = $row['user_id'];
+
             if (!$key) {
                 $key = $_POST['user']; //$key will be empty if above query returned empty set, reset
                 $sql = "SELECT user.id from user INNER JOIN client ON user.client_id=client.id WHERE user.email='$key'";
-                $row = doSafeFetch($link, $sql);
+                $st = doQuery($pdo, $sql, 'error retrieving details');
+                $row = $st->fetch(PDO::FETCH_ASSOC);
                 $key = $row['id'];
             } // @ clients use domain or full email as key if neither tests produce a result key refers to a user only
         } //END OF COUNT
@@ -89,33 +95,38 @@ if (isset($_POST['action']) and $_POST['action'] == 'upload') {
 
     // Prepare user-submitted values for safe database insert
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-    $realname = doSanitize($link,  $realname);
-    $size = doSanitize($link, $mefiles('size'));
-    $uploadname = doSanitize($link, $uploadname);
-    $uploadtype = doSanitize($link, $mefiles('type'));
-    $uploaddesc = doSanitize($link,  isset($_POST['desc']) ? $_POST['desc'] : '');
-    $path = doSanitize($link,  $path);
-    $time = doSanitize($link,  $time);
-
+    $uploaddesc = isset($_POST['desc']) ? $_POST['desc'] : '';
+    $size =  $mefiles('size') / 1024;
     $sql = "INSERT INTO upload SET
-filename = '$realname',
-mimetype = '$uploadtype',
-description = '$uploaddesc',
-filepath = '$path',
-file = '$uploadname',
-size ='$size'/1024,
-userid='$key',
-time=NOW()";
-    doFetch($link, $sql, 'Database error storing file information!' . $sql);
-    /*$sql2 = "select user.whatever from user INNER JOIN upload ON user.id=upload.userid INNER JOIN (SELECT MAX(id) AS big FROM upload) AS last ON last.big = upload.id";
+    filename = :realname,
+    mimetype = :uploadtype,
+    description = :uploaddesc,
+    filepath = :pth,
+    file = :uploadname,
+    size = :sized
+    userid=:id
+    time=NOW()";
+
+    $sql = "INSERT INTO upload (filename, mimetype, description, filepath, file, size, userid, time) VALUES(:realname, :uploadtype,:uploaddesc,:pth,:uploadname,:sized,:userid, NOW())";
+    $st = $pdo->prepare($sql);
+    $st->bindValue(":realname", $realname);
+    $st->bindValue(":uploadtype", $mefiles('type'));
+    $st->bindValue(":uploaddesc", $uploaddesc);
+    $st->bindValue(":pth", $path);
+    $st->bindValue(":uploadname", $uploadname);
+    $st->bindValue(":sized", $size);
+    $st->bindValue(":userid", $key);
+
+    $res = doPreparedQuery($st, "<p>Database error storing file information!</p>");
+    /*
+    $sql2 = "select user.whatever from user INNER JOIN upload ON user.id=upload.userid INNER JOIN (SELECT MAX(id) AS big FROM upload) AS last ON last.big = upload.id";
 NOT REQUIRED - USING mysqli_INSERT_ID INSTEAD - BUT KEPT AS AN EXAMPLE OF A SUBQUERY
 */
-    $menum = mysqli_insert_id($link);
+    $menum = $pdo->lastInsertId();
     $sql = "select user.email, user.name, upload.id, upload.filename from user INNER JOIN upload ON user.id=upload.userid WHERE upload.id=$menum";
+    $st = doQuery($pdo, $sql, 'Error selecting email address.');
+    $row = $st->fetch(PDO::FETCH_ASSOC);
 
-    doFetch($link, $sql, 'Error selecting email address.');
-
-    $row = doSafeFetch($link, $sql);
     $email = $row['email'];
     $file = $row['filename'];
     $name = $row['name'];
@@ -147,16 +158,14 @@ if (!@mail('north.wolds@btinternet.com', 'Files to North Wolds | ' . $file,
 
 
 if (isset($_GET['action']) and isset($_GET['id'])) {
+
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-    $id = doSanitize($link,  $_GET['id']);
-    $sql = "SELECT filename, mimetype, filepath, file, size FROM upload WHERE id = '$id'";
-    $result = mysqli_query($link, $sql);
-    if (!$result) {
-        $error = 'Database error fetching requested file.';
-        include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
-        exit();
-    }
-    $file = mysqli_fetch_array($result);
+    $sql = "SELECT filename, mimetype, filepath, file, size FROM upload WHERE id =:id";
+    $st = $pdo->prepare($sql);
+    $st->bindValue(":id", $_GET['id']);
+    doPreparedQuery($st, '<p>Database error fetching requested file.</p>');
+    $file = $st->fetch(PDO::FETCH_ASSOC);
+
     if (!$file) {
         $error = 'File with specified ID not found in the database!';
         include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
@@ -171,9 +180,8 @@ if (isset($_GET['action']) and isset($_GET['id'])) {
     $fullpath = $_SERVER['DOCUMENT_ROOT'] . $filepath;
     $filedata = file_get_contents($fullpath);
     $disposition = 'inline';
-    $ext = preg_replace('/(.*)(\.[^0-9.]+$)/i', '$2', $filename);
     //$mimetype = 'application/x-unknown'; application/octet-stream
-
+ 
     if ($_GET['action'] == 'download') {
         $disposition = 'attachment';
     }
@@ -204,8 +212,8 @@ if (isset($_POST['confirm']) and $_POST['confirm'] == 'Yes') {
 
 if (isset($_POST['proceed']) and $_POST['proceed'] == 'remove') {
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-    $id = doSanitize($link, $_POST['id']);
 
+    $id = $_POST['id'];
     $path = '../../filestore/';
 
     if ($_POST['extent'] == "c") {
@@ -219,21 +227,23 @@ if (isset($_POST['proceed']) and $_POST['proceed'] == 'remove') {
         exit();
     }
 
+    $st = doQuery($pdo, $sql, 'Error failed to delete file');
 
-    $result = mysqli_query($link, $sql);
+    $rows = $st->fetchAll(PDO::FETCH_ASSOC);
 
-    //exit($sql);
-
-    if (!$result) {
+    if (empty($rows)) {
         $error = 'Database error fetching stored files.';
         include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
         exit();
     }
 
-    while ($row = mysqli_fetch_array($result)) {
+    $sql = "DELETE FROM upload WHERE file=:f";
+    $st = $pdo->prepare($sql);
+    foreach ($rows as $row) {
         $file = $row['file'];
-        $sql = "DELETE FROM upload WHERE file = '$file'";
-        if (!mysqli_query($link, $sql)) { //delete file ref
+        $st->bindValue(":f", $file);
+        $res = doPreparedQuery($st, '<p>Error deleting file.</p>');
+        if (!$res) { //delete file ref
             $error = 'Error deleting file.';
             include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
             exit();
@@ -280,7 +290,7 @@ if (isset($_POST['swap'])) { //SWITCH OWNER OF FILE OR JUST UPDATE DESCRIPTION (
         $action = '';
         $answer = $_POST['swap'];
 
-        $sql_col = "SELECT employer.id, employer.name FROM upload INNER JOIN user ON upload.userid = user.id INNER JOIN (SELECT user.id, user.name, client.domain FROM user INNER JOIN client ON $domain=client.domain) AS employer ON $domain=employer.domain WHERE upload.id=$id ORDER BY name"; //colleagues
+        $sql_col = "SELECT employer.id, employer.name FROM upload INNER JOIN user ON upload.userid = user.id INNER JOIN (SELECT user.id, user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer ON $domainstr=employer.domain WHERE upload.id=$id ORDER BY name"; //colleagues
         //exit($sql_col);
         $result = mysqli_query($link, $sql_col);
         if (!$result) {
@@ -320,7 +330,6 @@ if (isset($_POST['original'])) { //CAN ONLY BE SET BY ADMIN, 'original' is commo
     $orig = doSanitize($link,  $_POST['original']);
     $user = doSanitize($link,  $_POST['user']);
 
-    
     if ($_POST['colleagues']) {
         $user = doSanitize($link,  $_POST['colleagues']);
     }
@@ -436,11 +445,11 @@ if (isset($_GET['find'])) {
     if ($priv != "Admin"): //CUSTOMISES SELECT MENU
         $email = "{$_SESSION['email']}";
         include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-        $sql = "SELECT $domain  FROM user WHERE user.email='$email'";
+        $sql = "SELECT $domainstr  FROM user WHERE user.email='$email'";
         $result = mysqli_query($link, $sql);
         $row = mysqli_fetch_array($result);
         $dom = $row[0];
-        $sql = "SELECT COUNT(*) AS dom FROM user INNER JOIN client ON $domain=client.domain WHERE $domain='$dom' AND client.domain='$dom'";
+        $sql = "SELECT COUNT(*) AS dom FROM user INNER JOIN client ON $domainstr=client.domain WHERE $domainstr='$dom' AND client.domain='$dom'";
         $result = mysqli_query($link, $sql);
         $row = mysqli_fetch_array($result);
         $count = $row['dom'];
@@ -449,7 +458,7 @@ if (isset($_GET['find'])) {
         } else {
             $where = " WHERE user.id=$key"; //user
         }
-        $sql = "SELECT employer.id, employer.name  FROM user INNER JOIN (SELECT user.id, user.name, client.domain FROM user INNER JOIN client ON $domain=client.domain) AS employer ON $domain=employer.domain $where";
+        $sql = "SELECT employer.id, employer.name  FROM user INNER JOIN (SELECT user.id, user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer ON $domainstr=employer.domain $where";
         $result = mysqli_query($link, $sql);
         if (!$result) {
             $error = 'Database error fetching clients.';
@@ -477,7 +486,7 @@ if (isset($_GET['find'])) {
 $select = "SELECT upload.id, filename, mimetype, description, filepath, file, size, time,  MID(file, 11, 14) AS origin, user.email";
 $from = " FROM upload INNER JOIN user ON upload.userid=user.id";
 $order = " ORDER BY $order_by LIMIT $start, $display";
-$domain = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
+$domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
 //_______//_______//_______//_______//_______//_______//_______//_______//_______//_____
 
 if (isset($_GET['action']) and $_GET['action'] == 'search') {

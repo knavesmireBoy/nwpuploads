@@ -30,8 +30,6 @@ if (isset($_POST['action']) and $_POST['action'] == 'Delete') {
   $pos = "Yes";
   $neg = "No";
   $action = '';
-  //include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/prompt.html.php';
-  //exit(); 
 }
 
 if (isset($_POST['confirm']) and $_POST['confirm'] == 'No') {
@@ -41,10 +39,10 @@ if (isset($_POST['confirm']) and $_POST['confirm'] == 'No') {
 
 if (isset($_POST['confirm']) and $_POST['confirm'] == 'Yes') {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-  $id = mysqli_real_escape_string($link, $_POST['id']);
-  $result = mysqli_query($link, "DELETE FROM client WHERE id = $id");
-  if (!$result) {
-    echo mysqli_errno($link) . ": " . mysqli_error($link) . "\n";
+  $st = $pdo->prepare("DELETE FROM client WHERE id =:id");
+  $st->bindValue(":id", $_POST['id']);
+  $res = doPreparedQuery($st, 'Error deleting client.');
+  if (!$res) {
     $error = 'Error deleting client.';
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
     exit();
@@ -56,16 +54,17 @@ if (isset($_POST['confirm']) and $_POST['confirm'] == 'Yes') {
 
 if (isset($_POST['action']) and $_POST['action'] == 'Edit') {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-  $id = mysqli_real_escape_string($link, $_POST['id']);
-  $sql = "SELECT id, name, domain, tel FROM client WHERE id =$id";
-  $result = mysqli_query($link, $sql);
-  if (!$result) {
+  $sql = "SELECT id, name, domain, tel FROM client WHERE id =:id";
+  $st = $pdo->prepare($sql);
+  $st->bindValue(":id", $_POST['id']);
+  $res = doPreparedQuery($st, 'Error fetching client details.');
+
+  if (!$res) {
     $error = 'Error fetching user details.';
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
     exit();
   }
-
-  $row = mysqli_fetch_array($result);
+  $row = $st->fetch(PDO::FETCH_ASSOC);
   $pagetitle = 'Edit Client';
   $action = 'editform';
   $name = $row['name'];
@@ -73,24 +72,24 @@ if (isset($_POST['action']) and $_POST['action'] == 'Edit') {
   $tel = $row['tel'];
   $id = $row['id'];
   $button = 'Update Client';
-
   include 'form.html.php';
   exit();
 }
 
 if (isset($_GET['editform'])) {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-  $id = mysqli_real_escape_string($link, $_POST['id']);
-  $name = mysqli_real_escape_string($link, $_POST['name']);
-  $domain = mysqli_real_escape_string($link, $_POST['domain']);
-  $tel = isset($_POST['tel']) ? mysqli_real_escape_string($link, $_POST['tel']) : '';
-  $sql = "UPDATE client SET name='$name', domain='$domain', tel='$tel' WHERE id=$id";
-  if (!mysqli_query($link, $sql)) {
-    $error = 'bloody client details.';
+  $sql = "UPDATE client SET name=:nom, domain=:dom, tel=:tel WHERE id=:id";
+  $st = $pdo->prepare($sql);
+  $st->bindValue(':nom', $_POST['name']);
+  $st->bindValue(':dom', $_POST['domain']);
+  $st->bindValue(':tel', $_POST['tel']);
+  $st->bindValue(':id',  $_POST['id']);
+  $res = doPreparedQuery($st, 'Error updating client.');
+  if (!$res) {
+    $error = 'Error updating client.';
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
     exit();
   }
-
   header('Location: . ');
   exit();
 }
@@ -110,17 +109,14 @@ if (isset($_GET['add'])) {
 
 if (isset($_GET['addform'])) {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-
-  $name = mysqli_real_escape_string($link, $_POST['name']);
-  $domain = mysqli_real_escape_string($link, $_POST['domain']);
-  $tel = isset($_POST['tel']) ? mysqli_real_escape_string($link, $_POST['tel'])  : '';
-
-  //$sql= "INSERT INTO client SET name='$name', domain='$domain', tel='$tel'";
-  $sql = "INSERT INTO client VALUES ('?', '$name', '$domain', '$tel')";
-
+  $sql = "INSERT INTO client (name, domain, tel) VALUES (:nom, :dom, :tel)";
+  $st = $pdo->prepare($sql);
+  $st->bindValue(':nom', $_POST['name']);
+  $st->bindValue(':dom', $_POST['domain']);
+  $st->bindValue(':tel', $_POST['tel']);
+  $res = doPreparedQuery($st, 'Error adding client.');
   //alert required for non unique domains. I attempted to enter uni.com
-  if (!mysqli_query($link, $sql)) {
-    echo mysqli_errno($link) . ": " . mysqli_error($link) . "\n";
+  if (!$res) {
     $error = 'Error adding client.';
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
     exit();
@@ -132,31 +128,24 @@ if (isset($_GET['addform'])) {
 
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 $sql = "SELECT id, name, domain from client"; // THE DEFAULT QUERY
-
+$cid = 0;//$id MAY have been set by delete so don't overwrite;
 if (isset($_POST['act']) and $_POST['act'] == 'Choose'  and $_POST['client'] != '') {
-  $id =  mysqli_real_escape_string($link, $_POST['client']);
-  $sql .= " WHERE id=$id";
+  $cid =  $_POST['client'];
+  $sql .= " WHERE id=:id";
 }
-
-
 $sql .= " ORDER BY name";
-
-
-
-//display clients
-include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-
-$st = doQuery($pdo, $sql, "<p>Error retrieving clients from database!</p>");
-
+$st = $pdo->prepare($sql);
+if ($cid) {
+  $st->bindValue(":id", $cid);
+}
+doPreparedQuery($st, "<p>Error retrieving clients from database!</p>");
 $rows = $st->fetchAll();
-
 if (!$rows) {
-  //echo mysqli_errno($link) . ": " . mysqli_error($link). "\n";
   $error = "Error retrieving clients from database!";
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
   exit();
 }
-//$clients = array();
+
 foreach ($rows as $row) {
   $clients[] = array(
     'id' => $row['id'],
@@ -164,4 +153,5 @@ foreach ($rows as $row) {
     'domain' => $row['domain']
   );
 }
+
 include 'clients.html.php';

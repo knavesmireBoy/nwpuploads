@@ -89,8 +89,11 @@ else {
 <?php 
 $fsize = formatFileSize($f['size']);
 ?>
-<td><a title="<?php htmlout($fsize); ?>" href="<?php htmlout($f['file']);?>">
+
+<td><a title="<?php htmlout($fsize); ?>" href="<?= '?action=get&id=' . $f['id'];?>">
 <?php htmlout($f['filename']); ?></a></td>
+
+
 <?php if ($priv =='Client') : ?>
 <td><?php htmlout($f['description']); ?></td>
 <?php endif;
