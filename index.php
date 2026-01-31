@@ -181,7 +181,7 @@ if (isset($_GET['action']) and isset($_GET['id'])) {
     $filedata = file_get_contents($fullpath);
     $disposition = 'inline';
     //$mimetype = 'application/x-unknown'; application/octet-stream
- 
+
     if ($_GET['action'] == 'download') {
         $disposition = 'attachment';
     }
@@ -268,20 +268,26 @@ if (isset($_POST['confirm']) and $_POST['confirm'] == 'No') { //swap
 if (isset($_POST['swap'])) { //SWITCH OWNER OF FILE OR JUST UPDATE DESCRIPTION (FILE AMEND BLOCK)
     $colleagues = [];
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-    $id = doSanitize($link,  $_POST['id']);
+
+
+
+
     $answer = $_POST['swap'];
-    $email = "{$_SESSION['email']}";
+    $email = $_SESSION['email'];
 
     if ($priv == 'Admin') {
-        $sql = "SELECT upload.id, filename, description, upload.userid, user.name FROM upload INNER JOIN user ON upload.userid=user.id  WHERE upload.id=$id";
-        $result = mysqli_query($link, $sql);
-        if (!$result) {
+        $sql = "SELECT upload.id, filename, description, upload.userid, user.name FROM upload INNER JOIN user ON upload.userid=user.id  WHERE upload.id=:id";
+
+        $st = $pdo->prepare($sql);
+        $st->bindValue(":id", $_POST['id']);
+        doPreparedQuery($st, '<p>Database error fetching stored files.</p>');
+        $row = $st->fetch(PDO::FETCH_ASSOC);
+
+        if (!$row) {
             $error = 'Database error fetching stored files.';
             include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
             exit();
         }
-        $row = mysqli_fetch_array($result);
-        $id = $row['id'];
         $filename = $row['filename'];
         $diz = $row['description'];
         $userid = $row['userid'];
@@ -290,27 +296,31 @@ if (isset($_POST['swap'])) { //SWITCH OWNER OF FILE OR JUST UPDATE DESCRIPTION (
         $action = '';
         $answer = $_POST['swap'];
 
-        $sql_col = "SELECT employer.id, employer.name FROM upload INNER JOIN user ON upload.userid = user.id INNER JOIN (SELECT user.id, user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer ON $domainstr=employer.domain WHERE upload.id=$id ORDER BY name"; //colleagues
+        $sql = "SELECT employer.id, employer.name FROM upload INNER JOIN user ON upload.userid = user.id INNER JOIN (SELECT user.id, user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer ON $domainstr=employer.domain WHERE upload.id=:id ORDER BY name"; //colleagues
+        $st = $pdo->prepare($sql);
+        $st->bindValue(":id", $row['id']);
+        doPreparedQuery($st, 'Database error fetching colleagues.');
+        $rows = $st->fetchAll(PDO::FETCH_ASSOC);
         //exit($sql_col);
-        $result = mysqli_query($link, $sql_col);
-        if (!$result) {
+        if (empty($rows)) {
             $error = 'Database error fetching colleagues.';
             include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
             exit();
         }
 
-        while ($row = mysqli_fetch_array($result)) {
+        foreach ($rows as $row) {
             $colleagues[$row['id']] = $row['name'];
         }
-        if (count($colleagues) == 0) {
+        if (empty($colleagues)) {
             $sql = "SELECT user.name, user.id FROM user LEFT JOIN client ON user.client_id=client.id  WHERE client.domain IS NULL UNION SELECT user.name, user.id FROM user INNER JOIN client ON user.client_id=client.id ORDER BY name";
-            $result = mysqli_query($link, $sql);
-            if (!$result) {
+            $st = doQuery($pdo, $sql, 'Database error fetching users.');
+            $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+            if (empty($rows)) {
                 $error = 'Database error fetching users.';
                 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
                 exit();
             }
-            while ($row = mysqli_fetch_array($result)) {
+            foreach ($rows as $row) {
                 $all_users[$row['id']] = $row['name'];
             }
         }
@@ -321,32 +331,24 @@ if (isset($_POST['swap'])) { //SWITCH OWNER OF FILE OR JUST UPDATE DESCRIPTION (
     }
 } ///
 
-
 if (isset($_POST['original'])) { //CAN ONLY BE SET BY ADMIN, 'original' is common to both options of file amend block
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+    $user = isset($_POST['colleagues']) ? $_POST['colleagues'] : (isset($_POST['user']) ? $_POST['user'] : $_POST['original']);
+    $id =  intval($_POST['fileid']);
+    $filename = $_POST['filename'];
 
-    $fid = doSanitize($link,  $_POST['fileid']);
-    $fname = doSanitize($link,  $_POST['filename']);
-    $orig = doSanitize($link,  $_POST['original']);
-    $user = doSanitize($link,  $_POST['user']);
-
-    if ($_POST['colleagues']) {
-        $user = doSanitize($link,  $_POST['colleagues']);
-    }
-    $diz = doSanitize($link,  $_POST['description']);
-    if (!$user) {
-        $user = $orig;
-    }
     if ($_POST['answer'] == 'Yes') {
-        $sql = "UPDATE upload SET userid='$user' WHERE userid='$orig'";
+        $st = $pdo->prepare("UPDATE upload SET userid=:userid WHERE userid=:orig");
+        $st->bindValue(':userid', $user);
+        $st->bindValue(':orig', $_POST['original']);
     } else {
-        $sql = "UPDATE upload SET userid='$user', description='$diz', filename='$fname' WHERE id ='$fid'";
+        $st = $pdo->prepare("UPDATE upload SET userid=:userid, description=:descrip, filename=:fname WHERE id =:fileid");
+        $st->bindValue(':userid', $user);
+        $st->bindValue(':descrip', $_POST['description']);
+        $st->bindValue(':fname', $filename);
+        $st->bindValue(':fileid', $id);
     }
-    if (!mysqli_query($link, $sql)) {
-        $error = 'error updating details';
-        include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
-        exit();
-    }
+    doPreparedQuery($st, '<p>Error Updating Details!</p>');
     header('Location: . ');
     exit();
 }
@@ -415,9 +417,6 @@ if (!$result) {
 foreach ($result as $row) {
     $users[$row['id']] = $row['name'];
 }
-
-
-
 /*$sqlc ="SELECT employer.user_id, employer.name from
 (SELECT user.name, user.id as user_id, client.domain FROM user INNER JOIN client ON RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))=client.domain) AS employer";*/
 
@@ -425,21 +424,15 @@ $sqlc = "SELECT name, domain, tel FROM client ORDER BY name";
 
 $st = doQuery($pdo, $sqlc, "<p>Database error fetching clients.</p>");
 $result = $st->fetchAll(PDO::FETCH_ASSOC);
-
-
 if (!$result) {
     $error = 'Database error fetching clients.';
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
     exit();
 }
-
 foreach ($result as $row) {
     $client[$row['domain']] = $row['name'];
 }
-
 //end of default_______________________________________________________________________
-
-
 
 if (isset($_GET['find'])) {
     if ($priv != "Admin"): //CUSTOMISES SELECT MENU
@@ -529,7 +522,6 @@ if (isset($_GET['action']) and $_GET['action'] == 'search') {
     }
 
     $sql =  $select . $from . $where . $order;
-
     $result = mysqli_query($link, $sql);
     if (!$result) {
         $error = 'Error fetching file details1.' . $sql;
@@ -585,7 +577,6 @@ if ($priv == 'Admin') {
             $where .= " AND (upload.filename NOT LIKE '%pdf' AND upload.filename NOT LIKE '%zip')";
         } else $where .= " AND upload.filename LIKE '%$ext'";
     }
-
     if (isset($useroo) && is_numeric($useroo)) { //CLIENTS USE EMAIL DOMAIN AS ID THERFORE NOT A NUMBER
         if ($useroo = $getuser) {
             $where .= " AND user.id=$useroo";
@@ -606,18 +597,14 @@ else {
     //$where .=" WHERE user.email='$email' ";
     $where = " WHERE user.email='$email' ";
 }
-
 //$sql= $select . $from . $where . $order; //DEFAULT; TELEPHONE BLOCK REQUIRED TO OBTAIN CLIENT PHONE NUMBER
 $sql = $select;
 $select_tel = ", client.tel";
 $from .= " LEFT JOIN client ON user.client_id=client.id"; //note LEFT join to include just 'users' also
 $sql .= $select_tel . $from . $where . $order;
-//____________________________________________________________________________________________END OF TELEPHONE
-
+//___________________________________________________________________________________________END OF TELEPHONE
 $st = doQuery($pdo, $sql, 'Database error fetching files. ');
-
 $result = $st->fetchAll(PDO::FETCH_ASSOC);
-
 $files = array();
 foreach ($result as $row) {
     $files[] = array(
