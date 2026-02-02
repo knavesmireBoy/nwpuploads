@@ -507,33 +507,52 @@ foreach ($result as $row) {
 
 if (isset($_GET['find'])) {
     if ($priv != "Admin"): //CUSTOMISES SELECT MENU
-        $email = "{$_SESSION['email']}";
+        $email = $_SESSION['email'];
+        $iskey = false;
         include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-        $sql = "SELECT $domainstr  FROM user WHERE user.email='$email'";
-        $result = mysqli_query($link, $sql);
-        $row = mysqli_fetch_array($result);
+        $sql = "SELECT $domainstr FROM user WHERE user.email=:email";
+        $st = $pdo->prepare($sql);
+        $st->bindValue(":email", $email);
+        doPreparedQuery($st, "<p>Error finding domain");
+        $row = $st->fetch(PDO::FETCH_NUM);
         $dom = $row[0];
-        $sql = "SELECT COUNT(*) AS dom FROM user INNER JOIN client ON $domainstr=client.domain WHERE $domainstr='$dom' AND client.domain='$dom'";
-        $result = mysqli_query($link, $sql);
-        $row = mysqli_fetch_array($result);
-        $count = $row['dom'];
+        $sql = "SELECT COUNT(*) AS dom FROM user INNER JOIN client ON $domainstr=client.domain WHERE $domainstr=:dom AND client.domain=:dommo";
+        $st = $pdo->prepare($sql);
+        $st->bindValue(":dom", $dom);
+        $st->bindValue(":dommo", $dom);
+        $row = $st->fetch(PDO::FETCH_ASSOC);
+        $count = $row ? $row['dom'] : [];
         if (count($count) > 0) {
-            $where = " WHERE user.email='$email'"; //client
+            $where = " WHERE user.email=:email"; //client
         } else {
-            $where = " WHERE user.id=$key"; //user
+            $where = " WHERE user.id=:key"; //user
+            $iskey = true;
         }
-        $sql = "SELECT employer.id, employer.name  FROM user INNER JOIN (SELECT user.id, user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer ON $domainstr=employer.domain $where";
-        $result = mysqli_query($link, $sql);
+        $sql = "SELECT employer.id, employer.name FROM user INNER JOIN (SELECT user.id, user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer ON $domainstr=employer.domain $where";
+        $st = $pdo->prepare($sql);
+        if($iskey){
+            $st->bindValue(":key", $key);
+        }
+        else {
+            $st->bindValue(":email", $email);
+        }     
+        doPreparedQuery($st, '<p>Database error fetching clients.</p>');
+        $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+        /*
         if (!$result) {
             $error = 'Database error fetching clients.';
             include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
             exit();
         }
-        $users = array(); //resets user array to display users of current client
-        while ($row = mysqli_fetch_array($result)) {
-            $users[$row['id']] = $row['name'];
-        }
-        if ($count <= 1) { //SELECT MENU in SEARCH for only more than one "employee"
+            */
+            if(!empty($rows)){
+                $users = array(); //resets user array to display users of current client
+                foreach ($rows as $row) {
+                    $users[$row['id']] = $row['name'];
+                }
+            }
+            //SELECT MENU in SEARCH for only more than one "employee"
+        else { 
             $users = array();
             $zero = true;
         }
@@ -566,7 +585,7 @@ if (isset($_GET['action']) and $_GET['action'] == 'search') {
     $tel = '';
     $from .= " INNER JOIN userrole ON user.id=userrole.userid";
     $user_id =  $_GET['user'];
-
+    $select .= ", user.name as user";
     if ($priv == 'Admin') {
         //will either return empty set(no error) or produce count. Test to see if a client has been selected.
         $sql = "SELECT domain FROM client WHERE domain=:id";
@@ -582,14 +601,14 @@ if (isset($_GET['action']) and $_GET['action'] == 'search') {
         } else {
             $where = ' WHERE TRUE';
         }
-        $select .= ", user.name as user";
+       // $select .= ", user.name as user";
     } //admin
     else {
         $email = $_SESSION['email'];
-        $where .= " WHERE user.email=:email";
+        $where = " WHERE user.email='$email'";
     }
     if ($user_id != '') { // A user is selected 
-        if (!isset($check)) $where .= " AND user.id=:uid";
+        if (!isset($check)) $where .= " AND user.id='$user_id'";
     }
     $text = $_GET['text'];
     if ($text != '') { // Some search text was specified 
@@ -606,6 +625,8 @@ if (isset($_GET['action']) and $_GET['action'] == 'search') {
     }
 
     $sql =  $select . $from . $where . $order;
+
+   
     $st = doQuery($pdo, $sql, '<p>Error fetching file details.</p>');
     $res = $st->fetch();
     if (empty($res)) {
@@ -623,6 +644,7 @@ if (isset($_GET['action']) and $_GET['action'] == 'search') {
         include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
         exit();
     }
+  
     $records = $rows[0]['total'];
     if ($records > $display) {
         $pages = ceil($records / $display);

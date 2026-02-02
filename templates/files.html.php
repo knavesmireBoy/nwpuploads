@@ -102,9 +102,9 @@ if ($priv == 'Admin' or $priv == 'Client') : ?>
 endif;
 //$wither = ($suffix || $user_id || $text || $ext || $useroo || $textme ? '.' : '?find'); 
 $wither = seek();
-$link = ($wither == '.'  ? 'Clear search results' : 'Search files');
+$lnk = ($wither == '.'  ? 'Clear search results' : 'Search files');
 ?>
-<p><a href="<?php echo $wither; ?>"><?php echo $link; ?></a></p>
+<p><a href="<?php echo $wither; ?>"><?php echo $lnk; ?></a></p>
 <?php include "_footer.html.php";
 
     if (isset($prompt)) {
