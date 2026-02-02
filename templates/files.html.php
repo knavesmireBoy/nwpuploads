@@ -43,7 +43,7 @@
     <p>The following files are stored in the database:</p>
 
     <?php
-    include 'tablehead.html.php'; ?>
+    include '_tablehead.html.php'; ?>
     <tbody>
         <?php foreach ($files as $f): ?>
             <tr valign="top" class="<?php if ($f['origin'] == $myip) echo 'admin'; ?>">
@@ -89,9 +89,7 @@
 
 <?php else :
     $greeting = ($_SERVER['QUERY_STRING']) ? 'There were no files that matched your criteria' : 'There are currently no files in the database' ?>
-
     <h2><a href="<?php $_SERVER['PHP_SELF'] ?>" title="Click to return"><?php echo $greeting; ?>
-
         </a></h2>
 <?php
 endif;

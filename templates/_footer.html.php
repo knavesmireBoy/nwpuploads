@@ -7,6 +7,8 @@
     $sort = explode('sort=', $_SERVER["QUERY_STRING"]);
     $sort = isset($sort[1]) ? $sort[1] : '';
     $sort = $sort ? "&sort=$sort" : '';
+    $sort = preg_replace("/&&/", "&", $sort);
+
 
     if ($pages > 1) {
         $current_page = ($start / $display) + 1;

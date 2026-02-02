@@ -52,7 +52,7 @@ function seek()
     );
     $i = count($arr);
     while ($i--) {
-        if (isset($GLOBALS[$arr[$i]])) {
+        if (!empty($GLOBALS[$arr[$i]])) {
             return '.';
         }
     }

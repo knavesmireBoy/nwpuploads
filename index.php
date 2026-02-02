@@ -20,10 +20,12 @@ function getRemoteAddr()
     return $ipAddress;
 }
 
-function qsort($q, $i)
+function qsort($q)
 {
     $res = explode($q, $_SERVER['QUERY_STRING']);
-    return isset($res[$i]) ? $res[$i] : '';
+    $sort = isset($res[1]) ? $res[1] : '';
+    $rest = isset($res[0]) ? $res[0] : '';
+    return [$rest, $sort];
 }
 
 function qU($char)
@@ -721,17 +723,19 @@ $a = [null, 'empty', 'single', 'double'];
 //$i = $i ? $i + 1 : $i;
 //$sort = $i ? substr($data, $i) : $q . <EVENT>;
 
-$state = qsort('sort=', 1);
-//$lookup = ['u', 'f', 't'];
+list($qs, $state) = qsort('sort=');
+
 
 $ufn = qU('u');
 $tfn = q('t', 'u');
 $ffn = q('f', 'u');
-
-$fhead = "?sort=" . $ffn($state);
-$uhead = "?sort=" . $ufn($state);
-$thead = "?sort=" . $tfn($state);
-
+$tmp = $qs ? "&sort=" : "?sort=";
+$qs = $qs ? "?$qs" : '';
+$qs = $qs . $tmp;
+$qs = preg_replace("/&&/", "&", $qs);
+$fhead = $qs . $ffn($state);
+$uhead = $qs . $ufn($state);
+$thead = $qs . $tfn($state);
 
 /*
 $_SERVER["REQUEST_URI"] = 'https://www.amazon.co.uk/gp/video/detail/amzn1.dv.gti.0ab7e668-f22e-12a9-025b-fb626ce88bd9?ref_=imdbref_tt_ov_wbr_ovf__pvs_piv&tag=imdbtag_tt_ov_wbr_ovf__pvs_piv-21';
