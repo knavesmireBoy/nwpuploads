@@ -20,66 +20,6 @@ function getRemoteAddr()
     return $ipAddress;
 }
 
-function qsort($q)
-{
-    $res = explode($q, $_SERVER['QUERY_STRING']);
-    $sort = isset($res[1]) ? $res[1] : '';
-    $rest = isset($res[0]) ? $res[0] : '';
-    return [$rest, $sort];
-}
-
-function qU($char)
-{
-    return function ($str) use ($char) {
-        $l = strlen($str);
-        $ret = '';
-        if (!$l) {
-            return $char;
-        }
-        $match = isset($str[0]) && $str[0] === $char;
-        $nomatch = isset($str[0]) && $str[0] !== $char;
-        if ($match) {
-            $next = isset($str[1]) && $str[0] === $str[1];
-            $ret = $next ? substr($str, 1) : $char . $str;
-        } else if ($nomatch) {
-            $ret = $char . $str;
-        }
-        return $ret;
-    };
-}
-
-function q($char, $w)
-{
-    return function ($str) use ($char, $w) {
-        $l = strlen($str);
-        $ret = '';
-        if (!$l) {
-            return $char;
-        }
-        $match = isset($str[0]) && $str[0] === $char;
-        $nomatch = isset($str[0]) && $str[0] !== $char;
-        if ($match) {
-            $next = isset($str[1]) && $str[0] === $str[1];
-            $ret = $next ? substr($str, 1) : $char . $str;
-        } else if ($nomatch) {
-            $sanitize = preg_replace("/$char/", '', $str);
-            $sanitize = preg_replace("/$w/", '', $sanitize);
-            if (isset($sanitize[0])) {
-                $str = preg_replace("/$sanitize[0]/", '', $str);
-            }
-            if (isset($str[0]) && $str[0] === $w) {
-                $single = preg_match("/$char/", $str);
-                $double = preg_match("/$char$char/", $str);
-                $repl = preg_replace("/$char/", '', $str);
-                $next = $double ? $char : ($single ? "$char$char" : $char);
-                $ret =  $repl . $next;
-            } else {
-                return $char;
-            }
-        }
-        return $ret;
-    };
-}
 
 $mefiles = function ($arg) {
     return $_FILES['upload'][$arg];
@@ -530,12 +470,11 @@ if (isset($_GET['find'])) {
         }
         $sql = "SELECT employer.id, employer.name FROM user INNER JOIN (SELECT user.id, user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer ON $domainstr=employer.domain $where";
         $st = $pdo->prepare($sql);
-        if($iskey){
+        if ($iskey) {
             $st->bindValue(":key", $key);
-        }
-        else {
+        } else {
             $st->bindValue(":email", $email);
-        }     
+        }
         doPreparedQuery($st, '<p>Database error fetching clients.</p>');
         $rows = $st->fetchAll(PDO::FETCH_ASSOC);
         /*
@@ -545,14 +484,14 @@ if (isset($_GET['find'])) {
             exit();
         }
             */
-            if(!empty($rows)){
-                $users = array(); //resets user array to display users of current client
-                foreach ($rows as $row) {
-                    $users[$row['id']] = $row['name'];
-                }
+        if (!empty($rows)) {
+            $users = array(); //resets user array to display users of current client
+            foreach ($rows as $row) {
+                $users[$row['id']] = $row['name'];
             }
-            //SELECT MENU in SEARCH for only more than one "employee"
-        else { 
+        }
+        //SELECT MENU in SEARCH for only more than one "employee"
+        else {
             $users = array();
             $zero = true;
         }
@@ -601,7 +540,7 @@ if (isset($_GET['action']) and $_GET['action'] == 'search') {
         } else {
             $where = ' WHERE TRUE';
         }
-       // $select .= ", user.name as user";
+        // $select .= ", user.name as user";
     } //admin
     else {
         $email = $_SESSION['email'];
@@ -625,33 +564,20 @@ if (isset($_GET['action']) and $_GET['action'] == 'search') {
     }
 
     $sql =  $select . $from . $where . $order;
-
-   
-    $st = doQuery($pdo, $sql, '<p>Error fetching file details.</p>');
+    $st = doQuery($pdo, $sql, '<p>Error fetching file details!</p>');
     $res = $st->fetch();
-    if (empty($res)) {
-        $error = 'Error fetching file details.' . $sql;
-        include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
-        exit();
-    }
+
     $where .= " GROUP BY upload.id ";
     $sqlcount = $select . ', COUNT(upload.id) as total ' . $from . $where . $order;
+
     $st =  doQuery($pdo, $sqlcount, '<p>Error getting file count, innit</p>');
     $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-
-    if (empty($rows)) {
-        $error = 'Error getting file count.';
-        include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
-        exit();
-    }
-  
-    $records = $rows[0]['total'];
+    $records = empty($rows) ? 0 : $rows[0]['total'];
     if ($records > $display) {
         $pages = ceil($records / $display);
     } else $pages = 1;
 
     $files = array();
-
     foreach ($rows as $row) {
         $files[] = array(
             'id' => $row['id'],
@@ -736,30 +662,11 @@ foreach ($result as $row) {
 }
 $base = 'North Wolds Printers | The File Uploads';
 
-$a = [null, 'empty', 'single', 'double'];
-//STATE is UPPER EVENT is lower ie Uu Tu
-//string can contain up to 2 instructions eg ut, uutt
-//a repeat instruction will toggle u -> uu; uu -> u
-//instructions can be repeated up to two times
-//a FOREIGN event ON another state RESETS except..
-//U STATE allows for ONE further instruction ut NOT utf, a 3rd instruction resets ut -> f
-//
-//t an f events are subservient to u ie Ut; Uff NOT fu OR ttu
-//there can be no ft combo an f event on a t state will RESET tt -> f and vice versa (vv)
-//U STATE toggle u/uu; append f or t;  toggle f/ff t/tt; RESET on THIRD
-//T STATE toggle t/tt; RESET on NON t
-//F STATE toggle f/f; RESET on NON f
-//$data = "?sort=";
-//first test: $i = strpos($q, "=");
-//$i = $i ? $i + 1 : $i;
-//$sort = $i ? substr($data, $i) : $q . <EVENT>;
-
 list($qs, $state) = qsort('sort=');
 
-
-$ufn = qU('u');
-$tfn = q('t', 'u');
-$ffn = q('f', 'u');
+$ufn = qUserHead('u');
+$tfn = qHead('t', 'u');
+$ffn = qHead('f', 'u');
 $tmp = $qs ? "&sort=" : "?sort=";
 $qs = $qs ? "?$qs" : '';
 $qs = $qs . $tmp;

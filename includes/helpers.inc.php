@@ -1,9 +1,72 @@
 <?php
 
+function qsort($q)
+{
+    $res = explode($q, $_SERVER['QUERY_STRING']);
+    $sort = isset($res[1]) ? $res[1] : '';
+    $rest = isset($res[0]) ? $res[0] : '';
+    return [$rest, $sort];
+}
+//queries the current $_SERVER['QUERY_STRING'] and determines what the next "route" would be
+//user can sublist by TIME or FILENAME (points; goal diff)
+function qUserHead($char)
+{
+    return function ($str) use ($char) {
+        $l = strlen($str);
+        $ret = '';
+        if (!$l) {
+            return $char;
+        }
+        $match = isset($str[0]) && $str[0] === $char;
+        $nomatch = isset($str[0]) && $str[0] !== $char;
+        if ($match) {
+            $next = isset($str[1]) && $str[0] === $str[1];
+            $ret = $next ? substr($str, 1) : $char . $str;
+        } else if ($nomatch) {
+            $ret = $char . $str;
+        }
+        return $ret;
+    };
+}
+//MAY be subservient to user but otherwise examines the query string and removes anything that fails to match
+function qHead($char, $w)
+{
+    return function ($str) use ($char, $w) {
+        $l = strlen($str);
+        $ret = '';
+        if (!$l) {
+            return $char;
+        }
+        $match = isset($str[0]) && $str[0] === $char;
+        $nomatch = isset($str[0]) && $str[0] !== $char;
+        if ($match) {
+            $next = isset($str[1]) && $str[0] === $str[1];
+            $ret = $next ? substr($str, 1) : $char . $str;
+        } else if ($nomatch) {
+            $sanitize = preg_replace("/$char/", '', $str);
+            $sanitize = preg_replace("/$w/", '', $sanitize);
+            if (isset($sanitize[0])) {
+                $str = preg_replace("/$sanitize[0]/", '', $str);
+            }
+            if (isset($str[0]) && $str[0] === $w) {
+                $single = preg_match("/$char/", $str);
+                $double = preg_match("/$char$char/", $str);
+                $repl = preg_replace("/$char/", '', $str);
+                $next = $double ? $char : ($single ? "$char$char" : $char);
+                $ret =  $repl . $next;
+            } else {
+                return $char;
+            }
+        }
+        return $ret;
+    };
+}
+
 function doQuery($pdo, $sql, $msg)
 {
     try {
-        return $pdo->query($sql);
+       return $pdo->query($sql);
+
     } catch (PDOException $e) {
         $error = $msg . ' ' . $e->getMessage();
         $root =  $_SERVER['DOCUMENT_ROOT'] . '/api/';
