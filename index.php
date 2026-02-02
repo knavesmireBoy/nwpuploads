@@ -2,6 +2,8 @@
 include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
 
+
+
 $base = 'Log In';
 $error = '';
 $tmpl_error = '/nwp_uploads/includes/error.html.php';
@@ -16,6 +18,65 @@ function getRemoteAddr()
         $ipAddress = array_pop(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']));
     }
     return $ipAddress;
+}
+
+function qsort($q, $i)
+{
+    $res = explode($q, $_SERVER['QUERY_STRING']);
+    return isset($res[$i]) ? $res[$i] : '';
+}
+
+function qU($char)
+{
+    return function ($str) use ($char) {
+        $l = strlen($str);
+        $ret = '';
+        if (!$l) {
+            return $char;
+        }
+        $match = isset($str[0]) && $str[0] === $char;
+        $nomatch = isset($str[0]) && $str[0] !== $char;
+        if ($match) {
+            $next = isset($str[1]) && $str[0] === $str[1];
+            $ret = $next ? substr($str, 1) : $char . $str;
+        } else if ($nomatch) {
+            $ret = $char . $str;
+        }
+        return $ret;
+    };
+}
+
+function q($char, $w)
+{
+    return function ($str) use ($char, $w) {
+        $l = strlen($str);
+        $ret = '';
+        if (!$l) {
+            return $char;
+        }
+        $match = isset($str[0]) && $str[0] === $char;
+        $nomatch = isset($str[0]) && $str[0] !== $char;
+        if ($match) {
+            $next = isset($str[1]) && $str[0] === $str[1];
+            $ret = $next ? substr($str, 1) : $char . $str;
+        } else if ($nomatch) {
+            $sanitize = preg_replace("/$char/", '', $str);
+            $sanitize = preg_replace("/$w/", '', $sanitize);
+            if (isset($sanitize[0])) {
+                $str = preg_replace("/$sanitize[0]/", '', $str);
+            }
+            if (isset($str[0]) && $str[0] === $w) {
+                $single = preg_match("/$char/", $str);
+                $double = preg_match("/$char$char/", $str);
+                $repl = preg_replace("/$char/", '', $str);
+                $next = $double ? $char : ($single ? "$char$char" : $char);
+                $ret =  $repl . $next;
+            } else {
+                return $char;
+            }
+        }
+        return $ret;
+    };
 }
 
 $mefiles = function ($arg) {
@@ -389,8 +450,13 @@ if (isset($_GET['s']) and is_numeric($_GET['s'])) {
     $start = 0;
 }
 
+
+
 $meswitch = array('f' => 'filename ASC', 'ff' => 'filename DESC', 'u' => 'user ASC', 'uu' => 'user DESC', 'uf' => 'user ASC, filename ASC', 'uuf' => 'user DESC, filename ASC',  'uff' => 'user ASC, filename DESC',  'uuff' => 'user DESC, filename DESC', 'ut' => 'user ASC, time ASC', 'utt' => 'user ASC, time DESC', 'uut' => 'user DESC, time ASC', 'uutt' => 'user DESC, time DESC', 't' => 'time ASC', 'tt' => 'time DESC');
+
 $sort = (isset($_GET['sort']) ? $_GET['sort'] : '1');
+
+
 foreach ($meswitch as $ix => $u) {
     if ($ix == $sort) break;
 }
@@ -403,6 +469,8 @@ switch ($sort) {
         $sort = 'tt';
         break;
 }
+
+
 //D I S P L A Y_______________________________________________________________
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php'; ///Present list of users for administrators
 $sqlu = "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS NULL ORDER BY name";
@@ -417,11 +485,12 @@ if (!$result) {
 foreach ($result as $row) {
     $users[$row['id']] = $row['name'];
 }
-/*$sqlc ="SELECT employer.user_id, employer.name from
-(SELECT user.name, user.id as user_id, client.domain FROM user INNER JOIN client ON RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))=client.domain) AS employer";*/
+/*
+$sqlc ="SELECT employer.user_id, employer.name from
+(SELECT user.name, user.id as user_id, client.domain FROM user INNER JOIN client ON RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))=client.domain) AS employer";
+*/
 
 $sqlc = "SELECT name, domain, tel FROM client ORDER BY name";
-
 $st = doQuery($pdo, $sqlc, "<p>Database error fetching clients.</p>");
 $result = $st->fetchAll(PDO::FETCH_ASSOC);
 if (!$result) {
@@ -475,6 +544,13 @@ if (isset($_GET['find'])) {
 /// S E A R C H  M E !!
 
 //INITIAL FILE SELECTION
+/*SELECT id, substr(`name`,(length(`name`) - locate(' ', reverse(`name`))+1)+1)
+AS `surname`
+FROM `user`
+ORDER BY `surname` ASC
+*/
+
+
 //_______//_______//_______//_______//_______//_______//_______//_______//_______//_____
 $select = "SELECT upload.id, filename, mimetype, description, filepath, file, size, time,  MID(file, 11, 14) AS origin, user.email";
 $from = " FROM upload INNER JOIN user ON upload.userid=user.id";
@@ -565,6 +641,9 @@ if (isset($_GET['action']) and $_GET['action'] == 'search') {
 //ENDEND S E A R C H//ENDEND S E A R C H//ENDEND S E A R C H//ENDEND S E A R C H
 
 if ($priv == 'Admin') {
+    /*by surname
+    $select .= ", substr(user.name, (length(user.name) - locate(' ', reverse(user.name)) +1) +1 ) AS `user`";
+    */
     $select .= ", user.name as user"; //append to line 465(ish)
     $from .= " INNER JOIN userrole ON user.id=userrole.userid";
     $where  = ' WHERE TRUE';
@@ -623,5 +702,40 @@ foreach ($result as $row) {
     );
 }
 $base = 'North Wolds Printers | The File Uploads';
+
+$a = [null, 'empty', 'single', 'double'];
+//STATE is UPPER EVENT is lower ie Uu Tu
+//string can contain up to 2 instructions eg ut, uutt
+//a repeat instruction will toggle u -> uu; uu -> u
+//instructions can be repeated up to two times
+//a FOREIGN event ON another state RESETS except..
+//U STATE allows for ONE further instruction ut NOT utf, a 3rd instruction resets ut -> f
+//
+//t an f events are subservient to u ie Ut; Uff NOT fu OR ttu
+//there can be no ft combo an f event on a t state will RESET tt -> f and vice versa (vv)
+//U STATE toggle u/uu; append f or t;  toggle f/ff t/tt; RESET on THIRD
+//T STATE toggle t/tt; RESET on NON t
+//F STATE toggle f/f; RESET on NON f
+//$data = "?sort=";
+//first test: $i = strpos($q, "=");
+//$i = $i ? $i + 1 : $i;
+//$sort = $i ? substr($data, $i) : $q . <EVENT>;
+
+$state = qsort('sort=', 1);
+//$lookup = ['u', 'f', 't'];
+
+$ufn = qU('u');
+$tfn = q('t', 'u');
+$ffn = q('f', 'u');
+
+$fhead = "?sort=" . $ffn($state);
+$uhead = "?sort=" . $ufn($state);
+$thead = "?sort=" . $tfn($state);
+
+
+/*
+$_SERVER["REQUEST_URI"] = 'https://www.amazon.co.uk/gp/video/detail/amzn1.dv.gti.0ab7e668-f22e-12a9-025b-fb626ce88bd9?ref_=imdbref_tt_ov_wbr_ovf__pvs_piv&tag=imdbtag_tt_ov_wbr_ovf__pvs_piv-21';
+*/
+
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/base.html.php';
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/files.html.php';

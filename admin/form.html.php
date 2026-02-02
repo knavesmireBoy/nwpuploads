@@ -1,7 +1,16 @@
 <?php include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php'; ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta content="IE=edge" http-equiv="X-UA-Compatible">
+	<meta content="width=device-width, initial-scale=1" name="viewport">
+	<title>Admin | Users</title>
+	<link href="css/lofi.css" type="text/css" rel="stylesheet" media="all" />
+	<script>
+		document.cookie = 'resolution=' + Math.max(screen.width, screen.height) + '; path=/';
+	</script>
+</head>
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 	<link href="../css/lofi.css" type="text/css" rel="stylesheet" media="all" />

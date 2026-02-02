@@ -128,7 +128,7 @@ if (isset($_GET['addform'])) {
 
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 $sql = "SELECT id, name, domain from client"; // THE DEFAULT QUERY
-$cid = 0;//$id MAY have been set by delete so don't overwrite;
+$cid = 0; //$id MAY have been set by delete so don't overwrite;
 if (isset($_POST['act']) and $_POST['act'] == 'Choose'  and $_POST['client'] != '') {
   $cid =  $_POST['client'];
   $sql .= " WHERE id=:id";
