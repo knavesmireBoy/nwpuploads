@@ -562,16 +562,22 @@ $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
 
 if (isset($_GET['action']) and $_GET['action'] == 'search') {
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+
     $tel = '';
     $from .= " INNER JOIN userrole ON user.id=userrole.userid";
-    $user_id =  doSanitize($link, $_GET['user']);
+    $user_id =  $_GET['user'];
+
     if ($priv == 'Admin') {
-        $sql = "SELECT domain FROM client WHERE domain='" . $user_id . "'"; //will either return empty set(no error) or produce count. Test to see if a client has been selected.
-        $result = mysqli_query($link, $sql);
-        $row = mysqli_fetch_array($result);
-        if (count($row[0]) > 0 and  !is_numeric($user_id)) { //user_id is text(domain) for Clients
-            $from .= " INNER JOIN client ON $domain =client.domain ";
-            $where = " WHERE domain='" . $user_id . "'";
+        //will either return empty set(no error) or produce count. Test to see if a client has been selected.
+        $sql = "SELECT domain FROM client WHERE domain=:id";
+        $st = $pdo->prepare($sql);
+        $st->bindValue(":id", $user_id);
+        doPreparedQuery($st, "<p>Unable to find domain</p>");
+        $dom = $st->fetch(PDO::FETCH_NUM);
+        //user_id is text(domain) for Clients
+        if ($dom) {
+            $from .= " INNER JOIN client ON $domainstr = client.domain ";
+            $where = " WHERE domain=:uid";
             $check = count($row[0]);
         } else {
             $where = ' WHERE TRUE';
@@ -580,16 +586,16 @@ if (isset($_GET['action']) and $_GET['action'] == 'search') {
     } //admin
     else {
         $email = $_SESSION['email'];
-        $where .= " WHERE user.email='$email' ";
+        $where .= " WHERE user.email=:email";
     }
     if ($user_id != '') { // A user is selected 
-        if (!isset($check)) $where .= " AND user.id=$user_id";
+        if (!isset($check)) $where .= " AND user.id=:uid";
     }
-    $text = doSanitize($link, $_GET['text']);
+    $text = $_GET['text'];
     if ($text != '') { // Some search text was specified 
         $where .= " AND upload.filename LIKE '%$text%'";
     }
-    $suffix = doSanitize($link, $_GET['suffix']);
+    $suffix = $_GET['suffix'];
     if (isset($suffix)) {
         if ($suffix == 'owt') {
             $where .= " AND (upload.filename NOT LIKE '%pdf' AND upload.filename NOT LIKE '%zip')";
@@ -600,28 +606,31 @@ if (isset($_GET['action']) and $_GET['action'] == 'search') {
     }
 
     $sql =  $select . $from . $where . $order;
-    $result = mysqli_query($link, $sql);
-    if (!$result) {
-        $error = 'Error fetching file details1.' . $sql;
+    $st = doQuery($pdo, $sql, '<p>Error fetching file details.</p>');
+    $res = $st->fetch();
+    if (empty($res)) {
+        $error = 'Error fetching file details.' . $sql;
         include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
         exit();
     }
+    $where .= " GROUP BY upload.id ";
     $sqlcount = $select . ', COUNT(upload.id) as total ' . $from . $where . $order;
-    //exit($sqlcount);
-    $r = mysqli_query($link, $sqlcount);
-    if (!$r) {
+    $st =  doQuery($pdo, $sqlcount, '<p>Error getting file count, innit</p>');
+    $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+
+    if (empty($rows)) {
         $error = 'Error getting file count.';
         include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
         exit();
     }
-    $row = mysqli_fetch_array($r);
-    $records = $row['total'];
+    $records = $rows[0]['total'];
     if ($records > $display) {
         $pages = ceil($records / $display);
     } else $pages = 1;
 
     $files = array();
-    while ($row = mysqli_fetch_array($result)) {
+
+    foreach ($rows as $row) {
         $files[] = array(
             'id' => $row['id'],
             'user' => $row['user'],
