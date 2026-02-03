@@ -1,6 +1,5 @@
 <?php include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php';
-//ob_start('ob_postprocess');
-//ob_start('ob_gzhandler');
+
 ?>
 <h1><a href="<?php $_SERVER['PHP_SELF'] ?>">North Wolds | File Uploads</a></h1>
 <h2><?php echo date('l F j, Y'); ?></h2>
@@ -39,7 +38,10 @@
         </tr>
     </table>
 </form>
-<?php if (count($files) > 0): ?>
+<?php
+echo $error;
+
+if (count($files) > 0): ?>
     <p>The following files are stored in the database:</p>
 
     <?php
@@ -107,14 +109,14 @@ $lnk = ($wither == '.'  ? 'Clear search results' : 'Search files');
 <p><a href="<?php echo $wither; ?>"><?php echo $lnk; ?></a></p>
 <?php include "_footer.html.php";
 
-    if (isset($prompt)) {
-        include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/prompt.html.php';
-        if (!isset($filename)) {
-            echo '</div></body></html>';
-            exit();
-        }
-    } //prompt
-    if (isset($filename)) {
-        include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/update.html.php';
+if (isset($prompt)) {
+    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/prompt.html.php';
+    if (!isset($filename)) {
         echo '</div></body></html>';
+        exit();
     }
+} //prompt
+if (isset($filename)) {
+    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/update.html.php';
+    echo '</div></body></html>';
+}

@@ -2,8 +2,6 @@
 include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
 
-
-
 $base = 'Log In';
 $error = '';
 $tmpl_error = '/nwp_uploads/includes/error.html.php';
@@ -44,12 +42,14 @@ if ($roleplay = userHasWhatRole()) {
     exit(); // endof OBTAIN access level
 }
 
-if (isset($_POST['action']) and $_POST['action'] == 'upload') {
+if (isset($_POST['action']) && $_POST['action'] == 'upload') {
     //Bail out if the file isn't really an upload
     if (!is_uploaded_file($_FILES['upload']['tmp_name'])) {
         $error = 'There was no file uploaded!';
-        include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
-        exit();
+        // echo "<p>'There was no file uploaded!'</p>";
+        header("Location: ./?nofile");
+        // include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
+       // exit();
     }
 
     $uploadfile = $mefiles('tmp_name');
@@ -677,4 +677,8 @@ $uhead = $qs . $ufn($state);
 $thead = $qs . $tfn($state);
 
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/base.html.php';
+
+if(isset($_GET['nofile'])){
+    $error =  "<h4>'There was no file uploaded!'</h4>";
+}
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/files.html.php';
