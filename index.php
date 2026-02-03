@@ -9,7 +9,7 @@ $myip = '86.160.57.166';
 $user_id = 0;
 $text = '';
 $suffix = '';
-$lib = ['nofile' => "<h4>'There was no file uploaded!'</h4>", 'fetch_files' => '<h4>Database error fetching stored files.</h4>', 'delete_file' => '<h4>Error deleting file.</h4>'];
+$lib = ['nofile' => "<h4>'There was no file uploaded!'</h4>", 'fetch_files' => '<h4>Database error fetching stored files.</h4>', 'delete_file' => '<h4>Error deleting file.</h4>', 'file_list' => '<h4>Database error requesting the list of files.</h4>'];
 
 $mefiles = function ($arg) {
     return $_FILES['upload'][$arg];
@@ -329,8 +329,7 @@ if (isset($_GET['p']) and is_numeric($_GET['p'])) {
     $row = $st->fetch(PDO::FETCH_ASSOC);
 
     if (!$row) {
-        $error = 'Database error fetching requesting THE list of files.';
-        include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
+        header("Location: ./?file_list");
         exit();
     }
 
@@ -346,12 +345,9 @@ if (isset($_GET['s']) and is_numeric($_GET['s'])) {
     $start = 0;
 }
 
-
-
 $meswitch = array('f' => 'filename ASC', 'ff' => 'filename DESC', 'u' => 'user ASC', 'uu' => 'user DESC', 'uf' => 'user ASC, filename ASC', 'uuf' => 'user DESC, filename ASC',  'uff' => 'user ASC, filename DESC',  'uuff' => 'user DESC, filename DESC', 'ut' => 'user ASC, time ASC', 'utt' => 'user ASC, time DESC', 'uut' => 'user DESC, time ASC', 'uutt' => 'user DESC, time DESC', 't' => 'time ASC', 'tt' => 'time DESC');
 
 $sort = (isset($_GET['sort']) ? $_GET['sort'] : '1');
-
 
 foreach ($meswitch as $ix => $u) {
     if ($ix == $sort) break;
@@ -389,6 +385,8 @@ $sqlc ="SELECT employer.user_id, employer.name from
 $sqlc = "SELECT name, domain, tel FROM client ORDER BY name";
 $st = doQuery($pdo, $sqlc, "<p>Database error fetching clients.</p>");
 $result = $st->fetchAll(PDO::FETCH_ASSOC);
+
+
 if (!$result) {
     $error = 'Database error fetching clients.';
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
@@ -431,13 +429,6 @@ if (isset($_GET['find'])) {
         }
         doPreparedQuery($st, '<p>Database error fetching clients.</p>');
         $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-        /*
-        if (!$result) {
-            $error = 'Database error fetching clients.';
-            include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
-            exit();
-        }
-            */
         if (!empty($rows)) {
             $users = array(); //resets user array to display users of current client
             foreach ($rows as $row) {
@@ -457,14 +448,6 @@ if (isset($_GET['find'])) {
 }
 /// S E A R C H  M E !!
 
-//INITIAL FILE SELECTION
-/*SELECT id, substr(`name`,(length(`name`) - locate(' ', reverse(`name`))+1)+1)
-AS `surname`
-FROM `user`
-ORDER BY `surname` ASC
-*/
-
-
 //_______//_______//_______//_______//_______//_______//_______//_______//_______//_____
 $select = "SELECT upload.id, filename, mimetype, description, filepath, file, size, time,  MID(file, 11, 14) AS origin, user.email, user.name";
 $from = " FROM upload INNER JOIN user ON upload.userid=user.id";
@@ -474,7 +457,6 @@ $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
 
 if (isset($_GET['action']) and $_GET['action'] == 'search') {
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-
     $tel = '';
     $from .= " INNER JOIN userrole ON user.id=userrole.userid";
     $user_id =  $_GET['user'];
@@ -494,7 +476,6 @@ if (isset($_GET['action']) and $_GET['action'] == 'search') {
         } else {
             $where = ' WHERE TRUE';
         }
-        // $select .= ", user.name as user";
     } //admin
     else {
         $email = $_SESSION['email'];
@@ -511,7 +492,7 @@ if (isset($_GET['action']) and $_GET['action'] == 'search') {
     if (isset($suffix)) {
         if ($suffix == 'owt') {
             $where .= " AND (upload.filename NOT LIKE '%pdf' AND upload.filename NOT LIKE '%zip')";
-        } elseif ($suffix == 'pdf' or $suffix == 'zip') {
+        } elseif ($suffix == 'pdf' || $suffix == 'zip') {
             $where .= " AND upload.filename LIKE '%$suffix'";
             //$where .= sprintf(" AND upload.filename LIKE %s", GetSQLValueString('%'.$suffix, "text"));//Tricky percent symbol
         }
@@ -596,10 +577,9 @@ $sql = $select;
 $select_tel = ", client.tel";
 $from .= " LEFT JOIN client ON user.client_id=client.id"; //note LEFT join to include just 'users' also
 $sql .= $select_tel . $from . $where . $order;
+
 //______________________________________________END OF TELEPHONE
 $st = doQuery($pdo, $sql, 'Database error fetching files. ');
-
-
 $result = $st->fetchAll(PDO::FETCH_ASSOC);
 $files = array();
 foreach ($result as $row) {
@@ -620,6 +600,7 @@ foreach ($result as $row) {
     );
 }
 $base = 'North Wolds Printers | The File Uploads';
+
 list($qs, $state) = qsort('sort=');
 $ufn = qUserHead('u');
 $tfn = qHead('t');

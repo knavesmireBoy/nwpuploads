@@ -114,17 +114,3 @@ $lnk = ($wither == '.'  ? 'Clear search results' : 'Search files');
 ?>
 <p><a href="<?php echo $wither; ?>"><?php echo $lnk; ?></a></p>
 <?php include "_footer.html.php";
-
-/*
-if (isset($prompt)) {
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/prompt.html.php';
-    if (!isset($filename)) {
-        echo '</div></body></html>';
-        exit();
-    }
-} //prompt
-if (isset($filename)) {
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/update.html.php';
-    echo '</div></body></html>';
-}
-*/
