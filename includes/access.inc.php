@@ -74,11 +74,9 @@ function userHasWhatRole()
 
     if (!$row) {
         $error = 'Error establishing user role:';
-        include 'error.html.php';
-        exit();
-        header('Location: .');
+        echo "<p>$error</p>";
     }
-    $roleplay[$row['id']] = $row['roleid'];
+    return [$row['id'], $row['roleid']];
     return $roleplay;
 }
 

@@ -35,16 +35,14 @@ if (!userIsLoggedIn()) {
     exit();
 }
 //public page
-if (!$roleplay = userHasWhatRole()) {
+if ($roleplay = userHasWhatRole()) {
+    list($key, $priv) = $roleplay;
+    $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))"; //!!?!! V. USEFUL VARIABLE IN GLOBAL SPACE
+} else {
     $error = 'Only valid clients may access this page.';
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/accessdenied.html.php';
     exit(); // endof OBTAIN access level
-} else {
-    foreach ($roleplay as $key => $priv) { // $roleplay is an array, use foreach to obtain value and index
-    }
-    $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))"; //!!?!! V. USEFUL VARIABLE IN GLOBAL SPACE
 }
-
 
 if (isset($_POST['action']) and $_POST['action'] == 'upload') {
     //Bail out if the file isn't really an upload
@@ -605,7 +603,7 @@ if ($priv == 'Admin') {
     if (isset($_GET['sort']) && preg_match("/uf/", $_GET['sort'])) {
         $select .= ", COALESCE(NULLIF(SUBSTR(user.name, LENGTH(user.name) - LOCATE(' ', REVERSE(user.name)) +1), ''), user.name) AS `user`";
     } else {
-        $select .= ", user.name as user"; 
+        $select .= ", user.name as user";
     }
     $from .= " INNER JOIN userrole ON user.id=userrole.userid";
     $where  = ' WHERE TRUE';
