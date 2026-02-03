@@ -1,5 +1,15 @@
 <?php
 
+function getRemoteAddr()
+{
+    $ipAddress = $_SERVER['REMOTE_ADDR'];
+    if (array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER)) {
+        $ipAddress = array_pop(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']));
+    }
+    return $ipAddress;
+}
+
+
 function qsort($q)
 {
     $res = explode($q, $_SERVER['QUERY_STRING']);

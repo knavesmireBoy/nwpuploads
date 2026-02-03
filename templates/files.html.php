@@ -39,7 +39,13 @@
     </table>
 </form>
 <?php
+ob_start();
 echo $error;
+if (isset($prompt)) {
+    ob_start();
+    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/prompt.html.php';
+    echo ob_get_clean();
+}
 
 if (count($files) > 0): ?>
     <p>The following files are stored in the database:</p>
@@ -109,6 +115,7 @@ $lnk = ($wither == '.'  ? 'Clear search results' : 'Search files');
 <p><a href="<?php echo $wither; ?>"><?php echo $lnk; ?></a></p>
 <?php include "_footer.html.php";
 
+/*
 if (isset($prompt)) {
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/prompt.html.php';
     if (!isset($filename)) {
@@ -120,3 +127,4 @@ if (isset($filename)) {
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/update.html.php';
     echo '</div></body></html>';
 }
+*/

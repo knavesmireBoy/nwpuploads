@@ -9,27 +9,14 @@ $myip = '86.160.57.166';
 $user_id = 0;
 $text = '';
 $suffix = '';
-function getRemoteAddr()
-{
-    $ipAddress = $_SERVER['REMOTE_ADDR'];
-    if (array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER)) {
-        $ipAddress = array_pop(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']));
-    }
-    return $ipAddress;
-}
-
+$lib = ['nofile' => "<h4>'There was no file uploaded!'</h4>"];
 
 $mefiles = function ($arg) {
     return $_FILES['upload'][$arg];
 };
-if (isset($_GET['action']) && $_GET['action'] == 'download') {;
-} else {
-    //include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/base.html.php';
-}
 
 if (!userIsLoggedIn()) {
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/base.html.php';
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/login.html.php';
+    include __DIR__ . '/templates/login.html.php';
     exit();
 }
 //public page
@@ -45,11 +32,7 @@ if ($roleplay = userHasWhatRole()) {
 if (isset($_POST['action']) && $_POST['action'] == 'upload') {
     //Bail out if the file isn't really an upload
     if (!is_uploaded_file($_FILES['upload']['tmp_name'])) {
-        $error = 'There was no file uploaded!';
-        // echo "<p>'There was no file uploaded!'</p>";
         header("Location: ./?nofile");
-        // include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
-       // exit();
     }
 
     $uploadfile = $mefiles('tmp_name');
@@ -270,15 +253,11 @@ if (isset($_POST['swap'])) { //SWITCH OWNER OF FILE OR JUST UPDATE DESCRIPTION (
     $colleagues = [];
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 
-
-
-
     $answer = $_POST['swap'];
     $email = $_SESSION['email'];
 
     if ($priv == 'Admin') {
         $sql = "SELECT upload.id, filename, description, upload.userid, user.name FROM upload INNER JOIN user ON upload.userid=user.id  WHERE upload.id=:id";
-
         $st = $pdo->prepare($sql);
         $st->bindValue(":id", $_POST['id']);
         doPreparedQuery($st, '<p>Database error fetching stored files.</p>');
@@ -337,7 +316,6 @@ if (isset($_POST['original'])) { //CAN ONLY BE SET BY ADMIN, 'original' is commo
     $user = isset($_POST['colleagues']) ? $_POST['colleagues'] : (isset($_POST['user']) ? $_POST['user'] : $_POST['original']);
     $id =  intval($_POST['fileid']);
     $filename = $_POST['filename'];
-
     if ($_POST['answer'] == 'Yes') {
         $st = $pdo->prepare("UPDATE upload SET userid=:userid WHERE userid=:orig");
         $st->bindValue(':userid', $user);
@@ -677,8 +655,5 @@ $uhead = $qs . $ufn($state);
 $thead = $qs . $tfn($state);
 
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/base.html.php';
-
-if(isset($_GET['nofile'])){
-    $error =  "<h4>'There was no file uploaded!'</h4>";
-}
+$error =  $lib[$_SERVER["QUERY_STRING"]] ?? '';
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/files.html.php';
