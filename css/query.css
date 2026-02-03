@@ -5,6 +5,34 @@ section#prompt {
   background-color: #f6fbe9;
 }
 
+form[name="clientform"] {
+  width: clamp(30em, 50%, 60em);
+  margin: 0 auto 1em;
+}
+
+form[name="clientform"] div {
+  display: flex;
+  column-gap: .5em;
+}
+
+form[name="clientform"] div input {
+  flex: 8 1 1em;
+}
+
+form[name="clientform"] div label {
+  text-align: right;
+  flex: 1 1 1em;
+}
+
+form[name="clientform"] div:last-of-type {
+  margin: 0 0 1em;
+}
+
+h1 {
+  color: var(--main-color);
+}
+
+
 @media screen and (min-width: 768px) {
   html body {
     border: solid 1px #808080;

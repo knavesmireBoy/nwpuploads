@@ -325,7 +325,7 @@ if (isset($_GET['p']) and is_numeric($_GET['p'])) {
 
     $st = $pdo->prepare($sql);
     $st->bindValue(":email", $_SESSION['email']);
-    doPreparedQuery($st, "<p>Database error fetching requesting THE list of files:</p>");
+    doPreparedQuery($st, "<p>Database error  requesting THE list of files:</p>");
     $row = $st->fetch(PDO::FETCH_ASSOC);
 
     if (!$row) {

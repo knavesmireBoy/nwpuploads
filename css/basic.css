@@ -1,3 +1,7 @@
+:root {
+	--main-color: #496600;
+  }
+
 body {
 	font-size: .75em;
 	font-family: Helvetica, Geneva, Arial, SunSans-Regular, sans-serif;
