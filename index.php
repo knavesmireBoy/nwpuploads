@@ -512,7 +512,7 @@ ORDER BY `surname` ASC
 
 
 //_______//_______//_______//_______//_______//_______//_______//_______//_______//_____
-$select = "SELECT upload.id, filename, mimetype, description, filepath, file, size, time,  MID(file, 11, 14) AS origin, user.email";
+$select = "SELECT upload.id, filename, mimetype, description, filepath, file, size, time,  MID(file, 11, 14) AS origin, user.email, user.name";
 $from = " FROM upload INNER JOIN user ON upload.userid=user.id";
 $order = " ORDER BY $order_by LIMIT $start, $display";
 $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
@@ -600,10 +600,13 @@ if (isset($_GET['action']) and $_GET['action'] == 'search') {
 //ENDEND S E A R C H//ENDEND S E A R C H//ENDEND S E A R C H//ENDEND S E A R C H
 
 if ($priv == 'Admin') {
-    /*by surname
-    $select .= ", substr(user.name, (length(user.name) - locate(' ', reverse(user.name)) +1) +1 ) AS `user`";
-    */
-    $select .= ", user.name as user"; //append to line 465(ish)
+    //by default listing by user will list by first name "Amanda White, Sally Bowles"
+    //where as lastname may be more desirable, so lets do that if you hit the file heading
+    if (isset($_GET['sort']) && preg_match("/uf/", $_GET['sort'])) {
+        $select .= ", COALESCE(NULLIF(SUBSTR(user.name, LENGTH(user.name) - LOCATE(' ', REVERSE(user.name)) +1), ''), user.name) AS `user`";
+    } else {
+        $select .= ", user.name as user"; 
+    }
     $from .= " INNER JOIN userrole ON user.id=userrole.userid";
     $where  = ' WHERE TRUE';
     $ext = isset($_GET['ext']) ? $_GET['ext'] : null;
@@ -628,7 +631,6 @@ if ($priv == 'Admin') {
         $where .= " AND upload.filename LIKE '%$textme%'";
     }
 } //admin
-
 else {
     $email = $_SESSION['email'];
     $from .= " INNER JOIN userrole ON user.id=userrole.userid";
@@ -640,14 +642,17 @@ $sql = $select;
 $select_tel = ", client.tel";
 $from .= " LEFT JOIN client ON user.client_id=client.id"; //note LEFT join to include just 'users' also
 $sql .= $select_tel . $from . $where . $order;
-//___________________________________________________________________________________________END OF TELEPHONE
+//______________________________________________END OF TELEPHONE
 $st = doQuery($pdo, $sql, 'Database error fetching files. ');
+
+
 $result = $st->fetchAll(PDO::FETCH_ASSOC);
 $files = array();
 foreach ($result as $row) {
     $files[] = array(
         'id' => $row['id'],
-        'user' => (isset($row['user'])) ? $row['user'] : '',
+        //'user' => (isset($row['user'])) ? $row['user'] : '',
+        'user' => $row['name'],
         'email' => $row['email'],
         'filename' => $row['filename'],
         'mimetype' => $row['mimetype'],
@@ -661,11 +666,9 @@ foreach ($result as $row) {
     );
 }
 $base = 'North Wolds Printers | The File Uploads';
-
 list($qs, $state) = qsort('sort=');
-
 $ufn = qUserHead('u');
-$tfn = qHead('t', 'u');
+$tfn = qHead('t');
 $ffn = qHead('f', 'u');
 $tmp = $qs ? "&sort=" : "?sort=";
 $qs = $qs ? "?$qs" : '';
@@ -674,10 +677,6 @@ $qs = preg_replace("/&&/", "&", $qs);
 $fhead = $qs . $ffn($state);
 $uhead = $qs . $ufn($state);
 $thead = $qs . $tfn($state);
-
-/*
-$_SERVER["REQUEST_URI"] = 'https://www.amazon.co.uk/gp/video/detail/amzn1.dv.gti.0ab7e668-f22e-12a9-025b-fb626ce88bd9?ref_=imdbref_tt_ov_wbr_ovf__pvs_piv&tag=imdbtag_tt_ov_wbr_ovf__pvs_piv-21';
-*/
 
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/base.html.php';
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/files.html.php';

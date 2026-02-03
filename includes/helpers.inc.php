@@ -3,8 +3,9 @@
 function qsort($q)
 {
     $res = explode($q, $_SERVER['QUERY_STRING']);
-    $sort = isset($res[1]) ? $res[1] : '';
     $rest = isset($res[0]) ? $res[0] : '';
+    $sort = isset($res[1]) ? $res[1] : '';
+    $sort = preg_replace("/[^ftu]/", '', $sort);
     return [$rest, $sort];
 }
 //queries the current $_SERVER['QUERY_STRING'] and determines what the next "route" would be
@@ -29,9 +30,9 @@ function qUserHead($char)
     };
 }
 //MAY be subservient to user but otherwise examines the query string and removes anything that fails to match
-function qHead($char, $w)
+function qHead($char, $permitted = '')
 {
-    return function ($str) use ($char, $w) {
+    return function ($str) use ($char, $permitted) {
         $l = strlen($str);
         $ret = '';
         if (!$l) {
@@ -44,11 +45,11 @@ function qHead($char, $w)
             $ret = $next ? substr($str, 1) : $char . $str;
         } else if ($nomatch) {
             $sanitize = preg_replace("/$char/", '', $str);
-            $sanitize = preg_replace("/$w/", '', $sanitize);
+            $sanitize = preg_replace("/$permitted/", '', $sanitize);
             if (isset($sanitize[0])) {
                 $str = preg_replace("/$sanitize[0]/", '', $str);
             }
-            if (isset($str[0]) && $str[0] === $w) {
+            if (isset($str[0]) && $str[0] === $permitted) {
                 $single = preg_match("/$char/", $str);
                 $double = preg_match("/$char$char/", $str);
                 $repl = preg_replace("/$char/", '', $str);
