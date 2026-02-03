@@ -9,7 +9,7 @@ $myip = '86.160.57.166';
 $user_id = 0;
 $text = '';
 $suffix = '';
-$lib = ['nofile' => "<h4>'There was no file uploaded!'</h4>"];
+$lib = ['nofile' => "<h4>'There was no file uploaded!'</h4>", 'fetch_files' => '<h4>Database error fetching stored files.</h4>', 'delete_file' => '<h4>Error deleting file.</h4>'];
 
 $mefiles = function ($arg) {
     return $_FILES['upload'][$arg];
@@ -34,13 +34,9 @@ if (isset($_POST['action']) && $_POST['action'] == 'upload') {
     if (!is_uploaded_file($_FILES['upload']['tmp_name'])) {
         header("Location: ./?nofile");
     }
-
     $uploadfile = $mefiles('tmp_name');
     $realname = $mefiles('name');
-
-
     $ext = preg_replace('/(.*)(\.[^0-9.]+$)/i', '$2', $realname);
-
     $time = time();
     //$uploadname = $time . getRemoteAddr() . $ext;
     $uploadname = $time . $ext;
@@ -55,27 +51,32 @@ if (isset($_POST['action']) && $_POST['action'] == 'upload') {
     //echo $key;
     if ($priv == 'Admin' and !empty($_POST['user'])) { //ie Admin selects user
         $key = $_POST['user'];
+
         include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-        $sql = "SELECT domain FROM client WHERE domain='$key'";
-        $st = doQuery($pdo, $sql, 'no domain');
+        $st = $pdo->prepare("SELECT domain FROM client WHERE domain=:id");
+        $st->bindValue(":id", $key);
+        doPreparedQuery($st, 'Error fetching domain');
         $row = $st->fetch(PDO::FETCH_NUM);
-        if (count($row) > 0) {
-            $sql = "SELECT employer.user_name, employer.user_id FROM (SELECT user.name AS user_name, user.id AS user_id, client.domain FROM user INNER JOIN client ON $domainstr =client.domain) AS employer WHERE employer.domain='$key' LIMIT 1"; //RETURNS one user, as relationship between file and user is one to one.
+
+        if ($row && count($row) > 0) {
+            $sql = "SELECT employer.user_name, employer.user_id FROM (SELECT user.name AS user_name, user.id AS user_id, client.domain FROM user INNER JOIN client ON $domainstr =client.domain) AS employer WHERE employer.domain=:id LIMIT 1"; //RETURNS one user, as relationship between file and user is one to one.
             //exit($sql);
-            $st = doQuery($pdo, $sql, 'error retrieving details');
+            $st = $pdo->prepare($sql);
+            $st->bindValue(":id", $key);
+            doPreparedQuery($st, 'Error fetching user details');
             $row = $st->fetch(PDO::FETCH_ASSOC);
-
-            $key = $row['user_id'];
-
+            $key = $row ? $row['user_id'] : null;
             if (!$key) {
                 $key = $_POST['user']; //$key will be empty if above query returned empty set, reset
-                $sql = "SELECT user.id from user INNER JOIN client ON user.client_id=client.id WHERE user.email='$key'";
-                $st = doQuery($pdo, $sql, 'error retrieving details');
+                $sql = "SELECT user.id from user INNER JOIN client ON user.client_id=client.id WHERE user.email=:id";
+                $st = $pdo->prepare($sql);
+                $st->bindValue(":id", $key);
+                doPreparedQuery($st, 'Error fetching user details');
                 $row = $st->fetch(PDO::FETCH_ASSOC);
-                $key = $row['id'];
+                $key = $row ? $row['id'] : 0;
             } // @ clients use domain or full email as key if neither tests produce a result key refers to a user only
         } //END OF COUNT
-    }
+    } //Admin uploading for user
 
     // Prepare user-submitted values for safe database insert
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
@@ -100,49 +101,31 @@ if (isset($_POST['action']) && $_POST['action'] == 'upload') {
     $st->bindValue(":uploadname", $uploadname);
     $st->bindValue(":sized", $size);
     $st->bindValue(":userid", $key);
-
     $res = doPreparedQuery($st, "<p>Database error storing file information!</p>");
     /*
     $sql2 = "select user.whatever from user INNER JOIN upload ON user.id=upload.userid INNER JOIN (SELECT MAX(id) AS big FROM upload) AS last ON last.big = upload.id";
 NOT REQUIRED - USING mysqli_INSERT_ID INSTEAD - BUT KEPT AS AN EXAMPLE OF A SUBQUERY
 */
-    $menum = $pdo->lastInsertId();
-    $sql = "select user.email, user.name, upload.id, upload.filename from user INNER JOIN upload ON user.id=upload.userid WHERE upload.id=$menum";
-    $st = doQuery($pdo, $sql, 'Error selecting email address.');
+    $menum = lastInsert($pdo);
+    $sql = "select user.email, user.name, upload.id, upload.filename from user INNER JOIN upload ON user.id=upload.userid WHERE upload.id=:id";
+    $st = $pdo->prepare($sql);
+    $st->bindValue(":id", $menum);
+    doPreparedQuery($st, 'Error selecting email address.');
     $row = $st->fetch(PDO::FETCH_ASSOC);
-
     $email = $row['email'];
     $file = $row['filename'];
     $name = $row['name'];
-
     if ($priv == 'Admin') {
         $body =  'We have just uploaded the file' . $file . 'for checking.';
         $body = wordwrap($body, 70);
         //mail($email, $file, $body, "From: $name <{$_SESSION['email']}>");
     }
 
-    /*
-else {
-$body =  '<html><body><p>We have just uploaded the file <a href='.
-'"http://northwolds.serveftp.net/nwp_uploads/" /><strong>' . $file . '</strong></a> for printing.</p></body></html>'; 
-if (!@mail('north.wolds@btinternet.com', 'Files to North Wolds | ' . $file,  
-   $body,  
-    "From: $name <{$_SESSION['email']}>\n" . 
-     "cc:  $name <files@northwolds.co.uk>\n" .
-    "MIME-Version: 1.0\n" .  
-    "Content-type: text/html; charset=iso-8859-1"))
-{
- exit('<p>The file uploaded but an email could not be sent.</p>');  
-}
-}
-*/
     header('Location: .');
     exit();
 } // end of upload_____________________________________________________________________
 
-
 if (isset($_GET['action']) and isset($_GET['id'])) {
-
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
     $sql = "SELECT filename, mimetype, filepath, file, size FROM upload WHERE id =:id";
     $st = $pdo->prepare($sql);
@@ -196,46 +179,42 @@ if (isset($_POST['confirm']) and $_POST['confirm'] == 'Yes') {
 
 if (isset($_POST['proceed']) and $_POST['proceed'] == 'remove') {
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-
-    $id = $_POST['id'];
     $path = '../../filestore/';
-
     if ($_POST['extent'] == "c") {
-        $sql = "SELECT c.file FROM user INNER JOIN client ON user.client_id = client.id INNER JOIN upload AS c ON user.id = c.userid  INNER JOIN upload AS d ON d.userid=user.id WHERE d.id=$id";
+        $sql = "SELECT c.file FROM user INNER JOIN client ON user.client_id = client.id INNER JOIN upload AS c ON user.id = c.userid INNER JOIN upload AS d ON d.userid=user.id WHERE d.id=:id";
     } elseif ($_POST['extent'] == "u") {
-        $sql = "SELECT upload.file FROM upload INNER JOIN user ON upload.userid=user.id INNER JOIN upload AS d ON upload.userid=d.userid WHERE d.id=$id";
+        $sql = "SELECT upload.file FROM upload INNER JOIN user ON upload.userid=user.id INNER JOIN upload AS d ON upload.userid=d.userid WHERE d.id=:id";
     } elseif ($_POST['extent'] == "f") {
-        $sql = "SELECT file FROM upload WHERE id=$id";
+        $sql = "SELECT file FROM upload WHERE id=:id";
     } else {
         header('Location: .');
         exit();
     }
-
-    $st = doQuery($pdo, $sql, 'Error failed to delete file');
-
+    $st = $pdo->prepare($sql);
+    $st->bindValue(":id", $_POST['id']);
+    doPreparedQuery($st, 'Error failed to delete file');
     $rows = $st->fetchAll(PDO::FETCH_ASSOC);
 
     if (empty($rows)) {
-        $error = 'Database error fetching stored files.';
-        include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
+        header("Location: ./?fetch_files");
         exit();
     }
 
     $sql = "DELETE FROM upload WHERE file=:f";
     $st = $pdo->prepare($sql);
+    $location =  "Location: .";
     foreach ($rows as $row) {
         $file = $row['file'];
         $st->bindValue(":f", $file);
         $res = doPreparedQuery($st, '<p>Error deleting file.</p>');
         if (!$res) { //delete file ref
-            $error = 'Error deleting file.';
-            include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
-            exit();
+            $location =  "Location: ./?delete_file";
+            break;
         }
         $thepath = $path . $file;
         unlink($thepath);
     }
-    header('Location: .');
+    header($location);
     exit();
 } //________________________end of confirm/delete
 
@@ -252,7 +231,6 @@ if (isset($_POST['confirm']) and $_POST['confirm'] == 'No') { //swap
 if (isset($_POST['swap'])) { //SWITCH OWNER OF FILE OR JUST UPDATE DESCRIPTION (FILE AMEND BLOCK)
     $colleagues = [];
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-
     $answer = $_POST['swap'];
     $email = $_SESSION['email'];
 

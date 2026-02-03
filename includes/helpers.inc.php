@@ -1,5 +1,13 @@
 <?php
 
+
+function lastInsert($pdo, $db = 'mysql')
+{
+    if ($db = 'postgres') {
+    }
+    return $pdo->lastInsertId();
+}
+
 function getRemoteAddr()
 {
     $ipAddress = $_SERVER['REMOTE_ADDR'];
@@ -76,8 +84,7 @@ function qHead($char, $permitted = '')
 function doQuery($pdo, $sql, $msg)
 {
     try {
-       return $pdo->query($sql);
-
+        return $pdo->query($sql);
     } catch (PDOException $e) {
         $error = $msg . ' ' . $e->getMessage();
         $root =  $_SERVER['DOCUMENT_ROOT'] . '/api/';
