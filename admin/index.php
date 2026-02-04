@@ -9,13 +9,18 @@ $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
 
 $lib = ['nousers' => "<h4>Unable to find any users</h4>"];
 
-if(isset($_GET['domain'])){
-  include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-  $old = $_GET['domain'];
-  $new = $_GET['updated'];
-  $sql = "UPDATE user SET email = CONCAT(LEFT(email, INSTR(email, '@')), '$new') WHERE email LIKE '%$old'";
+function updateDomain($old, $new)
+{
+  if ($old && $new) {
+    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+    $concat = replaceStrPos($new);
+    $sql = "UPDATE user SET email = $concat WHERE email LIKE '%$old'";
+    doQuery($pdo, $sql, '');
+  }
+}
 
-  doQuery($pdo, $sql, '');
+if (isset($_GET['domain'])) {
+  updateDomain($_GET['domain'], $_GET['updated']);
 }
 if (!userIsLoggedIn()) {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/login.html.php';
@@ -145,6 +150,7 @@ if (isset($_GET['addform'])) {
 
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
   $sql = "INSERT INTO user (name, email, password, client_id) VALUES(:nom, :email,:pwd, :clientid)";
+
   $st = $pdo->prepare($sql);
   $st->bindValue(':nom', $_POST['name']);
   $st->bindValue(':email', $_POST['email']);
@@ -173,7 +179,6 @@ if (isset($_GET['addform'])) {
     }
   }
   if (isset($_POST['employer']) && $_POST['employer'] != '') {
-
     $sql = "UPDATE user SET client_id=:cid WHERE id=:aid";
     $st = $pdo->prepare($sql);
     $st->bindValue(':cid', intval($_POST['employer']));
@@ -184,7 +189,20 @@ if (isset($_GET['addform'])) {
       include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
       exit();
     }
+    $sql = "SELECT domain AS dom FROM client WHERE id=:cid";
+    $st = $pdo->prepare($sql);
+    $st->bindValue(':cid', intval($_POST['employer']));
+    doPreparedQuery($st, 'Error fetching client.');
+    $row = $st->fetch(PDO::FETCH_ASSOC);
+    $sql = "SELECT $domainstr AS dom FROM user WHERE client_id=:cid AND id=:aid";
+    $st = $pdo->prepare($sql);
+    $st->bindValue(':aid', $aid);
+    $st->bindValue(':cid', intval($_POST['employer']));
+    doPreparedQuery($st, 'Error fetching user.');
+    $oldrow = $st->fetch(PDO::FETCH_ASSOC);
+    updateDomain($oldrow['dom'], $row['dom']);
   }
+
   if (isset($_POST['roles'])) {
     foreach ($_POST['roles'] as $role) {
       $sql = "INSERT INTO userrole SET userid=:aid, roleid=:roleid";
@@ -308,7 +326,6 @@ include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 
 if (isset($_POST['act']) and $_POST['act'] == 'Choose' && isset($_POST['user']) && $_POST['user'] != '') {
 
-
   $return = "Return to users";
   $manage = "Manage Users";
   $key = $_POST['user'];
@@ -317,8 +334,6 @@ if (isset($_POST['act']) and $_POST['act'] == 'Choose' && isset($_POST['user']) 
   $st->bindValue(":domain", $key);
   doPreparedQuery($st, "<p>Error:</p>");
   $row = $st->fetch(PDO::FETCH_ASSOC);
-
- 
   if (strrpos($key, "@")) { // some clients need full domain for identification, in which case the query is simplified to a straight match to a users email address which corresponds to the client domain.
     $domainstr = "user.email";
   }
@@ -331,7 +346,7 @@ if (isset($_POST['act']) and $_POST['act'] == 'Choose' && isset($_POST['user']) 
     $rows = $st->fetchAll(PDO::FETCH_ASSOC);
 
     if (empty($rows)) {
-        header("Location: ./?nousers");
+      header("Location: ./?nousers");
     }
     foreach ($rows as $row) {
       $users[$row['user_id']] = $row['user_name'];

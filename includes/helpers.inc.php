@@ -8,6 +8,25 @@ function lastInsert($pdo, $db = 'mysql')
     return $pdo->lastInsertId();
 }
 
+function fromStrPos($db = 'mysql')
+{
+    if ($db === 'postgres') {
+        return "substring(email FROM POSITION('@' IN email) + 1)";
+    } else {
+        return "RIGHT(email, LENGTH(email) - LOCATE('@', email))";
+    }
+}
+
+function replaceStrPos($new, $db = 'mysql')
+{
+    if ($db === 'postgres') {
+        return "CONCAT(LEFT(email, substring(email FROM POSITION('@' IN email) + 1)), '$new')";
+    } else {
+
+        return "CONCAT(LEFT(email, INSTR(email, '@')), '$new')";
+    }
+}
+
 function getRemoteAddr()
 {
     $ipAddress = $_SERVER['REMOTE_ADDR'];

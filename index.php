@@ -234,6 +234,7 @@ if (isset($_POST['swap'])) { //SWITCH OWNER OF FILE OR JUST UPDATE DESCRIPTION (
     $answer = $_POST['swap'];
     $email = $_SESSION['email'];
 
+
     if ($priv == 'Admin') {
         $sql = "SELECT upload.id, filename, description, upload.userid, user.name FROM upload INNER JOIN user ON upload.userid=user.id  WHERE upload.id=:id";
         $st = $pdo->prepare($sql);
@@ -246,6 +247,7 @@ if (isset($_POST['swap'])) { //SWITCH OWNER OF FILE OR JUST UPDATE DESCRIPTION (
             include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
             exit();
         }
+       
         $filename = $row['filename'];
         $diz = $row['description'];
         $userid = $row['userid'];
@@ -259,6 +261,8 @@ if (isset($_POST['swap'])) { //SWITCH OWNER OF FILE OR JUST UPDATE DESCRIPTION (
         $st->bindValue(":id", $row['id']);
         doPreparedQuery($st, 'Database error fetching colleagues.');
         $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+
+       
         //exit($sql_col);
         if (empty($rows)) {
             $error = 'Database error fetching colleagues.';
@@ -269,10 +273,12 @@ if (isset($_POST['swap'])) { //SWITCH OWNER OF FILE OR JUST UPDATE DESCRIPTION (
         foreach ($rows as $row) {
             $colleagues[$row['id']] = $row['name'];
         }
+       
         if (empty($colleagues)) {
             $sql = "SELECT user.name, user.id FROM user LEFT JOIN client ON user.client_id=client.id  WHERE client.domain IS NULL UNION SELECT user.name, user.id FROM user INNER JOIN client ON user.client_id=client.id ORDER BY name";
             $st = doQuery($pdo, $sql, 'Database error fetching users.');
             $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+           
             if (empty($rows)) {
                 $error = 'Database error fetching users.';
                 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
@@ -467,12 +473,13 @@ if (isset($_GET['action']) and $_GET['action'] == 'search') {
         $st = $pdo->prepare($sql);
         $st->bindValue(":id", $user_id);
         doPreparedQuery($st, "<p>Unable to find domain</p>");
-        $dom = $st->fetch(PDO::FETCH_NUM);
+        $row = $st->fetch(PDO::FETCH_NUM);
         //user_id is text(domain) for Clients
-        if ($dom) {
+        if ($row) {
+            $dom = $row[0];
             $from .= " INNER JOIN client ON $domainstr = client.domain ";
-            $where = " WHERE domain=:uid";
-            $check = count($row[0]);
+            $where = " WHERE domain='$dom'";
+            $check = count($row);
         } else {
             $where = ' WHERE TRUE';
         }
@@ -484,6 +491,7 @@ if (isset($_GET['action']) and $_GET['action'] == 'search') {
     if ($user_id != '') { // A user is selected 
         if (!isset($check)) $where .= " AND user.id='$user_id'";
     }
+
     $text = $_GET['text'];
     if ($text != '') { // Some search text was specified 
         $where .= " AND upload.filename LIKE '%$text%'";
