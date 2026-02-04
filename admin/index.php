@@ -4,6 +4,19 @@ mysqli_real_escape_string($2, $1);*/
 require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
 $users = [];
 $id = '';
+$error = '';
+$domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
+
+$lib = ['nousers' => "<h4>Unable to find any users</h4>"];
+
+if(isset($_GET['domain'])){
+  include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+  $old = $_GET['domain'];
+  $new = $_GET['updated'];
+  $sql = "UPDATE user SET email = CONCAT(LEFT(email, INSTR(email, '@')), '$new') WHERE email LIKE '%$old'";
+
+  doQuery($pdo, $sql, '');
+}
 if (!userIsLoggedIn()) {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/login.html.php';
   exit();
@@ -285,7 +298,7 @@ if (isset($_GET['editform'])) {
 } ///END OF EDIT
 
 //display users___________________________________________________________________
-$domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
+
 $sql = "SELECT user.id, user.name FROM user LEFT JOIN (SELECT user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer ON $domainstr=employer.domain WHERE employer.domain IS NULL"; //this overwrites above query to filter out users as employees
 
 $sql = "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS NULL"; //USING ID NOT DOMAIN
@@ -294,6 +307,8 @@ include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 //_______________________________________________________________________________
 
 if (isset($_POST['act']) and $_POST['act'] == 'Choose' && isset($_POST['user']) && $_POST['user'] != '') {
+
+
   $return = "Return to users";
   $manage = "Manage Users";
   $key = $_POST['user'];
@@ -303,19 +318,20 @@ if (isset($_POST['act']) and $_POST['act'] == 'Choose' && isset($_POST['user']) 
   doPreparedQuery($st, "<p>Error:</p>");
   $row = $st->fetch(PDO::FETCH_ASSOC);
 
+ 
   if (strrpos($key, "@")) { // some clients need full domain for identification, in which case the query is simplified to a straight match to a users email address which corresponds to the client domain.
     $domainstr = "user.email";
   }
   if ($row) {
     $sqlc = "SELECT employer.user_name, employer.user_id FROM (SELECT user.name AS user_name, user.id AS user_id, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer WHERE employer.domain=:domain"; //
+
     $st = $pdo->prepare($sqlc);
     $st->bindValue(":domain", $row['domain']);
     doPreparedQuery($st, "<p>'Database error fetching users.'</p>");
     $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+
     if (empty($rows)) {
-      $error = 'Database error fetching users.' . $sql;
-      include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
-      exit();
+        header("Location: ./?nousers");
     }
     foreach ($rows as $row) {
       $users[$row['user_id']] = $row['user_name'];
@@ -403,4 +419,7 @@ if ($priv && $priv == "Admin") {
     $client[$row['domain']] = $row['name'];
   }
 }
+
+$error =  $lib[$_SERVER["QUERY_STRING"]] ?? '';
+
 include 'users.html.php';

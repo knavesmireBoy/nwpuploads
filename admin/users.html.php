@@ -17,9 +17,9 @@
 		<h1><?php echo $manage; ?></h1>
 		<?php if ($priv == 'Admin') : ?>
 			<p><a href="?add">Add New User</a></p>
-		<?php endif; ?>
-
-		<?php if ($priv == 'Admin' and !isset($_POST['act'])): ?>
+		<?php endif;
+		echo $error;
+		if ($priv == 'Admin' and !isset($_POST['act'])): ?>
 			<form action="" method="post" name="userform">
 				<ul>
 					<li><label for="user">User: </label><select id="user" name="user">

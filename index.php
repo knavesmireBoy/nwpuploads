@@ -613,6 +613,11 @@ $fhead = $qs . $ffn($state);
 $uhead = $qs . $ufn($state);
 $thead = $qs . $tfn($state);
 
+$arr = get_defined_vars();
+foreach ($arr as $key => $value) {
+    if (preg_match('/_[A-Z]+/', $key)) unset($arr[$key]);
+}
+
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/base.html.php';
 $error =  $lib[$_SERVER["QUERY_STRING"]] ?? '';
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/files.html.php';

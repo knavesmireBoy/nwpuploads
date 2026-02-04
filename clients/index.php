@@ -1,12 +1,25 @@
 <?php
-/*mysqli_real_escape_string\(([^,]+),([^)]+\);)
-mysqli_real_escape_string($2, $1);*/
+
+
+
+
+
+
 require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
 if (!userIsLoggedIn()) {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/login.html.php';
   exit();
 }
 //clients page
+
+function getDomain($pdo, $id)
+{
+  $st = $pdo->prepare("SELECT domain FROM client WHERE id=:id");
+  $st->bindValue(':id',  $id);
+  doPreparedQuery($st, '<h4>Problem</h4>');
+  $row = $st->fetch(PDO::FETCH_ASSOC);
+  return $row['domain'];
+}
 
 if (!$roleplay = userHasWhatRole()) {
   $error = 'Only Account Administrators may access this page!!';
@@ -77,9 +90,12 @@ if (isset($_POST['action']) and $_POST['action'] == 'Edit') {
 }
 
 if (isset($_GET['editform'])) {
+
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-  $sql = "UPDATE client SET name=:nom, domain=:dom, tel=:tel WHERE id=:id";
-  $st = $pdo->prepare($sql);
+  $dom = getDomain($pdo, $_POST['id']);
+
+
+  $st = $pdo->prepare("UPDATE client SET name=:nom, domain=:dom, tel=:tel WHERE id=:id");
   $st->bindValue(':nom', $_POST['name']);
   $st->bindValue(':dom', $_POST['domain']);
   $st->bindValue(':tel', $_POST['tel']);
@@ -90,6 +106,13 @@ if (isset($_GET['editform'])) {
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
     exit();
   }
+  $newdom = getDomain($pdo, $_POST['id']);
+
+  if ($dom !== $newdom) {
+    header("Location: ../admin/?domain=$dom&updated=$newdom");
+    exit();
+  }
+
   header('Location: . ');
   exit();
 }
