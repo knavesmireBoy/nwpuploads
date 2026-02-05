@@ -23,7 +23,8 @@ if (isset($clientlist)): ?>
     </form>
 
 
-<?php elseif (!isset($clientlist) and !isset($del)): ?>
+<?php elseif (!isset($clientlist) and !isset($del)):
+    ?>
     <form action="<?= $action; ?>" method="post" name="choice">
         <input type="hidden" name="id" value="<?= $id; ?>" />
         <p><?= $prompt; ?></p>

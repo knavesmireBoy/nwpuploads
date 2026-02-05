@@ -235,20 +235,17 @@ if (isset($_POST['swap'])) { //SWITCH OWNER OF FILE OR JUST UPDATE DESCRIPTION (
     $answer = $_POST['swap'];
     $email = $_SESSION['email'];
 
-
     if ($priv == 'Admin') {
         $sql = "SELECT upload.id, filename, description, upload.userid, user.name FROM upload INNER JOIN user ON upload.userid=user.id  WHERE upload.id=:id";
         $st = $pdo->prepare($sql);
         $st->bindValue(":id", $_POST['id']);
         doPreparedQuery($st, '<p>Database error fetching stored files.</p>');
         $row = $st->fetch(PDO::FETCH_ASSOC);
-       ;
         if (!$row) {
             $error = 'Database error fetching stored files.';
             include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
             exit();
         }
-
         $filename = $row['filename'];
         $diz = $row['description'];
         $userid = $row['userid'];
@@ -262,7 +259,7 @@ if (isset($_POST['swap'])) { //SWITCH OWNER OF FILE OR JUST UPDATE DESCRIPTION (
         $st->bindValue(":id", $row['id']);
         doPreparedQuery($st, 'Database error fetching colleagues.');
         $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-      
+
         /*
         if (empty($rows)) {
             $error = 'Database error fetching colleagues.';
@@ -270,6 +267,7 @@ if (isset($_POST['swap'])) { //SWITCH OWNER OF FILE OR JUST UPDATE DESCRIPTION (
             exit();
         }
 */
+        $id =  $_POST['id'];//CRUCIAL to pass id to file amend form (update.html.php)
         foreach ($rows as $row) {
             $colleagues[$row['id']] = $row['name'];
         }
@@ -277,7 +275,6 @@ if (isset($_POST['swap'])) { //SWITCH OWNER OF FILE OR JUST UPDATE DESCRIPTION (
             $sql = "SELECT user.name, user.id FROM user LEFT JOIN client ON user.client_id=client.id  WHERE client.domain IS NULL UNION SELECT user.name, user.id FROM user INNER JOIN client ON user.client_id=client.id ORDER BY name";
             $st = doQuery($pdo, $sql, 'Database error fetching users.');
             $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-            // dump($rows);
             if (empty($rows)) {
                 $error = 'Database error fetching users.';
                 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
@@ -294,11 +291,11 @@ if (isset($_POST['swap'])) { //SWITCH OWNER OF FILE OR JUST UPDATE DESCRIPTION (
     }
 } ///
 
-if (isset($_POST['original'])) { //CAN ONLY BE SET BY ADMIN, 'original' is common to both options of file amend block
-
+if (isset($_POST['original'])) {
+    //CAN ONLY BE SET BY ADMIN, 'original' is common to both options of file amend block
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-    $user = isset($_POST['colleagues']) ? $_POST['colleagues'] : (isset($_POST['user']) ? $_POST['user'] : $_POST['original']);
-    $id =  intval($_POST['fileid']);
+    $user = !empty($_POST['colleagues']) ? $_POST['colleagues'] : (isset($_POST['user']) ? $_POST['user'] : $_POST['original']);
+    $id = intval($_POST['fileid']);
     $filename = $_POST['filename'];
     if ($_POST['answer'] == 'Yes') {
         $st = $pdo->prepare("UPDATE upload SET userid=:userid WHERE userid=:orig");
@@ -309,7 +306,7 @@ if (isset($_POST['original'])) { //CAN ONLY BE SET BY ADMIN, 'original' is commo
         $st->bindValue(':userid', $user);
         $st->bindValue(':descrip', $_POST['description']);
         $st->bindValue(':fname', $filename);
-        $st->bindValue(':fileid', $id);
+        $st->bindValue(':fileid', $_POST['fileid']);
     }
     doPreparedQuery($st, '<p>Error Updating Details!</p>');
     header('Location: . ');
@@ -628,12 +625,11 @@ foreach ($arr as $key => $value) {
 
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/base.html.php';
 
-    $doUpdate = function () {
-        if(isset($filename)) {
-            include __DIR__ . '/templates/update.html.php';
-        }
-      }; 
-
+$doUpdate = function () {
+    if (isset($filename)) {
+        include __DIR__ . '/templates/update.html.php';
+    }
+};
 $error =  $lib[$_SERVER["QUERY_STRING"]] ?? '';
-ob_start();
+//ob_start();
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/files.html.php';
