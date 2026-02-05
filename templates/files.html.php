@@ -4,8 +4,12 @@
 ?>
 <h1><a href="<?php $_SERVER['PHP_SELF'] ?>">North Wolds | File Uploads</a></h1>
 <h2><?php echo date('l F j, Y'); ?></h2>
+<?php
 
-<?php ob_start(); ?>
+if (!empty($filename) || !empty($prompt)) {
+    ob_start();
+}
+?>
 <form action="<?php $_SERVER['PHP_SELF'] ?>" method="post" name="uploadform" enctype="multipart/form-data">
     <table class="up">
         <tr>
@@ -44,22 +48,18 @@
 <?php
 
 
-ob_end_clean();
 if (isset($filename)) {
+    ob_end_clean();
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/update.html.php';
 }
 echo $error;
-
 if (isset($prompt)) {
-   // ob_start();
+    ob_end_clean();
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/prompt.html.php';
-  // ob_get_clean();
 }
-
 if (count($files) > 0): ?>
-    <p><?= "The following files are stored in the database:"?></p>
-
-
+    </form>
+    <p><?= "The following files are stored in the database:" ?></p>
     <?php
     include '_tablehead.html.php'; ?>
     <tbody>

@@ -242,7 +242,7 @@ if (isset($_POST['swap'])) { //SWITCH OWNER OF FILE OR JUST UPDATE DESCRIPTION (
         $st->bindValue(":id", $_POST['id']);
         doPreparedQuery($st, '<p>Database error fetching stored files.</p>');
         $row = $st->fetch(PDO::FETCH_ASSOC);
-
+       ;
         if (!$row) {
             $error = 'Database error fetching stored files.';
             include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
@@ -262,6 +262,7 @@ if (isset($_POST['swap'])) { //SWITCH OWNER OF FILE OR JUST UPDATE DESCRIPTION (
         $st->bindValue(":id", $row['id']);
         doPreparedQuery($st, 'Database error fetching colleagues.');
         $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+      
         /*
         if (empty($rows)) {
             $error = 'Database error fetching colleagues.';
@@ -272,9 +273,7 @@ if (isset($_POST['swap'])) { //SWITCH OWNER OF FILE OR JUST UPDATE DESCRIPTION (
         foreach ($rows as $row) {
             $colleagues[$row['id']] = $row['name'];
         }
-
-        //!empty($colleagues)
-        if (1) {
+        if (empty($colleagues)) {
             $sql = "SELECT user.name, user.id FROM user LEFT JOIN client ON user.client_id=client.id  WHERE client.domain IS NULL UNION SELECT user.name, user.id FROM user INNER JOIN client ON user.client_id=client.id ORDER BY name";
             $st = doQuery($pdo, $sql, 'Database error fetching users.');
             $rows = $st->fetchAll(PDO::FETCH_ASSOC);

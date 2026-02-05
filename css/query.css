@@ -58,6 +58,26 @@ h1 {
   table tr {
     text-align: left;
   }
+
+  form[name="updatefileinfo"] {
+    border: solid 1px red;
+    padding: 1em clamp(1em, 20%, 10em) 1em clamp(1em, 20%, 10em);
+    margin: 0 0 1em;
+  }
+  form[name="updatefileinfo"] div {
+    display: flex;
+    justify-content: center;
+  }
+
+  form[name="updatefileinfo"] div input[type=text], form[name="updatefileinfo"] div select {
+    flex: 6 1 1em;
+  }
+
+  form[name="updatefileinfo"] div label {
+    flex: 1 1 1em;
+  }
+  
+
   form[name="updatefileinfo"] > div,
   .searcher div:last-child,
   table th {
