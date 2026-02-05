@@ -1,5 +1,7 @@
 :root {
   --main-color: #496600;
+  --prompt: #d9ebad;
+
 }
 
 body {
@@ -111,7 +113,7 @@ form div {
   margin: 0 0 1em;
 }
 .prompt {
-  background-color: #d9ebad;
+  background-color: var(--prompt);
   display: inline-block;
   padding: 1em;
   border: solid 1px #000;
@@ -135,7 +137,7 @@ form div {
   padding: 0.7em;
 }
 .clientlist {
-  background-color: #d9ebad;
+  background-color: var(--prompt);;
 }
 .name {
   margin: 0 0 0.3em;
@@ -208,6 +210,40 @@ form[name="uploadform"] > table tbody tr:last-child td input {
 	width: auto;
 }
 
+form[name=search]{
+	padding: 1em;
+	background-color: var(--prompt);
+	width: clamp(300px, 70vw, 600px);
+	margin: 1em auto;
+}
+
+form[name=search] div{
+	display: flex;
+	justify-content: center;
+	column-gap: .5em;
+}
+
+form[name=search] div label{
+	flex: 1 1 1em;
+	text-align: right;
+}
+form[name=search] div :not(label, input[type=submit]){
+	flex: 4 1 1em;
+}
+form[name=search] input[name="text"]{
+	width: clamp(200px, 60%, 300px);
+}
+
+form[name=search] select {
+	font-size: 1rem;
+}
+form[name=search] input[type=search] {
+	font-size: 1rem;
+	padding: .5em 0;
+}
+div#upload > table {
+	width: clamp(700px, 100%, 900px);
+}
 form[name="logoutform"] {
   border-width: 0;
 }
@@ -252,7 +288,7 @@ form[name="deletions"] {
 }
 .searcher fieldset,
 .upload fieldset {
-  background-color: #d9ebad;
+  background-color: var(--prompt);;
 }
 .searcher legend,
 .upload legend,
@@ -443,7 +479,7 @@ input[type="submit"]:hover {
 .select,
 .edit fieldset,
 .edit .select + div {
-  background-color: #d9ebad;
+  background-color: var(--prompt);;
 }
 .clients .prompt {
   margin: 0 0 1em;
@@ -501,7 +537,7 @@ form[name="deletions"] div.fieldset {
 }
 .xrole fieldset:last-of-type {
   background-color: #496600;
-  color: #d9ebad;
+  color: var(--prompt);;
 }
 .upload input[type="submit"]:disabled,
 .upload input[type="submit"][disabled] {

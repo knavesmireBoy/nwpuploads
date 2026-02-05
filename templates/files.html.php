@@ -46,21 +46,23 @@ if (!empty($filename) || !empty($prompt)) {
 </form>
 <?php
 
-
 if (isset($filename)) {
     ob_end_clean();
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/update.html.php';
 }
 
-if (!empty($search)) {
+if (!empty($find)) {
     ob_end_clean();
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/search.html.php';
 }
-echo $error;
+
 if (isset($prompt)) {
     ob_end_clean();
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/prompt.html.php';
 }
+
+echo $error;
+
 if (count($files) > 0): ?>
     </form>
     <p><?= "The following files are stored in the database:" ?></p>

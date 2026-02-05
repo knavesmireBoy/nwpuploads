@@ -1,7 +1,5 @@
-<?php include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php'; ?>
-
 <h1>Search Files</h1>
-<form action="?" method="get" name="searchFiles">
+<form action="?" method="get" name="search" class="prompt">
 	<p>View files satisfying the following criteria:</p>
 	<?php if (!isset($zero)) : ?>
 		<div><label for="user">By user: </label><select id="user" name="user">
@@ -24,7 +22,7 @@
 	<div>
 		<label for="text">Containing text:</label> <input id="text" type="search" name="text" />
 	</div>
-	<div>
+	
 		<div>
 			<label for="suffix">Suffix: </label>
 			<select id="suffix" name="suffix">
@@ -34,12 +32,10 @@
 				<option value="owt">other</option>
 			</select>
 		</div>
+		<div>
 		<input type="hidden" name="action" value="search" />
 		<input type="hidden" name="flag" />
 		<input type="submit" value="Search" />
 	</div>
 </form>
 <p><a href=".">Return</a></p>
-<!--</div>	-->
-</body>
-</html>

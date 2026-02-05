@@ -1,4 +1,4 @@
-<form action="<?= $action; ?>" method="post" name="updatefileinfo" >
+<form action="<?= $action; ?>" method="post" name="updatefileinfo"  class="prompt">
 	<?php if ($_POST['swap'] == 'No'){ 
 		
 		

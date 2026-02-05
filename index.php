@@ -13,6 +13,7 @@ $lib = ['nofile' => "<h4>'There was no file uploaded!'</h4>", 'fetch_files' => '
 $clientlist = null;
 $prompt = null;
 $display = 10;
+$find = false;
 
 $uploaded = function ($arg) {
     return $_FILES['upload'][$arg];
@@ -362,6 +363,7 @@ if (!$result) {
 foreach ($result as $row) {
     $users[$row['id']] = $row['name'];
 }
+
 /*
 $sqlc ="SELECT employer.user_id, employer.name from
 (SELECT user.name, user.id as user_id, client.domain FROM user INNER JOIN client ON RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))=client.domain) AS employer";
@@ -377,15 +379,15 @@ if (!$result) {
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
     exit();
 }
+
 foreach ($result as $row) {
     $client[$row['domain']] = $row['name'];
 }
 //end of default_______________________________________________________________________
 
 if (isset($_GET['find'])) {
-
-   
-    if ($priv != "Admin"): //CUSTOMISES SELECT MENU
+    $find = true;
+    if ($priv != "Admin"): //CUSTOMISES SELECT MENU overwriting DEFAULT $client and $users
         $email = $_SESSION['email'];
         $iskey = false;
         include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
@@ -433,9 +435,11 @@ if (isset($_GET['find'])) {
         }
         $client = array();
     endif;
+
+   
    // include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/base.html.php';
-   // include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/search.html.php';
-    exit();
+  //  include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/search.html.php';
+  //  exit();
 }
 /// S E A R C H  M E !!
 
@@ -612,12 +616,6 @@ foreach ($arr as $key => $value) {
 }
 
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/base.html.php';
-
-$doUpdate = function () {
-    if (isset($filename)) {
-        include __DIR__ . '/templates/update.html.php';
-    }
-};
 $error =  $lib[$_SERVER["QUERY_STRING"]] ?? '';
-//ob_start();
+ob_start();
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/files.html.php';

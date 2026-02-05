@@ -9,7 +9,7 @@ NOT REALLY USED IN PRACTICE
 */
 
 if (isset($clientlist)): ?>
-    <form action="." method="post" name="clientform">
+    <form action="." method="post" name="clientform" class="prompt">
         <div><label for="employer">If existing client:</label>
             <select name="employer" id="employer">
                 <option value="">Set email domain</option>
@@ -25,7 +25,7 @@ if (isset($clientlist)): ?>
 
 <?php elseif (!isset($clientlist) and !isset($del)):
     ?>
-    <form action="<?= $action; ?>" method="post" name="choice">
+    <form action="<?= $action; ?>" method="post" name="choice"  class="prompt">
         <input type="hidden" name="id" value="<?= $id; ?>" />
         <p><?= $prompt; ?></p>
         <p><label>Yes<input type="radio" name="<?= $call; ?>" value="<?= $pos; ?>" /></label></p>
@@ -35,7 +35,7 @@ if (isset($clientlist)): ?>
 <?php endif;  ?>
 
 <?php if (isset($del)): ?>
-    <form action="." method="post" name="deletions" class="block">
+    <form action="." method="post" name="deletions" class="block prompt">
         <input type="hidden" name="id" value="<?= $id; ?>" />
         <p><label for="ext_nwf">Delete this file only<input type="radio" id="ext_nwf" name="extent" value="f" /></label></p>
         <p><label for="ext_nwu">Delete all files for this user<input type="radio" id="ext_nwu" name="extent" value="u" /></label></p>
