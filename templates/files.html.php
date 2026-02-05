@@ -1,8 +1,11 @@
 <?php include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php';
 
+
 ?>
 <h1><a href="<?php $_SERVER['PHP_SELF'] ?>">North Wolds | File Uploads</a></h1>
 <h2><?php echo date('l F j, Y'); ?></h2>
+
+<?php ob_start(); ?>
 <form action="<?php $_SERVER['PHP_SELF'] ?>" method="post" name="uploadform" enctype="multipart/form-data">
     <table class="up">
         <tr>
@@ -39,16 +42,23 @@
     </table>
 </form>
 <?php
-ob_start();
+
+
+ob_end_clean();
+if (isset($filename)) {
+    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/update.html.php';
+}
 echo $error;
+
 if (isset($prompt)) {
-    ob_start();
+   // ob_start();
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/prompt.html.php';
-    echo ob_get_clean();
+  // ob_get_clean();
 }
 
 if (count($files) > 0): ?>
-    <p>The following files are stored in the database:</p>
+    <p><?= "The following files are stored in the database:"?></p>
+
 
     <?php
     include '_tablehead.html.php'; ?>

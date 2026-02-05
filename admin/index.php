@@ -434,7 +434,5 @@ if ($priv && $priv == "Admin") {
     $client[$row['domain']] = $row['name'];
   }
 }
-
 $error =  $lib[$_SERVER["QUERY_STRING"]] ?? '';
-
 include 'users.html.php';

@@ -273,12 +273,12 @@ if (isset($_POST['swap'])) { //SWITCH OWNER OF FILE OR JUST UPDATE DESCRIPTION (
             $colleagues[$row['id']] = $row['name'];
         }
 
-//!empty($colleagues)
+        //!empty($colleagues)
         if (1) {
             $sql = "SELECT user.name, user.id FROM user LEFT JOIN client ON user.client_id=client.id  WHERE client.domain IS NULL UNION SELECT user.name, user.id FROM user INNER JOIN client ON user.client_id=client.id ORDER BY name";
             $st = doQuery($pdo, $sql, 'Database error fetching users.');
             $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-           // dump($rows);
+            // dump($rows);
             if (empty($rows)) {
                 $error = 'Database error fetching users.';
                 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
@@ -296,7 +296,7 @@ if (isset($_POST['swap'])) { //SWITCH OWNER OF FILE OR JUST UPDATE DESCRIPTION (
 } ///
 
 if (isset($_POST['original'])) { //CAN ONLY BE SET BY ADMIN, 'original' is common to both options of file amend block
-    
+
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
     $user = isset($_POST['colleagues']) ? $_POST['colleagues'] : (isset($_POST['user']) ? $_POST['user'] : $_POST['original']);
     $id =  intval($_POST['fileid']);
@@ -628,5 +628,13 @@ foreach ($arr as $key => $value) {
 }
 
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/base.html.php';
+
+    $doUpdate = function () {
+        if(isset($filename)) {
+            include __DIR__ . '/templates/update.html.php';
+        }
+      }; 
+
 $error =  $lib[$_SERVER["QUERY_STRING"]] ?? '';
+ob_start();
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/files.html.php';

@@ -1,7 +1,6 @@
 <?php include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php'; ?>
 <!DOCTYPE html>
 <html class="no-js" lang="en">
-
 <head>
 	<meta charset="utf-8">
 	<meta content="IE=edge" http-equiv="X-UA-Compatible">
@@ -11,7 +10,6 @@
 	<script>
 		document.cookie = 'resolution=' + Math.max(screen.width, screen.height) + '; path=/';
 	</script>
-
 <body>
 	<div>
 		<h1><?php echo $manage; ?></h1>
@@ -48,8 +46,7 @@
 <input type="hidden" name="id" value="<?php echo $k; ?>"/>
 <input type="submit" name="action" value="Edit"/>&nbsp;<input type="submit" name="action" value="Delete"/>
 </form>-->
-
-				<form action="" method="post" name="edituserform">
+<form action="" method="post" name="edituserform">
 					<ul>
 						<li><label><?php htmlout($user); ?></label></li>
 						<li><label>Edit<input type="radio" name="action" value="Edit" /></label>
@@ -59,8 +56,6 @@
 						<li><input type="submit" value="Submit" /></li>
 					</ul>
 				</form>
-
-
 		<?php
 			endforeach;
 		endif;
@@ -70,14 +65,18 @@
 						?>">Return to uploads</a></p>-->
 
 		<?php
+	
 		if (isset($prompt)) {
 			include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/prompt.html.php';
 		}
 		include '../includes/logout.inc.html.php';
 		//include $_SERVER['DOCUMENT_ROOT'] . '/includes/logout.inc.html.php'; 
 		exit();
-		?>
+		
+
+
+		 ?>
 	</div>
 </body>
-
 </html>
+
