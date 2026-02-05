@@ -40,8 +40,7 @@ if (!empty($filename) || !empty($prompt)) {
         <?php endif; ?>
         <input type="hidden" name="action" value="upload" />
         <tr>
-            <td><input type="submit" value="Upload" /></td>
-            <td>&nbsp;</td>
+            <td colspan=2><input type="submit" value="Upload" /></td>
         </tr>
     </table>
 </form>
@@ -51,6 +50,11 @@ if (!empty($filename) || !empty($prompt)) {
 if (isset($filename)) {
     ob_end_clean();
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/update.html.php';
+}
+
+if (!empty($search)) {
+    ob_end_clean();
+    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/search.html.php';
 }
 echo $error;
 if (isset($prompt)) {

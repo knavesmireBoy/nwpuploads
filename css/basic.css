@@ -1,89 +1,92 @@
 :root {
-	--main-color: #496600;
-  }
+  --main-color: #496600;
+}
 
 body {
-	font-size: .75em;
-	font-family: Helvetica, Geneva, Arial, SunSans-Regular, sans-serif;
+  font-size: 0.75em;
+  font-family: Helvetica, Geneva, Arial, SunSans-Regular, sans-serif;
 }
-h1, h2 {
-	font: bold 2.2em/1 Georgia, sans-serif;
+h1,
+h2 {
+  font: bold 2.2em/1 Georgia, sans-serif;
 }
 h2 {
-	font-size: 1.75em;
+  font-size: 1.75em;
 }
 ul {
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
 }
 p {
-	margin: 0 0 1em;
+  margin: 0 0 1em;
 }
 fieldset {
-	border: solid 1px #000;
-	margin: 0 0 1em;
+  border: solid 1px #000;
+  margin: 0 0 1em;
 }
-fieldset, legend {
-	border-radius: 10px;
+fieldset,
+legend {
+  border-radius: 10px;
 }
 h2 {
-	color: #7a9f33;
-	font-size: 1.5em
+  color: #7a9f33;
+  font-size: 1.5em;
 }
 label {
-	font-size: 1em;
-	font-weight: bold;
-	padding: 0.3em 0;
+  font-size: 1em;
+  font-weight: bold;
+  padding: 0.3em 0;
 }
 table {
-	margin-bottom: 1em;
-	border-collapse: collapse
+  margin-bottom: 1em;
+  border-collapse: collapse;
 }
 td {
-	padding: 0.5em 1em;
-	vertical-align: middle;
-	border: solid 0 #9c0;
-	border-width: 0 0 2px;
+  padding: 0.25em;
+  vertical-align: middle;
+  border: solid 0 #9c0;
+  border-width: 0 0 2px;
 }
 th {
-	font: bold 1.1em Georgia, sans-serif;
-	background-color: #9c0;
+  font: bold 1.1em Georgia, sans-serif;
+  background-color: #9c0;
 }
 a {
-	text-decoration: none;
-	color: #000;
+  text-decoration: none;
+  color: #000;
 }
 table a {
-	display: block;
+  display: block;
 }
 th a {
-	padding: 0.6em 0;
+  padding: 0.6em 0;
 }
 p a {
-	display: inline-block;
+  display: inline-block;
 }
-h1 span, h1 a {
-	display: block;
+h1 span,
+h1 a {
+  display: block;
 }
 
 ul input {
-	margin-left: 0.5em;
+  margin-left: 0.5em;
 }
 form li {
-	padding: 0.2em 0;
+  padding: 0.2em 0;
 }
 form div {
-	padding: 0.2em 0;
+  padding: 0.2em 0;
 }
 .container {
-	border-radius: 3px;
-	display: inline-block;
+  border-radius: 3px;
+  display: inline-block;
 }
 /* Preview */
 
 .preview {
-	margin: 0 auto 1em;
+  margin: 0 auto 1em;
 }
 /* Button 
 
@@ -97,345 +100,438 @@ form div {
 }
 */
 .up {
-	margin: 0;
+  margin: 0;
 }
 .info {
-	font: 1.1em Georgia, serif;
-	font-style: italic;
-	margin: 1em 0 .5em;
+  font: 1.1em Georgia, serif;
+  font-style: italic;
+  margin: 1em 0 0.5em;
 }
 .log {
-	margin: 0 0 1em;
+  margin: 0 0 1em;
 }
 .prompt {
-	background-color: #d9ebad;
-	display: inline-block;
-	padding: 1em;
-	border: solid 1px #000;
-	border-radius: 5px;
+  background-color: #d9ebad;
+  display: inline-block;
+  padding: 1em;
+  border: solid 1px #000;
+  border-radius: 5px;
 }
 .commit {
-	padding: 1em;
-	border: solid 1px #000;
+  padding: 1em;
+  border: solid 1px #000;
 }
 .warning {
-	background-color: #000;
+  background-color: #000;
 }
 /*div form*/
 
-.select, .clientlist {
-	padding: 1em;
+.select,
+.clientlist {
+  padding: 1em;
 }
 .select {
-	border-radius: 20px;
-	padding: .7em;
+  border-radius: 20px;
+  padding: 0.7em;
 }
 .clientlist {
-	background-color: #d9ebad;
+  background-color: #d9ebad;
 }
 .name {
-	margin: 0 0 .3em;
+  margin: 0 0 0.3em;
 }
-.upload, .update, .searcher {
-	display: inline-block;
+.upload,
+.update,
+.searcher {
+  display: inline-block;
 }
-.select, .fieldset, form.clientlist {
-	border: solid 1px #000;
-	border-radius: 5px;
+.select,
+.fieldset,
+form.clientlist {
+  border: solid 1px #000;
+  border-radius: 5px;
 }
 .prompt p {
-	border-bottom: dotted 1px;
+  border-bottom: dotted 1px;
 }
 /*div form*/
 
 form.clientlist {
-	display: inline-block;
+  display: inline-block;
 }
+
+form[name="uploadform"] {
+  padding: 1em;
+}
+
+form[name="uploadform"] > table {
+  text-align: center;
+  width: clamp(35em, 50%, 50em);
+  margin: 0 auto;
+}
+form[name="uploadform"] > table tbody {
+	display: flex;
+	flex-wrap: wrap;
+	width: 100%;
+}
+form[name="uploadform"] > table tbody tr{
+	display: flex;
+	width: 100%;
+}
+form[name="uploadform"] > table tbody td:first-child{
+	flex: 1 1 1em;
+}
+
+form[name="uploadform"] > table tbody td:last-child{
+	flex: 3 1 1em;
+}
+
+form[name="uploadform"] > table tbody td:last-child input{
+	width: clamp(8em, 70%, 98%);
+}
+
+form[name="uploadform"] > table tbody td:last-child select{
+	width: clamp(8em, 70%, 98%);
+}
+
+form[name="uploadform"] > table tbody tr:last-child {
+	flex: 0 0 100%;
+	display: flex;
+	margin: .2em 0;
+	justify-content: center;
+}
+form[name="uploadform"] > table tbody tr:last-child td{
+	display: flex;
+	justify-content: center;
+}
+form[name="uploadform"] > table tbody tr:last-child td input {
+	width: auto;
+}
+
 form[name="logoutform"] {
-	border-width: 0;
+  border-width: 0;
 }
 p.ret {
-	margin: 1em 0;
+  margin: 1em 0;
 }
-.update, .editclient, .fieldset, .commit, .select, div.clientlist, .edit .select+div {
-	margin: 0;
-	display: inline-block;
-	vertical-align: top;
+.update,
+.editclient,
+.fieldset,
+.commit,
+.select,
+div.clientlist,
+.edit .select + div {
+  margin: 0;
+  display: inline-block;
+  vertical-align: top;
 }
 a:hover {
-	text-decoration: underline;
+  text-decoration: underline;
 }
 input[type="text"] {
-	font-size: 1em;
-	height: 1.5em;
+  font-size: 1em;
+  height: 1.5em;
 }
-input[type=submit] {
-	border: 1px solid #000;
-	color: white;
-	border-radius: 20px;
-	background-color: #496600;
-	font: 1em Arial;
-	font: 1em/1.35 Georgia, serif;
-	font-style: italic;
-	font-weight: bold;
-	margin: 0;
+input[type="submit"] {
+  border: 1px solid #000;
+  color: white;
+  border-radius: 20px;
+  background-color: #496600;
+  font: 1em Arial;
+  font: 1em/1.35 Georgia, serif;
+  font-style: italic;
+  font-weight: bold;
+  margin: 0;
 }
-.edit~p, .clients .commit~p {
-	margin: 1em 0 0;
+.edit ~ p,
+.clients .commit ~ p {
+  margin: 1em 0 0;
 }
-form[name='deletions'] {
-	padding: 0;
+form[name="deletions"] {
+  padding: 0;
 }
-.searcher fieldset, .upload fieldset {
-	background-color: #d9ebad;
+.searcher fieldset,
+.upload fieldset {
+  background-color: #d9ebad;
 }
-.searcher legend, .upload legend, .commit legend, .edit legend {
-	padding: .4em;
-	color: #c6e085;
-	background-color: #000;
-	font: bold 1.1em Georgia, serif;
+.searcher legend,
+.upload legend,
+.commit legend,
+.edit legend {
+  padding: 0.4em;
+  color: #c6e085;
+  background-color: #000;
+  font: bold 1.1em Georgia, serif;
 }
 
 th.control {
-	vertical-align: middle;
+  vertical-align: middle;
 }
 tr.admin {
-	background-color: white
+  background-color: white;
 }
 p.footer {
-	margin: 1em 0;
+  margin: 1em 0;
 }
 /*buttons only present on mobile sites. so noo need for MQ*/
 button.action {
-	width: 30px;
-	height: 25px;
-	display: block;
-	background-image: url(../icons/sprite_lo_res.png);
-    background-position: center 0;
-	background-repeat: no-repeat;
-	border-width: 0;
-    padding: 0;
-    background-color: transparent;
-    border: solid 0px #000;
+  width: 30px;
+  height: 25px;
+  display: block;
+  background-image: url(../icons/sprite_lo_res.png);
+  background-position: center 0;
+  background-repeat: no-repeat;
+  border-width: 0;
+  padding: 0;
+  background-color: transparent;
+  border: solid 0px #000;
 }
 button.download {
-    background-position: center;
+  background-position: center;
 }
 button.update {
-    background-position: center bottom;
+  background-position: center bottom;
 }
-.prompt label, .prompt input {
-	display: inline-block;
-	vertical-align: top;
-	margin: 0;
+.prompt label,
+.prompt input {
+  display: inline-block;
+  vertical-align: top;
+  margin: 0;
 }
 .prompt div:last-of-type {
-	margin: 0 0 .3em;
+  margin: 0 0 0.3em;
 }
 .prompt label {
-	width: 24px;
-	padding: 0;
+  width: 24px;
+  padding: 0;
 }
 .commit label {
-	width: auto;
+  width: auto;
 }
 .up td {
-	text-align: right;
-	padding: .25em 0.3em .25em 0;
-	border: 0px;
+  text-align: right;
+  border: 0px;
 }
 form[name="deletions"] {
-	border-width: 0;
+  border-width: 0;
 }
-.clientlist li, .clientlist li > * {
-	display: inline-block;
-	vertical-align: middle;
+.clientlist li,
+.clientlist li > * {
+  display: inline-block;
+  vertical-align: middle;
 }
 .select select {
-	font: bold 1em Arial, sans-serif;
+  font: bold 1em Arial, sans-serif;
 }
 .warning legend {
-	border: solid 1px #fff;
+  border: solid 1px #fff;
 }
 .prompt p {
-	margin: 0 0 .5em;
+  margin: 0 0 0.5em;
 }
 .edit span {
-	font-style: italic;
+  font-style: italic;
 }
 .clientlist input {
-	margin: 0 .3em 0 0;
+  margin: 0 0.3em 0 0;
 }
 .preview img {
-	position: absolute;
-	left: -9999px;
-	width: 100%;
-	height: auto;
-	display: block;
+  position: absolute;
+  left: -9999px;
+  width: 100%;
+  height: auto;
+  display: block;
 }
-.Yes p, .Yes {
-	margin: 0;
-	border: 0;
+.Yes p,
+.Yes {
+  margin: 0;
+  border: 0;
 }
 button.action image {
-	width: 100%;
-	height: auto;
-	display: block;
+  width: 100%;
+  height: auto;
+  display: block;
 }
 th a:hover {
-	color: white;
-	text-decoration: none;
-	background-color: #7caa09;
+  color: white;
+  text-decoration: none;
+  background-color: #7caa09;
 }
 p a:hover {
-	text-decoration: none;
-	background: #000;
-	color: white;
+  text-decoration: none;
+  background: #000;
+  color: white;
 }
 p.footer a {
-	border-width: 0;
-	border-radius: 0;
-	font: 1em Arial, sans-serif;
-	color: #000;
+  border-width: 0;
+  border-radius: 0;
+  font: 1em Arial, sans-serif;
+  color: #000;
 }
 
-.footer a, .footer span {
-	display: inline;
-    zoom: 1;
-	outline: 1px solid #000;
+.footer a,
+.footer span {
+  display: inline;
+  zoom: 1;
+  outline: 1px solid #000;
 }
-.footer > a, .footer > span {
-	display: inline-block;
-	margin-right: 0.5em;
-	padding: 0.5em 0.75em
+.footer > a,
+.footer > span {
+  display: inline-block;
+  margin-right: 0.5em;
+  padding: 0.5em 0.75em;
 }
 .name label {
-	font-family: Georgia, serif;
-	font-size: 1.3em;
-	color: #496600;
-	padding: .3em 0 0;
+  font-family: Georgia, serif;
+  font-size: 1.3em;
+  color: #496600;
+  padding: 0.3em 0 0;
 }
 h1.admin a {
-	color: #000080;
+  color: #000080;
 }
 h1.manager a {
-	color: #006400;
+  color: #006400;
 }
 h1.browser a {
-	color: #708090;
+  color: #708090;
 }
-h1.edit a, h2.edit a {
-	color: #496600;
+h1.edit a,
+h2.edit a {
+  color: #496600;
 }
 div.clientlist form {
-	padding: .5em;
-	border: solid 1px #000;
-	border-radius: 5px;
-	background-color: #fff;
-    margin: 0 0 1em;
+  padding: 0.5em;
+  border: solid 1px #000;
+  border-radius: 5px;
+  background-color: #fff;
+  margin: 0 0 1em;
 }
 div.clientlist form:last-child {
-    margin: 0;
+  margin: 0;
 }
 div.clientlist {
-    margin: 0 0 1em;
+  margin: 0 0 1em;
 }
 /*form div*/
 
 .clientlist .name {
-	display: block;
-	font-size: 110%;
-	border-bottom: dotted 1px;
+  display: block;
+  font-size: 110%;
+  border-bottom: dotted 1px;
 }
 .upload.warning {
-	padding: 1em;
+  padding: 1em;
 }
-.footer+.prompt, .footer+.commit {
-	margin: 1em 0;
+.footer + .prompt,
+.footer + .commit {
+  margin: 1em 0;
 }
-input[type=submit]:hover {
-	background-color: #000;
+input[type="submit"]:hover {
+  background-color: #000;
 }
 .up td:last-child {
-	text-align: left;
+  text-align: left;
 }
-.users p.ret, .clients p.ret {
-	position: absolute;
-	left: -9999px;
+.users p.ret,
+.clients p.ret {
+  position: absolute;
+  left: -9999px;
 }
-.commit fieldset, .fieldset, .select, .edit fieldset, .edit .select+div {
-	background-color: #d9ebad;
+.commit fieldset,
+.fieldset,
+.select,
+.edit fieldset,
+.edit .select + div {
+  background-color: #d9ebad;
 }
 .clients .prompt {
-	margin: 0 0 1em;
+  margin: 0 0 1em;
 }
 .edit .select {
-	margin: 0;
-	border-radius: 5px;
+  margin: 0;
+  border-radius: 5px;
 }
-.edit .select+div {
-	padding: .6em;
-	border: solid 1px #000;
-	border-radius: 5px;
+.edit .select + div {
+  padding: 0.6em;
+  border: solid 1px #000;
+  border-radius: 5px;
 }
 .footer a:hover {
-	color: white;
-	background-color: #9c0;
+  color: white;
+  background-color: #9c0;
 }
 .warning fieldset:first-child {
-	border: solid 1px white;
-	position: relative;
-	left: 0;
+  border: solid 1px white;
+  position: relative;
+  left: 0;
 }
-p a, .log input[type=submit] {
-	font: bold 1em Georgia, serif;
-	color: #6e9900;
-	border-radius: 10px;
-	padding: .15em .3em;
-	border: solid 1px #000;
+p a,
+.log input[type="submit"] {
+  font: bold 1em Georgia, serif;
+  color: #6e9900;
+  border-radius: 10px;
+  padding: 0.15em 0.3em;
+  border: solid 1px #000;
 }
-.log input[type=submit], .upload input[type=submit] {
-	padding: .2em .4em;
-	font: bold 1.1em Georgia, serif;
-	background: #000;
-	color: white;
+.log input[type="submit"],
+.upload input[type="submit"] {
+  padding: 0.2em 0.4em;
+  font: bold 1.1em Georgia, serif;
+  background: #000;
+  color: white;
 }
 p.footer span.current {
-	background-color: #9c0;
+  background-color: #9c0;
 }
-.log input[type=submit]:hover, .upload input[type=submit]:hover {
-	color: #6e9900;
+.log input[type="submit"]:hover,
+.upload input[type="submit"]:hover {
+  color: #6e9900;
 }
-.upload input[type=submit]:disabled:hover {
-	color: #666666;
+.upload input[type="submit"]:disabled:hover {
+  color: #666666;
 }
-.update input[type=submit]:hover, .commit input[type=submit]:hover {
-	color: orangered;
-	border: solid 1px #f00;
+.update input[type="submit"]:hover,
+.commit input[type="submit"]:hover {
+  color: orangered;
+  border: solid 1px #f00;
 }
 form[name="deletions"] div.fieldset {
-	padding: 1em;
+  padding: 1em;
 }
 .xrole fieldset:last-of-type {
-	background-color: #496600;
-	color: #d9ebad;
+  background-color: #496600;
+  color: #d9ebad;
 }
-.upload input[type="submit"]:disabled, .upload input[type="submit"][disabled] {
-	border: 1px solid #999;
-	background-color: #ccc;
-	color: #666;
+.upload input[type="submit"]:disabled,
+.upload input[type="submit"][disabled] {
+  border: 1px solid #999;
+  background-color: #ccc;
+  color: #666;
 }
-.js .prompt input[type="submit"], .js form[name="edituserform"] input[type="submit"], .js form[name="editclientform"] input[type="submit"], .js #userform button, .js #clientsform button, .js form[name="clientsform"] input[type="submit"], .js form[name="userform"] input[type="submit"] {
-	position: absolute;
-	left: -999px;
+.js .prompt input[type="submit"],
+.js form[name="edituserform"] input[type="submit"],
+.js form[name="editclientform"] input[type="submit"],
+.js #userform button,
+.js #clientsform button,
+.js form[name="clientsform"] input[type="submit"],
+.js form[name="userform"] input[type="submit"] {
+  position: absolute;
+  left: -999px;
 }
-.users .prompt input[type="submit"], .clients .prompt input[type="submit"] {
-	position: relative;
-	left: 0;
+.users .prompt input[type="submit"],
+.clients .prompt input[type="submit"] {
+  position: relative;
+  left: 0;
 }
-.xname #name, .xemail #email, .xpassword #password {
-	border: solid 1px #f00;
+.xname #name,
+.xemail #email,
+.xpassword #password {
+  border: solid 1px #f00;
 }
-.xname.xemail #email, .xname.xemail.xpassword #password, .xname.xpassword #password, .xemail.xpassword #password {
-	border: solid 1px #ffa500;
+.xname.xemail #email,
+.xname.xemail.xpassword #password,
+.xname.xpassword #password,
+.xemail.xpassword #password {
+  border: solid 1px #ffa500;
 }
