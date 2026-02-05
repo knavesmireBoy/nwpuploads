@@ -10,7 +10,8 @@ $user_id = 0;
 $text = '';
 $suffix = '';
 $lib = ['nofile' => "<h4>'There was no file uploaded!'</h4>", 'fetch_files' => '<h4>Database error fetching stored files.</h4>', 'delete_file' => '<h4>Error deleting file.</h4>', 'file_list' => '<h4>Database error requesting the list of files.</h4>'];
-
+$clientlist = null;
+$prompt = null;
 $mefiles = function ($arg) {
     return $_FILES['upload'][$arg];
 };
@@ -247,7 +248,7 @@ if (isset($_POST['swap'])) { //SWITCH OWNER OF FILE OR JUST UPDATE DESCRIPTION (
             include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
             exit();
         }
-       
+
         $filename = $row['filename'];
         $diz = $row['description'];
         $userid = $row['userid'];
@@ -261,24 +262,23 @@ if (isset($_POST['swap'])) { //SWITCH OWNER OF FILE OR JUST UPDATE DESCRIPTION (
         $st->bindValue(":id", $row['id']);
         doPreparedQuery($st, 'Database error fetching colleagues.');
         $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-
-       
-        //exit($sql_col);
+        /*
         if (empty($rows)) {
             $error = 'Database error fetching colleagues.';
             include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
             exit();
         }
-
+*/
         foreach ($rows as $row) {
             $colleagues[$row['id']] = $row['name'];
         }
-       
-        if (empty($colleagues)) {
+
+//!empty($colleagues)
+        if (1) {
             $sql = "SELECT user.name, user.id FROM user LEFT JOIN client ON user.client_id=client.id  WHERE client.domain IS NULL UNION SELECT user.name, user.id FROM user INNER JOIN client ON user.client_id=client.id ORDER BY name";
             $st = doQuery($pdo, $sql, 'Database error fetching users.');
             $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-           
+           // dump($rows);
             if (empty($rows)) {
                 $error = 'Database error fetching users.';
                 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
@@ -296,6 +296,7 @@ if (isset($_POST['swap'])) { //SWITCH OWNER OF FILE OR JUST UPDATE DESCRIPTION (
 } ///
 
 if (isset($_POST['original'])) { //CAN ONLY BE SET BY ADMIN, 'original' is common to both options of file amend block
+    
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
     $user = isset($_POST['colleagues']) ? $_POST['colleagues'] : (isset($_POST['user']) ? $_POST['user'] : $_POST['original']);
     $id =  intval($_POST['fileid']);

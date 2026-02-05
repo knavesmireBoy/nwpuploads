@@ -2,16 +2,18 @@
 <?php include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php';
 
 
-/*NOT REQUIRED : WAS USED TO PROVIDE A CLIENT LIST DROP DOWN MENU
+/*
+NOT REQUIRED : WAS USED TO PROVIDE A CLIENT LIST DROP DOWN MENU
 FOR PRE-SELECTING A DOMAIN PRIOR TO ADDING A NEW USER TO AN EXISITING CLIENT
-NOT REALLY USED IN PRACTICE*/
+NOT REALLY USED IN PRACTICE
+*/
 
 if (isset($clientlist)): ?>
     <form action="." method="post" name="clientform">
         <div><label for="employer">If existing client:</label>
             <select name="employer" id="employer">
                 <option value="">Set email domain</option>
-                <?php foreach ($clientlist as  $i => $client): ?>
+                <?php foreach ($clientlist as $i => $client): ?>
                     <option value="<?= $i; ?>">
                         <?php htmlout($client); ?></option>
                 <?php endforeach; ?>
@@ -31,9 +33,7 @@ if (isset($clientlist)): ?>
     </form>
 <?php endif;  ?>
 
-
 <?php if (isset($del)): ?>
-
     <form action="." method="post" name="deletions" class="block">
         <input type="hidden" name="id" value="<?= $id; ?>" />
         <p><label for="ext_nwf">Delete this file only<input type="radio" id="ext_nwf" name="extent" value="f" /></label></p>
