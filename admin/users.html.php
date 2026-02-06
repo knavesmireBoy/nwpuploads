@@ -53,9 +53,10 @@
 					<label for="delete">Delete</label><input id="delete" type="radio" name="action" value="Delete" />
 					<input type="submit" value="Submit" />
 				</form>
-		<?php
-			endforeach;
-		endif;
+			<?php
+			endforeach; ?>
+			<p><a href=".">Return to user list</a></p>
+		<?php endif;
 		?>
 		<p><a href="..">Return to uploads</a></p>
 		<?php

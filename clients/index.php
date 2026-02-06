@@ -106,6 +106,7 @@ if (isset($_GET['editform'])) {
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
     exit();
   }
+  $id = $_POST['id'];
   $newdom = getDomain($pdo, $_POST['id']);
 
   if ($dom !== $newdom) {

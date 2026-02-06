@@ -7,20 +7,46 @@ $id = '';
 $error = '';
 $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
 
-$lib = ['nousers' => "<h4>Unable to find any users</h4>", "addnotice" => "Please fill required fields", "selectuser" => "Please select a user for editing"];
+$lib = ['nousers' => "<h4>Unable to find any users</h4>", "addnotice" => "Please fill required fields", "selectuser" => "Please select a user for editing", "clientdom" => "Cannot assign this user to a new client", "lastuser" => "To remove this last user, please delete the client instead"];
 
-function updateDomain($old, $new)
+function updateUserDomain($old, $new, $id = 0)
 {
   if ($old && $new) {
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
     $concat = replaceStrPos($new);
+    //update email of employees IF the domain of client changes
     $sql = "UPDATE user SET email = $concat WHERE email LIKE '%$old'";
+    //but restrict to a specific employee (eg leaving)
+    if ($id) {
+      $sql .= "  AND id='$id'";
+    }
     doQuery($pdo, $sql, '');
   }
 }
 
+function resetRoles($pdo, $roles, $id)
+{
+  foreach ($roles as $role) {
+    $sql = "INSERT INTO userrole SET userid=:id, roleid=:rol";
+    $st = $pdo->prepare($sql);
+    $st->bindValue(":id", $id);
+    $st->bindValue(":rol", $role);
+    doPreparedQuery($st, '<p>Error assigning selected role to user.</p>');
+  } //end foreach
+}
+
+function deleteAlready($pdo, $id)
+{
+  $st = $pdo->prepare("DELETE FROM user WHERE id =:id");
+  $st->bindValue(':id', $id);
+  //dump($_POST);
+  doPreparedQuery($st, 'Error deleting user.');
+  header('Location: . ');
+  exit();
+}
+
 if (isset($_GET['domain'])) {
-  updateDomain($_GET['domain'], $_GET['updated']);
+  updateUserDomain($_GET['domain'], $_GET['updated']);
 }
 if (!userIsLoggedIn()) {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/login.html.php';
@@ -42,6 +68,7 @@ foreach ($roleplay as $key => $priv):
 endforeach;
 
 if (isset($_POST['action']) and $_POST['action'] == 'Delete') {
+
   $id = $_POST['id'];
   $title = "Prompt";
   $prompt = "Are you sure you want to delete this user? ";
@@ -49,18 +76,27 @@ if (isset($_POST['action']) and $_POST['action'] == 'Delete') {
   $pos = "Yes";
   $neg = "No";
   $action = '';
-  //include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/prompt.html.php';
-  //exit(); 
 }
 
 if (isset($_POST['confirm']) and $_POST['confirm'] == 'Yes') {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-  $st = $pdo->prepare("DELETE FROM user WHERE id =:id");
-  $st->bindValue(':id', $_POST['id']);
-  //dump($_POST);
-  doPreparedQuery($st, 'Error deleting user.');
-  header('Location: . ');
-  exit();
+  $id = $_POST['id'];
+  $sql = "SELECT domain FROM user INNER JOIN client ON user.client_id = client.id WHERE user.id=:id";
+  $st = $pdo->prepare($sql);
+  $st->bindValue(':id',  $id);
+  doPreparedQuery($st, 'Error fetching client.');
+  $row = $st->fetch(PDO::FETCH_ASSOC);
+  $dom = $row['domain'];
+  $sql = "SELECT user.id FROM user INNER JOIN client ON user.client_id = client.id WHERE client.domain='$dom'";
+  $st = doQuery($pdo, $sql, 'Error fetching client.');
+  $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+
+  if (count($rows) === 1) {
+    header("Location: ./?lastuser");
+    exit();
+  }
+
+  deleteAlready($pdo, $_POST['id']);
 }
 if (isset($_POST['confirm']) and $_POST['confirm'] == 'No') {
   header('Location: . ');
@@ -214,16 +250,11 @@ if (isset($_GET['addform'])) {
     $st->bindValue(':cid', $clientId);
     doPreparedQuery($st, 'Error fetching user.');
     $oldrow = $st->fetch(PDO::FETCH_ASSOC);
-    updateDomain($oldrow['dom'], $row['dom']);
+    updateUserDomain($oldrow['dom'], $row['dom']);
   }
 
-  foreach ($roles as $role) {
-    $sql = "INSERT INTO userrole SET userid=:aid, roleid=:roleid";
-    $st = $pdo->prepare($sql);
-    $st->bindValue(':aid', $aid);
-    $st->bindValue(':roleid', $role);
-    $res = doPreparedQuery($st, 'Error assigning selected role to user.');
-  }
+  resetRoles($pdo, $roles, $aid);
+
   header('Location: .');
   exit();
 } //end of addform
@@ -280,14 +311,38 @@ if (isset($_POST['action']) and $_POST['action'] == 'Edit') {
 
 if (isset($_GET['editform'])) {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+
+  $roles = isset($_POST['roles']) ? $_POST['roles'] : ['Browser'];
+  $clientId = empty($_POST['employer']) ? NULL : intval($_POST['employer']);
+
+  $sql = "SELECT domain AS dom FROM client WHERE id=:cid";
+  $st = $pdo->prepare($sql);
+  $st->bindValue(':cid',  $clientId);
+  doPreparedQuery($st, 'Error fetching client.');
+  $row = $st->fetch(PDO::FETCH_ASSOC);
+  $dom = $row['dom'];
+
+  $i = strpos($_POST['email'], '@');
+  $edom = substr($_POST['email'], $i + 1);
+
+  $sql = "SELECT $domainstr AS dom FROM user WHERE client_id=:cid AND id=:id";
+  $st = $pdo->prepare($sql);
+  $st->bindValue(':id', $_POST['id']);
+  $st->bindValue(':cid', $clientId);
+  doPreparedQuery($st, 'Error fetching user.');
+  $oldrow = $st->fetch(PDO::FETCH_ASSOC);
+
+
+  if ($oldrow && ($edom !== $oldrow['dom'])) {
+    header("Location: ./?clientdom");
+    exit();
+  }
   $sql = "UPDATE user SET name=:name, email=:email WHERE id=:id";
   $st = $pdo->prepare($sql);
   $st->bindValue(":name", $_POST['name']);
   $st->bindValue(":email", $_POST['email']);
   $st->bindValue(":id", $_POST['id']);
   doPreparedQuery($st, '<p>Error setting user details.</p>');
-
-  $roles = isset($_POST['roles']) ? $_POST['roles'] : ['Browser'];
 
   if (isset($_POST['password']) && $_POST['password'] != '') {
     $password = md5($_POST['password'] . 'uploads');
@@ -304,21 +359,17 @@ if (isset($_GET['editform'])) {
     $st->bindValue(":id", $_POST['id']);
     doPreparedQuery($st, '<p>Error removing obsolete user role entries.</p>');
   }
-  foreach ($roles as $role) {
-    $sql = "INSERT INTO userrole SET userid=:id, roleid=:rol";
-    $st = $pdo->prepare($sql);
-    $st->bindValue(":id", $_POST['id']);
-    $st->bindValue(":rol", $role);
-    doPreparedQuery($st, '<p>Error assigning selected role to user.</p>');
-  } //end foreach
+  resetRoles($pdo, $roles, $_POST['id']);
 
-  if (isset($_POST['employer']) && !empty($_POST['employer'])) {
-    $sql = "UPDATE user SET client_id=:cid WHERE id =:id";
-    $st = $pdo->prepare($sql);
-    $st->bindValue(":cid", $_POST['employer']);
-    $st->bindValue(":id", $_POST['id']);
-    doPreparedQuery($st, '<p>Error setting client id innit</p>');
-  }
+  //$clientId is allowed to be null if a user wants to disassociate from a client
+  $sql = "UPDATE user SET client_id=:cid WHERE id =:id";
+  $st = $pdo->prepare($sql);
+  $st->bindValue(":cid", $clientId);
+  $st->bindValue(":id", $_POST['id']);
+  doPreparedQuery($st, '<p>Error setting client id innit</p>');
+
+  updateUserDomain($edom, $dom, $_POST['id']);
+
   header('Location: . ');
   exit();
 } ///END OF EDIT
