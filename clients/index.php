@@ -130,7 +130,6 @@ if (isset($_GET['associate'])) {
   $sql = "SELECT id, name, domain FROM client WHERE domain='$dom'";
   $st = doQuery($pdo, $sql, 'Error fetching id.');
   $row = $st->fetch(PDO::FETCH_ASSOC);
-
   $clientdom = $row['domain'];
   $clientname = $row['name'];
   $clientid = $row['id'];
@@ -152,7 +151,6 @@ if (isset($_POST['associate'])) {
     $sql = "UPDATE user SET client_id='$_cid' WHERE id='$id'";
     doQuery($pdo, $sql, 'Error updating user.');
   }
-
 }
 
 if (isset($_GET['addform'])) {
