@@ -150,6 +150,7 @@ form div {
   padding: 1em;
   border: solid 1px #000;
   border-radius: 5px;
+  margin: 1em 0;
 }
 
 .commit {
