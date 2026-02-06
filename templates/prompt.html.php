@@ -28,8 +28,8 @@ if (isset($clientlist)): ?>
     <form action="<?= $action; ?>" method="post" name="choice"  class="prompt">
         <input type="hidden" name="id" value="<?= $id; ?>" />
         <p><?= $prompt; ?></p>
-        <p><label>Yes<input type="radio" name="<?= $call; ?>" value="<?= $pos; ?>" /></label></p>
-        <p><label>No<input type="radio" name="<?= $call; ?>" value="<?= $neg; ?>" /></label></p>
+        <label>Yes<input type="radio" name="<?= $call; ?>" value="<?= $pos; ?>" /></label>
+        <label>No<input type="radio" name="<?= $call; ?>" value="<?= $neg; ?>" /></label>
         <input type="submit" value="Submit" />
     </form>
 <?php endif;  ?>

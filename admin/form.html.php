@@ -1,7 +1,5 @@
-<?php include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php'; ?>
 <!DOCTYPE html>
 <html class="no-js" lang="en">
-
 <head>
 	<meta charset="utf-8">
 	<meta content="IE=edge" http-equiv="X-UA-Compatible">
@@ -12,32 +10,23 @@
 		document.cookie = 'resolution=' + Math.max(screen.width, screen.height) + '; path=/';
 	</script>
 </head>
-
-<head>
-	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-	<link href="../css/lofi.css" type="text/css" rel="stylesheet" media="all" />
-</head>
-
 <body>
 	<div>
-		<h1><?php htmlout($pagetitle); ?></h1>
-		<form action="?<?php htmlout($action); ?>" method="post" name="usersform">
+		<h1><?= $pagetitle; ?></h1>
+		<form action="?<?= $action; ?>" method="post" name="usersform">
 			<ul>
-				<li><label for="name">Name:</label><input id="name" type="text" name="name" value="<?php htmlout($name); ?>" size="32" /></li>
-				<li><label for="email">Email:</label><input id="email" name="email" value="<?php htmlout($email); ?>" size="32" /></li>
-				<li><label for="password">Set password:</label><input id="password" type="password" name="password" /><input type="hidden" name="employer" value="<?php if (isset($cid)) {
-																																										htmlout($cid);
-																																									} ?>" size="32" /></li>
+				<li><label for="name">Name:</label><input id="name" type="text" name="name" value="<?= $name; ?>" size="32" required /></li>
+				<li><label for="email">Email:</label><input type="email" id="email" name="email" value="<?= $email; ?>" size="32" required/></li>
+				<li><label for="password">Set password:</label><input id="password" type="password" name="password"/><input type="hidden" name="employer"
+				value="<?= $cid ? $cid : ''; ?>" size="32" /></li>
 			</ul>
-
 			<?php if ($priv == 'Admin') : ?>
 				<fieldset>
-					<legend>Roles:</legend> <?php for ($i = 0; $i < count($roles); $i++): ?>
+					<legend>Roles</legend> <?php for ($i = 0; $i < count($roles); $i++): ?>
 						<div>
-							<label for="role<?php echo $i; ?>"><input id="role<?php echo $i; ?>" type="checkbox" name="roles[]" value="<?php htmlout($roles[$i]['id']); ?>" <?php if ($roles[$i]['selected']) {
-																																												echo 'checked="checked"';
-																																											} ?> />
-								<?php htmlout($roles[$i]['id']); ?></label>: <?php htmlout($roles[$i]['description']); ?>
+							<label for="role<?php echo $i; ?>"><input id="role<?php echo $i; ?>" type="checkbox" name="roles[]" value="<?= $roles[$i]['id']; ?>"
+									<?= $roles[$i]['selected'] ? 'checked' : ''; ?> />
+								<?= $roles[$i]['id']; ?></label>: <?= $roles[$i]['description']; ?>
 						</div>
 					<?php endfor; ?>
 				</fieldset>
@@ -45,24 +34,18 @@
 					<select name="employer" id="employer">
 						<option value="">Assign to Client?</option>
 						<?php foreach ($clientlist as  $i => $client): ?>
-							<option value="<?php echo $i; ?>" <?php if (isset($job) && $job == $i) echo 'selected="selected"' ?>>
-								<?php htmlout($client); ?></option>
+							<option value="<?= $i; ?>" <?= isset($job) && $job == $i ? 'selected' : ''; ?>>
+								<?= $client; ?></option>
 						<?php endforeach; ?>
 					</select>
 				</div>
 			<?php endif; ?>
-			<div><input type="hidden" name="id" value="<?php htmlout($id); ?>" /><input type="submit" value="<?php htmlout($button); ?>" /></div>
+			<div><input type="hidden" name="id" value="<?= $id; ?>" /><input type="submit" value="<?= $button; ?>" /></div>
 		</form>
 		<p><a href=".">Return to User List</a></p>
-		<!--<p><a href="<?php //$_SERVER['DOCUMENT_ROOT'] . '/admin/index.php';
-						?>">Return to User List</a></p>-->
 		<?php if ($priv == 'Admin') : ?>
 			<p><a href="../clients/">Edit Clients</a></p>
-			<!--<p><a href="<?php //$_SERVER['DOCUMENT_ROOT'] . '/clients/';
-							?>">Edit Clients</a></p>-->
-
 		<?php endif;  ?>
-
 	</div>
 </body>
 

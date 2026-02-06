@@ -7,7 +7,7 @@ $id = '';
 $error = '';
 $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
 
-$lib = ['nousers' => "<h4>Unable to find any users</h4>"];
+$lib = ['nousers' => "<h4>Unable to find any users</h4>", "addnotice" => "Please fill required fields", "selectuser" => "Please select a user for editing"];
 
 function updateDomain($old, $new)
 {
@@ -150,13 +150,23 @@ if (isset($_GET['addform'])) {
 
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
   $sql = "INSERT INTO user (name, email, password, client_id) VALUES(:nom, :email,:pwd, :clientid)";
-
+  $clientId = empty($_POST['employer']) ? NULL : intval($_POST['employer']);
   $st = $pdo->prepare($sql);
+  $essentials = [$_POST['name'], $_POST['email'], $_POST['password']];
+  $essentials = array_filter($essentials, function ($item) {
+    return $item;
+  });
+
+  if (count($essentials) < 3) {
+    header("Location: ./?addnotice");
+    exit();
+  }
+
   $st->bindValue(':nom', $_POST['name']);
   $st->bindValue(':email', $_POST['email']);
   $st->bindValue(':pwd', $_POST['password']);
-  $st->bindValue(':clientid', $_POST['employer']);
-  $res = doPreparedQuery($st, 'Error adding user.');
+  $st->bindValue(':clientid', $clientId);
+  $res = doPreparedQuery($st, 'Error adding user!!');
 
   if (!$res) {
     $error = 'Error adding user.';
@@ -172,52 +182,49 @@ if (isset($_GET['addform'])) {
     $st->bindValue(':id', $aid);
     $res = doPreparedQuery($st, 'Error setting user password.');
 
+    $roles = isset($_POST['roles']) ? $_POST['roles'] : ['Browser'];
+
     if (!$res) {
       $error = 'Error setting user password.';
       include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
       exit();
     }
   }
-  if (isset($_POST['employer']) && $_POST['employer'] != '') {
+  if ($clientId) {
     $sql = "UPDATE user SET client_id=:cid WHERE id=:aid";
     $st = $pdo->prepare($sql);
-    $st->bindValue(':cid', intval($_POST['employer']));
+    $st->bindValue(':cid',  $clientId);
     $st->bindValue(':aid', $aid);
     $res = doPreparedQuery($st, 'Error setting client id.');
+
     if (!$res) {
       $error = 'Error setting client id.';
       include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
       exit();
     }
+
     $sql = "SELECT domain AS dom FROM client WHERE id=:cid";
     $st = $pdo->prepare($sql);
-    $st->bindValue(':cid', intval($_POST['employer']));
+    $st->bindValue(':cid',  $clientId);
     doPreparedQuery($st, 'Error fetching client.');
     $row = $st->fetch(PDO::FETCH_ASSOC);
     $sql = "SELECT $domainstr AS dom FROM user WHERE client_id=:cid AND id=:aid";
     $st = $pdo->prepare($sql);
     $st->bindValue(':aid', $aid);
-    $st->bindValue(':cid', intval($_POST['employer']));
+    $st->bindValue(':cid', $clientId);
     doPreparedQuery($st, 'Error fetching user.');
     $oldrow = $st->fetch(PDO::FETCH_ASSOC);
     updateDomain($oldrow['dom'], $row['dom']);
   }
 
-  if (isset($_POST['roles'])) {
-    foreach ($_POST['roles'] as $role) {
-      $sql = "INSERT INTO userrole SET userid=:aid, roleid=:roleid";
-      $st = $pdo->prepare($sql);
-      $st->bindValue(':aid', $aid);
-      $st->bindValue(':roleid', $role);
-      $res = doPreparedQuery($st, 'Error assigning selected role to user.');
-      if (!$res) {
-        $error = 'Error assigning selected role to user.';
-        include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
-        exit();
-      }
-    }
+  foreach ($roles as $role) {
+    $sql = "INSERT INTO userrole SET userid=:aid, roleid=:roleid";
+    $st = $pdo->prepare($sql);
+    $st->bindValue(':aid', $aid);
+    $st->bindValue(':roleid', $role);
+    $res = doPreparedQuery($st, 'Error assigning selected role to user.');
   }
-  header('Location: . ');
+  header('Location: .');
   exit();
 } //end of addform
 
@@ -280,6 +287,8 @@ if (isset($_GET['editform'])) {
   $st->bindValue(":id", $_POST['id']);
   doPreparedQuery($st, '<p>Error setting user details.</p>');
 
+  $roles = isset($_POST['roles']) ? $_POST['roles'] : ['Browser'];
+
   if (isset($_POST['password']) && $_POST['password'] != '') {
     $password = md5($_POST['password'] . 'uploads');
     $sql = "UPDATE user SET password =:password WHERE id =:id";
@@ -295,15 +304,14 @@ if (isset($_GET['editform'])) {
     $st->bindValue(":id", $_POST['id']);
     doPreparedQuery($st, '<p>Error removing obsolete user role entries.</p>');
   }
-  if (isset($_POST['roles'])) {
-    foreach ($_POST['roles'] as $role) {
-      $sql = "INSERT INTO userrole SET userid=:id, roleid=:rol";
-      $st = $pdo->prepare($sql);
-      $st->bindValue(":id", $_POST['id']);
-      $st->bindValue(":rol", $role);
-      doPreparedQuery($st, '<p>Error assigning selected role to user.</p>');
-    } //end foreach
-  }
+  foreach ($roles as $role) {
+    $sql = "INSERT INTO userrole SET userid=:id, roleid=:rol";
+    $st = $pdo->prepare($sql);
+    $st->bindValue(":id", $_POST['id']);
+    $st->bindValue(":rol", $role);
+    doPreparedQuery($st, '<p>Error assigning selected role to user.</p>');
+  } //end foreach
+
   if (isset($_POST['employer']) && !empty($_POST['employer'])) {
     $sql = "UPDATE user SET client_id=:cid WHERE id =:id";
     $st = $pdo->prepare($sql);
@@ -324,7 +332,12 @@ $sql = "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=c
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 //_______________________________________________________________________________
 
-if (isset($_POST['act']) and $_POST['act'] == 'Choose' && isset($_POST['user']) && $_POST['user'] != '') {
+if (isset($_POST['act']) and $_POST['act'] == 'Choose') {
+
+  if ($_POST['user'] === '') {
+    header("Location: ./?selectuser");
+    exit();
+  }
 
   $return = "Return to users";
   $manage = "Manage Users";
@@ -334,7 +347,8 @@ if (isset($_POST['act']) and $_POST['act'] == 'Choose' && isset($_POST['user']) 
   $st->bindValue(":domain", $key);
   doPreparedQuery($st, "<p>Error:</p>");
   $row = $st->fetch(PDO::FETCH_ASSOC);
-  if (strrpos($key, "@")) { // some clients need full domain for identification, in which case the query is simplified to a straight match to a users email address which corresponds to the client domain.
+  // some clients need full domain for identification, in which case the query is simplified to a straight match to a users email address which corresponds to the client domain.
+  if (strrpos($key, "@")) {
     $domainstr = "user.email";
   }
   if ($row) {
@@ -422,13 +436,8 @@ if ($priv && $priv !== "Admin") {
 if ($priv && $priv == "Admin") {
   $manage = "Manage Users";
   $sqlc = "SELECT client.domain, client.name FROM client ORDER BY name";
-  $result = doQuery($pdo, $sqlc, 'Error retrieving list:');
+  $result = doQuery($pdo, $sqlc, 'Database error fetching clients:');
 
-  if (!$result) {
-    $error = 'Database error fetching clients.';
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
-    exit();
-  }
   $rows = $result->fetchAll();
   foreach ($rows as $row) {
     $client[$row['domain']] = $row['name'];
