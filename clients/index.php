@@ -1,17 +1,12 @@
 <?php
 
-
-
-
-
-
 require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
 if (!userIsLoggedIn()) {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/login.html.php';
   exit();
 }
 //clients page
-
+$domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
 function getDomain($pdo, $id)
 {
   $st = $pdo->prepare("SELECT domain FROM client WHERE id=:id");
@@ -93,8 +88,6 @@ if (isset($_GET['editform'])) {
 
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
   $dom = getDomain($pdo, $_POST['id']);
-
-
   $st = $pdo->prepare("UPDATE client SET name=:nom, domain=:dom, tel=:tel WHERE id=:id");
   $st->bindValue(':nom', $_POST['name']);
   $st->bindValue(':dom', $_POST['domain']);
@@ -113,7 +106,6 @@ if (isset($_GET['editform'])) {
     header("Location: ../admin/?domain=$dom&updated=$newdom");
     exit();
   }
-
   header('Location: . ');
   exit();
 }
@@ -131,20 +123,64 @@ if (isset($_GET['add'])) {
   exit();
 } //////////////END OF ADD
 
+
+if (isset($_GET['associate'])) {
+  $dom = $_GET['associate'];
+  include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+  $sql = "SELECT id, name, domain FROM client WHERE domain='$dom'";
+  $st = doQuery($pdo, $sql, 'Error fetching id.');
+  $row = $st->fetch(PDO::FETCH_ASSOC);
+
+  $clientdom = $row['domain'];
+  $clientname = $row['name'];
+  $clientid = $row['id'];
+  $pos = 'proceed';
+  $neg = 'decline';
+  $call = "associate";
+}
+
+if (isset($_POST['associate'])) {
+  include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+  $dom = strtolower($_POST['dom']);
+  $_cid = strtolower($_POST['id']);
+  $sql = "SELECT id FROM user WHERE $domainstr = '$dom'";
+  $st = doQuery($pdo, $sql, 'Error adding client.');
+  $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+
+  foreach ($rows as $row) {
+    $id = $row['id'];
+    $sql = "UPDATE user SET client_id='$_cid' WHERE id='$id'";
+    doQuery($pdo, $sql, 'Error updating user.');
+  }
+
+}
+
 if (isset($_GET['addform'])) {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+  $dom = $_POST['domain'];
   $sql = "INSERT INTO client (name, domain, tel) VALUES (:nom, :dom, :tel)";
   $st = $pdo->prepare($sql);
   $st->bindValue(':nom', $_POST['name']);
-  $st->bindValue(':dom', $_POST['domain']);
+  $st->bindValue(':dom', $dom);
   $st->bindValue(':tel', $_POST['tel']);
   $res = doPreparedQuery($st, 'Error adding client.');
+  $cid = lastInsert($pdo);
   //alert required for non unique domains. I attempted to enter uni.com
   if (!$res) {
     $error = 'Error adding client.';
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
     exit();
   }
+
+  $sql = "SELECT id FROM user WHERE $domainstr = '$dom'";
+  $st = doQuery($pdo, $sql, 'Error adding client.');
+  $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+  //dump($rows);
+  if (!empty($rows)) {
+    header("Location: ./?associate=$dom");
+    exit();
+  }
+
   header('Location: . ');
   exit();
 } //end of addform

@@ -2,6 +2,7 @@
 
 <!DOCTYPE html>
 <html class="no-js" lang="en">
+
 <head>
 	<meta charset="utf-8">
 	<meta content="IE=edge" http-equiv="X-UA-Compatible">
@@ -12,6 +13,7 @@
 		document.cookie = 'resolution=' + Math.max(screen.width, screen.height) + '; path=/';
 	</script>
 </head>
+
 <body>
 	<div>
 		<h1><?php htmlout($pagetitle); ?></h1>
@@ -24,7 +26,6 @@
 				<label for="the_domain">Domain</label>
 				<input id="the_domain" type="text" name="domain" value="<?php htmlout($domain); ?>" />
 			</div>
-
 			<div>
 				<label for="the_tel">Phone</label>
 				<input id="the_tel" type="text" name="tel" value="<?php htmlout($tel); ?>" />

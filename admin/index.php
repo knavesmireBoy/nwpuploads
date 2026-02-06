@@ -209,7 +209,7 @@ if (isset($_GET['addform'])) {
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
     exit();
   }
-  $aid = $pdo->lastInsertId();
+  $aid = lastInsert($pdo);
   if (isset($_POST['password']) && $_POST['password'] != '') {
     $password = md5($_POST['password'] . 'uploads');
     $sql = "UPDATE user SET password =:pwd  WHERE id =:id";

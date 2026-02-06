@@ -1,0 +1,9 @@
+
+<form action="." method="post" name="choice" class="prompt">
+<input type="hidden" name="dom" value="<?= $clientdom; ?>" />
+<input type="hidden" name="id" value="<?= $clientid; ?>" />
+<p><?= "Associate existing users with $clientname?"; ?></p>
+<label>Yes<input type="radio" name="<?= $call; ?>" value="<?= $pos; ?>" /></label>
+<label>No<input type="radio" name="<?= $call; ?>" value="<?= $neg; ?>" /></label>
+<input type="submit" value="Submit" />
+</form>
