@@ -1,4 +1,3 @@
-<?php include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php'; ?>
 <!DOCTYPE html>
 <html class="no-js" lang="en">
 <head>
@@ -6,7 +5,7 @@
 	<meta content="IE=edge" http-equiv="X-UA-Compatible">
 	<meta content="width=device-width, initial-scale=1" name="viewport">
 	<title>Manage Users</title>
-	<link href="../css/lofi.css" type="text/css" rel="stylesheet" media="all" />
+	<link href="../css/main.css" type="text/css" rel="stylesheet" media="all" />
 	<script>
 		document.cookie = 'resolution=' + Math.max(screen.width, screen.height) + '; path=/';
 	</script>
@@ -37,9 +36,8 @@
 				</ul>
 			</form>
 
-			<?php elseif ($priv == 'Client' or (isset($_POST['act']) and $_POST['act'] == 'Choose')):
+			<?php elseif ($priv == 'Client' || (isset($_POST['act']) && $_POST['act'] == 'Choose')):
 			foreach ($users as $k => $user): ?>
-
 				<!--
 <form action="" method="post" name="edituserform">
 <label><?php htmlout($user); ?></label>
@@ -61,20 +59,12 @@
 		endif;
 		?>
 		<p><a href="..">Return to uploads</a></p>
-		<!--<p><a href="<?php //include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/index.php';
-						?>">Return to uploads</a></p>-->
-
 		<?php
-	
 		if (isset($prompt)) {
 			include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/prompt.html.php';
 		}
 		include '../includes/logout.inc.html.php';
-		//include $_SERVER['DOCUMENT_ROOT'] . '/includes/logout.inc.html.php'; 
 		exit();
-		
-
-
 		 ?>
 	</div>
 </body>

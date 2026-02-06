@@ -279,7 +279,7 @@ if (isset($_POST['swap'])) {
 if (isset($_POST['original'])) {
     //CAN ONLY BE SET BY ADMIN, 'original' is common to both options of file amend block
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-    $user = !empty($_POST['colleagues']) ? $_POST['colleagues'] : (isset($_POST['user']) ? $_POST['user'] : $_POST['original']);
+    $user = !empty($_POST['colleagues']) ? $_POST['colleagues'] : (!empty($_POST['user']) ? $_POST['user'] : $_POST['original']);
     $id = intval($_POST['fileid']);
     $filename = $_POST['filename'];
     if ($_POST['answer'] == 'Yes') {

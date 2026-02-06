@@ -6,7 +6,7 @@
 	<meta content="IE=edge" http-equiv="X-UA-Compatible">
 	<meta content="width=device-width, initial-scale=1" name="viewport">
 	<title>Manage Clients</title>
-	<link href="../css/lofi.css" type="text/css" rel="stylesheet" media="all"/>
+	<link href="../css/main.css" type="text/css" rel="stylesheet" media="all"/>
 	<script>
 		document.cookie = 'resolution=' + Math.max(screen.width, screen.height) + '; path=/';
 	</script>
