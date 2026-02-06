@@ -82,6 +82,7 @@ if (isset($_POST['confirm']) and $_POST['confirm'] == 'Yes') {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
   $id = $_POST['id'];
   $sql = "SELECT domain FROM user INNER JOIN client ON user.client_id = client.id WHERE user.id=:id";
+
   $st = $pdo->prepare($sql);
   $st->bindValue(':id',  $id);
   doPreparedQuery($st, 'Error fetching client.');
@@ -95,7 +96,6 @@ if (isset($_POST['confirm']) and $_POST['confirm'] == 'Yes') {
     header("Location: ./?lastuser");
     exit();
   }
-
   deleteAlready($pdo, $_POST['id']);
 }
 if (isset($_POST['confirm']) and $_POST['confirm'] == 'No') {
@@ -331,7 +331,6 @@ if (isset($_GET['editform'])) {
   $st->bindValue(':cid', $clientId);
   doPreparedQuery($st, 'Error fetching user.');
   $oldrow = $st->fetch(PDO::FETCH_ASSOC);
-
 
   if ($oldrow && ($edom !== $oldrow['dom'])) {
     header("Location: ./?clientdom");

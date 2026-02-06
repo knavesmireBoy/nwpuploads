@@ -1,5 +1,44 @@
 <?php
 
+function identity($arg)
+{
+    return $arg;
+}
+
+function add($a, $b) {
+    return $a + $b;
+}
+
+function multiply($a, $b) {
+    return $a * $b;
+}
+
+//https://eddmann.com/posts/using-partial-application-in-php/
+function partial($func, ...$args)
+{
+    return function (...$newargs) use ($func, $args) {
+        return $func(...$args, ...$newargs);
+    };
+}
+
+function curry2($fun)
+{
+    return function ($arg2) use ($fun) {
+        return function ($arg1) use ($fun, $arg2) {
+            return $fun($arg1, $arg2);
+        };
+    };
+}
+
+function composer(...$fns)
+{
+    return array_reduce($fns, function ($f, $g) {
+        return function(...$vals) use($f, $g){
+            $f($g(...$vals));
+        };
+    }, 'identity');
+}
+
 
 function lastInsert($pdo, $db = 'mysql')
 {
