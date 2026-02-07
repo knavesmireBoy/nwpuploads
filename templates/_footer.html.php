@@ -1,4 +1,4 @@
-<p class="footer">
+<footer>
     <?php
     if (isset($_GET['ext'])) $suffix = $ext;
     if (isset($_GET['u'])) $user_id = $useroo;
@@ -27,7 +27,7 @@
         }
         if ($current_page <> $pages) { ?>
             <a href="?s=<?= $start + $display; ?>&p=<?= $pages; ?>&u=<?= $user_id; ?>&t=<?= $text; ?>&ext=<?= $suffix; ?><?= $sort; ?>">Next</a>
-</p>
+        </footer>
 <?php
         }
     } //If Pages > 1

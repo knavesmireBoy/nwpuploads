@@ -63,11 +63,9 @@ if (count($files) > 0): ?>
         </a></h2>
 <?php
 endif;
-
-
-//$wither = ($suffix || $user_id || $text || $ext || $useroo || $textme ? '.' : '?find'); 
 $wither = seek();
 $lnk = ($wither !== '.' ? 'Search files' : 'Clear search results');
+
 if (!isset($_GET['find'])) { ?>
     <p><a href="<?= $wither; ?>"><?= $lnk; ?></a></p>
 <?php

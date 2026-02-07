@@ -11,7 +11,7 @@ $text = '';
 $suffix = '';
 $lib = ['nofile' => "<h4>'There was no file uploaded!'</h4>", 'fetch_files' => '<h4>Database error fetching stored files.</h4>', 'delete_file' => '<h4>Error deleting file.</h4>', 'file_list' => '<h4>Database error requesting the list of files.</h4>'];
 $clientlist = null;
-$display = 10;
+$display = 5;
 $template = '/upload.html.php';
 
 $uploaded = function ($arg) {
