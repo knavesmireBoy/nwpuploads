@@ -7,13 +7,11 @@ include_once 'base.html.php';
 	<p><?= $loginError; ?></p>
 <?php endif; ?>
 <form action="." method="post" name="loginform">
-	<div>
-		<label for="email">Email: <input id="email" type="email" name="email" /></label>
-	</div>
-	<div>
-		<label for="password">Password: <input id="password" type="password" name="password" /></label>
-	</div>
-	<div>
-		<input type="hidden" name="action" value="login" /><input type="submit" value="Log in" />
-	</div>
-</form><?php echo '</div></body></html>';
+	<label for="email">Email</label>
+	<input id="email" type="email" name="email"/>
+	<label for="password">Password</label>
+	<input id="password" type="password" name="password"/>
+	<input type="hidden" name="action" value="login" /><input type="submit" value="Log in"/>
+</form>
+</body>
+</html>

@@ -200,6 +200,24 @@ form.clientlist {
   display: inline-block;
 }
 
+form[name=loginform] {
+  display: flex;
+  column-gap: 0.5em;
+  justify-content: center;
+  margin: 0 auto;
+  padding: 1em;
+  border: solid 1px;
+  border-radius: 8px;
+  background-color: var(--prompt);
+  width: clamp(300px, 50vw, 600px);
+}
+form[name=loginform] input {
+  flex: 3 1 10em;
+}
+form[name=loginform] input:last-child {
+  flex: 1 1 1em;
+}
+
 form[name=edituserform] {
   margin: 0 0 1em;
 }
@@ -212,9 +230,10 @@ form[name=edituserform] p {
 form[name=usersform] {
   background-color: var(--prompt);
   border: solid 1px;
-  padding: 1em;
-  margin: 0 0 1em;
+  padding: 0.5em;
+  margin: 0 auto 1em;
   border-radius: 8px;
+  width: clamp(300px, 50vw, 1000px);
 }
 form[name=usersform] > ul {
   border-radius: 8px;
@@ -255,6 +274,8 @@ form[name=usersform] > div select {
 }
 form[name=usersform] > div:last-child {
   margin: 0.5em 0;
+  display: flex;
+  justify-content: center;
 }
 
 form[name=uploadform] {
@@ -819,8 +840,7 @@ html > body {
   form[name=usersform],
 form[name=updatefileinfo],
 form[name=deletions] p,
-.searcher,
-table tr {
+.searcher {
     text-align: left;
   }
   form[name=updatefileinfo] > div,

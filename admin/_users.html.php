@@ -14,13 +14,9 @@
 <body>
 	<div>
 		<h1><?php echo $manage; ?></h1>
-		<?php
-		if (isset($prompt)) {
-			ob_start();
-		} ?>
-		<?php if ($priv == 'Admin') { ?>
+		<?php if ($priv == 'Admin') : ?>
 			<p><a href="?add">Add New User</a></p>
-		<?php }
+		<?php endif;
 		echo "<h2 class='error'>$error</h2>";
 		if ($priv == 'Admin' && !isset($_POST['act'])): ?>
 			<form action="" method="post" name="userform">
@@ -41,8 +37,15 @@
 					</li>
 				</ul>
 			</form>
+
 			<?php elseif ($priv == 'Client' || (isset($_POST['act']) && $_POST['act'] == 'Choose')):
 			foreach ($users as $k => $user): ?>
+				<!--
+<form action="" method="post" name="edituserform">
+<label><?= $user; ?></label>
+<input type="hidden" name="id" value="<?php echo $k; ?>"/>
+<input type="submit" name="action" value="Edit"/>&nbsp;<input type="submit" name="action" value="Delete"/>
+</form>-->
 				<form action="" method="post" name="edituserform" class="prompt">
 					<input type="hidden" name="id" value="<?php echo $k; ?>" />
 					<p><?= $user; ?></p>
@@ -51,16 +54,13 @@
 					<input type="submit" value="Submit" />
 				</form>
 			<?php
-			endforeach;
-			if ($priv === 'Admin') { ?>
-				<p><a href=".">Return to user list</a></p>
-		<?php }
-		endif;
+			endforeach; ?>
+			<p><a href=".">Return to user list</a></p>
+		<?php endif;
 		?>
 		<p><a href="..">Return to uploads</a></p>
 		<?php
 		if (isset($prompt)) {
-			ob_end_clean();
 			include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/prompt.html.php';
 		}
 		include '../includes/logout.inc.html.php';
@@ -68,4 +68,5 @@
 		?>
 	</div>
 </body>
+
 </html>

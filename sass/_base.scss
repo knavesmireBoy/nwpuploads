@@ -186,6 +186,24 @@ form.clientlist {
   display: inline-block;
 }
 
+form[name="loginform"] {
+  display: flex;
+  column-gap: .5em;
+  justify-content: center;
+  margin: 0 auto;
+  padding: 1em;
+  border: solid 1px;
+  border-radius: 8px;
+  background-color: var(--prompt);
+  width: clamp(300px, 50vw, 600px);
+  input{
+    flex: 3 1 10em;
+    &:last-child{
+      flex: 1 1 1em;
+    }
+  }
+}
+
 form[name="edituserform"] {
   p {
     font: var(--georgiaform);
@@ -198,9 +216,10 @@ form[name="edituserform"] {
 form[name="usersform"] {
   background-color: var(--prompt);
   border: solid 1px;
-  padding: 1em;
-  margin: 0 0 1em;
+  padding: .5em;
+  margin: 0 auto 1em;
   border-radius: 8px;
+  width: clamp(300px, 50vw, 1000px);
   > ul {
     border-radius: 8px;
     padding: 1em;
@@ -241,6 +260,8 @@ form[name="usersform"] {
     }
     &:last-child {
       margin: .5em 0;
+      display: flex;
+      justify-content: center;
     }
   }
 }

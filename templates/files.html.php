@@ -22,7 +22,7 @@ if (count($files) > 0): ?>
                 ?>
                 <td><a title="<?php htmlout($fsize); ?>" href="<?= '?action=get&id=' . $f['id']; ?>">
                         <?php htmlout($f['filename']); ?></a></td>
-                <?php if ($priv == 'Client') : ?>
+                <?php if ($priv != 'Admin') : ?>
                     <td><?php htmlout($f['description']); ?></td>
                 <?php endif;
                 if ($priv == 'Admin') :

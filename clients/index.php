@@ -21,8 +21,8 @@ if (!$roleplay = userHasWhatRole()) {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/accessdenied.html.php';
   exit();
 } else {
-  foreach ($roleplay as $key => $priv) { // $roleplay is an array, use foreach to obtain value and index
-  }
+
+  list($key, $priv) = $roleplay;
   if ($priv != 'Admin') {
     $error = 'Only Account Administrators may access this page!!';
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/accessdenied.html.php';

@@ -18,13 +18,11 @@
 <body>
 	<div>
 		<h1>Manage Clients</h1>
-
 		<?php if (isset($template)) {
 			ob_start();
 			$obstart = true;
 		}
 		?>
-
 		<p><a href="./?add">Add New Client</a></p>
 <?php
 		if (isset($obstart)) {
@@ -32,8 +30,6 @@
 			include TEMPLATE . "$template";
 			//include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/associate.html.php';
 		}
-
-
 		 if ($priv == 'Admin' and !isset($_POST['act'])): ?>
 			<form action="" method="post" name="clientsform">
 				<label for="the_client">Client: </label>
@@ -72,7 +68,6 @@
 		if (isset($prompt)) {
 			include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/prompt.html.php';
 		}
-
 		include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/logout.inc.html.php';
 		exit();
 		?>

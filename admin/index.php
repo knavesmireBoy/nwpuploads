@@ -1,6 +1,5 @@
 <?php
-/*mysqli_real_escape_string\(([^,]+),([^)]+\);)
-mysqli_real_escape_string($2, $1);*/
+
 require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
 $users = [];
 $id = '';
@@ -39,7 +38,6 @@ function deleteAlready($pdo, $id)
 {
   $st = $pdo->prepare("DELETE FROM user WHERE id =:id");
   $st->bindValue(':id', $id);
-  //dump($_POST);
   doPreparedQuery($st, 'Error deleting user.');
   header('Location: . ');
   exit();
@@ -60,12 +58,11 @@ if (!$roleplay = userHasWhatRole()) {
   exit();
 }
 $sql = "SELECT id, name FROM user "; // THE DEFAULT QUERY___________________________________
-foreach ($roleplay as $key => $priv):
-  if ($priv == 'Client') {
-    // constrains the query to one user if a client is logged in
-    $sql = "SELECT id, name FROM user where id ='$key' ORDER BY name";
-  }
-endforeach;
+list($key, $priv) = $roleplay;
+if ($priv == 'Client') {
+  // constrains the query to one user if a client is logged in
+  $sql = "SELECT id, name FROM user where id ='$key' ORDER BY name";
+}
 
 if (isset($_POST['action']) and $_POST['action'] == 'Delete') {
 
@@ -340,7 +337,7 @@ if (isset($_GET['editform'])) {
   $oldrow = $st->fetch(PDO::FETCH_ASSOC);
   $dom = $oldrow['dom'] ?? NULL;
 
-  if (!$freelance && ($edom !== $dom)){
+  if (!$freelance && ($edom !== $dom)) {
     header("Location: ./?clientdom");
     exit();
   }
@@ -405,6 +402,7 @@ if (isset($_POST['act']) and $_POST['act'] == 'Choose') {
   $st->bindValue(":domain", $key);
   doPreparedQuery($st, "<p>Error:</p>");
   $row = $st->fetch(PDO::FETCH_ASSOC);
+
   // some clients need full domain for identification, in which case the query is simplified to a straight match to a users email address which corresponds to the client domain.
   if (strrpos($key, "@")) {
     $domainstr = "user.email";
@@ -450,6 +448,8 @@ if (!isset($flag)) {
 }
 
 if ($priv && $priv !== "Admin") {
+
+
   $email = $_SESSION['email'];
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
   $st = $pdo->prepare("SELECT $domainstr FROM user WHERE user.email=:email");
@@ -466,6 +466,7 @@ if ($priv && $priv !== "Admin") {
     doPreparedQuery($st, 'Error retrieving list:');
     $row = $st->fetch(PDO::FETCH_ASSOC);
     $count = $row['dom'];
+
 
     if ($count == 0) {
       $domainstr = "user.email";
@@ -487,6 +488,7 @@ if ($priv && $priv !== "Admin") {
         $users[$row['id']] = $row['name'];
       }
     }
+
     include 'users.html.php';
   }
 }
@@ -502,4 +504,5 @@ if ($priv && $priv == "Admin") {
   }
 }
 $error =  $lib[$_SERVER["QUERY_STRING"]] ?? '';
+
 include 'users.html.php';
