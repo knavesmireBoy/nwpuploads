@@ -67,10 +67,10 @@ endif;
 
 //$wither = ($suffix || $user_id || $text || $ext || $useroo || $textme ? '.' : '?find'); 
 $wither = seek();
-$lnk = ($wither == '.'  ? 'Clear search results' : 'Search files');
-?>
-<p><a href="<?= $wither; ?>"><?= $lnk; ?></a></p>
+$lnk = ($wither !== '.' ? 'Search files' : 'Clear search results');
+if (!isset($_GET['find'])) { ?>
+    <p><a href="<?= $wither; ?>"><?= $lnk; ?></a></p>
 <?php
-
+}
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/logout.inc.html.php';
 include "_footer.html.php";
