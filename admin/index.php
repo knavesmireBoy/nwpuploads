@@ -331,11 +331,15 @@ if (isset($_GET['editform'])) {
   $st->bindValue(':cid', $clientId);
   doPreparedQuery($st, 'Error fetching user.');
   $oldrow = $st->fetch(PDO::FETCH_ASSOC);
+  $dom = $oldrow['dom'] ?? $row['dom'] ?? NULL;
 
-  if ($oldrow && ($edom !== $oldrow['dom'])) {
+  if ($edom !== $dom){
     header("Location: ./?clientdom");
     exit();
   }
+
+
+
   $sql = "UPDATE user SET name=:name, email=:email WHERE id=:id";
   $st = $pdo->prepare($sql);
   $st->bindValue(":name", $_POST['name']);
@@ -351,7 +355,6 @@ if (isset($_GET['editform'])) {
     $st->bindValue(":id", $_POST['id']);
     doPreparedQuery($st, '<p>Error setting user password.</p>');
   }
-
   if ($priv && $priv == 'Admin') {
     $sql = "DELETE FROM userrole WHERE userid=:id";
     $st = $pdo->prepare($sql);
@@ -366,9 +369,7 @@ if (isset($_GET['editform'])) {
   $st->bindValue(":cid", $clientId);
   $st->bindValue(":id", $_POST['id']);
   doPreparedQuery($st, '<p>Error setting client id innit</p>');
-
   updateUserDomain($edom, $dom, $_POST['id']);
-
   header('Location: . ');
   exit();
 } ///END OF EDIT
