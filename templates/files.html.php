@@ -1,68 +1,14 @@
 <?php include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php';
-
-
+include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
 ?>
 <h1><a href="<?php $_SERVER['PHP_SELF'] ?>">North Wolds | File Uploads</a></h1>
 <h2><?php echo date('l F j, Y'); ?></h2>
+
 <?php
 
-if (!empty($filename) || !empty($prompt)) {
-    ob_start();
-}
-?>
-<form action="<?php $_SERVER['PHP_SELF'] ?>" method="post" name="uploadform" enctype="multipart/form-data">
-    <table class="up">
-        <tr>
-            <td><label for="uploadfiles">Upload File:</label></td>
-            <td><input id="uploadfiles" type="file" name="upload" /></td>
-        </tr>
-        <tr>
-            <td><label for="desc">File Description: </label></td>
-            <td><input id="desc" type="text" name="desc" maxlength="255" /></td>
-        </tr>
-        <?php if ($priv == 'Admin') : ?>
-            <tr>
-                <td><label for="user">User:</label></td>
-                <td><select id="user" name="user">
-                        <option value="">Select one</option>
-                        <optgroup label="clients"><?php foreach ($client as $x => $c): ?>
-                                <option value="<?php htmlout($x); ?>"><?php htmlout($c); ?>
-                                </option><?php endforeach; ?>
-                        </optgroup>
-                        <optgroup label="users">
-                            <?php foreach ($users as $ix => $u): ?>
-                                <option value="<?php htmlout($ix); ?>"><?php htmlout($u); ?>
-                                </option><?php endforeach; ?>
-                        </optgroup>
-                    </select>
-                </td>
-            </tr>
-        <?php endif; ?>
-        <input type="hidden" name="action" value="upload" />
-        <tr>
-            <td colspan=2><input type="submit" value="Upload" /></td>
-        </tr>
-    </table>
-</form>
-<?php
-
-if (isset($filename)) {
-    ob_end_clean();
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/update.html.php';
-}
-
-if (!empty($find)) {
-    ob_end_clean();
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/search.html.php';
-}
-
-if (isset($prompt)) {
-    ob_end_clean();
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/prompt.html.php';
-}
+include TEMPLATE . $template;
 
 echo $error;
-
 if (count($files) > 0): ?>
     </form>
     <p><?= "The following files are stored in the database:" ?></p>
@@ -89,7 +35,7 @@ if (count($files) > 0): ?>
                     <?php
                     $stamp = html($f["time"]);
                     echo date("g:i a F j ", strtotime($stamp)); ?></td>
-                <td>
+                <td title="download">
                     <form action="<?php $_SERVER['PHP_SELF'] ?>" method="get" name="downloads">
                         <div><input type="hidden" name="action" value="download" />
                             <input type="hidden" name="id" value="<?php htmlout($f['id']); ?>" />
@@ -98,7 +44,7 @@ if (count($files) > 0): ?>
                     </form>
                 </td>
                 <?php if ($priv != 'Browser') : ?>
-                    <td>
+                    <td title="delete">
                         <form action="<?php $_SERVER['PHP_SELF'] ?>" method="post" name="<?php htmlout($f['id']); ?>">
                             <div><input type="hidden" name="action" value="delete" />
                                 <input type="hidden" name="id" value="<?php htmlout($f['id']); ?>" />

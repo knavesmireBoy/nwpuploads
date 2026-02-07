@@ -4,18 +4,18 @@
 		
 		?>
 		<div>
-			<label for="filename">Name:</label><input id="filename" type="text" name="filename" value="<?= $filename; ?>" />
+			<label for="filename">Name</label><input id="filename" type="text" name="filename" value="<?= $filename; ?>" />
 		</div>
 		<div>
-			<label for="description">Description:</label><input id="description" type="text" name="description" value="<?= $diz; ?>" />
+			<label for="description">Description</label><input id="description" type="text" name="description" value="<?= $diz; ?>" />
 		</div>
 		<?php } ?>
 		<?php if (!isset($colleagues) && isset($all_users)) { ?>
 			<div>
-			<label for="user">User:&nbsp;<select id="user" name="user">
+			<label for="user">User</label><select id="user" name="user">
 				<option value="">Select one</option><?php foreach ($all_users as $i => $a): ?>
 					<option value="<?= $i; ?>"><?= $a; ?></option><?php endforeach; ?>
-			</select></label>
+			</select>
 		</div>
 	<?php }
 	if(isset($colleagues)) { ?>

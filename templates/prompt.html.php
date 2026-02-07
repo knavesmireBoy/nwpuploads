@@ -15,7 +15,7 @@ if (isset($clientlist)): ?>
                 <option value="">Set email domain</option>
                 <?php foreach ($clientlist as $i => $client): ?>
                     <option value="<?= $i; ?>">
-                        <?php htmlout($client); ?></option>
+                        <?= $client; ?></option>
                 <?php endforeach; ?>
             </select>
             <input type="submit" name="action" value="continue" />

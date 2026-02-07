@@ -247,47 +247,28 @@ form[name="usersform"] {
 
 form[name="uploadform"] {
   padding: 1em;
-
-  > table {
-    text-align: center;
-    width: clamp(35em, 50%, 50em);
-    margin: 0 auto;
-    tbody {
-      display: flex;
-      flex-wrap: wrap;
-      width: 100%;
-      tr {
-        display: flex;
-        width: 100%;
-        td:first-child {
-          flex: 1 1 1em;
-        }
-        td:last-child {
-          flex: 3 1 1em;
-          input {
-            width: clamp(8em, 70%, 98%);
-          }
-        }
-        &:last-child {
-          flex: 0 0 100%;
-          display: flex;
-          margin: 0.2em 0;
-          justify-content: center;
-          td {
-            display: flex;
-            justify-content: center;
-            input {
-              width: auto;
-            }
-          }
-        }
-
-        select {
-          width: clamp(8em, 70%, 98%);
-        }
-      }
+  margin: 0 auto 1em;
+  border: solid 1px;
+  border-radius: 8px;
+  background-color: var(--prompt);
+  width: clamp(300px, 50vw, 600px);
+  > div {
+    display: flex;
+    column-gap: .5em;
+    justify-content: center;
+    input, select {
+      flex: 7 1 1em;
+    }
+    label {
+      text-align: right;
+      flex: 2 1 2em;
+    }
+    input[type=submit] {
+      margin: .5em 0 0;
+      flex: 0 0 auto;
     }
   }
+
 }
 
 form[name="search"] {
@@ -658,11 +639,9 @@ form[name="deletions"] div.fieldset {
 
 
   section#prompt {
-    border: solid 1px;
     margin: 1em 0;
     padding: 1em;
     border-radius: 8px;
-    background-color: var(--main-color);
   }
   
   form[name="clientform"] {

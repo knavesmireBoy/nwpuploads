@@ -11,9 +11,8 @@ $text = '';
 $suffix = '';
 $lib = ['nofile' => "<h4>'There was no file uploaded!'</h4>", 'fetch_files' => '<h4>Database error fetching stored files.</h4>', 'delete_file' => '<h4>Error deleting file.</h4>', 'file_list' => '<h4>Database error requesting the list of files.</h4>'];
 $clientlist = null;
-$prompt = null;
 $display = 10;
-$find = false;
+$template = '/upload.html.php';
 
 $uploaded = function ($arg) {
     return $_FILES['upload'][$arg];
@@ -168,12 +167,14 @@ if (isset($_POST['action']) and $_POST['action'] == 'delete') {
     $pos = "Yes";
     $neg = "No";
     $action = '';
+    $template = '/prompt.html.php';
 }
 
 if (isset($_POST['confirm']) and $_POST['confirm'] == 'Yes') {
     $prompt = "Select the extent of deletions";
     $id = $_POST['id'];
     $del = "proceed";
+    $template = '/prompt.html.php';
 }
 
 if (isset($_POST['proceed']) and $_POST['proceed'] == 'remove') {
@@ -229,12 +230,14 @@ if (isset($_POST['confirm']) and $_POST['confirm'] == 'No') { //swap
     $pos = "Yes";
     $neg = "No";
     $action = '';
+    $template = '/prompt.html.php';
 }
 
 //SWITCH OWNER OF FILE OR JUST UPDATE DESCRIPTION (FILE AMEND BLOCK)
 if (isset($_POST['swap'])) {
     // $colleagues = [];
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+    $template = '/update.html.php';
     $answer = $_POST['swap'];
     $email = $_SESSION['email'];
 
@@ -386,7 +389,7 @@ foreach ($result as $row) {
 //end of default_______________________________________________________________________
 
 if (isset($_GET['find'])) {
-    $find = true;
+    $template = '/search.html.php';
     if ($priv != "Admin"): //CUSTOMISES SELECT MENU overwriting DEFAULT $client and $users
         $email = $_SESSION['email'];
         $iskey = false;

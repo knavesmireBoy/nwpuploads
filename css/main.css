@@ -259,45 +259,27 @@ form[name=usersform] > div:last-child {
 
 form[name=uploadform] {
   padding: 1em;
+  margin: 0 auto 1em;
+  border: solid 1px;
+  border-radius: 8px;
+  background-color: var(--prompt);
+  width: clamp(300px, 50vw, 600px);
 }
-form[name=uploadform] > table {
-  text-align: center;
-  width: clamp(35em, 50%, 50em);
-  margin: 0 auto;
-}
-form[name=uploadform] > table tbody {
+form[name=uploadform] > div {
   display: flex;
-  flex-wrap: wrap;
-  width: 100%;
-}
-form[name=uploadform] > table tbody tr {
-  display: flex;
-  width: 100%;
-}
-form[name=uploadform] > table tbody tr td:first-child {
-  flex: 1 1 1em;
-}
-form[name=uploadform] > table tbody tr td:last-child {
-  flex: 3 1 1em;
-}
-form[name=uploadform] > table tbody tr td:last-child input {
-  width: clamp(8em, 70%, 98%);
-}
-form[name=uploadform] > table tbody tr:last-child {
-  flex: 0 0 100%;
-  display: flex;
-  margin: 0.2em 0;
+  column-gap: 0.5em;
   justify-content: center;
 }
-form[name=uploadform] > table tbody tr:last-child td {
-  display: flex;
-  justify-content: center;
+form[name=uploadform] > div input, form[name=uploadform] > div select {
+  flex: 7 1 1em;
 }
-form[name=uploadform] > table tbody tr:last-child td input {
-  width: auto;
+form[name=uploadform] > div label {
+  text-align: right;
+  flex: 2 1 2em;
 }
-form[name=uploadform] > table tbody tr select {
-  width: clamp(8em, 70%, 98%);
+form[name=uploadform] > div input[type=submit] {
+  margin: 0.5em 0 0;
+  flex: 0 0 auto;
 }
 
 form[name=search] {
@@ -724,11 +706,9 @@ form[name=deletions] div.fieldset {
 }
   */
 section#prompt {
-  border: solid 1px;
   margin: 1em 0;
   padding: 1em;
   border-radius: 8px;
-  background-color: var(--main-color);
 }
 
 form[name=clientform] {
@@ -823,20 +803,23 @@ table tr {
     text-align: left;
   }
   form[name=updatefileinfo] {
-    border: solid 1px red;
-    padding: 1em clamp(1em, 20%, 10em) 1em clamp(1em, 20%, 10em);
     margin: 0 0 1em;
   }
   form[name=updatefileinfo] div {
     display: flex;
     justify-content: center;
+    column-gap: 0.4em;
   }
   form[name=updatefileinfo] div input[type=text],
 form[name=updatefileinfo] div select {
-    flex: 6 1 1em;
+    flex: 4 1 10em;
   }
   form[name=updatefileinfo] div label {
     flex: 1 1 1em;
+    text-align: right;
+  }
+  form[name=updatefileinfo] div input[type=text] {
+    min-width: 30em;
   }
   form[name=updatefileinfo] > div,
 .searcher div:last-child,
