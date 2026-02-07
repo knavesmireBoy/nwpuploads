@@ -1,4 +1,6 @@
 <?php include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php'; ?>
+<?php include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php'; ?>
+
 <!DOCTYPE html>
 <html class="no-js" lang="en">
 
@@ -17,16 +19,18 @@
 	<div>
 		<h1>Manage Clients</h1>
 
-		<?php if (isset($clientname)) {
+		<?php if (isset($template)) {
 			ob_start();
+			$obstart = true;
 		}
 		?>
 
 		<p><a href="./?add">Add New Client</a></p>
 <?php
-		if (isset($clientname)) {
+		if (isset($obstart)) {
 			ob_end_clean();
-			include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/associate.html.php';
+			include TEMPLATE . "$template";
+			//include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/associate.html.php';
 		}
 
 

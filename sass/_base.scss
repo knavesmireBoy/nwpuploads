@@ -6,6 +6,21 @@
   --invert: #8560cc;
 }
 
+@mixin trash($dim: 25px, $pos: center 0%, $col: var(--main-color)) {
+  background-image: url(../assets/trash_sprite.png);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-color: $col;
+  background-position: $pos;
+  display: inline-block;
+  height: $dim;
+  width: $dim;
+  align-self: center;
+  text-indent: $dim;
+  overflow: hidden;
+  border: none;
+}
+
 body {
   font-size: 0.75em;
   font-family: Helvetica, Geneva, Arial, SunSans-Regular, sans-serif;
@@ -51,12 +66,14 @@ label {
 table {
   margin-bottom: 1em;
   border-collapse: collapse;
+  table-layout: auto;
 }
 td {
   padding: 0.25em;
   vertical-align: middle;
   border: solid 0 #9c0;
   border-width: 0 0 2px;
+
 }
 th {
   font: bold 1.1em Georgia, sans-serif;
@@ -304,8 +321,13 @@ form[name="search"] input[type="search"] {
   font-size: 1rem;
   padding: 0.5em 0;
 }
-div#upload > table {
-  width: clamp(700px, 100%, 900px);
+div#upload {
+  margin: 0 auto;
+  width: clamp(320px, 80vw, 1000px);
+
+> table {
+  width: 100%;
+}
 }
 form[name="logoutform"] {
   border-width: 0;
@@ -663,5 +685,21 @@ form[name="deletions"] div.fieldset {
       &:last-of-type {
         margin: 0 0 1em;
       }
+    }
+  }
+
+  form[name="downloads"] div input {
+    cursor: pointer;
+    @include trash(30px, center 33%);
+    &:hover {
+      background-color: orange;
+    }
+  }
+
+  #upload > table > tbody > tr > td:last-child div input {
+    @include trash(30px);
+    cursor: pointer;
+    &:hover {
+      background-color: darkred;
     }
   }

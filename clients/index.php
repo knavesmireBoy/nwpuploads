@@ -136,6 +136,7 @@ if (isset($_GET['associate'])) {
   $pos = 'proceed';
   $neg = 'decline';
   $call = "associate";
+  $template = "associate.html.php";
 }
 
 if (isset($_POST['associate'])) {

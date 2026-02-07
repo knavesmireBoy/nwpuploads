@@ -61,6 +61,7 @@ label {
 table {
   margin-bottom: 1em;
   border-collapse: collapse;
+  table-layout: auto;
 }
 
 td {
@@ -334,8 +335,12 @@ form[name=search] input[type=search] {
   padding: 0.5em 0;
 }
 
+div#upload {
+  margin: 0 auto;
+  width: clamp(320px, 80vw, 1000px);
+}
 div#upload > table {
-  width: clamp(700px, 100%, 900px);
+  width: 100%;
 }
 
 form[name=logoutform] {
@@ -745,17 +750,58 @@ form[name=clientform] div:last-of-type {
   margin: 0 0 1em;
 }
 
+form[name=downloads] div input {
+  cursor: pointer;
+  background-image: url(../assets/trash_sprite.png);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-color: var(--main-color);
+  background-position: center 33%;
+  display: inline-block;
+  height: 30px;
+  width: 30px;
+  align-self: center;
+  text-indent: 30px;
+  overflow: hidden;
+  border: none;
+}
+form[name=downloads] div input:hover {
+  background-color: orange;
+}
+
+#upload > table > tbody > tr > td:last-child div input {
+  background-image: url(../assets/trash_sprite.png);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-color: var(--main-color);
+  background-position: center 0%;
+  display: inline-block;
+  height: 30px;
+  width: 30px;
+  align-self: center;
+  text-indent: 30px;
+  overflow: hidden;
+  border: none;
+  cursor: pointer;
+}
+#upload > table > tbody > tr > td:last-child div input:hover {
+  background-color: darkred;
+}
+
 h1 {
   color: var(--main-color);
 }
 
+html {
+  max-width: 100%;
+  height: 100%;
+}
 html > body {
-  margin: 2% auto;
+  margin: auto;
   text-align: center;
-  width: 75%;
-  box-shadow: 0 0 20px #000;
-  padding: 2em;
   background-color: white;
+  max-width: 100%;
+  height: 100%;
 }
 
 @media screen and (min-width: 768px) {
