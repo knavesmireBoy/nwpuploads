@@ -315,12 +315,19 @@ if (isset($_GET['editform'])) {
   $roles = isset($_POST['roles']) ? $_POST['roles'] : ['Browser'];
   $clientId = empty($_POST['employer']) ? NULL : intval($_POST['employer']);
 
+  $sql = "SELECT id FROM user WHERE client_id IS NULL AND id=:id";
+  $st = $pdo->prepare($sql);
+  $st->bindValue(':id',  $_POST['id']);
+  doPreparedQuery($st, 'Error fetching client.');
+  $row = $st->fetch(PDO::FETCH_ASSOC);
+  $freelance = $row['id'];
+
   $sql = "SELECT domain AS dom FROM client WHERE id=:cid";
   $st = $pdo->prepare($sql);
   $st->bindValue(':cid',  $clientId);
   doPreparedQuery($st, 'Error fetching client.');
   $row = $st->fetch(PDO::FETCH_ASSOC);
-  $dom = $row['dom'];
+  //$dom = $row['dom'];
 
   $i = strpos($_POST['email'], '@');
   $edom = substr($_POST['email'], $i + 1);
@@ -331,9 +338,9 @@ if (isset($_GET['editform'])) {
   $st->bindValue(':cid', $clientId);
   doPreparedQuery($st, 'Error fetching user.');
   $oldrow = $st->fetch(PDO::FETCH_ASSOC);
-  $dom = $oldrow['dom'] ?? $row['dom'] ?? NULL;
+  $dom = $oldrow['dom'] ?? NULL;
 
-  if ($edom !== $dom){
+  if (!$freelance && ($edom !== $dom)){
     header("Location: ./?clientdom");
     exit();
   }

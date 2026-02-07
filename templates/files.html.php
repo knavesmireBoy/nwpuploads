@@ -64,15 +64,13 @@ if (count($files) > 0): ?>
 <?php
 endif;
 
-include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/logout.inc.html.php';
-if ($priv == 'Admin' or $priv == 'Client') : ?>
-    <p><a href="admin/">Admin Pages</a></p>
 
-<?php
-endif;
 //$wither = ($suffix || $user_id || $text || $ext || $useroo || $textme ? '.' : '?find'); 
 $wither = seek();
 $lnk = ($wither == '.'  ? 'Clear search results' : 'Search files');
 ?>
-<p><a href="<?php echo $wither; ?>"><?php echo $lnk; ?></a></p>
-<?php include "_footer.html.php";
+<p><a href="<?= $wither; ?>"><?= $lnk; ?></a></p>
+<?php
+
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/logout.inc.html.php';
+include "_footer.html.php";

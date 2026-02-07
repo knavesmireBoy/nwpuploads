@@ -251,7 +251,7 @@ form[name="uploadform"] {
   border: solid 1px;
   border-radius: 8px;
   background-color: var(--prompt);
-  width: clamp(300px, 50vw, 600px);
+  width: clamp(300px, 70vw, 700px);
   > div {
     display: flex;
     column-gap: .5em;
@@ -268,7 +268,6 @@ form[name="uploadform"] {
       flex: 0 0 auto;
     }
   }
-
 }
 
 form[name="search"] {
