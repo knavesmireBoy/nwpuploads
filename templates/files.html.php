@@ -59,14 +59,14 @@ if (count($files) > 0): ?>
 
 <?php else :
     $greeting = ($_SERVER['QUERY_STRING']) ? 'There were no files that matched your criteria' : 'There are currently no files in the database' ?>
-    <h2><a href="<?php $_SERVER['PHP_SELF'] ?>" title="Click to return"><?php echo $greeting; ?>
+    <h2><a href="<?php $_SERVER['PHP_SELF'] ?>" title="Click to return"><?= $greeting; ?>
         </a></h2>
 <?php
 endif;
 $wither = seek();
 $lnk = ($wither !== '.' ? 'Search files' : 'Clear search results');
 
-if (!isset($_GET['find'])) { ?>
+if (!isset($_GET['find']) && !isset($greeting)) { ?>
     <p><a href="<?= $wither; ?>"><?= $lnk; ?></a></p>
 <?php
 }

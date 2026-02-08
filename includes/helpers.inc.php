@@ -1,4 +1,5 @@
 <?php
+require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
 
 function identity($arg)
 {
@@ -147,7 +148,7 @@ function doQuery($pdo, $sql, $msg)
         $error = $msg . ' ' . $e->getMessage();
         $root =  $_SERVER['DOCUMENT_ROOT'] . '/api/';
         $root =  $_SERVER['DOCUMENT_ROOT'];
-        include __DIR__ . '/../templates/error.html.php';
+        include '../templates/error.html.php';
         exit();
     }
 }
@@ -169,7 +170,9 @@ function doPreparedQuery($st, $msg, $flag = false)
         $error = $msg . ' ' . $e->getMessage();
         $root =  $_SERVER['DOCUMENT_ROOT'] . '/api/';
         $root =  $_SERVER['DOCUMENT_ROOT'];
-        include __DIR__ . '/../templates/output.html.php';
+       // include TEMPLATE. './output.html.php';
+       include '../templates/output.html.php';
+      // include $root . WEBSITE . '/templates/output.html.php';
         exit();
     }
 }

@@ -17,15 +17,14 @@ function getDomain($pdo, $id)
 }
 
 if (!$roleplay = userHasWhatRole()) {
-  $error = 'Only Account Administrators may access this page!!';
-  include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/accessdenied.html.php';
+  $error = 'Only Account Administrators may access this page!';
+  include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/accessdenied.html.php';
   exit();
 } else {
-
+  $error = 'Only Account Administrators may access this page!';
   list($key, $priv) = $roleplay;
   if ($priv != 'Admin') {
-    $error = 'Only Account Administrators may access this page!!';
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/accessdenied.html.php';
+    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/accessdenied.html.php';
     exit();
   }
 }
@@ -60,11 +59,14 @@ if (isset($_POST['confirm']) and $_POST['confirm'] == 'Yes') {
 } ////////////END OF DELETE....START OF EDIT
 
 
-if (isset($_POST['action']) and $_POST['action'] == 'Edit') {
+if (isset($_POST['action']) && $_POST['action'] == 'Edit' || isset($_GET['dom'])) {
+
+ 
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
   $sql = "SELECT id, name, domain, tel FROM client WHERE id =:id";
+  $id = isset($_POST['id']) ? $_POST['id'] : (isset($_GET['dom']) ? $_GET['dom'] : NULL);
   $st = $pdo->prepare($sql);
-  $st->bindValue(":id", $_POST['id']);
+  $st->bindValue(":id", $id);
   $res = doPreparedQuery($st, 'Error fetching client details.');
 
   if (!$res) {

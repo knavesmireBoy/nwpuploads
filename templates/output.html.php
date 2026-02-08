@@ -1,5 +1,6 @@
 <?php
-include 'base.html.php';
+include TEMPLATE .'/base.html.php';
+
 ?>
 <body>
 
@@ -8,5 +9,6 @@ include 'base.html.php';
     <p>
         <?php echo $error; ?>
     </p>
+    <p><a href="..">Back</a></p>
 </body>
 </html>

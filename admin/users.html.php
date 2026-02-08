@@ -15,10 +15,8 @@
 	<div>
 		<h1><?php echo $manage; ?></h1>
 		<?php
-		if (isset($prompt)) {
-			ob_start();
-		} ?>
-		<?php if ($priv == 'Admin') { ?>
+		ob_start();
+		if ($priv == 'Admin') { ?>
 			<p><a href="?add">Add New User</a></p>
 		<?php }
 		echo "<h2 class='error'>$error</h2>";
@@ -56,16 +54,17 @@
 				<p><a href=".">Return to user list</a></p>
 		<?php }
 		endif;
-		?>
-		<p><a href="..">Return to uploads</a></p>
-		<?php
 		if (isset($prompt)) {
 			ob_end_clean();
 			include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/prompt.html.php';
 		}
+		?>
+		<p><a href="..">Return to uploads</a></p>
+		<?php
 		include '../includes/logout.inc.html.php';
 		exit();
 		?>
 	</div>
 </body>
+
 </html>

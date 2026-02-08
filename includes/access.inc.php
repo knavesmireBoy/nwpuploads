@@ -21,8 +21,6 @@ function databaseContainsUser($email, $password)
 function userIsLoggedIn()
 {
     if (isset($_POST['action']) && $_POST['action'] == 'login') {
-
-
         if (!isset($_POST['email']) or $_POST['email'] == '' or !isset($_POST['password']) or $_POST['password'] == '') {
             $GLOBALS['loginError'] = 'Please fill in both fields';
             return FALSE;
@@ -45,12 +43,13 @@ function userIsLoggedIn()
         }
     } //end of log in attempt
 
-    if (isset($_POST['action']) and $_POST['action'] == 'logout') {
+    if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'logout') {
         session_start();
         unset($_SESSION['loggedIn']);
         unset($_SESSION['email']);
         unset($_SESSION['password']);
-        header("Location: " . $_POST['goto']);
+        //header("Location: " . $_POST['goto']);
+        header("Location: .");
         exit();
     } //end of logout
 
@@ -59,8 +58,6 @@ function userIsLoggedIn()
         return databaseContainsUser($_SESSION['email'], $_SESSION['password']);
     }
 } // end of user check
-
-
 
 function userHasWhatRole()
 {

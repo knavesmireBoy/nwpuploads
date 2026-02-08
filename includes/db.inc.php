@@ -8,6 +8,7 @@ try {
     //$conn = mysql_connect('localhost', 'root', 'krauq');
 } catch (PDOException $e) {
     $output = 'Unable to connect to the database server: ' . $e->getMessage();
-    include '../templates/output.html.php';
+    $error = $output;
+    include TEMPLATE . './output.html.php';
     exit();
 }
