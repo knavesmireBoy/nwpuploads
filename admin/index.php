@@ -9,7 +9,7 @@ $userdom = isset($_GET['userdom']) ? $_GET['userdom'] : NULL;
 $clientdom = isset($_GET['clientdom']) ? $_GET['clientdom'] : NULL;
 $pwd = isset($_GET['pwd']) ? $_GET['pwd'] : NULL;
 $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
-$lib = ['nousers' => "<h4>Unable to find any users</h4>", "addnotice" => "Please fill required fields", "selectuser" => "Please select a user for editing", "clientdom" => "Cannot assign this user to a new client", "lastuser" => "To remove this last user, please delete the client instead",  "userdom" => "Changing your email address will require you to log out"];
+$lib = ['nousers' => "<h4>Unable to find any users</h4>", "addnotice" => "Please fill required fields", "selectuser" => "Please select a user for editing", "clientdom" => "Cannot assign this user to a new client", "lastuser" => "To remove this last user, please delete the client instead",  "userdom" => "Changing your email address will require you to log out", "denied" => "You do not have the required privileges to delete, please contact your administrator"];
 
 function updateUserDomain($old, $new, $id = 0)
 {
@@ -76,7 +76,6 @@ $sql = "SELECT id, name FROM user "; // THE DEFAULT QUERY_______________________
 list($key, $priv) = $roleplay;
 
 
-//if ($priv == 'Client') {
 if (preg_match("/client/i", $priv)) {
   // constrains the query to one user if a client is logged in
   $sql = "SELECT id, name FROM user where id ='$key' ORDER BY name";
@@ -93,6 +92,7 @@ if (isset($_POST['action']) and $_POST['action'] == 'Delete') {
 }
 
 if (isset($_POST['confirm'])) {
+  $location = " .";
   if ($_POST['confirm'] == 'Yes') {
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
     $id = $_POST['id'];
@@ -106,18 +106,25 @@ if (isset($_POST['confirm'])) {
     $sql = "SELECT user.id FROM user INNER JOIN client ON user.client_id = client.id WHERE client.domain='$dom'";
     $st = doQuery($pdo, $sql, 'Error fetching client.');
     $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-
+    $denied = !clientCheck();
     if (count($rows) === 1) {
       header("Location: ./?lastuser");
       exit();
     }
-    deleteAlready($pdo, $_POST['id']);
+    if (!$denied) {
+      deleteAlready($pdo, $_POST['id']);
+    }
+    else {
+      $location .= "/?denied";
+    }
   }
-  header('Location: . ');
+  header("Location: $location");
   exit();
 } ////////////END OF DELETE
 
-
+if (isset($_GET['denied'])) {
+  $error =  $lib[$_SERVER["QUERY_STRING"]] ?? '';
+}
 if (isset($_GET['add'])) {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
   $pagetitle = 'New User';
@@ -338,7 +345,6 @@ if (isset($_GET['editform'])) {
   $dom = $oldrow['dom'] ?? NULL;
   $email = $oldrow['email'] ?? NULL;
 
- 
   if (!$freelance && ($edom !== $dom)) {
     header("Location: ./?clientdom=$dom");
     exit();
@@ -355,10 +361,9 @@ if (isset($_GET['editform'])) {
   $st->bindValue(":email", $_POST['email']);
   $st->bindValue(":id", $id);
   doPreparedQuery($st, '<p>Error setting user details.</p>');
-  
+
   $echange  = $_POST['email'] != $email;
   $editor = $_SESSION['email'] === $email;
-
 
   if ($override || ($echange && $editor)) {
     header("Location: ./?action=logout");
@@ -373,7 +378,6 @@ if (isset($_GET['editform'])) {
       exit();
     }
   }
-
 
   if (preg_match("/admin/i", $priv)) {
     $sql = "DELETE FROM userrole WHERE userid=:id";
@@ -446,7 +450,6 @@ if ($priv && $priv != "Admin") {
 
 $sql .= " ORDER BY name";
 
-
 if (!isset($flag)) {
   $result = doQuery($pdo, $sql, 'Error retrieving list:');
   $rows = $result->fetchAll();
@@ -461,7 +464,6 @@ if (!isset($flag)) {
 }
 
 if (preg_match("/client/i", $priv)) {
-
   $email = $_SESSION['email'];
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
   $st = $pdo->prepare("SELECT $domainstr FROM user WHERE user.email=:email");
@@ -510,6 +512,8 @@ if (preg_match("/client/i", $priv)) {
         $users[$row['id']] = $row['name'];
       }
     }
+
+    $denied = !clientCheck();
     include 'users.html.php';
     exit();
   }

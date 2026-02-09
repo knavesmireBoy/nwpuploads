@@ -20,7 +20,9 @@
 		if (preg_match("/admin/i", $priv)) {
 		?>
 			<p><a href="?add">Add New User</a></p>
-		<?php }
+		<?php 
+	
+	}
 		echo "<h2 class='error'>$error</h2>";
 		if (preg_match("/admin/i", $priv) && !isset($_POST['act'])): ?>
 			<form action="" method="post" name="userform" class="choose">
@@ -55,7 +57,10 @@
 					<input type="hidden" name="id" value="<?= $k; ?>" />
 					<p><?= $user; ?></p>
 					<label for="edit">Edit</label><input id="edit" type="radio" name="action" value="Edit" />
+					<?php
+					if(!isset($denied)) { ?>
 					<label for="delete">Delete</label><input id="delete" type="radio" name="action" value="Delete" />
+					<?php } ?>
 					<input type="submit" value="Submit" />
 				</form>
 			<?php

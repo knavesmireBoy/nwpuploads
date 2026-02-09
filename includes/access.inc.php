@@ -78,6 +78,13 @@ function userHasWhatRole()
     return $roleplay;
 }
 
+function clientCheck($flag = false) {
+    list($key, $priv) = userHasWhatRole();
+    $c = preg_match("/client/i", $priv);
+    $ca = $c && preg_match("/admin/i", $priv);
+    return $flag ? !($ca || !$c) : ($ca || !$c);
+}
+
 
 /*
 function email($em, $id) {
