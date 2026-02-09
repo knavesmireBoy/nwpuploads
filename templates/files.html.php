@@ -69,12 +69,9 @@ $lnk = ($wither !== '.' ? 'Search files' : 'Clear search results');
 if (!isset($_GET['find']) && !isset($greeting)) { ?>
     <p><a href="<?= $wither; ?>"><?= $lnk; ?></a></p>
 <?php
-}
+} ?>
 
-if ($priv == 'Admin' || $priv == 'Client') { ?>
-    <p><a href="admin/">Admin Pages</a></p>
-
+<p><a href="admin/">Admin Pages</a></p>
 <?php
-}
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/logout.inc.html.php';
 include "_footer.html.php";

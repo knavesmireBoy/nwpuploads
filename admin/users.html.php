@@ -23,8 +23,9 @@
 		<?php 
 	
 	}
-		echo "<h2 class='error'>$error</h2>";
-		if (preg_match("/admin/i", $priv) && !isset($_POST['act'])): ?>
+		echo "<h3 class='error'>$error</h3>";
+		//if (preg_match("/admin/i", $priv) && !isset($_POST['act'])): 
+		if (($priv == 'Admin') && !isset($_POST['act'])): ?>
 			<form action="" method="post" name="userform" class="choose">
 				<ul>
 					<li><label for="user">User: </label><select id="user" name="user">
@@ -45,20 +46,20 @@
 				</ul>
 			</form>
 			<?php elseif (preg_match("/client/i", $priv) || (isset($_POST['act']) && $_POST['act'] == 'Choose')):
-
+			/*
 			if (preg_match("/client/i", $priv) && isset($_POST['user'])) {
 				$id = $_POST['user'];
 				header("Location: ./?userdom=$id");
 				exit();
 			}
-
+				*/
 			foreach ($users as $k => $user): ?>
 				<form action="" method="post" name="edituserform" class="prompt">
 					<input type="hidden" name="id" value="<?= $k; ?>" />
 					<p><?= $user; ?></p>
 					<label for="edit">Edit</label><input id="edit" type="radio" name="action" value="Edit" />
 					<?php
-					if(!isset($denied)) { ?>
+					if(empty($denied)) { ?>
 					<label for="delete">Delete</label><input id="delete" type="radio" name="action" value="Delete" />
 					<?php } ?>
 					<input type="submit" value="Submit" />

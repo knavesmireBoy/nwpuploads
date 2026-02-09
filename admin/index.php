@@ -5,6 +5,7 @@ $id = '';
 $error = '';
 $manage = "Edit details";
 $message = '';
+$denied = false;
 $userdom = isset($_GET['userdom']) ? $_GET['userdom'] : NULL;
 $clientdom = isset($_GET['clientdom']) ? $_GET['clientdom'] : NULL;
 $pwd = isset($_GET['pwd']) ? $_GET['pwd'] : NULL;
@@ -96,7 +97,7 @@ if (isset($_POST['confirm'])) {
   if ($_POST['confirm'] == 'Yes') {
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
     $id = $_POST['id'];
-    $sql = "SELECT domain FROM user INNER JOIN client ON user.client_id = client.id WHERE user.id=:id";
+    $sql = "SELECT email, domain FROM user INNER JOIN client ON user.client_id = client.id WHERE user.id=:id";
 
     $st = $pdo->prepare($sql);
     $st->bindValue(':id',  $id);
@@ -104,17 +105,40 @@ if (isset($_POST['confirm'])) {
     $row = $st->fetch(PDO::FETCH_ASSOC);
     $dom = $row['domain'];
     $sql = "SELECT user.id FROM user INNER JOIN client ON user.client_id = client.id WHERE client.domain='$dom'";
+
     $st = doQuery($pdo, $sql, 'Error fetching client.');
     $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-    $denied = !clientCheck();
+
+    $sql = "SELECT role.id AS role FROM role LEFT JOIN userrole ON role.id = userrole.roleid WHERE userrole.userid=:id";
+    $roles = [];
+    $st = $pdo->prepare($sql);
+
+    foreach ($rows as $r) {
+      $st->bindValue(':id',  $r['id']);
+      doPreparedQuery($st, 'Error fetching client.');
+      $ro = $st->fetch(PDO::FETCH_ASSOC);
+      if ($ro['role'] === 'Client Admin') {
+        $roles[] = $ro['role'];
+      }
+    }
+
+    $denied = clientCheck(true);
+    $_admin = clientCheck();
+    $denied = $denied || ($_admin && ($row['email'] === $_SESSION['email']));
+
+    //can delete a "Client Admin" role providing there is one another
+    if ($_admin && $denied && count($roles) > 1) {
+      $denied = false;
+    }
+
     if (count($rows) === 1) {
       header("Location: ./?lastuser");
       exit();
     }
+
     if (!$denied) {
       deleteAlready($pdo, $_POST['id']);
-    }
-    else {
+    } else {
       $location .= "/?denied";
     }
   }
@@ -513,7 +537,7 @@ if (preg_match("/client/i", $priv)) {
       }
     }
 
-    $denied = !clientCheck();
+    $denied = clientCheck(true);
     include 'users.html.php';
     exit();
   }
