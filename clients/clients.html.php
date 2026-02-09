@@ -24,32 +24,29 @@
 		}
 		?>
 		<p><a href="./?add">Add New Client</a></p>
-<?php
-		if (isset($obstart)) {
-			ob_end_clean();
-			include TEMPLATE . "$template";
-			//include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/associate.html.php';
-		}
-		 if ($priv == 'Admin' and !isset($_POST['act'])): ?>
+		<?php
+
+		ob_start();
+		if (preg_match("/admin/i", $priv) && !isset($_POST['act'])): ?>
 			<form action="" method="post" name="clientsform">
 				<label for="the_client">Client: </label>
 				<select name="client" id="the_client">
 					<option value="">Select one</option>
 					<?php foreach ($clients as $client): ?>
-						<option value="<?php echo $client['id']; ?>">
-							<?php htmlout($client['name']) ?></option>
+						<option value="<?= $client['id']; ?>">
+							<?= $client['name']; ?></option>
 					<?php endforeach; ?>
 				</select>
 				<input type="submit" name="act" value="Choose" />
 			</form>
 
-			<?php elseif (isset($_POST['act']) and $_POST['act'] == 'Choose'):
+			<?php elseif (isset($_POST['act']) && $_POST['act'] == 'Choose'):
 			foreach ($clients as $client): ?>
 				<form action="" method="post" name="editclientform">
 					<ul>
-						<li><label><?php htmlout($client['name']); ?></label></li>
-						<li><label>Edit<input type="radio" name="action" value="Edit" /></label>
-							<label>Delete<input type="radio" name="action" value="Delete" /></label>
+						<li><h1><?= $client['name']; ?></h1></li>
+						<li><label for="edit">Edit</label><input id="edit" type="radio" name="action" value="Edit" />
+							<label for="delete">Delete</label><input id="delete" type="radio" name="action" value="Delete" />
 						</li>
 						<li>
 							<input type="hidden" name="id" value="<?php echo $client['id']; ?>" />
@@ -57,17 +54,19 @@
 						</li>
 					</ul>
 				</form>
-		<?php
+			<?php
 			endforeach;
 		endif;
-		?>
-		<p><a href="../admin/">Return to users</a></p>
-		<p><a href="..">Return to uploads</a></p>
-		<?php
 
-		if (isset($prompt)) {
-			include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/prompt.html.php';
+		if (isset($template)) {
+			ob_end_clean();
+			include TEMPLATE . "$template";
 		}
+		if (isset($clientid)) { ?>
+			<p><a href=".">Return to clients</a></p>
+		<?php } ?>
+		<p><a href="../admin/">Return to users</a></p>
+		<?php
 		include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/logout.inc.html.php';
 		exit();
 		?>

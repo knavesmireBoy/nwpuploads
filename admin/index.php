@@ -66,12 +66,14 @@ if (!userIsLoggedIn()) {
 //admin page
 
 if (!$roleplay = userHasWhatRole()) {
-  $error = 'Only Account Administrators may access this page!!';
+  $error = 'Only Account Administrators may access this page!';
   include 'accessdenied.html.php';
   exit();
 }
 $sql = "SELECT id, name FROM user "; // THE DEFAULT QUERY___________________________________
 list($key, $priv) = $roleplay;
+
+
 if ($priv == 'Client') {
   // constrains the query to one user if a client is logged in
   $sql = "SELECT id, name FROM user where id ='$key' ORDER BY name";
@@ -460,6 +462,7 @@ if ($priv && $priv !== "Admin") {
   $res = doPreparedQuery($st, 'Error retrieving list:');
   $row = $res ? $st->fetch(PDO::FETCH_NUM) : null;
   $dom = isset($row) ? $row[0] : null;
+
   if ($dom) {
     //https://stackoverflow.com/questions/18511645/use-bound-parameter-multiple-times
     $sqlc = "SELECT COUNT(*) AS dom FROM user INNER JOIN client ON $domainstr=client.domain WHERE $domainstr=:dom AND client.domain=:dommo";
@@ -506,4 +509,3 @@ if ($priv && $priv == "Admin") {
 $error =  $lib[$_SERVER["QUERY_STRING"]] ?? '';
 $message = $message ? $message : $error;
 include 'users.html.php';
-

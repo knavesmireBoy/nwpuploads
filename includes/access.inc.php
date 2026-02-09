@@ -10,6 +10,7 @@ function databaseContainsUser($email, $password)
     $st->bindValue(":pwd", $password);
     doPreparedQuery($st, "<p>Error retrieving user:</p>");
     $result = $st->fetch(PDO::FETCH_NUM);
+
     if (empty($result)) {
         $error = 'Error retrieving user';
         include 'error.html.php';

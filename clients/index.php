@@ -16,22 +16,19 @@ function getDomain($pdo, $id)
   return $row['domain'];
 }
 
-if (!$roleplay = userHasWhatRole()) {
+$roleplay = userHasWhatRole();
+list($key, $priv) = $roleplay;
+
+if (!preg_match('/admin/i', $priv)) {
   $error = 'Only Account Administrators may access this page!';
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/accessdenied.html.php';
   exit();
-} else {
-  $error = 'Only Account Administrators may access this page!';
-  list($key, $priv) = $roleplay;
-  if ($priv != 'Admin') {
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/accessdenied.html.php';
-    exit();
-  }
 }
 
 if (isset($_POST['action']) and $_POST['action'] == 'Delete') {
   $id = $_POST['id'];
   $title = "Prompt for deletion";
+  $template = 'prompt.html.php';
   $prompt = "Are you sure you want to delete this client? ";
   $call = "confirm";
   $pos = "Yes";
@@ -39,29 +36,21 @@ if (isset($_POST['action']) and $_POST['action'] == 'Delete') {
   $action = '';
 }
 
-if (isset($_POST['confirm']) and $_POST['confirm'] == 'No') {
-  header('Location: . ');
-  exit();
-}
 
-if (isset($_POST['confirm']) and $_POST['confirm'] == 'Yes') {
-  include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-  $st = $pdo->prepare("DELETE FROM client WHERE id =:id");
-  $st->bindValue(":id", $_POST['id']);
-  $res = doPreparedQuery($st, 'Error deleting client.');
-  if (!$res) {
-    $error = 'Error deleting client.';
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
-    exit();
+if (isset($_POST['confirm'])) {
+  if ($_POST['confirm'] == 'Yes') {
+    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+    $st = $pdo->prepare("DELETE FROM client WHERE id =:id");
+    $st->bindValue(":id", $_POST['id']);
+    $res = doPreparedQuery($st, 'Error deleting client.');
   }
   header('Location: . ');
   exit();
-} ////////////END OF DELETE....START OF EDIT
+}
+////////////END OF DELETE....START OF EDIT
 
 
 if (isset($_POST['action']) && $_POST['action'] == 'Edit' || isset($_GET['dom'])) {
-
- 
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
   $sql = "SELECT id, name, domain, tel FROM client WHERE id =:id";
   $id = isset($_POST['id']) ? $_POST['id'] : (isset($_GET['dom']) ? $_GET['dom'] : NULL);
@@ -87,7 +76,6 @@ if (isset($_POST['action']) && $_POST['action'] == 'Edit' || isset($_GET['dom'])
 }
 
 if (isset($_GET['editform'])) {
-
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
   $dom = getDomain($pdo, $_POST['id']);
   $st = $pdo->prepare("UPDATE client SET name=:nom, domain=:dom, tel=:tel WHERE id=:id");
@@ -165,7 +153,7 @@ if (isset($_GET['addform'])) {
   $st->bindValue(':dom', $dom);
   $st->bindValue(':tel', $_POST['tel']);
   $res = doPreparedQuery($st, 'Error adding client.');
-  $cid = lastInsert($pdo);
+  $clientid = lastInsert($pdo);
   //alert required for non unique domains. I attempted to enter uni.com
   if (!$res) {
     $error = 'Error adding client.';
@@ -176,36 +164,31 @@ if (isset($_GET['addform'])) {
   $sql = "SELECT id FROM user WHERE $domainstr = '$dom'";
   $st = doQuery($pdo, $sql, 'Error adding client.');
   $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-  //dump($rows);
   if (!empty($rows)) {
     header("Location: ./?associate=$dom");
     exit();
   }
-
   header('Location: . ');
   exit();
 } //end of addform
 
-
+/// DEFAULT /////
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 $sql = "SELECT id, name, domain from client"; // THE DEFAULT QUERY
-$cid = 0; //$id MAY have been set by delete so don't overwrite;
-if (isset($_POST['act']) and $_POST['act'] == 'Choose'  and $_POST['client'] != '') {
-  $cid =  $_POST['client'];
+//$cid = 0; //$id MAY have been set by delete so don't overwrite;
+
+if (isset($_POST['act']) and $_POST['act'] == 'Choose' && $_POST['client'] != '') {
+  $clientid = $_POST['client'];
   $sql .= " WHERE id=:id";
 }
 $sql .= " ORDER BY name";
 $st = $pdo->prepare($sql);
-if ($cid) {
-  $st->bindValue(":id", $cid);
+if (isset($clientid)) {
+  $st->bindValue(":id", $clientid);
 }
-doPreparedQuery($st, "<p>Error retrieving clients from database!</p>");
+doPreparedQuery($st, "Error retrieving clients from database!");
 $rows = $st->fetchAll();
-if (!$rows) {
-  $error = "Error retrieving clients from database!";
-  include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
-  exit();
-}
+$clients = [];
 
 foreach ($rows as $row) {
   $clients[] = array(

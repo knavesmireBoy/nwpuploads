@@ -6,9 +6,9 @@ include TEMPLATE .'/base.html.php';
 
 <h1><a href=".">North Wolds</a></h1>
 <h2><?php echo date('l F j, Y'); ?></h2>
-    <p>
-        <?php echo $error; ?>
-    </p>
+    <h3>
+        <?= $error; ?>
+</h3>
     <p><a href="..">Back</a></p>
 </body>
 </html>

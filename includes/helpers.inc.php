@@ -1,16 +1,31 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
 
+function sanitizeInput($data) {
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
+}
+function formatDate($date) {
+    return date('F j, Y', strtotime($date));
+}
+function generateRandomString($length = 10) {
+    return substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil($length/strlen($x)) )),1,$length);
+}
+
 function identity($arg)
 {
     return $arg;
 }
 
-function add($a, $b) {
+function add($a, $b)
+{
     return $a + $b;
 }
 
-function multiply($a, $b) {
+function multiply($a, $b)
+{
     return $a * $b;
 }
 
@@ -34,7 +49,7 @@ function curry2($fun)
 function composer(...$fns)
 {
     return array_reduce($fns, function ($f, $g) {
-        return function(...$vals) use($f, $g){
+        return function (...$vals) use ($f, $g) {
             $f($g(...$vals));
         };
     }, 'identity');
@@ -170,9 +185,7 @@ function doPreparedQuery($st, $msg, $flag = false)
         $error = $msg . ' ' . $e->getMessage();
         $root =  $_SERVER['DOCUMENT_ROOT'] . '/api/';
         $root =  $_SERVER['DOCUMENT_ROOT'];
-       // include TEMPLATE. './output.html.php';
-       include '../templates/output.html.php';
-      // include $root . WEBSITE . '/templates/output.html.php';
+        include '../templates/output.html.php';
         exit();
     }
 }
