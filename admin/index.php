@@ -10,7 +10,7 @@ $userdom = isset($_GET['userdom']) ? $_GET['userdom'] : NULL;
 $clientdom = isset($_GET['clientdom']) ? $_GET['clientdom'] : NULL;
 $pwd = isset($_GET['pwd']) ? $_GET['pwd'] : NULL;
 $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
-$lib = ['nousers' => "<h4>Unable to find any users</h4>", "addnotice" => "Please fill required fields", "selectuser" => "Please select a user for editing", "clientdom" => "Cannot assign this user to a new client", "lastuser" => "To remove this last user, please delete the client instead",  "userdom" => "Changing your email address will require you to log out", "denied" => "You do not have the required privileges to delete, please contact your administrator"];
+$lib = ['nousers' => "<h4>Unable to find any users</h4>", "addnotice" => "Please fill required fields", "selectuser" => "Please select a user for editing", "clientdom" => "Cannot assign this user to a new client", "lastuser" => "To remove this last user, please delete the client instead",  "userdom" => "Changing your email address will require you to log out", "denied" => "You do not have the required privileges to delete, please contact your administrator", "access" => "You do not have the privileges to add a user"];
 
 function updateUserDomain($old, $new, $id = 0)
 {
@@ -146,9 +146,11 @@ if (isset($_POST['confirm'])) {
   exit();
 } ////////////END OF DELETE
 
-if (isset($_GET['denied'])) {
+if (isset($_GET['denied']) || isset($_GET['access'])) {
   $error =  $lib[$_SERVER["QUERY_STRING"]] ?? '';
 }
+
+
 if (isset($_GET['add'])) {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
   $pagetitle = 'New User';
@@ -156,52 +158,48 @@ if (isset($_GET['add'])) {
   $name = '';
   $email = '';
   $button = 'Add User';
+  $job = '';
+  $id = '';
+  $admin = $priv === 'Admin';
+  $clientadmin = preg_match("/admin/i", $priv) && preg_match("/client/i", $priv);
 
-
-  //Build the list of roles
-  $sql = "SELECT id, description FROM role";
-  $st = doQuery($pdo, $sql, "<p>Error retrieving details</p>");
-  $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-
-  if (!$rows) {
-    $error = 'Error fetching list of roles.';
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
+  if (!$clientadmin || !$admin) {
+    header("Location: ./?access");
     exit();
   }
+
+  $sql = "SELECT id, description FROM role";
+  $st = doQuery($pdo, $sql, "Error fetching list of roles.");
+  $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+
+  //Build the list of roles
   foreach ($rows as $row) {
-    $roles[] = array('id' => $row['id'], 'description' => $row['description'], 'selected' => FALSE);
+    $_roles[] = array('id' => $row['id'], 'description' => $row['description'], 'selected' => FALSE);
   }
- 
-  
-  if (isset($_POST['employer']) && !empty($_POST['employer'])) {
-    
-    $st = doQuery($pdo, "SELECT id, domain FROM client WHERE id=$id", "Error retrieving clients from database!");
-    if (!$st) {
-      $error = "Error retrieving clients from database!";
-      include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
-      exit();
-    }
-    $row = $st->fetch(PDO::FETCH_ASSOC);
-    $cid = $row['id'];
-    $email = $row['domain'];
 
-    $sql = "SELECT id, name FROM client ORDER BY name";
-    $st = doQuery($pdo, $sql, "<p>Error retrieving client from database!</p>");
-    $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-    /*
-    if (!$row) {
-      $error = "Error retrieving client from database!";
-      include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
-      exit();
-    }
-
-    $st = doQuery($pdo, "SELECT id, name FROM client ORDER BY name", '<p>Error retrieving clients from database!</p>');
-    $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-  */
+  if ($admin) {
+    $sql = "SELECT * FROM client";
+    $rows = doQuery($pdo, "SELECT * FROM client", "");
     foreach ($rows as $row) {
       $clientlist[$row['id']] = $row['name'];
     }
-  
+    $roles = $_roles;
+  }
+  if ($clientadmin) {
+    $sql = "SELECT client.id AS employer, domain FROM client LEFT JOIN user ON $domainstr = client.domain WHERE user.email=:email";
+    $st = $pdo->prepare($sql);
+    $st->bindValue(":email", $_SESSION['email']);
+    doPreparedQuery($st, "Error fetching client details");
+    $row = $st->fetch(PDO::FETCH_ASSOC);
+    $job = empty($row) ? NULL : $row['employer'];
+    $roles = [];
+    foreach ($_roles as $role) {
+      // dump($role['id']);
+      if ($role['id'] !== 'Admin') {
+        $roles[] = $role;
+      }
+    }
+    unset($clientlist);
   }
   include 'form.html.php';
   exit();
@@ -210,34 +208,21 @@ if (isset($_GET['add'])) {
 
 if (isset($_GET['addform'])) {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-  $clientid = NULL;
-  $match = false;
-  $sqlc = "SELECT client.id as employer, domain FROM user INNER JOIN client ON $domainstr=client.domain WHERE user.email=:email";
+  $clientid = isset($_POST['employer']) ? $_POST['employer'] : NULL;
+  $clientadmin = preg_match("/admin/i", $priv) && preg_match("/client/i", $priv);
 
-  $st = $pdo->prepare($sqlc);
-  $st->bindValue(":email", $_SESSION['email']);
-  doPreparedQuery($st, 'Error retrieving list:');
-  $row = $st->fetch(PDO::FETCH_ASSOC);
-  if($row){
-    $clientid = $row['employer'];
-    $domain = $row['domain'];
-    $match = stripos($_POST['email'], $domain);
-  }
-
-  $sql = "INSERT INTO user (name, email, password, client_id) VALUES(:nom, :e,:pwd, :clientid)";
-
-  $st = $pdo->prepare($sql);
   $essentials = [$_POST['name'], $_POST['email'], $_POST['password']];
   $essentials = array_filter($essentials, function ($item) {
     return $item;
   });
 
-  $roles = isset($_POST['roles']) ? $_POST['roles'] : [];
-
   if (count($essentials) < 3) {
     header("Location: ./?addnotice");
     exit();
   }
+
+  $sql = "INSERT INTO user (name, email, password, client_id) VALUES(:nom, :e,:pwd, :clientid)";
+  $st = $pdo->prepare($sql);
 
   $st->bindValue(':nom', $_POST['name']);
   //allows a potential client to put in a duff email
@@ -245,35 +230,24 @@ if (isset($_GET['addform'])) {
   $st->bindValue(':pwd', $_POST['password']);
   $st->bindValue(':clientid', $clientid);
   $res = doPreparedQuery($st, 'Error adding user');
-
   $aid = lastInsert($pdo);
+
   if (isset($_POST['password']) && $_POST['password'] != '') {
     $res = updatePassword($pdo, $_POST['password'], $aid);
   }
+  $roles = isset($_POST['roles']) ? $_POST['roles'] : [];
 
-  //dump([$domain, $_POST['email']]);
-
-  if ($clientid && !$match) {
-    $sql = "UPDATE user SET client_id=:cid WHERE id=:aid";
-    $st = $pdo->prepare($sql);
-    $st->bindValue(':cid',  $clientid);
-    $st->bindValue(':aid', $aid);
-    $res = doPreparedQuery($st, 'Error setting client id.');
-
-    $sql = "SELECT domain AS dom FROM client WHERE id=:cid";
-    $st = $pdo->prepare($sql);
-    $st->bindValue(':cid',  $clientid);
-    doPreparedQuery($st, 'Error fetching client.');
-
+  if ($clientid) {
+    $st = doQuery($pdo, "SELECT domain FROM client WHERE id=$clientid", "Error retrieving clients from database!");
     $row = $st->fetch(PDO::FETCH_ASSOC);
+    $truedom = $row['domain'];
     $sql = "SELECT $domainstr AS dom FROM user WHERE client_id=:cid AND id=:aid";
     $st = $pdo->prepare($sql);
     $st->bindValue(':aid', $aid);
     $st->bindValue(':cid', $clientid);
     doPreparedQuery($st, 'Error fetching domain.');
-    $oldrow = $st->fetch(PDO::FETCH_ASSOC);
-
-    updateUserDomain($oldrow['dom'], $row['dom']);
+    $row = $st->fetch(PDO::FETCH_ASSOC);
+    updateUserDomain($row['dom'], $truedom);
   }
   resetRoles($pdo, $roles, $aid);
   header('Location: .');
@@ -285,6 +259,7 @@ if ((isset($_POST['action']) && $_POST['action'] == 'Edit') || $userdom || $pwd 
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
   $clientAdmin = preg_match('/admin/i', $priv) && preg_match('/client/i', $priv);
   $id = isset($_POST['id']) ? $_POST['id'] : (isset($userdom) ? $userdom : ($pwd ? $pwd : NULL));
+
 
   $st = $pdo->prepare("SELECT id, name, email, $domainstr AS dom FROM user WHERE id =:id");
   $st->bindValue(":id", $id);
@@ -324,6 +299,7 @@ if ((isset($_POST['action']) && $_POST['action'] == 'Edit') || $userdom || $pwd 
   // Build the list of all roles
   $st = doQuery($pdo, "SELECT id, description FROM role", '<p>Error fetching list of roles.</p>');
   $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+
   foreach ($rows as $row) {
     $_roles[] = array('id' => $row['id'], 'description' => $row['description'], 'selected' => in_array($row['id'], $selectedRoles));
   }
@@ -360,6 +336,7 @@ if ((isset($_POST['action']) && $_POST['action'] == 'Edit') || $userdom || $pwd 
 if (isset($_GET['editform'])) {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
   $override = $_POST['override'];
+
   $roles = isset($_POST['roles']) ? $_POST['roles'] : [];
   $id =  $_POST['id'];
   $clientid = empty($_POST['employer']) ? NULL : intval($_POST['employer']);
@@ -394,7 +371,9 @@ if (isset($_GET['editform'])) {
     exit();
   }
 
-  if (($freelance && !$override) && ($edom !== $dom)) {
+  $edom = $dom && ($edom !== $dom);
+
+  if (($freelance && !$override) && ($edom)) {
     header("Location: ./?userdom=$freelance");
     exit();
   }
@@ -406,7 +385,7 @@ if (isset($_GET['editform'])) {
   $st->bindValue(":id", $id);
   doPreparedQuery($st, '<p>Error setting user details.</p>');
 
-  $echange  = $_POST['email'] != $email;
+  $echange  = $_POST['email'] !== $email;
   $editor = $_SESSION['email'] === $email;
 
   if ($override || ($echange && $editor)) {
@@ -515,6 +494,7 @@ if (preg_match("/client/i", $priv)) {
   $res = doPreparedQuery($st, 'Error retrieving list:');
   $row = $res ? $st->fetch(PDO::FETCH_NUM) : null;
   $dom = isset($row) ? $row[0] : null;
+  $flag = true;
 
   if ($dom) {
     //https://stackoverflow.com/questions/18511645/use-bound-parameter-multiple-times
@@ -526,6 +506,7 @@ if (preg_match("/client/i", $priv)) {
     $row = $st->fetch(PDO::FETCH_ASSOC);
     $count = $row['dom'];
     if ($count == 0) {
+      $flag = false;
       $domainstr = "user.email";
     } //full domain
 
@@ -556,8 +537,7 @@ if (preg_match("/client/i", $priv)) {
         $users[$row['id']] = $row['name'];
       }
     }
-
-    $denied = clientCheck(true);
+    $denied = clientCheck($flag);
     include 'users.html.php';
     exit();
   }
