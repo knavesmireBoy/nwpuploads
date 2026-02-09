@@ -44,7 +44,7 @@
 			</form>
 			<?php elseif (preg_match("/client/i", $priv) || (isset($_POST['act']) && $_POST['act'] == 'Choose')):
 
-			if (preg_match("/admin/i", $priv) && isset($_POST['user'])) {
+			if (preg_match("/client/i", $priv) && isset($_POST['user'])) {
 				$id = $_POST['user'];
 				header("Location: ./?userdom=$id");
 				exit();
@@ -52,7 +52,7 @@
 
 			foreach ($users as $k => $user): ?>
 				<form action="" method="post" name="edituserform" class="prompt">
-					<input type="hidden" name="id" value="<?php echo $k; ?>" />
+					<input type="hidden" name="id" value="<?= $k; ?>" />
 					<p><?= $user; ?></p>
 					<label for="edit">Edit</label><input id="edit" type="radio" name="action" value="Edit" />
 					<label for="delete">Delete</label><input id="delete" type="radio" name="action" value="Delete" />

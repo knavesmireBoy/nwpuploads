@@ -77,7 +77,7 @@ list($key, $priv) = $roleplay;
 
 
 //if ($priv == 'Client') {
-  if (preg_match("/client/i", $priv)){
+if (preg_match("/client/i", $priv)) {
   // constrains the query to one user if a client is logged in
   $sql = "SELECT id, name FROM user where id ='$key' ORDER BY name";
 }
@@ -232,14 +232,18 @@ if (isset($_GET['addform'])) {
 
 if ((isset($_POST['action']) && $_POST['action'] == 'Edit') || $userdom || $pwd || $clientdom) {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+  $clientAdmin = preg_match('/admin/i', $priv) && preg_match('/client/i', $priv);
   $id = isset($_POST['id']) ? $_POST['id'] : (isset($userdom) ? $userdom : ($pwd ? $pwd : NULL));
 
   $st = $pdo->prepare("SELECT id, name, email, $domainstr AS dom FROM user WHERE id =:id");
   $st->bindValue(":id", $id);
   doPreparedQuery($st, "<p>Error fetching user details.</p>");
   $row = $st->fetch(PDO::FETCH_ASSOC);
+  $editor = $_SESSION['email'] === $row['email'];
 
-  $message = ($userdom || $pwd) ? 'Polite Notice: changing an email or password will automatically log you out. Please log in again with your updated details.' : '';
+  $warning = 'Polite Notice: changing an email or password will automatically log you out. Please log in again with your updated details.';
+
+  $message = ($userdom || $pwd || $editor) ? $warning : '';
   $message = $message ? $message : ($clientdom ? 'You do not have sufficient privileges to change the domain name. Please contact the database administrator.' : '');
 
   if ($clientdom) {
@@ -270,13 +274,28 @@ if ((isset($_POST['action']) && $_POST['action'] == 'Edit') || $userdom || $pwd 
   $st = doQuery($pdo, "SELECT id, description FROM role", '<p>Error fetching list of roles.</p>');
   $rows = $st->fetchAll(PDO::FETCH_ASSOC);
   foreach ($rows as $row) {
-    $roles[] = array('id' => $row['id'], 'description' => $row['description'], 'selected' => in_array($row['id'], $selectedRoles));
+    $_roles[] = array('id' => $row['id'], 'description' => $row['description'], 'selected' => in_array($row['id'], $selectedRoles));
   }
+
   $st = doQuery($pdo, "SELECT id, name FROM client ORDER BY name", '<p>Error retrieving clients from database!</p>');
   $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+
   foreach ($rows as $row) {
     $clientlist[$row['id']] = $row['name'];
   }
+
+  $roles = [];
+  if ($clientAdmin) {
+    foreach ($_roles as $role) {
+      if ($role['id'] !== 'Admin') {
+        $roles[] = $role;
+      }
+    }
+    unset($clientlist);
+  } else {
+    $roles = $_roles;
+  }
+
   $st = $pdo->prepare("SELECT client_id FROM user WHERE id=:id");
   $st->bindValue(":id", $id);
   doPreparedQuery($st, "<p>Error retrieving client id from user!</p>");
@@ -310,14 +329,16 @@ if (isset($_GET['editform'])) {
   $i = strpos($_POST['email'], '@');
   $edom = substr($_POST['email'], $i + 1);
 
-  $sql = "SELECT $domainstr AS dom FROM user WHERE client_id=:cid AND id=:id";
+  $sql = "SELECT email, $domainstr AS dom FROM user WHERE client_id=:cid AND id=:id";
   $st = $pdo->prepare($sql);
   $st->bindValue(':id', $id);
   $st->bindValue(':cid', $clientId);
   doPreparedQuery($st, 'Error fetching user.');
   $oldrow = $st->fetch(PDO::FETCH_ASSOC);
   $dom = $oldrow['dom'] ?? NULL;
+  $email = $oldrow['email'] ?? NULL;
 
+ 
   if (!$freelance && ($edom !== $dom)) {
     header("Location: ./?clientdom=$dom");
     exit();
@@ -334,8 +355,12 @@ if (isset($_GET['editform'])) {
   $st->bindValue(":email", $_POST['email']);
   $st->bindValue(":id", $id);
   doPreparedQuery($st, '<p>Error setting user details.</p>');
+  
+  $echange  = $_POST['email'] != $email;
+  $editor = $_SESSION['email'] === $email;
 
-  if ($override) {
+
+  if ($override || ($echange && $editor)) {
     header("Location: ./?action=logout");
     exit();
   }
@@ -349,7 +374,7 @@ if (isset($_GET['editform'])) {
     }
   }
 
-  //if ($priv && $priv == 'Admin') {
+
   if (preg_match("/admin/i", $priv)) {
     $sql = "DELETE FROM userrole WHERE userid=:id";
     $st = $pdo->prepare($sql);
@@ -421,10 +446,10 @@ if ($priv && $priv != "Admin") {
 
 $sql .= " ORDER BY name";
 
+
 if (!isset($flag)) {
   $result = doQuery($pdo, $sql, 'Error retrieving list:');
   $rows = $result->fetchAll();
-
   if (!$result) {
     $error = "Error retrieving users from t'database!";
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
@@ -435,8 +460,7 @@ if (!isset($flag)) {
   }
 }
 
-//if ($priv && $priv !== "Admin") {
-  if (preg_match("/client/i", $priv)){
+if (preg_match("/client/i", $priv)) {
 
   $email = $_SESSION['email'];
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
@@ -460,11 +484,22 @@ if (!isset($flag)) {
     } //full domain
 
     if ($count > 0) {
-      $sql = "SELECT employer.id, employer.name FROM user INNER JOIN (SELECT user.id, user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer ON $domainstr=employer.domain WHERE user.email=:email";
+      $sql = "SELECT employer.id, employer.name FROM user INNER JOIN (SELECT user.id, user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain";
+      $sqlend = " AS employer ON $domainstr=employer.domain WHERE user.email=:email";
 
+      if (!preg_match("/admin/i", $priv)) {
+        $sqlkey = " WHERE user.id=:k)";
+        $sql .= $sqlkey;
+      } else {
+        $sql .= ")";
+      }
+      $sql .= $sqlend;
       $st = $pdo->prepare($sql);
       $st->bindValue(":email", $email);
-      $res = doPreparedQuery($st, 'Error retrieving list:');
+      if (isset($sqlkey)) {
+        $st->bindValue(":k", $key);
+      }
+      doPreparedQuery($st, 'Error retrieving list:');
       if (!$res) {
         $error = 'Database error fetching client list.' . $sql;
         include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
@@ -480,9 +515,7 @@ if (!isset($flag)) {
   }
 }
 
-
-//if ($priv && $priv == "Admin") {
-  if (preg_match("/admin/i", $priv)) {
+if (preg_match("/admin/i", $priv)) {
   $manage = "Manage Users";
   $sqlc = "SELECT client.domain, client.name FROM client ORDER BY name";
   $result = doQuery($pdo, $sqlc, 'Database error fetching clients:');
@@ -492,7 +525,6 @@ if (!isset($flag)) {
     $client[$row['domain']] = $row['name'];
   }
 }
-
 $error =  $lib[$_SERVER["QUERY_STRING"]] ?? '';
 $message = $message ? $message : $error;
 include 'users.html.php';
