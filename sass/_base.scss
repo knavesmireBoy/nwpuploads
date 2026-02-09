@@ -92,9 +92,11 @@ th a {
 p a {
   display: inline-block;
 }
-h1 span,
-h1 a {
+h1 {
+  margin: 0 0 .5em;
+  span, a {
   display: block;
+}
 }
 
 ul input {
@@ -109,6 +111,10 @@ form div {
 .container {
   border-radius: 3px;
   display: inline-block;
+}
+
+input[type=submit]{
+  padding: .25em .5em;
 }
 /* Preview */
 
@@ -240,6 +246,7 @@ form[name="usersform"] {
     font: var(--georgiaform);
     color: var(--main-color);
     font-size: 1em;
+    padding: 1em;
     background-color: rgba(255,255,255, .5);
     legend {
       background-color: rgba(255,255,255, 1);
@@ -288,6 +295,32 @@ form[name="uploadform"] {
       margin: .5em 0 0;
       flex: 0 0 auto;
     }
+  }
+}
+
+form.choose {
+  border: solid 1px;
+  background-color: var(--prompt);
+  margin: 0 auto 1em;
+  border-radius: 8px;
+  padding: 1em;
+  width: clamp(300px, 40vw, 600px);
+}
+
+form[name="editclientform"] {
+  border: solid 1px;
+  background-color: var(--prompt);
+  margin: 0 auto 1em;
+  border-radius: 8px;
+  width: clamp(300px, 30vw, 600px);
+  padding: 1em 0;
+  h1 {
+    color: white;
+    text-shadow: (1px 1px 1px black);
+    margin: 0 0 .4em;
+  }
+  > input {
+    margin: 1em 0 0;
   }
 }
 
@@ -668,7 +701,10 @@ form[name="deletions"] div.fieldset {
   form[name="clientform"] {
     width: clamp(30em, 50%, 60em);
     margin: 0 auto 1em;
-  
+    border-radius: 8px;
+    border: solid 1px;
+    background-color: var(--prompt);
+    padding: 1em 1em 1em .5em;
     div {
       display: flex;
       column-gap: 0.5em;

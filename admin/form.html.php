@@ -21,7 +21,7 @@
 				<li><label for="password">Set password:</label><input id="password" type="password" name="password"/><input type="hidden" name="employer"
 				value="<?= $job ? $job : ''; ?>" size="32" /></li>
 			</ul>
-			<?php if ($priv == 'Admin') : ?>
+			<?php if (preg_match("/admin/i", $priv)) : ?>
 				<fieldset>
 					<legend>Roles</legend> <?php for ($i = 0; $i < count($roles); $i++): ?>
 						<div>

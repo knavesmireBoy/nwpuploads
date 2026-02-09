@@ -19,7 +19,7 @@ function getDomain($pdo, $id)
 $roleplay = userHasWhatRole();
 list($key, $priv) = $roleplay;
 
-if (!preg_match('/admin/i', $priv)) {
+if ($priv === 'Admin') {
   $error = 'Only Account Administrators may access this page!';
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/accessdenied.html.php';
   exit();

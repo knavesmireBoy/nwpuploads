@@ -16,30 +16,40 @@
 		<h1><?php echo $manage; ?></h1>
 		<?php
 		ob_start();
-		if ($priv == 'Admin') { ?>
+		//if ($priv == 'Admin') { 
+		if (preg_match("/admin/i", $priv)) {
+		?>
 			<p><a href="?add">Add New User</a></p>
 		<?php }
 		echo "<h2 class='error'>$error</h2>";
-		if ($priv == 'Admin' && !isset($_POST['act'])): ?>
-			<form action="" method="post" name="userform">
+		if (preg_match("/admin/i", $priv) && !isset($_POST['act'])): ?>
+			<form action="" method="post" name="userform" class="choose">
 				<ul>
 					<li><label for="user">User: </label><select id="user" name="user">
 							<option value="">Select one</option>
-							<optgroup label="clients"><?php foreach ($client as $x => $c): ?>
-									<option value="<?= $x; ?>"><?= $c; ?>
-									</option><?php endforeach; ?>
-							</optgroup>
-							<optgroup label="users">
-								<?php foreach ($users as $ix => $u): ?>
-									<option value="<?= $ix; ?>"><?= $u; ?>
-									</option><?php endforeach; ?>
-							</optgroup>
+							<?php if ($priv === 'Admin') {
+								$optgroup = 'clients';
+							}
+							$group = $client;
+							include '../templates/_optgroup.html.php';
+							if ($priv === 'Admin') {
+								$optgroup = 'users';
+							}
+							$group = $users;
+							include '../templates/_optgroup.html.php'; ?>
 						</select>
 						<input type="submit" name="act" value="Choose" />
 					</li>
 				</ul>
 			</form>
-			<?php elseif ($priv == 'Client' || (isset($_POST['act']) && $_POST['act'] == 'Choose')):
+			<?php elseif (preg_match("/client/i", $priv) || (isset($_POST['act']) && $_POST['act'] == 'Choose')):
+
+			if (preg_match("/admin/i", $priv) && isset($_POST['user'])) {
+				$id = $_POST['user'];
+				header("Location: ./?userdom=$id");
+				exit();
+			}
+
 			foreach ($users as $k => $user): ?>
 				<form action="" method="post" name="edituserform" class="prompt">
 					<input type="hidden" name="id" value="<?php echo $k; ?>" />
