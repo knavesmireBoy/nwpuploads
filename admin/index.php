@@ -157,6 +157,7 @@ if (isset($_GET['add'])) {
   $email = '';
   $button = 'Add User';
 
+
   //Build the list of roles
   $sql = "SELECT id, description FROM role";
   $st = doQuery($pdo, $sql, "<p>Error retrieving details</p>");
@@ -170,8 +171,10 @@ if (isset($_GET['add'])) {
   foreach ($rows as $row) {
     $roles[] = array('id' => $row['id'], 'description' => $row['description'], 'selected' => FALSE);
   }
-  //cannot see how we have $_POST here
+ 
+  
   if (isset($_POST['employer']) && !empty($_POST['employer'])) {
+    
     $st = doQuery($pdo, "SELECT id, domain FROM client WHERE id=$id", "Error retrieving clients from database!");
     if (!$st) {
       $error = "Error retrieving clients from database!";
@@ -184,13 +187,21 @@ if (isset($_GET['add'])) {
 
     $sql = "SELECT id, name FROM client ORDER BY name";
     $st = doQuery($pdo, $sql, "<p>Error retrieving client from database!</p>");
-    $row = $st->fetch(PDO::FETCH_ASSOC);
-
+    $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+    /*
     if (!$row) {
       $error = "Error retrieving client from database!";
       include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
       exit();
     }
+
+    $st = doQuery($pdo, "SELECT id, name FROM client ORDER BY name", '<p>Error retrieving clients from database!</p>');
+    $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+  */
+    foreach ($rows as $row) {
+      $clientlist[$row['id']] = $row['name'];
+    }
+  
   }
   include 'form.html.php';
   exit();
@@ -199,8 +210,22 @@ if (isset($_GET['add'])) {
 
 if (isset($_GET['addform'])) {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-  $sql = "INSERT INTO user (name, email, password, client_id) VALUES(:nom, :email,:pwd, :clientid)";
-  $clientId = empty($_POST['employer']) ? NULL : intval($_POST['employer']);
+  $clientid = NULL;
+  $match = false;
+  $sqlc = "SELECT client.id as employer, domain FROM user INNER JOIN client ON $domainstr=client.domain WHERE user.email=:email";
+
+  $st = $pdo->prepare($sqlc);
+  $st->bindValue(":email", $_SESSION['email']);
+  doPreparedQuery($st, 'Error retrieving list:');
+  $row = $st->fetch(PDO::FETCH_ASSOC);
+  if($row){
+    $clientid = $row['employer'];
+    $domain = $row['domain'];
+    $match = stripos($_POST['email'], $domain);
+  }
+
+  $sql = "INSERT INTO user (name, email, password, client_id) VALUES(:nom, :e,:pwd, :clientid)";
+
   $st = $pdo->prepare($sql);
   $essentials = [$_POST['name'], $_POST['email'], $_POST['password']];
   $essentials = array_filter($essentials, function ($item) {
@@ -215,44 +240,39 @@ if (isset($_GET['addform'])) {
   }
 
   $st->bindValue(':nom', $_POST['name']);
-  $st->bindValue(':email', $_POST['email']);
+  //allows a potential client to put in a duff email
+  $st->bindValue(':e', $_POST['email']);
   $st->bindValue(':pwd', $_POST['password']);
-  $st->bindValue(':clientid', $clientId);
-  $res = doPreparedQuery($st, 'Error adding user!!');
+  $st->bindValue(':clientid', $clientid);
+  $res = doPreparedQuery($st, 'Error adding user');
 
-  if (!$res) {
-    $error = 'Error adding user.';
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
-    exit();
-  }
   $aid = lastInsert($pdo);
   if (isset($_POST['password']) && $_POST['password'] != '') {
     $res = updatePassword($pdo, $_POST['password'], $aid);
   }
 
-  if ($clientId) {
+  //dump([$domain, $_POST['email']]);
+
+  if ($clientid && !$match) {
     $sql = "UPDATE user SET client_id=:cid WHERE id=:aid";
     $st = $pdo->prepare($sql);
-    $st->bindValue(':cid',  $clientId);
+    $st->bindValue(':cid',  $clientid);
     $st->bindValue(':aid', $aid);
     $res = doPreparedQuery($st, 'Error setting client id.');
 
-    if (!$res) {
-      $error = 'Error setting client id.';
-      include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
-      exit();
-    }
     $sql = "SELECT domain AS dom FROM client WHERE id=:cid";
     $st = $pdo->prepare($sql);
-    $st->bindValue(':cid',  $clientId);
+    $st->bindValue(':cid',  $clientid);
     doPreparedQuery($st, 'Error fetching client.');
+
     $row = $st->fetch(PDO::FETCH_ASSOC);
     $sql = "SELECT $domainstr AS dom FROM user WHERE client_id=:cid AND id=:aid";
     $st = $pdo->prepare($sql);
     $st->bindValue(':aid', $aid);
-    $st->bindValue(':cid', $clientId);
-    doPreparedQuery($st, 'Error fetching user.');
+    $st->bindValue(':cid', $clientid);
+    doPreparedQuery($st, 'Error fetching domain.');
     $oldrow = $st->fetch(PDO::FETCH_ASSOC);
+
     updateUserDomain($oldrow['dom'], $row['dom']);
   }
   resetRoles($pdo, $roles, $aid);
@@ -342,7 +362,7 @@ if (isset($_GET['editform'])) {
   $override = $_POST['override'];
   $roles = isset($_POST['roles']) ? $_POST['roles'] : [];
   $id =  $_POST['id'];
-  $clientId = empty($_POST['employer']) ? NULL : intval($_POST['employer']);
+  $clientid = empty($_POST['employer']) ? NULL : intval($_POST['employer']);
   //work out if freelancer...
   $sql = "SELECT id FROM user WHERE client_id IS NULL AND id=:id";
   $st = $pdo->prepare($sql);
@@ -353,7 +373,7 @@ if (isset($_GET['editform'])) {
 
   $sql = "SELECT domain AS dom FROM client WHERE id=:cid";
   $st = $pdo->prepare($sql);
-  $st->bindValue(':cid',  $clientId);
+  $st->bindValue(':cid',  $clientid);
   doPreparedQuery($st, 'Error fetching client.');
   $row = $st->fetch(PDO::FETCH_ASSOC);
 
@@ -363,7 +383,7 @@ if (isset($_GET['editform'])) {
   $sql = "SELECT email, $domainstr AS dom FROM user WHERE client_id=:cid AND id=:id";
   $st = $pdo->prepare($sql);
   $st->bindValue(':id', $id);
-  $st->bindValue(':cid', $clientId);
+  $st->bindValue(':cid', $clientid);
   doPreparedQuery($st, 'Error fetching user.');
   $oldrow = $st->fetch(PDO::FETCH_ASSOC);
   $dom = $oldrow['dom'] ?? NULL;
@@ -410,10 +430,10 @@ if (isset($_GET['editform'])) {
     doPreparedQuery($st, '<p>Error removing obsolete user role entries.</p>');
   }
   resetRoles($pdo, $roles, $_POST['id']);
-  //$clientId is allowed to be null if a user wants to disassociate from a client
+  //$clientid is allowed to be null if a user wants to disassociate from a client
   $sql = "UPDATE user SET client_id=:cid WHERE id =:id";
   $st = $pdo->prepare($sql);
-  $st->bindValue(":cid", $clientId);
+  $st->bindValue(":cid", $clientid);
   $st->bindValue(":id", $_POST['id']);
   doPreparedQuery($st, '<p>Error setting client id</p>');
 
