@@ -30,13 +30,16 @@ function updateUserDomain($old, $new, $id = 0)
   }
 }
 
+//returns an id IF NOT already present and it becomes a signal to update the client id
+//this could be overridden if a user desired a "contract" status
+//ie they could up sticks by changing their email address with impunity
 function isContractor($pdo, $sql, $email, $clientid = NULL)
 {
   $st = $pdo->prepare($sql);
   $st->bindValue(':email', $email);
   doPreparedQuery($st, 'Error querying client credentials');
   $row = $st->fetch(PDO::FETCH_ASSOC);
-  return (isset($row['employer']) && !$clientid) ? $row['employer'] : $clientid;
+  return (isset($row['employer']) && is_null($clientid)) ? $row['employer'] : $clientid;
 }
 
 function resetRoles($pdo, $roles, $id)
@@ -226,7 +229,7 @@ if (isset($_GET['addform'])) {
   $st = $pdo->prepare($sql);
 
   /*
-  applies to admin users only
+  applies to admin users only as $_POST['employer'] is set by default by client
   if the email field corresponds to an existing client AND there is no selection in the assign to client drop down $_POST['employer'] then we can correct with the isContractor function
   if we have a clientid provided by $_POST['employer'] we must check that the supplied email DOMAIN matches
   Potentially there may be a case for having a contractor role but it would have to be deleted if the client was removed from the database and without a clientid this would not happen through the referential integrity enforced by the database. But an additional check could be made at this point, in the meantime the "contractor" would be free to leave the role
@@ -245,7 +248,6 @@ if (isset($_GET['addform'])) {
   $roles = isset($_POST['roles']) ? $_POST['roles'] : [];
 
   if ($clientid || $contractor) {
-    
     $st = doQuery($pdo, "SELECT domain FROM client WHERE id='$clientid'", "Error retrieving clients from database!");
     $row = $st->fetch(PDO::FETCH_ASSOC);
     $truedom = $row['domain'];
