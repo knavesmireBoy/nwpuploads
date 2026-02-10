@@ -30,12 +30,13 @@ function updateUserDomain($old, $new, $id = 0)
   }
 }
 
-function isContractor($pdo, $sql, $email){
+function isContractor($pdo, $sql, $email, $clientid = NULL)
+{
   $st = $pdo->prepare($sql);
   $st->bindValue(':email', $email);
   doPreparedQuery($st, 'Error querying client credentials');
   $row = $st->fetch(PDO::FETCH_ASSOC);
-  return isset($row['employer']) ? $row['employer'] : NULL;
+  return (isset($row['employer']) && !$clientid) ? $row['employer'] : $clientid;
 }
 
 function resetRoles($pdo, $roles, $id)
@@ -237,15 +238,15 @@ if (isset($_GET['addform'])) {
   $st->bindValue(':clientid', $clientid);
   $res = doPreparedQuery($st, 'Error adding user');
   $aid = lastInsert($pdo);
-  $clientid = isContractor($pdo, $is_client_sql,  $_POST['email']) ?? $clientid;
-
+  $contractor = isContractor($pdo, $is_client_sql,  $_POST['email'], $clientid);
   if (isset($_POST['password']) && $_POST['password'] != '') {
     $res = updatePassword($pdo, $_POST['password'], $aid);
   }
   $roles = isset($_POST['roles']) ? $_POST['roles'] : [];
 
-  if ($clientid) {
-    $st = doQuery($pdo, "SELECT domain FROM client WHERE id=$clientid", "Error retrieving clients from database!");
+  if ($clientid || $contractor) {
+    
+    $st = doQuery($pdo, "SELECT domain FROM client WHERE id='$clientid'", "Error retrieving clients from database!");
     $row = $st->fetch(PDO::FETCH_ASSOC);
     $truedom = $row['domain'];
     $sql = "SELECT $domainstr AS dom FROM user WHERE client_id=:cid AND id=:aid";
@@ -255,6 +256,9 @@ if (isset($_GET['addform'])) {
     doPreparedQuery($st, 'Error fetching domain.');
     $row = $st->fetch(PDO::FETCH_ASSOC);
     updateUserDomain($row['dom'], $truedom);
+    if($contractor){
+      doQuery($pdo, "UPDATE user INNER JOIN client ON $domainstr = client.domain SET client_id='$contractor' WHERE $domainstr = client.domain", "Error updating client");
+    }
   }
   resetRoles($pdo, $roles, $aid);
   header('Location: .');
@@ -278,7 +282,7 @@ if ((isset($_POST['action']) && $_POST['action'] == 'Edit') || $userdom || $pwd 
   $message = ($userdom || $pwd || $editor) ? $warning : '';
   $message = $message ? $message : ($clientdom ? 'You do not have sufficient privileges to change the domain name. Please contact the database administrator.' : '');
 
-  if($message && ($message === $warning) && isset($_GET['userdom'])){
+  if ($message && ($message === $warning) && isset($_GET['userdom'])) {
     $message .= ' You can proceed but you will need to log in again with your updated details.';
   }
 
