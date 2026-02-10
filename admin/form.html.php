@@ -16,12 +16,12 @@
 	<div>
 		<h1><?= $pagetitle; ?></h1>
 		<p><?= $message; ?></p>
-		<form action="?<?= $action; ?>" method="post" name="usersform">
+		<form action="?" method="post" name="usersform">
 			<ul>
 				<li><label for="name">Name:</label><input id="name" type="text" name="name" value="<?= $name; ?>" size="32" required /></li>
 				<li><label for="email">Email:</label><input type="email" id="email" name="email" value="<?= $email; ?>" size="32" required /></li>
 				<li><label for="password">Set password:</label><input id="password" type="password" name="password" /><input type="hidden" name="employer"
-						value="<?= $job ? $job : ''; ?>" size="32" /><label for="delete"><input type="checkbox" id="delete" name="delete"></li>
+						value="<?= $job ? $job : ''; ?>" size="32" /><label for="delete">Delete</label><input type="checkbox" id="delete" name="delete"></li>
 			</ul>
 			<?php if (preg_match("/admin/i", $priv)) : ?>
 				<fieldset>
@@ -41,6 +41,7 @@
 
 			endif; ?>
 			<div><input type="hidden" name="id" value="<?= $id; ?>" />
+				<input type="hidden" name="action" value="Edit" />
 				<input type="hidden" name="override" value="<?= $override; ?>" />
 				<input type="submit" value="<?= $button; ?>" />
 			</div>

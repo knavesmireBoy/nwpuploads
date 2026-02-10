@@ -15,13 +15,13 @@
 	<div>
 		<h1><?php echo $manage; ?></h1>
 		<?php
-		ob_start();
 		if (preg_match("/admin/i", $priv)) {
 		?>
 			<p><a href="?add">Add New User</a></p>
-			<h3 class='error'><?= $error; ?></h3>
-		<?php }
-
+		<?php } ?>
+		<h3 class='error'><?= $error; ?></h3>
+		<?php
+		ob_start();
 		if (($priv == 'Admin') && !isset($_POST['act'])): ?>
 			<form action="" method="post" name="userform" class="choose">
 				<ul>
@@ -42,10 +42,16 @@
 					</li>
 				</ul>
 			</form>
-			<?php elseif (preg_match("/client/i", $priv) || (isset($_POST['act']) && $_POST['act'] == 'Choose')):
-			foreach ($users as $k => $user):
-				include '_users.html.php';
-			endforeach;
+		<?php elseif (preg_match("/client/i", $priv) || (isset($_POST['act']) && $_POST['act'] == 'Choose')):
+		?>
+			<div class="clientgroup">
+				<?php
+				foreach ($users as $k => $user):
+					include '_users.html.php';
+				endforeach;
+				?>
+			</div>
+			<?php
 			if ($priv === 'Admin') { ?>
 				<p><a href=".">Return to user list</a></p>
 		<?php }

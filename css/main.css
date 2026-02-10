@@ -97,6 +97,7 @@ ol, ul, dl {
 
 :root {
   --main-color: #496600;
+  --main-color-alt:hsl(77, 100%, 10%);
   --prompt: #d9ebad;
   --georgia: bold 2.2em/1 Georgia, sans-serif;
   --georgiaform: bold italic 1.8em/1 Georgia, sans-serif;
@@ -117,6 +118,10 @@ h2 {
 h2 {
   font-size: 1.75em;
   margin: 1em 0;
+}
+
+h3 {
+  margin: 0 0 1em;
 }
 
 ul {
@@ -195,7 +200,8 @@ p a {
 h1 {
   margin: 0 0 0.5em;
 }
-h1 span, h1 a {
+h1 span,
+h1 a {
   display: block;
 }
 
@@ -269,6 +275,29 @@ input[type=submit] {
 }
 
 /*div form*/
+.clientgroup {
+  background-color: var(--prompt);
+  background-image: radial-gradient(white, var(--prompt));
+  padding: 1em;
+  border: solid 1px;
+  border-radius: 8px;
+  line-height: 2;
+  font-weight: bold;
+  margin: 0 auto 1em;
+  width: clamp(300px, 30vw, 600px);
+  font: bold italic 1.2em/1.8 Georgia, serif;
+}
+.clientgroup a {
+  display: block;
+  color: var(--main-color);
+}
+.clientgroup a:nth-child(even) {
+  color: var(--main-color-alt);
+}
+.clientgroup a:hover {
+  color: rgb(0, 119, 255);
+}
+
 .select,
 .clientlist {
   padding: 1em;
@@ -314,7 +343,7 @@ form[name=loginform] {
   border: solid 1px;
   border-radius: 8px;
   background-color: var(--prompt);
-  width: clamp(300px, 50vw, 600px);
+  width: clamp(300px, 60vw, 1000px);
 }
 form[name=loginform] input {
   flex: 3 1 10em;
@@ -346,13 +375,24 @@ form[name=usersform] > ul {
 }
 form[name=usersform] > ul li {
   display: flex;
+  column-gap: 3px;
 }
 form[name=usersform] > ul li label {
-  flex: 2 1 1em;
+  flex: 10 1 1em;
   text-align: right;
 }
+form[name=usersform] > ul li label[for=delete] {
+  flex: 3 1 1em;
+}
 form[name=usersform] > ul li input {
-  flex: 7 1 1em;
+  flex: 40 1 1em;
+}
+form[name=usersform] > ul li input[type=checkbox] {
+  flex: 1 1 1em;
+  margin: auto;
+}
+form[name=usersform] > ul li input#password {
+  flex: 34 1 1em;
 }
 form[name=usersform] > fieldset {
   margin: 1em 0;
@@ -397,7 +437,8 @@ form[name=uploadform] > div {
   column-gap: 0.5em;
   justify-content: center;
 }
-form[name=uploadform] > div input, form[name=uploadform] > div select {
+form[name=uploadform] > div input,
+form[name=uploadform] > div select {
   flex: 7 1 1em;
 }
 form[name=uploadform] > div label {

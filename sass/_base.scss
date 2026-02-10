@@ -1,5 +1,6 @@
 :root {
   --main-color: #496600;
+  --main-color-alt:hsl(77, 100%, 10%);
   --prompt: #d9ebad;
   --georgia: bold 2.2em/1 Georgia, sans-serif;
   --georgiaform: bold italic 1.8em/1 Georgia, sans-serif;
@@ -33,6 +34,9 @@ h2 {
 h2 {
   font-size: 1.75em;
   margin: 1em 0;
+}
+h3 {
+  margin: 0 0 1em;
 }
 ul {
   list-style-type: none;
@@ -75,7 +79,6 @@ td {
   vertical-align: middle;
   border: solid 0 #9c0;
   border-width: 0 0 2px;
-
 }
 th {
   font: bold 1.1em Georgia, sans-serif;
@@ -95,10 +98,11 @@ p a {
   display: inline-block;
 }
 h1 {
-  margin: 0 0 .5em;
-  span, a {
-  display: block;
-}
+  margin: 0 0 0.5em;
+  span,
+  a {
+    display: block;
+  }
 }
 
 ul input {
@@ -115,8 +119,8 @@ form div {
   display: inline-block;
 }
 
-input[type=submit]{
-  padding: .25em .5em;
+input[type="submit"] {
+  padding: 0.25em 0.5em;
 }
 /* Preview */
 
@@ -162,6 +166,30 @@ input[type=submit]{
 }
 /*div form*/
 
+.clientgroup {
+  background-color: var(--prompt);
+  background-image: radial-gradient(white, var(--prompt));
+  padding: 1em;
+  border: solid 1px;
+  border-radius: 8px;
+  line-height: 2;
+  font-weight: bold;
+  margin: 0 auto 1em;
+  width: clamp(300px, 30vw, 600px);
+  font: bold italic 1.2em/1.8 Georgia, serif;
+  a {
+    display: block;
+    color: var(--main-color);
+    &:nth-child(even){
+      color: var(--main-color-alt);
+    }
+    &:hover {
+      color: rgb(0, 119, 255);
+    }
+   
+  }
+}
+
 .select,
 .clientlist {
   padding: 1em;
@@ -196,17 +224,17 @@ form.clientlist {
 
 form[name="loginform"] {
   display: flex;
-  column-gap: .5em;
+  column-gap: 0.5em;
   justify-content: center;
   margin: 0 auto;
   padding: 1em;
   border: solid 1px;
   border-radius: 8px;
   background-color: var(--prompt);
-  width: clamp(300px, 50vw, 600px);
-  input{
+  width: clamp(300px, 60vw, 1000px);
+  input {
     flex: 3 1 10em;
-    &:last-child{
+    &:last-child {
       flex: 1 1 1em;
     }
   }
@@ -224,7 +252,7 @@ form[name="edituserform"] {
 form[name="usersform"] {
   background-color: var(--prompt);
   border: solid 1px;
-  padding: .5em;
+  padding: 0.5em;
   margin: 0 auto 1em;
   border-radius: 8px;
   width: clamp(300px, 50vw, 1000px);
@@ -233,12 +261,25 @@ form[name="usersform"] {
     padding: 1em;
     li {
       display: flex;
+      column-gap: 3px;
+
       label {
-        flex: 2 1 1em;
+        flex: 10 1 1em;
         text-align: right;
+        &[for=delete]{
+          flex: 3 1 1em;
+        }
       }
       input {
-        flex: 7 1 1em;
+        flex: 40 1 1em;
+
+        &[type="checkbox"] {
+          flex: 1 1 1em;
+          margin: auto;
+        }
+        &#password {
+          flex: 34 1 1em;
+        }
       }
     }
   }
@@ -249,17 +290,17 @@ form[name="usersform"] {
     color: var(--main-color);
     font-size: 1em;
     padding: 1em;
-    background-color: rgba(255,255,255, .5);
+    background-color: rgba(255, 255, 255, 0.5);
     legend {
-      background-color: rgba(255,255,255, 1);
+      background-color: rgba(255, 255, 255, 1);
       font-size: 1rem;
       text-align: center;
-      padding: .25em 1em;
+      padding: 0.25em 1em;
       color: black;
       font-style: normal;
     }
     label {
-     color: black;
+      color: black;
       font-style: normal;
     }
   }
@@ -268,7 +309,7 @@ form[name="usersform"] {
       font-size: 1rem;
     }
     &:last-child {
-      margin: .5em 0;
+      margin: 0.5em 0;
       display: flex;
       justify-content: center;
     }
@@ -284,17 +325,18 @@ form[name="uploadform"] {
   width: clamp(300px, 70vw, 700px);
   > div {
     display: flex;
-    column-gap: .5em;
+    column-gap: 0.5em;
     justify-content: center;
-    input, select {
+    input,
+    select {
       flex: 7 1 1em;
     }
     label {
       text-align: right;
       flex: 2 1 2em;
     }
-    input[type=submit] {
-      margin: .5em 0 0;
+    input[type="submit"] {
+      margin: 0.5em 0 0;
       flex: 0 0 auto;
     }
   }
@@ -319,7 +361,7 @@ form[name="editclientform"] {
   h1 {
     color: white;
     text-shadow: (1px 1px 1px black);
-    margin: 0 0 .4em;
+    margin: 0 0 0.4em;
   }
   > input {
     margin: 1em 0 0;
@@ -361,10 +403,10 @@ div#upload {
   margin: 0 auto;
   width: clamp(320px, 80vw, 1000px);
 
-> table {
-  width: 100%;
-  margin: 0 auto 1em;
-}
+  > table {
+    width: 100%;
+    margin: 0 auto 1em;
+  }
 }
 form[name="logoutform"] {
   border-width: 0;
@@ -693,74 +735,72 @@ form[name="deletions"] div.fieldset {
 }
   */
 
+section#prompt {
+  margin: 1em 0;
+  padding: 1em;
+  border-radius: 8px;
+}
 
-  section#prompt {
-    margin: 1em 0;
-    padding: 1em;
-    border-radius: 8px;
-  }
-  
-  form[name="clientform"] {
-    width: clamp(30em, 50%, 60em);
-    margin: 0 auto 1em;
-    border-radius: 8px;
-    border: solid 1px;
-    background-color: var(--prompt);
-    padding: 1em 1em 1em .5em;
-    div {
-      display: flex;
-      column-gap: 0.5em;
-  
-      input {
-        flex: 8 1 1em;
-      }
-  
-      label {
-        text-align: right;
-        flex: 1 1 1em;
-      }
-  
-      &:last-of-type {
-        margin: 0 0 1em;
-      }
+form[name="clientform"] {
+  width: clamp(30em, 50%, 60em);
+  margin: 0 auto 1em;
+  border-radius: 8px;
+  border: solid 1px;
+  background-color: var(--prompt);
+  padding: 1em 1em 1em 0.5em;
+  div {
+    display: flex;
+    column-gap: 0.5em;
+
+    input {
+      flex: 8 1 1em;
+    }
+
+    label {
+      text-align: right;
+      flex: 1 1 1em;
+    }
+
+    &:last-of-type {
+      margin: 0 0 1em;
     }
   }
+}
 
-  form[name="downloads"] div input {
-    cursor: pointer;
-    @include trash(30px, center 33%);
-    &:hover {
-      background-color: orange;
+form[name="downloads"] div input {
+  cursor: pointer;
+  @include trash(30px, center 33%);
+  &:hover {
+    background-color: orange;
+  }
+}
+
+#upload > table > tbody > tr > td:last-child div input {
+  @include trash(30px);
+  cursor: pointer;
+  &:hover {
+    background-color: darkred;
+  }
+}
+
+form[name="updatefileinfo"] {
+  // padding: 1em clamp(1em, 20%, 10em) 1em clamp(1em, 20%, 10em);
+  margin: 0 0 1em;
+
+  > div {
+    display: flex;
+    justify-content: center;
+    column-gap: 0.4em;
+    input[type="text"],
+    select {
+      flex: 4 1 10em;
+    }
+    label {
+      flex: 1 1 1em;
+      text-align: right;
+    }
+    input[type="text"] {
+      min-width: 30em;
     }
   }
-
-  #upload > table > tbody > tr > td:last-child div input {
-    @include trash(30px);
-    cursor: pointer;
-    &:hover {
-      background-color: darkred;
-    }
-  }
-
-
-  form[name="updatefileinfo"] {
-    // padding: 1em clamp(1em, 20%, 10em) 1em clamp(1em, 20%, 10em);
-    margin: 0 0 1em;
-
-    > div {
-      display: flex;
-      justify-content: center;
-      column-gap: 0.4em;
-      input[type="text"],
-      select {
-        flex: 4 1 10em;
-      }
-      label {
-        flex: 1 1 1em;
-        text-align: right;
-      }
-      input[type="text"] {
-        min-width: 30em;
-      }
-    }
-  }
+}

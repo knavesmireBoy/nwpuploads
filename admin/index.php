@@ -10,7 +10,7 @@ $userdom = isset($_GET['userdom']) ? $_GET['userdom'] : NULL;
 $clientdom = isset($_GET['clientdom']) ? $_GET['clientdom'] : NULL;
 $pwd = isset($_GET['pwd']) ? $_GET['pwd'] : NULL;
 $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
-$lib = ['nousers' => "<h4>Unable to find any users</h4>", "addnotice" => "Please fill required fields", "selectuser" => "Please select a user for editing", "clientdom" => "Cannot assign this user to a new client", "lastuser" => "To remove this last user, please delete the client instead",  "userdom" => "Changing your email address will require you to log out", "denied" => "You do not have the required privileges to delete, please contact your administrator", "access" => "You do not have the privileges to add a user"];
+$lib = ['nousers' => "<h4>Unable to find any users</h4>", "addnotice" => "Please fill required fields", "selectuser" => "Please select a user for editing", "clientdom" => "Cannot assign this user to a new client", "lastuser" => "To remove this last user, please delete the client instead",  "userdom" => "Changing your email address will require you to log out", "denied" => "You do not have the required privileges to delete, please contact your administrator", "access" => "You do not have the privileges to add a user", "deniedbyadmin" => "Cannot delete this user until a new client admin role is assigned to this client",];
 
 $is_client_sql = "SELECT client.id AS employer, domain FROM client LEFT JOIN user ON $domainstr = client.domain WHERE user.email=:email";
 
@@ -108,6 +108,7 @@ if (isset($_POST['confirm'])) {
   $location = " .";
   if ($_POST['confirm'] == 'Yes') {
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+    $priv == 'Admin';
     $id = $_POST['id'];
     $sql = "SELECT email, domain FROM user INNER JOIN client ON user.client_id = client.id WHERE user.id=:id";
 
@@ -120,6 +121,7 @@ if (isset($_POST['confirm'])) {
 
     $st = doQuery($pdo, $sql, 'Error fetching client.');
     $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+    $self = $row['email'] === $_SESSION['email'];
 
     $sql = "SELECT role.id AS role FROM role LEFT JOIN userrole ON role.id = userrole.roleid WHERE userrole.userid=:id";
     $roles = [];
@@ -129,41 +131,42 @@ if (isset($_POST['confirm'])) {
       $st->bindValue(':id',  $r['id']);
       doPreparedQuery($st, 'Error fetching client.');
       $ro = $st->fetch(PDO::FETCH_ASSOC);
-      if ($ro['role'] === 'Client Admin') {
-        $roles[] = $ro['role'];
-      }
+      $roles[$r['id']] = $ro['role'];
     }
 
+    $role = $roles[$id];
+    $danger = preg_match("/admin/i", $role);
     $denied = clientCheck(true);
-    $_admin = clientCheck();
-    $denied = $denied || ($_admin && ($row['email'] === $_SESSION['email']));
-
-    //can delete a "Client Admin" role providing there is one another
-    if ($_admin && $denied && count($roles) > 1) {
-      $denied = false;
+    if ($danger) {
+      $roles = safeFilter($roles, function ($role) {
+        return preg_match("/admin/i", $role);
+      });
     }
-
+    $danger && count($roles) < 2;
     if (count($rows) === 1) {
       header("Location: ./?lastuser");
       exit();
     }
-
     if (!$denied) {
-      deleteAlready($pdo, $_POST['id']);
+      if (!$danger) {
+        deleteAlready($pdo, $_POST['id']);
+      } else {
+        $location .= "/?deniedbyadmin";
+      }
     } else {
       $location .= "/?denied";
     }
   }
+
   header("Location: $location");
   exit();
-} ////////////END OF DELETE
+} ////////////END OF CONFIRM
 
 if (isset($_GET['denied']) || isset($_GET['access'])) {
   $error =  $lib[$_SERVER["QUERY_STRING"]] ?? '';
 }
 
 if (isset($_GET['add'])) {
-
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
   $pagetitle = 'New User';
   $action = 'addform';
@@ -224,17 +227,14 @@ if (isset($_GET['addform'])) {
     header("Location: ./?addnotice");
     exit();
   }
-
   $sql = "INSERT INTO user (name, email, password, client_id) VALUES(:nom, :e,:pwd, :clientid)";
   $st = $pdo->prepare($sql);
-
   /*
   applies to admin users only as $_POST['employer'] is set by default by client
   if the email field corresponds to an existing client AND there is no selection in the assign to client drop down $_POST['employer'] then we can correct with the isContractor function
   if we have a clientid provided by $_POST['employer'] we must check that the supplied email DOMAIN matches
   Potentially there may be a case for having a contractor role but it would have to be deleted if the client was removed from the database and without a clientid this would not happen through the referential integrity enforced by the database. But an additional check could be made at this point, in the meantime the "contractor" would be free to leave the role
   */
-
   $st->bindValue(':nom', $_POST['name']);
   $st->bindValue(':e', $_POST['email']);
   $st->bindValue(':pwd', $_POST['password']);
@@ -258,7 +258,7 @@ if (isset($_GET['addform'])) {
     doPreparedQuery($st, 'Error fetching domain.');
     $row = $st->fetch(PDO::FETCH_ASSOC);
     updateUserDomain($row['dom'], $truedom);
-    if($contractor){
+    if ($contractor) {
       doQuery($pdo, "UPDATE user INNER JOIN client ON $domainstr = client.domain SET client_id='$contractor' WHERE $domainstr = client.domain", "Error updating client");
     }
   }
@@ -268,36 +268,30 @@ if (isset($_GET['addform'])) {
 } //end of addform
 
 
-//if ((isset($_POST['action']) && $_POST['action'] == 'Edit') || $userdom || $pwd || $clientdom) {
-  if ((isset($_GET['edit'])) || $userdom || $pwd || $clientdom) {
+if ((isset($_GET['edit'])) || $userdom || $pwd || $clientdom) {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
   $clientAdmin = preg_match('/admin/i', $priv) && preg_match('/client/i', $priv);
 
-
   $id = isset($_GET['edit']) ? $_GET['edit'] : (isset($userdom) ? $userdom : ($pwd ? $pwd : NULL));
-
+  $id = $id ? $id : $_POST['id'];
   $st = $pdo->prepare("SELECT id, name, email, $domainstr AS dom FROM user WHERE id =:id");
   $st->bindValue(":id", $id);
   doPreparedQuery($st, "<p>Error fetching user details.</p>");
   $row = $st->fetch(PDO::FETCH_ASSOC);
   $editor = $_SESSION['email'] === $row['email'];
-
   $warning = 'Polite Notice: changing an email or password will automatically log you out.';
-
   $message = ($userdom || $pwd || $editor) ? $warning : '';
   $message = $message ? $message : ($clientdom ? 'You do not have sufficient privileges to change the domain name. Please contact the database administrator.' : '');
 
   if ($message && ($message === $warning) && isset($_GET['userdom'])) {
     $message .= ' You can proceed but you will need to log in again with your updated details.';
   }
-
   if ($clientdom) {
     $st = $pdo->prepare("SELECT id, name, email, $domainstr AS dom FROM user WHERE email LIKE :dom");
     $st->bindValue(":dom", "%$clientdom");
     doPreparedQuery($st, "<p>Error fetching user details.</p>");
     $row = $st->fetch(PDO::FETCH_ASSOC);
   }
-
   $pagetitle = 'Edit User';
   $action = 'editform';
   $name = $row['name'];
@@ -318,18 +312,14 @@ if (isset($_GET['addform'])) {
   // Build the list of all roles
   $st = doQuery($pdo, "SELECT id, description FROM role", '<p>Error fetching list of roles.</p>');
   $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-
   foreach ($rows as $row) {
     $_roles[] = array('id' => $row['id'], 'description' => $row['description'], 'selected' => in_array($row['id'], $selectedRoles));
   }
-
   $st = doQuery($pdo, "SELECT id, name FROM client ORDER BY name", '<p>Error retrieving clients from database!</p>');
   $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-
   foreach ($rows as $row) {
     $clientlist[$row['id']] = $row['name'];
   }
-
   $roles = [];
   if ($clientAdmin) {
     foreach ($_roles as $role) {
@@ -347,96 +337,104 @@ if (isset($_GET['addform'])) {
   doPreparedQuery($st, "<p>Error retrieving client id from user!</p>");
   $row = $st->fetch(PDO::FETCH_ASSOC);
   $job = $row['client_id']; //selects client in drop down menu
-
   include 'form.html.php';
   exit();
 } //edit
 
-if (isset($_GET['editform'])) {
+if (isset($_POST['action']) && $_POST['action'] == 'Edit') {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
   $override = $_POST['override'];
-
-  $roles = isset($_POST['roles']) ? $_POST['roles'] : [];
   $id =  $_POST['id'];
-  $clientid = empty($_POST['employer']) ? NULL : intval($_POST['employer']);
-  //work out if freelancer...
-  $sql = "SELECT id FROM user WHERE client_id IS NULL AND id=:id";
-  $st = $pdo->prepare($sql);
-  $st->bindValue(':id',  $_POST['id']);
-  doPreparedQuery($st, 'Error fetching client.');
-  $row = $st->fetch(PDO::FETCH_ASSOC);
-  $freelance = $row['id'];
 
-  $sql = "SELECT domain AS dom FROM client WHERE id=:cid";
-  $st = $pdo->prepare($sql);
-  $st->bindValue(':cid',  $clientid);
-  doPreparedQuery($st, 'Error fetching client.');
-  $row = $st->fetch(PDO::FETCH_ASSOC);
+  if (isset($_POST['delete'])) {
+    $id = $_POST['id'];
+    $title = "Prompt";
+    $prompt = "Are you sure you want to delete this user? ";
+    $call = "confirm";
+    $pos = "Yes";
+    $neg = "No";
+    $action = '';
+  } else {
+    $roles = isset($_POST['roles']) ? $_POST['roles'] : [];
+    $clientid = empty($_POST['employer']) ? NULL : intval($_POST['employer']);
+    //work out if freelancer...
+    $sql = "SELECT id FROM user WHERE client_id IS NULL AND id=:id";
+    $st = $pdo->prepare($sql);
+    $st->bindValue(':id',  $_POST['id']);
+    doPreparedQuery($st, 'Error fetching client.');
+    $row = $st->fetch(PDO::FETCH_ASSOC);
+    $freelance = $row['id'];
 
-  $i = strpos($_POST['email'], '@');
-  $edom = substr($_POST['email'], $i + 1);
+    $sql = "SELECT domain AS dom FROM client WHERE id=:cid";
+    $st = $pdo->prepare($sql);
+    $st->bindValue(':cid',  $clientid);
+    doPreparedQuery($st, 'Error fetching client.');
+    $row = $st->fetch(PDO::FETCH_ASSOC);
 
-  $sql = "SELECT email, $domainstr AS dom FROM user WHERE client_id=:cid AND id=:id";
-  $st = $pdo->prepare($sql);
-  $st->bindValue(':id', $id);
-  $st->bindValue(':cid', $clientid);
-  doPreparedQuery($st, 'Error fetching user.');
-  $oldrow = $st->fetch(PDO::FETCH_ASSOC);
-  $dom = $oldrow['dom'] ?? NULL;
-  $email = $oldrow['email'] ?? NULL;
+    $i = strpos($_POST['email'], '@');
+    $edom = substr($_POST['email'], $i + 1);
 
-  if (!$freelance && ($edom !== $dom)) {
-    header("Location: ./?clientdom=$dom");
-    exit();
-  }
+    $sql = "SELECT email, $domainstr AS dom FROM user WHERE client_id=:cid AND id=:id";
+    $st = $pdo->prepare($sql);
+    $st->bindValue(':id', $id);
+    $st->bindValue(':cid', $clientid);
+    doPreparedQuery($st, 'Error fetching user.');
+    $oldrow = $st->fetch(PDO::FETCH_ASSOC);
+    $dom = $oldrow['dom'] ?? NULL;
+    $email = $oldrow['email'] ?? NULL;
 
-  if (($freelance && !$override) && ($edom !== $dom)) {
-    header("Location: ./?userdom=$freelance");
-    exit();
-  }
-
-  $sql = "UPDATE user SET name=:name, email=:email WHERE id=:id";
-  $st = $pdo->prepare($sql);
-  $st->bindValue(":name", $_POST['name']);
-  $st->bindValue(":email", $_POST['email']);
-  $st->bindValue(":id", $id);
-  doPreparedQuery($st, '<p>Error setting user details.</p>');
-
-  $echange  = $_POST['email'] !== $email;
-  $editor = $_SESSION['email'] === $email;
-
-  if ($override || ($echange && $editor)) {
-    header("Location: ../?action=logout");
-    exit();
-  }
-
-  if (isset($_POST['password']) && $_POST['password'] != '') {
-    if ($override) {
-      $res = updatePassword($pdo, $_POST['password'], $id);
-    } else {
-      header("Location: ./?pwd=$id");
+    if (!$freelance && ($edom !== $dom)) {
+      header("Location: ./?clientdom=$dom");
       exit();
     }
-  }
 
-  if (preg_match("/admin/i", $priv)) {
-    $sql = "DELETE FROM userrole WHERE userid=:id";
+    if (($freelance && !$override) && ($edom !== $dom)) {
+      header("Location: ./?userdom=$freelance");
+      exit();
+    }
+
+    $sql = "UPDATE user SET name=:name, email=:email WHERE id=:id";
     $st = $pdo->prepare($sql);
+    $st->bindValue(":name", $_POST['name']);
+    $st->bindValue(":email", $_POST['email']);
+    $st->bindValue(":id", $id);
+    doPreparedQuery($st, '<p>Error setting user details.</p>');
+
+    $echange  = $_POST['email'] !== $email;
+    $editor = $_SESSION['email'] === $email;
+
+    if ($override || ($echange && $editor)) {
+      header("Location: ../?action=logout");
+      exit();
+    }
+
+    if (isset($_POST['password']) && $_POST['password'] != '') {
+      if ($override) {
+        $res = updatePassword($pdo, $_POST['password'], $id);
+      } else {
+        header("Location: ./?pwd=$id");
+        exit();
+      }
+    }
+
+    if (preg_match("/admin/i", $priv)) {
+      $sql = "DELETE FROM userrole WHERE userid=:id";
+      $st = $pdo->prepare($sql);
+      $st->bindValue(":id", $_POST['id']);
+      doPreparedQuery($st, '<p>Error removing obsolete user role entries.</p>');
+    }
+    resetRoles($pdo, $roles, $_POST['id']);
+    //$clientid is allowed to be null if a user wants to disassociate from a client
+    $sql = "UPDATE user SET client_id=:cid WHERE id =:id";
+    $st = $pdo->prepare($sql);
+    $st->bindValue(":cid", $clientid);
     $st->bindValue(":id", $_POST['id']);
-    doPreparedQuery($st, '<p>Error removing obsolete user role entries.</p>');
-  }
-  resetRoles($pdo, $roles, $_POST['id']);
-  //$clientid is allowed to be null if a user wants to disassociate from a client
-  $sql = "UPDATE user SET client_id=:cid WHERE id =:id";
-  $st = $pdo->prepare($sql);
-  $st->bindValue(":cid", $clientid);
-  $st->bindValue(":id", $_POST['id']);
-  doPreparedQuery($st, '<p>Error setting client id</p>');
-  dump([$edom, $dom]);
-  updateUserDomain($edom, $dom, $_POST['id']);
-  header('Location: .');
-  exit();
-} ///END OF EDIT
+    doPreparedQuery($st, '<p>Error setting client id</p>');
+    updateUserDomain($edom, $dom, $_POST['id']);
+    header('Location: .');
+    exit();
+  } //not delete
+} ///END OF editform
 
 //display users___________________________________________________________________
 $sql = "SELECT user.id, user.name FROM user LEFT JOIN (SELECT user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer ON $domainstr=employer.domain WHERE employer.domain IS NULL"; //this overwrites above query to filter out users as employees
@@ -482,13 +480,13 @@ if (isset($_POST['act']) and $_POST['act'] == 'Choose') {
   }
 } ///CHOOSE________________________________________________________________________
 
-
-if ($priv && $priv != "Admin") {
+if (!preg_match("/admin/i", $priv)) {
   $sql .= " AND user.id=$key";
   $manage = "Edit details";
 }
 
 $sql .= " ORDER BY name";
+
 
 if (!isset($flag)) {
   $result = doQuery($pdo, $sql, 'Error retrieving list:');
@@ -512,6 +510,7 @@ if (preg_match("/client/i", $priv)) {
   $row = $res ? $st->fetch(PDO::FETCH_NUM) : null;
   $dom = isset($row) ? $row[0] : null;
   $flag = true;
+  $users = []; //!!! reset
 
   if ($dom) {
     //https://stackoverflow.com/questions/18511645/use-bound-parameter-multiple-times
@@ -530,7 +529,6 @@ if (preg_match("/client/i", $priv)) {
     if ($count > 0) {
       $sql = "SELECT employer.id, employer.name FROM user INNER JOIN (SELECT user.id, user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain";
       $sqlend = " AS employer ON $domainstr=employer.domain WHERE user.email=:email";
-
       if (!preg_match("/admin/i", $priv)) {
         $sqlkey = " WHERE user.id=:k)";
         $sql .= $sqlkey;
@@ -543,7 +541,9 @@ if (preg_match("/client/i", $priv)) {
       if (isset($sqlkey)) {
         $st->bindValue(":k", $key);
       }
+
       doPreparedQuery($st, 'Error retrieving list:');
+
       if (!$res) {
         $error = 'Database error fetching client list.' . $sql;
         include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
@@ -560,6 +560,7 @@ if (preg_match("/client/i", $priv)) {
   }
 }
 
+
 if (preg_match("/admin/i", $priv)) {
   $manage = "Manage Users";
   $sqlc = "SELECT client.domain, client.name FROM client ORDER BY name";
@@ -570,6 +571,7 @@ if (preg_match("/admin/i", $priv)) {
     $client[$row['domain']] = $row['name'];
   }
 }
+
 $error =  $lib[$_SERVER["QUERY_STRING"]] ?? '';
 $message = $message ? $message : $error;
 include 'users.html.php';

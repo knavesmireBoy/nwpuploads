@@ -1,1 +1,1 @@
-<p><a href="?edit=<?=$k;?>"><?= $user; ?></a><p>
+<a href="?edit=<?=$k;?>"><?= $user; ?></a>
