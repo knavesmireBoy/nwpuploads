@@ -10,8 +10,7 @@ $userdom = isset($_GET['userdom']) ? $_GET['userdom'] : NULL;
 $clientdom = isset($_GET['clientdom']) ? $_GET['clientdom'] : NULL;
 $pwd = isset($_GET['pwd']) ? $_GET['pwd'] : NULL;
 $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
-$lib = ['nousers' => "<h4>Unable to find any users</h4>", "addnotice" => "Please fill required fields", "selectuser" => "Please select a user for editing", "clientdom" => "Cannot assign this user to a new client", "lastuser" => "To remove this last user, please delete the client instead",  "userdom" => "Changing your email address will require you to log out", "denied" => "You do not have the required privileges to delete, please contact your administrator", "access" => "You do not have the privileges to add a user", "deniedbyadmin" => "Cannot delete this user until a new client admin role is assigned to this client", "self" => "NO"];
-
+$lib = ['nousers' => "<h4>Unable to find any users</h4>", "addnotice" => "Please fill required fields", "selectuser" => "Please select a user for editing", "clientdom" => "Cannot assign this user to a new client", "lastuser" => "To remove this last user, please delete the client instead",  "userdom" => "Changing your email address will require you to log out", "denied" => "You do not have the required privileges to delete, please contact your administrator", "access" => "You do not have the privileges to add a user", "deniedbyadmin" => "Cannot delete this user until a new client admin role is assigned to this client", "self" => "Only a peer can perform this deletion"];
 $is_client_sql = "SELECT client.id AS employer, domain FROM client LEFT JOIN user ON $domainstr = client.domain WHERE user.email=:email";
 
 function updateUserDomain($old, $new, $id = 0)
@@ -106,27 +105,42 @@ if (isset($_POST['confirm'])) {
   $location = " .";
   if ($_POST['confirm'] == 'Yes') {
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-    $admin = $priv == 'Admin';
+    $admin = ($priv == 'Admin');
     $id = $_POST['id'];
-    $sql = "SELECT email, domain FROM user INNER JOIN client ON user.client_id = client.id WHERE user.id=:id";
+    $role = null;
+    $roles = [];
 
+    $sql = "SELECT email, domain FROM user INNER JOIN client ON user.client_id = client.id WHERE user.id=:id";
     $st = $pdo->prepare($sql);
     $st->bindValue(':id',  $id);
     doPreparedQuery($st, 'Error fetching client.');
     $row = $st->fetch(PDO::FETCH_ASSOC);
-    https: //stackoverflow.com/questions/20009076/php-undefined-index-notice-not-raised-when-indexing-null-variable
+
+    //https: //stackoverflow.com/questions/20009076/php-undefined-index-notice-not-raised-when-indexing-null-variable
     $dom = $row['domain'];
     $email = $row['email'];
 
-    $sql = "SELECT user.id FROM user INNER JOIN client ON user.client_id = client.id WHERE client.domain='$dom'";
+    if (!$dom) {
+      if (!$role) { //must be a freelancer/admin
+        $st = doQuery($pdo, "SELECT email from user where id='$id'", "fail");
+        $email = $st->fetch(PDO::FETCH_ASSOC)['email'];
+        if ($admin && ($email === $_SESSION['email'])) {
+          header("Location: ./?self");
+          exit();
+        } else {
+          deleteAlready($pdo, $id);
+          header("Location: .");
+          exit();
+        }
+      }
+    }
 
+    $sql = "SELECT user.id FROM user INNER JOIN client ON user.client_id = client.id WHERE client.domain='$dom'";
     $st = doQuery($pdo, $sql, 'Error fetching client.');
     $rows = $st->fetchAll(PDO::FETCH_ASSOC);
 
-    $sql = "SELECT role.id AS role FROM role LEFT JOIN userrole ON role.id = userrole.roleid WHERE userrole.userid=:id";
-    $roles = [];
-    $st = $pdo->prepare($sql);
-
+    $rolesql = "SELECT role.id AS role, userrole.userid AS id FROM role LEFT JOIN userrole ON role.id = userrole.roleid WHERE userrole.userid=:id";
+    $st = $pdo->prepare($rolesql);
     if (!empty($rows)) {
       foreach ($rows as $r) {
         $st->bindValue(':id',  $r['id']);
@@ -135,44 +149,25 @@ if (isset($_POST['confirm'])) {
         $roles[$ro['id']] = $ro['role'];
       }
     }
-
+    if (count($rows) === 1) {
+      header("Location: ./?lastuser");
+      exit();
+    }
     $role = isset($roles[$id]) ? $roles[$id] : NULL;
     $danger = preg_match("/admin/i", $role);
-    $denied = clientCheck(true);
-
-    if (!$role) { //must be a freelancer
-      $st = doQuery($pdo, "SELECT email from user where id='$id'", "fail");
-      $email = $st->fetch(PDO::FETCH_ASSOC)['email'];
-      $self = $email === $_SESSION['email'];
-      if ($admin && $self) {
-        header("Location: ./?self=$id");
-        exit();
-      } else {
-        deleteAlready($pdo, $_POST['id']);
-      }
-    }
-
     if ($danger) {
       $roles = safeFilter($roles, function ($role) {
         return preg_match("/admin/i", $role);
       });
     }
-    $danger && count($roles) < 2;
-    if (count($rows) === 1) {
-      header("Location: ./?lastuser");
-      exit();
+    $danger || count($roles) < 2;
+    $denied = ($role === 'Client');
+    if (!$denied && !$danger) {
+      deleteAlready($pdo, $id);
     }
-    if (!$denied) {
-      if (!$danger) {
-        deleteAlready($pdo, $_POST['id']);
-      } else {
-        $location .= "/?deniedbyadmin";
-      }
-    } else {
-      $location .= "/?denied";
-    }
+  } else {
+    $location .= "/?denied";
   }
-
   header("Location: $location");
   exit();
 } ////////////END OF CONFIRM

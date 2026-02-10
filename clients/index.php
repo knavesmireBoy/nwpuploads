@@ -50,7 +50,6 @@ if (isset($_POST['confirm'])) {
 }
 ////////////END OF DELETE....START OF EDIT
 
-
 if (isset($_POST['action']) && $_POST['action'] == 'Edit' || isset($_GET['dom'])) {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
   $sql = "SELECT id, name, domain, tel FROM client WHERE id =:id";
