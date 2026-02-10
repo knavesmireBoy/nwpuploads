@@ -50,7 +50,8 @@ function userIsLoggedIn()
         unset($_SESSION['email']);
         unset($_SESSION['password']);
         //header("Location: " . $_POST['goto']);
-        header("Location: .");
+        $e = $_GET['error'] ?? '';
+        header("Location: ./?loginError=$e");
         exit();
     } //end of logout
 
@@ -64,21 +65,24 @@ function userHasWhatRole()
 {
     include 'db.inc.php';
     $sql = "SELECT userrole.roleid, user.id, count(*) as total FROM userrole INNER JOIN user ON user.id=userrole.userid where user.email=:email GROUP BY roleid";
-
+    $email = $_SESSION['email'];
     $st = $pdo->prepare($sql);
-    $st->bindValue(":email", $_SESSION['email']);
-    doPreparedQuery($st, "<p>Error establishing user role:</p>");
+    $st->bindValue(":email", $email);
+    doPreparedQuery($st, "<p>Error establishing user role!:</p>");
     $row = $st->fetch(PDO::FETCH_ASSOC);
 
     if (!$row) {
         $error = 'Error establishing user role:';
-        echo "<p>$error</p>";
+       // echo "<h3>$error</h3>";
+        header("Location: ./?action=logout&error=$error");
+        exit();
     }
     return [$row['id'], $row['roleid']];
     return $roleplay;
 }
 
-function clientCheck($flag = false) {
+function clientCheck($flag = false)
+{
     list($key, $priv) = userHasWhatRole();
     $c = preg_match("/client/i", $priv);
     $ca = $c && preg_match("/admin/i", $priv);

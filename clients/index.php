@@ -7,6 +7,7 @@ if (!userIsLoggedIn()) {
 }
 //clients page
 $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
+
 function getDomain($pdo, $id)
 {
   $st = $pdo->prepare("SELECT domain FROM client WHERE id=:id");
@@ -19,7 +20,7 @@ function getDomain($pdo, $id)
 $roleplay = userHasWhatRole();
 list($key, $priv) = $roleplay;
 
-if ($priv === 'Admin') {
+if ($priv !== 'Admin') {
   $error = 'Only Account Administrators may access this page!';
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/accessdenied.html.php';
   exit();

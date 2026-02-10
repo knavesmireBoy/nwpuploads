@@ -16,15 +16,12 @@
 		<h1><?php echo $manage; ?></h1>
 		<?php
 		ob_start();
-		//if ($priv == 'Admin') { 
 		if (preg_match("/admin/i", $priv)) {
 		?>
 			<p><a href="?add">Add New User</a></p>
-		<?php 
+			<h3 class='error'><?=$error; ?></h3>;
+		<?php }
 	
-	}
-		echo "<h3 class='error'>$error</h3>";
-		//if (preg_match("/admin/i", $priv) && !isset($_POST['act'])): 
 		if (($priv == 'Admin') && !isset($_POST['act'])): ?>
 			<form action="" method="post" name="userform" class="choose">
 				<ul>
@@ -46,13 +43,6 @@
 				</ul>
 			</form>
 			<?php elseif (preg_match("/client/i", $priv) || (isset($_POST['act']) && $_POST['act'] == 'Choose')):
-			/*
-			if (preg_match("/client/i", $priv) && isset($_POST['user'])) {
-				$id = $_POST['user'];
-				header("Location: ./?userdom=$id");
-				exit();
-			}
-				*/
 			foreach ($users as $k => $user): ?>
 				<form action="" method="post" name="edituserform" class="prompt">
 					<input type="hidden" name="id" value="<?= $k; ?>" />

@@ -1,6 +1,13 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
 
+
+function safeFilter($array, $cb)
+{
+    return array_values(array_filter($array, $cb));
+}
+
+
 function sanitizeInput($data) {
     $data = trim($data);
     $data = stripslashes($data);
