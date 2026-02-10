@@ -114,7 +114,7 @@ if (isset($_POST['confirm'])) {
     $st->bindValue(':id',  $id);
     doPreparedQuery($st, 'Error fetching client.');
     $row = $st->fetch(PDO::FETCH_ASSOC);
-    https://stackoverflow.com/questions/20009076/php-undefined-index-notice-not-raised-when-indexing-null-variable
+    https: //stackoverflow.com/questions/20009076/php-undefined-index-notice-not-raised-when-indexing-null-variable
     $dom = $row['domain'];
     $email = $row['email'];
 
@@ -142,14 +142,13 @@ if (isset($_POST['confirm'])) {
 
     if (!$role) { //must be a freelancer
       $st = doQuery($pdo, "SELECT email from user where id='$id'", "fail");
-      $email= $st->fetch(PDO::FETCH_ASSOC)['email'];
+      $email = $st->fetch(PDO::FETCH_ASSOC)['email'];
       $self = $email === $_SESSION['email'];
-
       if ($admin && $self) {
         header("Location: ./?self=$id");
         exit();
       } else {
-       deleteAlready($pdo, $_POST['id']);
+        deleteAlready($pdo, $_POST['id']);
       }
     }
 
@@ -178,7 +177,7 @@ if (isset($_POST['confirm'])) {
   exit();
 } ////////////END OF CONFIRM
 
-if (isset($_GET['denied']) || isset($_GET['access']) || isset($_GET['self'])){
+if (isset($_GET['denied']) || isset($_GET['access']) || isset($_GET['self'])) {
   $error =  $lib[$_SERVER["QUERY_STRING"]] ?? '';
 }
 
