@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html class="no-js" lang="en">
-
 <head>
 	<meta charset="utf-8">
 	<meta content="IE=edge" http-equiv="X-UA-Compatible">
@@ -10,7 +9,6 @@
 	<script>
 		document.cookie = 'resolution=' + Math.max(screen.width, screen.height) + '; path=/';
 	</script>
-
 <body>
 	<div>
 		<h1><?php echo $manage; ?></h1>
@@ -18,10 +16,12 @@
 		if (preg_match("/admin/i", $priv)) {
 		?>
 			<p><a href="?add">Add New User</a></p>
-		<?php } ?>
+		<?php }
+		ob_start();
+		?>
 		<h3 class='error'><?= $error; ?></h3>
 		<?php
-		ob_start();
+
 		if (($priv == 'Admin') && !isset($_POST['act'])): ?>
 			<form action="" method="post" name="userform" class="choose">
 				<ul>

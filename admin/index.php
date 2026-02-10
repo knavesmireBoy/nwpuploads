@@ -10,10 +10,9 @@ $userdom = isset($_GET['userdom']) ? $_GET['userdom'] : NULL;
 $clientdom = isset($_GET['clientdom']) ? $_GET['clientdom'] : NULL;
 $pwd = isset($_GET['pwd']) ? $_GET['pwd'] : NULL;
 $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
-$lib = ['nousers' => "<h4>Unable to find any users</h4>", "addnotice" => "Please fill required fields", "selectuser" => "Please select a user for editing", "clientdom" => "Cannot assign this user to a new client", "lastuser" => "To remove this last user, please delete the client instead",  "userdom" => "Changing your email address will require you to log out", "denied" => "You do not have the required privileges to delete, please contact your administrator", "access" => "You do not have the privileges to add a user", "deniedbyadmin" => "Cannot delete this user until a new client admin role is assigned to this client",];
+$lib = ['nousers' => "<h4>Unable to find any users</h4>", "addnotice" => "Please fill required fields", "selectuser" => "Please select a user for editing", "clientdom" => "Cannot assign this user to a new client", "lastuser" => "To remove this last user, please delete the client instead",  "userdom" => "Changing your email address will require you to log out", "denied" => "You do not have the required privileges to delete, please contact your administrator", "access" => "You do not have the privileges to add a user", "deniedbyadmin" => "Cannot delete this user until a new client admin role is assigned to this client", "self" => "NO"];
 
 $is_client_sql = "SELECT client.id AS employer, domain FROM client LEFT JOIN user ON $domainstr = client.domain WHERE user.email=:email";
-
 
 function updateUserDomain($old, $new, $id = 0)
 {
@@ -88,13 +87,12 @@ if (!$roleplay = userHasWhatRole()) {
 $sql = "SELECT id, name FROM user "; // THE DEFAULT QUERY___________________________________
 list($key, $priv) = $roleplay;
 
-
 if (preg_match("/client/i", $priv)) {
   // constrains the query to one user if a client is logged in
   $sql = "SELECT id, name FROM user where id ='$key' ORDER BY name";
 }
 
-if (isset($_POST['action']) and $_POST['action'] == 'Delete') {
+if (isset($_POST['action']) && $_POST['action'] == 'Delete') {
   $id = $_POST['id'];
   $title = "Prompt";
   $prompt = "Are you sure you want to delete this user? ";
@@ -108,7 +106,7 @@ if (isset($_POST['confirm'])) {
   $location = " .";
   if ($_POST['confirm'] == 'Yes') {
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-    $priv == 'Admin';
+    $admin = $priv == 'Admin';
     $id = $_POST['id'];
     $sql = "SELECT email, domain FROM user INNER JOIN client ON user.client_id = client.id WHERE user.id=:id";
 
@@ -116,27 +114,45 @@ if (isset($_POST['confirm'])) {
     $st->bindValue(':id',  $id);
     doPreparedQuery($st, 'Error fetching client.');
     $row = $st->fetch(PDO::FETCH_ASSOC);
+    https://stackoverflow.com/questions/20009076/php-undefined-index-notice-not-raised-when-indexing-null-variable
     $dom = $row['domain'];
+    $email = $row['email'];
+
     $sql = "SELECT user.id FROM user INNER JOIN client ON user.client_id = client.id WHERE client.domain='$dom'";
 
     $st = doQuery($pdo, $sql, 'Error fetching client.');
     $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-    $self = $row['email'] === $_SESSION['email'];
 
     $sql = "SELECT role.id AS role FROM role LEFT JOIN userrole ON role.id = userrole.roleid WHERE userrole.userid=:id";
     $roles = [];
     $st = $pdo->prepare($sql);
 
-    foreach ($rows as $r) {
-      $st->bindValue(':id',  $r['id']);
-      doPreparedQuery($st, 'Error fetching client.');
-      $ro = $st->fetch(PDO::FETCH_ASSOC);
-      $roles[$r['id']] = $ro['role'];
+    if (!empty($rows)) {
+      foreach ($rows as $r) {
+        $st->bindValue(':id',  $r['id']);
+        doPreparedQuery($st, 'Error fetching client.');
+        $ro = $st->fetch(PDO::FETCH_ASSOC);
+        $roles[$ro['id']] = $ro['role'];
+      }
     }
 
-    $role = $roles[$id];
+    $role = isset($roles[$id]) ? $roles[$id] : NULL;
     $danger = preg_match("/admin/i", $role);
     $denied = clientCheck(true);
+
+    if (!$role) { //must be a freelancer
+      $st = doQuery($pdo, "SELECT email from user where id='$id'", "fail");
+      $email= $st->fetch(PDO::FETCH_ASSOC)['email'];
+      $self = $email === $_SESSION['email'];
+
+      if ($admin && $self) {
+        header("Location: ./?self=$id");
+        exit();
+      } else {
+       deleteAlready($pdo, $_POST['id']);
+      }
+    }
+
     if ($danger) {
       $roles = safeFilter($roles, function ($role) {
         return preg_match("/admin/i", $role);
@@ -162,7 +178,7 @@ if (isset($_POST['confirm'])) {
   exit();
 } ////////////END OF CONFIRM
 
-if (isset($_GET['denied']) || isset($_GET['access'])) {
+if (isset($_GET['denied']) || isset($_GET['access']) || isset($_GET['self'])){
   $error =  $lib[$_SERVER["QUERY_STRING"]] ?? '';
 }
 
@@ -442,7 +458,7 @@ $sql = "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=c
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 //_______________________________________________________________________________
 
-if (isset($_POST['act']) and $_POST['act'] == 'Choose') {
+if (isset($_POST['act']) && $_POST['act'] == 'Choose') {
   if ($_POST['user'] === '') {
     header("Location: ./?selectuser");
     exit();
@@ -455,7 +471,7 @@ if (isset($_POST['act']) and $_POST['act'] == 'Choose') {
   $st->bindValue(":domain", $key);
   doPreparedQuery($st, "<p>Error:</p>");
   $row = $st->fetch(PDO::FETCH_ASSOC);
-  // some clients need full domain for identification, in which case the query is simplified to a straight match to a users email address which corresponds to the client domain.
+  //some clients need full domain for identification, in which case the query is simplified to a straight match to a users email address which corresponds to the client domain.
   if (strrpos($key, "@")) {
     $domainstr = "user.email";
   }
@@ -487,7 +503,6 @@ if (!preg_match("/admin/i", $priv)) {
 
 $sql .= " ORDER BY name";
 
-
 if (!isset($flag)) {
   $result = doQuery($pdo, $sql, 'Error retrieving list:');
   $rows = $result->fetchAll();
@@ -510,7 +525,6 @@ if (preg_match("/client/i", $priv)) {
   $row = $res ? $st->fetch(PDO::FETCH_NUM) : null;
   $dom = isset($row) ? $row[0] : null;
   $flag = true;
-  $users = []; //!!! reset
 
   if ($dom) {
     //https://stackoverflow.com/questions/18511645/use-bound-parameter-multiple-times
@@ -527,6 +541,7 @@ if (preg_match("/client/i", $priv)) {
     } //full domain
 
     if ($count > 0) {
+      $users = []; //!!! reset
       $sql = "SELECT employer.id, employer.name FROM user INNER JOIN (SELECT user.id, user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain";
       $sqlend = " AS employer ON $domainstr=employer.domain WHERE user.email=:email";
       if (!preg_match("/admin/i", $priv)) {
@@ -541,9 +556,7 @@ if (preg_match("/client/i", $priv)) {
       if (isset($sqlkey)) {
         $st->bindValue(":k", $key);
       }
-
       doPreparedQuery($st, 'Error retrieving list:');
-
       if (!$res) {
         $error = 'Database error fetching client list.' . $sql;
         include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
@@ -559,7 +572,6 @@ if (preg_match("/client/i", $priv)) {
     exit();
   }
 }
-
 
 if (preg_match("/admin/i", $priv)) {
   $manage = "Manage Users";
