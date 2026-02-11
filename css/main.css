@@ -203,10 +203,6 @@ th a {
   padding: 0.6em 0;
 }
 
-p a {
-  display: inline-block;
-}
-
 h1 {
   margin: 0 0 0.5em;
 }
@@ -234,6 +230,41 @@ form div {
 
 input[type=submit] {
   padding: 0.25em 0.5em;
+}
+
+footer > * {
+  border-width: 0;
+  border-radius: 0;
+  font: 1em Arial, sans-serif;
+  color: #000;
+  display: inline-block;
+  margin-right: 0.5em;
+  padding: 0.5em 0.75em;
+}
+footer > *:hover {
+  color: white;
+  background-color: #9c0;
+}
+footer span.current {
+  background-color: #9c0;
+}
+
+p a {
+  display: inline-block;
+}
+p a:hover {
+  text-decoration: none;
+  background: #000;
+  color: white;
+}
+
+p a,
+.log input[type=submit] {
+  font: bold 1em Georgia, serif;
+  color: #6e9900;
+  border-radius: 10px;
+  padding: 0.15em 0.3em;
+  border: solid 1px #000;
 }
 
 /* Preview */
@@ -538,22 +569,6 @@ p.ret {
   margin: 1em 0;
 }
 
-.update,
-.editclient,
-.fieldset,
-.commit,
-.select,
-div.clientlist,
-.edit .select + div {
-  margin: 0;
-  display: inline-block;
-  vertical-align: top;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
 input[type=text] {
   font-size: 1em;
   height: 1.5em;
@@ -607,309 +622,6 @@ footer {
   margin: 1em 0;
 }
 
-/*buttons only present on mobile sites. so noo need for MQ*/
-button.action {
-  width: 30px;
-  height: 25px;
-  display: block;
-  background-image: url(../icons/sprite_lo_res.png);
-  background-position: center 0;
-  background-repeat: no-repeat;
-  border-width: 0;
-  padding: 0;
-  background-color: transparent;
-  border: solid 0px #000;
-}
-
-button.download {
-  background-position: center;
-}
-
-button.update {
-  background-position: center bottom;
-}
-
-/*
-.prompt label,
-.prompt input {
-  display: inline-block;
-  vertical-align: top;
-  margin: 0;
-}
-.prompt div:last-of-type {
-  margin: 0 0 0.3em;
-}
-.prompt label {
-  padding: 0;
-}
-  */
-.commit label {
-  width: auto;
-}
-
-.up td {
-  text-align: right;
-  border: 0px;
-}
-
-form[name=deletions] {
-  border-width: 0;
-}
-
-.clientlist li,
-.clientlist li > * {
-  display: inline-block;
-  vertical-align: middle;
-}
-
-.select select {
-  font: bold 1em Arial, sans-serif;
-}
-
-.warning legend {
-  border: solid 1px #fff;
-}
-
-.edit span {
-  font-style: italic;
-}
-
-.clientlist input {
-  margin: 0 0.3em 0 0;
-}
-
-.preview img {
-  position: absolute;
-  left: -9999px;
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
-.Yes p,
-.Yes {
-  margin: 0;
-  border: 0;
-}
-
-button.action image {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
-th a:hover {
-  color: white;
-  text-decoration: none;
-  background-color: #7caa09;
-}
-
-p a:hover {
-  text-decoration: none;
-  background: #000;
-  color: white;
-}
-
-footer a {
-  border-width: 0;
-  border-radius: 0;
-  font: 1em Arial, sans-serif;
-  color: #000;
-}
-
-footer a,
-footer span {
-  display: inline;
-  zoom: 1;
-  outline: 1px solid #000;
-}
-
-footer > a,
-footer > span {
-  display: inline-block;
-  margin-right: 0.5em;
-  padding: 0.5em 0.75em;
-}
-
-.name label {
-  font-family: Georgia, serif;
-  font-size: 1.3em;
-  color: #496600;
-  padding: 0.3em 0 0;
-}
-
-h1.admin a {
-  color: #000080;
-}
-
-h1.manager a {
-  color: #006400;
-}
-
-h1.browser a {
-  color: #708090;
-}
-
-h1.edit a,
-h2.edit a {
-  color: #496600;
-}
-
-div.clientlist form {
-  padding: 0.5em;
-  border: solid 1px #000;
-  border-radius: 5px;
-  background-color: #fff;
-  margin: 0 0 1em;
-}
-
-div.clientlist form:last-child {
-  margin: 0;
-}
-
-div.clientlist {
-  margin: 0 0 1em;
-}
-
-/*form div*/
-.clientlist .name {
-  display: block;
-  font-size: 110%;
-  border-bottom: dotted 1px;
-}
-
-.upload.warning {
-  padding: 1em;
-}
-
-footer + .commit {
-  margin: 1em 0;
-}
-
-input[type=submit]:hover {
-  background-color: #000;
-}
-
-.up td:last-child {
-  text-align: left;
-}
-
-.users p.ret,
-.clients p.ret {
-  position: absolute;
-  left: -9999px;
-}
-
-.commit fieldset,
-.fieldset,
-.select,
-.edit fieldset,
-.edit .select + div {
-  background-color: var(--prompt);
-}
-
-.edit .select {
-  margin: 0;
-  border-radius: 5px;
-}
-
-.edit .select + div {
-  padding: 0.6em;
-  border: solid 1px #000;
-  border-radius: 5px;
-}
-
-footer a:hover {
-  color: white;
-  background-color: #9c0;
-}
-
-.warning fieldset:first-child {
-  border: solid 1px white;
-  position: relative;
-  left: 0;
-}
-
-p a,
-.log input[type=submit] {
-  font: bold 1em Georgia, serif;
-  color: #6e9900;
-  border-radius: 10px;
-  padding: 0.15em 0.3em;
-  border: solid 1px #000;
-}
-
-.log input[type=submit],
-.upload input[type=submit] {
-  padding: 0.2em 0.4em;
-  font: bold 1.1em Georgia, serif;
-  background: #000;
-  color: white;
-}
-
-footer span.current {
-  background-color: #9c0;
-}
-
-.log input[type=submit]:hover,
-.upload input[type=submit]:hover {
-  color: #6e9900;
-}
-
-.upload input[type=submit]:disabled:hover {
-  color: #666666;
-}
-
-.update input[type=submit]:hover,
-.commit input[type=submit]:hover {
-  color: orangered;
-  border: solid 1px #f00;
-}
-
-form[name=deletions] div.fieldset {
-  padding: 1em;
-}
-
-.xrole fieldset:last-of-type {
-  background-color: #496600;
-  color: var(--prompt);
-}
-
-.upload input[type=submit]:disabled,
-.upload input[type=submit][disabled] {
-  border: 1px solid #999;
-  background-color: #ccc;
-  color: #666;
-}
-
-/*
-.js .prompt input[type="submit"],
-.js form[name="edituserform"] input[type="submit"],
-.js form[name="editclientform"] input[type="submit"],
-.js #userform button,
-.js #clientsform button,
-.js form[name="clientsform"] input[type="submit"],
-.js form[name="userform"] input[type="submit"] {
-  position: absolute;
-  left: -999px;
-}
-.users .prompt input[type="submit"],
-.clients .prompt input[type="submit"] {
-  position: relative;
-  left: 0;
-}
-.xname #name,
-.xemail #email,
-.xpassword #password {
-  border: solid 1px #f00;
-}
-.xname.xemail #email,
-.xname.xemail.xpassword #password,
-.xname.xpassword #password,
-.xemail.xpassword #password {
-  border: solid 1px #ffa500;
-}
-  */
 section#prompt {
   margin: 1em 0;
   padding: 1em;
