@@ -178,8 +178,9 @@ if (isset($_GET['denied']) || isset($_GET['access']) || isset($_GET['self'])) {
 
 if (isset($_GET['add'])) {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+  $route = "Add";
   $pagetitle = 'New User';
-  $action = 'addform';
+  //$action = '?';
   $button = 'Add User';
   $name = '';
   $email = '';
@@ -223,7 +224,7 @@ if (isset($_GET['add'])) {
 } //////////////END OF ASSIGN
 
 
-if (isset($_GET['addform'])) {
+if (isset($_POST['action']) && $_POST['action'] === 'Add') {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
   $clientid = $_POST['employer'] !== '' ? $_POST['employer'] : NULL;
   $clientadmin = preg_match("/admin/i", $priv) && preg_match("/client/i", $priv);
@@ -302,12 +303,14 @@ if ((isset($_GET['edit'])) || $userdom || $pwd || $clientdom) {
     doPreparedQuery($st, "<p>Error fetching user details.</p>");
     $row = $st->fetch(PDO::FETCH_ASSOC);
   }
+  $route = "Edit";
   $pagetitle = 'Edit User';
   $action = 'editform';
+  $button = 'Update User';
   $name = $row['name'];
   $email = $row['email'];
   $id = $row['id'];
-  $button = 'Update User';
+  
   $override = $userdom ? $userdom : ($pwd ? $pwd : NULL);
 
   $st = $pdo->prepare("SELECT roleid FROM userrole WHERE userid=:id");
@@ -351,7 +354,7 @@ if ((isset($_GET['edit'])) || $userdom || $pwd || $clientdom) {
   exit();
 } //edit
 
-if (isset($_POST['action']) && $_POST['action'] == 'Edit') {
+if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
   $override = $_POST['override'];
   $id =  $_POST['id'];

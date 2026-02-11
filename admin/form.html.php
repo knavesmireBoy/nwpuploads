@@ -41,7 +41,7 @@
 
 			endif; ?>
 			<div><input type="hidden" name="id" value="<?= $id; ?>" />
-				<input type="hidden" name="action" value="Edit" />
+				<input type="hidden" name="action" value="<?= $route; ?>" />
 				<input type="hidden" name="override" value="<?= $override; ?>" />
 				<input type="submit" value="<?= $button; ?>" />
 			</div>
