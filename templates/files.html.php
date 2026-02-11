@@ -35,8 +35,8 @@ if (count($files) > 0): ?>
                 ?>
                 <td title="<?= $tel; ?>">
                     <?php
-                    $stamp = html($f["time"]);
-                    echo date("g:i a F j ", strtotime($stamp)); ?></td>
+                    $stamp = $f["time"];
+                    echo date("g:ia F j", strtotime($stamp)); ?></td>
                 <td title="download">
                     <form action="<?php $_SERVER['PHP_SELF'] ?>" method="get" name="downloads">
                         <div><input type="hidden" name="action" value="download" />
@@ -68,7 +68,7 @@ endif;
 $wither = seek();
 $lnk = ($wither !== '.' ? 'Search files' : 'Clear search results');
 
-if (!isset($_GET['find']) && !isset($greeting)) { ?>
+if (!isset($_GET['find']) /* && !isset($greeting)*/) { ?>
     <p><a href="<?= $wither; ?>"><?= $lnk; ?></a></p>
 <?php
 } ?>

@@ -26,18 +26,6 @@ if ($priv !== 'Admin') {
   exit();
 }
 
-if (isset($_POST['action']) and $_POST['action'] == 'Delete') {
-  $id = $_POST['id'];
-  $title = "Prompt for deletion";
-  $template = 'prompt.html.php';
-  $prompt = "Are you sure you want to delete this client? ";
-  $call = "confirm";
-  $pos = "Yes";
-  $neg = "No";
-  $action = '';
-}
-
-
 if (isset($_POST['confirm'])) {
   if ($_POST['confirm'] == 'Yes') {
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
@@ -50,54 +38,40 @@ if (isset($_POST['confirm'])) {
 }
 ////////////END OF DELETE....START OF EDIT
 
-if (isset($_POST['action']) && $_POST['action'] == 'Edit' || isset($_GET['dom'])) {
-  include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-  $sql = "SELECT id, name, domain, tel FROM client WHERE id =:id";
-  $id = isset($_POST['id']) ? $_POST['id'] : (isset($_GET['dom']) ? $_GET['dom'] : NULL);
-  $st = $pdo->prepare($sql);
-  $st->bindValue(":id", $id);
-  $res = doPreparedQuery($st, 'Error fetching client details.');
+if (isset($_POST['action']) && $_POST['action'] == 'Edited' || isset($_GET['dom'])) {
+  if (isset($_POST['delete'])) {
+    $id = $_POST['id'];
+    $title = "Prompt for deletion";
+    $template = 'prompt.html.php';
+    $prompt = "Are you sure you want to delete this client? ";
+    $call = "confirm";
+    $pos = "Yes";
+    $neg = "No";
+    $action = '';
+  } else {
+    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+    $dom = getDomain($pdo, $_POST['id']);
+    $st = $pdo->prepare("UPDATE client SET name=:nom, domain=:dom, tel=:tel WHERE id=:id");
+    $st->bindValue(':nom', $_POST['name']);
+    $st->bindValue(':dom', $_POST['domain']);
+    $st->bindValue(':tel', $_POST['tel']);
+    $st->bindValue(':id',  $_POST['id']);
+    $res = doPreparedQuery($st, 'Error updating client.');
+    if (!$res) {
+      $error = 'Error updating client.';
+      include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
+      exit();
+    }
+    $id = $_POST['id'];
+    $newdom = getDomain($pdo, $_POST['id']);
 
-  if (!$res) {
-    $error = 'Error fetching user details.';
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
+    if ($dom !== $newdom) {
+      header("Location: ../admin/?domain=$dom&updated=$newdom");
+      exit();
+    }
+    header('Location: . ');
     exit();
   }
-  $row = $st->fetch(PDO::FETCH_ASSOC);
-  $pagetitle = 'Edit Client';
-  $action = 'editform';
-  $name = $row['name'];
-  $domain = $row['domain'];
-  $tel = $row['tel'];
-  $id = $row['id'];
-  $button = 'Update Client';
-  include 'form.html.php';
-  exit();
-}
-
-if (isset($_GET['editform'])) {
-  include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-  $dom = getDomain($pdo, $_POST['id']);
-  $st = $pdo->prepare("UPDATE client SET name=:nom, domain=:dom, tel=:tel WHERE id=:id");
-  $st->bindValue(':nom', $_POST['name']);
-  $st->bindValue(':dom', $_POST['domain']);
-  $st->bindValue(':tel', $_POST['tel']);
-  $st->bindValue(':id',  $_POST['id']);
-  $res = doPreparedQuery($st, 'Error updating client.');
-  if (!$res) {
-    $error = 'Error updating client.';
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
-    exit();
-  }
-  $id = $_POST['id'];
-  $newdom = getDomain($pdo, $_POST['id']);
-
-  if ($dom !== $newdom) {
-    header("Location: ../admin/?domain=$dom&updated=$newdom");
-    exit();
-  }
-  header('Location: . ');
-  exit();
 }
 
 if (isset($_GET['add'])) {
@@ -105,9 +79,11 @@ if (isset($_GET['add'])) {
   $id = '';
   $pagetitle = 'New Client';
   $action = 'addform';
+  $route = 'Added';
   $name = '';
   $domain = '';
   $tel = '';
+  $id = '';
   $button = 'Add Client';
   include 'form.html.php';
   exit();
@@ -177,8 +153,25 @@ include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 $sql = "SELECT id, name, domain from client"; // THE DEFAULT QUERY
 //$cid = 0; //$id MAY have been set by delete so don't overwrite;
 
-if (isset($_POST['act']) and $_POST['act'] == 'Choose' && $_POST['client'] != '') {
-  $clientid = $_POST['client'];
+if (isset($_POST['act']) && $_POST['act'] == 'Choose' && $_POST['client'] != '') {
+
+  include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+  $sql = "SELECT id, name, domain, tel FROM client WHERE id =:id";
+  $id = $_POST['client'];
+  $st = $pdo->prepare($sql);
+  $st->bindValue(":id", $id);
+  $res = doPreparedQuery($st, 'Error fetching client details.');
+  $row = $st->fetch(PDO::FETCH_ASSOC);
+  $pagetitle = 'Edit Client';
+  $action = 'editform';
+  $route = 'Edited';
+  $name = $row['name'];
+  $domain = $row['domain'];
+  $tel = $row['tel'];
+  $button = 'Update Client';
+  include 'form.html.php';
+  exit();
+  $clientid = $id;
   $sql .= " WHERE id=:id";
 }
 $sql .= " ORDER BY name";

@@ -25,11 +25,13 @@ if (isset($clientlist)): ?>
 
 <?php elseif (!isset($clientlist) and !isset($del)):
     ?>
-    <form action="<?= $action; ?>" method="post" name="choice"  class="prompt">
+    <form action="<?= $action; ?>" method="post" name="choice" class="prompt" id="yesno">
         <input type="hidden" name="id" value="<?= $id; ?>" />
         <p><?= $prompt; ?></p>
-        <label>Yes<input type="radio" name="<?= $call; ?>" value="<?= $pos; ?>" /></label>
-        <label>No<input type="radio" name="<?= $call; ?>" value="<?= $neg; ?>" /></label>
+        <input id="yes" type="radio" name="<?= $call; ?>" value="<?= $pos; ?>" />
+        <label for="yes">Yes</label>
+        <input id="no" type="radio" name="<?= $call; ?>" value="<?= $neg; ?>" />
+        <label for="no">No</label>
         <input type="submit" value="Submit" />
     </form>
 <?php endif;  ?>

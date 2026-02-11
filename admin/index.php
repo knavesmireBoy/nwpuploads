@@ -160,7 +160,9 @@ if (isset($_POST['confirm'])) {
         return preg_match("/admin/i", $role);
       });
     }
-    $danger || count($roles) < 2;
+    $danger = $danger || count($roles) < 2;
+
+    dump($danger);
     $denied = ($role === 'Client');
     if (!$denied && !$danger) {
       deleteAlready($pdo, $id);
@@ -187,6 +189,7 @@ if (isset($_GET['add'])) {
   $email = '';
   $job = '';
   $id = '';
+  $override = '';
   $admin = ($priv === 'Admin');
   $clientadmin = preg_match("/admin/i", $priv) || preg_match("/client/i", $priv);
 
