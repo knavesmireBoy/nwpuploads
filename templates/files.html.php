@@ -5,9 +5,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
 <h2><?php echo date('l F j, Y'); ?></h2>
 
 <?php
-
 include TEMPLATE . $template;
-
 echo $error;
 if (count($files) > 0): ?>
     </form>
@@ -19,26 +17,30 @@ if (count($files) > 0): ?>
             <tr valign="top" class="<?php if ($f['origin'] == $myip) echo 'admin'; ?>">
                 <?php
                 $fsize = formatFileSize($f['size']);
+                $client = $f['client'] ?? '';
+                $des = (empty($f['description'])  ? 'No description provided' : $f['description']);
+                $tel = $f['tel'];
+                $tel = $client && $tel ? "$client | $tel" : $client;
+                $id = $f['id'];
                 ?>
-                <td><a title="<?php htmlout($fsize); ?>" href="<?= '?action=get&id=' . $f['id']; ?>">
-                        <?php htmlout($f['filename']); ?></a></td>
+                <td><a title="<?= $fsize; ?>" href="<?= '?action=get&id=' . $id; ?>">
+                        <?= $f['filename']; ?></a></td>
                 <?php if ($priv != 'Admin') : ?>
-                    <td><?php htmlout($f['description']); ?></td>
+                    <td><?= $f['description']; ?></td>
                 <?php endif;
-                if ($priv == 'Admin') :
-                    $des = (empty($f['description'])  ? 'No description provided' : html($f['description'])); ?>
-                    <td title="<?php echo $des; ?>">
-                        <?php htmlout($f['user']); ?></td>
+                if ($priv == 'Admin') : ?>
+                    <td title="<?= $des; ?>">
+                        <?= $f['user']; ?></td>
                 <?php endif;
                 ?>
-                <td title="<?php echo $tel ?>">
+                <td title="<?= $tel; ?>">
                     <?php
                     $stamp = html($f["time"]);
                     echo date("g:i a F j ", strtotime($stamp)); ?></td>
                 <td title="download">
                     <form action="<?php $_SERVER['PHP_SELF'] ?>" method="get" name="downloads">
                         <div><input type="hidden" name="action" value="download" />
-                            <input type="hidden" name="id" value="<?php htmlout($f['id']); ?>" />
+                            <input type="hidden" name="id" value="<?= $id; ?>" />
                             <input type="submit" value="Download" />
                         </div>
                     </form>
@@ -47,7 +49,7 @@ if (count($files) > 0): ?>
                     <td title="delete">
                         <form action="<?php $_SERVER['PHP_SELF'] ?>" method="post" name="<?php htmlout($f['id']); ?>">
                             <div><input type="hidden" name="action" value="delete" />
-                                <input type="hidden" name="id" value="<?php htmlout($f['id']); ?>" />
+                                <input type="hidden" name="id" value="<?= $id; ?>" />
                                 <input type="submit" value="Delete" />
                             </div>
                         </form>

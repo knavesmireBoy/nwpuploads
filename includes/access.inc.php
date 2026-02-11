@@ -83,6 +83,8 @@ function userHasWhatRole()
 
 function clientCheck($flag = false)
 {
+   // $lib = ["Client" => ['add', 'delete'], ""]
+    
     list($key, $priv) = userHasWhatRole();
     $c = preg_match("/client/i", $priv);
     $ca = $c && preg_match("/admin/i", $priv);

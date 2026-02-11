@@ -1,5 +1,6 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
+$super = "andrewsykes@btinternet.com";
 $users = [];
 $id = '';
 $error = '';
@@ -91,7 +92,7 @@ if (preg_match("/client/i", $priv)) {
   $sql = "SELECT id, name FROM user where id ='$key' ORDER BY name";
 }
 
-if (isset($_POST['action']) && $_POST['action'] == 'Delete') {
+if (isset($_POST['action']) && $_POST['action'] === 'Delete') {
   $id = $_POST['id'];
   $title = "Prompt";
   $prompt = "Are you sure you want to delete this user? ";
@@ -115,14 +116,13 @@ if (isset($_POST['confirm'])) {
     $st->bindValue(':id',  $id);
     doPreparedQuery($st, 'Error fetching client.');
     $row = $st->fetch(PDO::FETCH_ASSOC);
-
     //https: //stackoverflow.com/questions/20009076/php-undefined-index-notice-not-raised-when-indexing-null-variable
     $dom = $row['domain'];
     $email = $row['email'];
 
     if (!$dom) {
       if (!$role) { //must be a freelancer/admin
-        $st = doQuery($pdo, "SELECT email from user where id='$id'", "fail");
+        $st = doQuery($pdo, "SELECT email from user where id=$id", "fail");
         $email = $st->fetch(PDO::FETCH_ASSOC)['email'];
         if ($admin && ($email === $_SESSION['email'])) {
           header("Location: ./?self");
@@ -165,9 +165,10 @@ if (isset($_POST['confirm'])) {
     if (!$denied && !$danger) {
       deleteAlready($pdo, $id);
     }
-  } else {
-    $location .= "/?denied";
-  }
+    else {
+      $location .= "/?denied";
+    }
+  } 
   header("Location: $location");
   exit();
 } ////////////END OF CONFIRM
@@ -310,7 +311,7 @@ if ((isset($_GET['edit'])) || $userdom || $pwd || $clientdom) {
   $name = $row['name'];
   $email = $row['email'];
   $id = $row['id'];
-  
+
   $override = $userdom ? $userdom : ($pwd ? $pwd : NULL);
 
   $st = $pdo->prepare("SELECT roleid FROM userrole WHERE userid=:id");

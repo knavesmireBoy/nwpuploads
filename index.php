@@ -575,19 +575,23 @@ else {
 }
 //$sql= $select . $from . $where . $order; //DEFAULT; TELEPHONE BLOCK REQUIRED TO OBTAIN CLIENT PHONE NUMBER
 $sql = $select;
-$select_tel = ", client.tel";
+$select_tel = ", client.name AS client, client.tel";
 $from .= " LEFT JOIN client ON user.client_id=client.id"; //note LEFT join to include just 'users' also
 $sql .= $select_tel . $from . $where . $order;
 
 //______________________________________________END OF TELEPHONE
+
+
 $st = doQuery($pdo, $sql, 'Database error fetching files. ');
-$result = $st->fetchAll(PDO::FETCH_ASSOC);
+$rows = $st->fetchAll(PDO::FETCH_ASSOC);
+
 $files = array();
-foreach ($result as $row) {
+foreach ($rows as $row) {
     $files[] = array(
         'id' => $row['id'],
         //'user' => (isset($row['user'])) ? $row['user'] : '',
         'user' => $row['name'],
+        'client' => $row['client'],
         'email' => $row['email'],
         'filename' => $row['filename'],
         'mimetype' => $row['mimetype'],
