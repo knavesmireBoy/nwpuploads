@@ -138,13 +138,14 @@ input[type="submit"] {
 
 footer {
   > * {
-    border-width: 0;
+    border: solid 1px black;
     border-radius: 0;
     font: 1em Arial, sans-serif;
     color: #000;
     display: inline-block;
     margin-right: 0.5em;
-    padding: 0.5em 0.75em;
+    padding: 0.5rem 0.75rem;
+
     &:hover {
       color: white;
       background-color: #9c0;
@@ -452,7 +453,7 @@ form[name="search"] input[type="search"] {
 }
 div#upload {
   margin: 0 auto;
-  width: clamp(320px, 80vw, 1000px);
+  width: clamp(320px, 70vw, 1000px);
 
   > table {
     width: 100%;

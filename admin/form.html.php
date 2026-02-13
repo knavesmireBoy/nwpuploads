@@ -49,7 +49,10 @@
 		<p><a href=".">Return to User List</a></p>
 		<?php if ($priv == 'Admin') : ?>
 			<p><a href="../clients/">Edit Clients</a></p>
-		<?php endif;  ?>
+		<?php endif;  
+			include '../includes/logout.inc.html.php';
+			exit();
+			?>
 	</div>
 </body>
 
