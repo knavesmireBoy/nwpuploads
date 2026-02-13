@@ -3,12 +3,11 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
 
 function query()
 {
-  $lib = ['nousers' => "<h4>Unable to find any users</h4>", "addnotice" => "Please fill required fields", "selectuser" => "Please select a user for editing", "clientflag" => "Cannot assign this user to a new client", "lastuser" => "To remove this last user, please delete the client instead",  "userdom" => "Changing your email address will require you to log out", "denied" => "You do not have the required privileges to delete, please contact your administrator", "access" => "You do not have the privileges to add a user", "deniedbyadmin" => "Cannot delete this user until a new client admin role is assigned to this client", "self" => "Only a peer can perform this deletion", "freelancer" => "Cannot assign this domain"];
+  $lib = ['nousers' => "<h4>Unable to find any users</h4>", "addnotice" => "Please fill required fields", "selectuser" => "Please select a user for editing", "clientflag" => "Cannot assign this user to a new client", "lastuser" => "To remove this last user, please delete the client instead",  "denied" => "You do not have the required privileges to delete, please contact your administrator", "access" => "You do not have the privileges to add a user", "deniedbyadmin" => "Cannot delete this user until a new client admin role is assigned to this client", "self" => "Only a peer can perform this deletion", "freelancer" => "Cannot assign this domain"];
   $query = explode('=', $_SERVER["QUERY_STRING"]);
   $q = $query[1] ?? $query[0];
   return $lib[$q] ?? '';
 }
-
 
 $super = "andrewsykes@btinternet.com";
 $users = [];
@@ -36,10 +35,8 @@ $isContractor = function ($pdo, $email, $clientid = NULL) use ($is_client_sql) {
   return (isset($row['employer']) && is_null($clientid)) ? $row['employer'] : $clientid;
 };
 
-$userdom = isset($_GET['userdom']) ? $_GET['userdom'] : NULL;
 $clientflag = isset($_GET['clientflag']) ? $_GET['clientflag'] : NULL;
 $pwd = isset($_GET['pwd']) ? $_GET['pwd'] : NULL;
-
 
 function updateUserDomain($old, $new, $id = 0)
 {
@@ -340,24 +337,23 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
 } //end of addform
 
 
-if ((isset($_GET['edit'])) || $userdom || $pwd || $clientflag) {
+if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
 
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
   $clientAdmin = preg_match('/admin/i', $priv) && preg_match('/client/i', $priv);
-  $id = isset($_GET['edit']) ? $_GET['edit'] : (isset($userdom) ? $userdom : ($pwd ? $pwd : NULL));
+  $id = isset($_GET['edit']) ? $_GET['edit'] : ($pwd ? $pwd : NULL);
   $id = !empty($id) ? $id : $_POST['id'] ?? '';
   $st = $pdo->prepare("SELECT id, name, email, $domainstr AS dom FROM user WHERE id =:id");
   $st->bindValue(":id", $id);
   doPreparedQuery($st, "<p>Error fetching user details.</p>");
   $row = $st->fetch(PDO::FETCH_ASSOC);
   $editor = $_SESSION['email'] === $row['email'];
-  $userdom = $userdom && $editor;
   $warning = 'Polite Notice: changing an email or password will automatically log you out.';
   $message = ($pwd || $editor) ? $warning : '';
 
   $message = $message ? $message : ($clientflag ? 'You do not have sufficient privileges to change the domain name. Please contact the database administrator.' : '');
 
-  if ($message && ($message === $warning) && isset($_GET['userdom'])) {
+  if ($message && ($message === $warning)) {
     $message .= ' You can proceed but you will need to log in again with your updated details.';
   }
   if ($clientflag) {
@@ -376,7 +372,7 @@ if ((isset($_GET['edit'])) || $userdom || $pwd || $clientflag) {
   $email = $row['email'];
   $id = $row['id'];
 
-  $override = $userdom ? $userdom : ($pwd ? $pwd : NULL);
+  $override = $pwd ? $pwd : NULL;
 
   $st = $pdo->prepare("SELECT roleid FROM userrole WHERE userid=:id");
   $st->bindValue(":id", $id);
