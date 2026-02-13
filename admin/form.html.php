@@ -46,13 +46,18 @@
 				<input type="submit" value="<?= $button; ?>" />
 			</div>
 		</form>
-		<p><a href=".">Return to User List</a></p>
-		<?php if ($priv == 'Admin') : ?>
+		<?php if (isset($_SESSION['extent']) && $_SESSION['extent'] > 1) { ?>
+			<p><a href=".">Return to User List</a></p>
+		<?php } ?>
+		<p><a href="..">Return to Uploads</a></p>
+		<?php
+		if ($priv == 'Admin') { ?>
 			<p><a href="../clients/">Edit Clients</a></p>
-		<?php endif;  
-			include '../includes/logout.inc.html.php';
-			exit();
-			?>
+		<?php }
+		include '../includes/logout.inc.html.php';
+		exit();
+
+		?>
 	</div>
 </body>
 

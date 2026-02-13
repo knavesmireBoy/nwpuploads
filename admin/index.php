@@ -3,7 +3,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
 
 function query()
 {
-  $lib = ['nousers' => "<h4>Unable to find any users</h4>", "addnotice" => "Please fill required fields", "selectuser" => "Please select a user for editing", "clientdom" => "Cannot assign this user to a new client", "lastuser" => "To remove this last user, please delete the client instead",  "userdom" => "Changing your email address will require you to log out", "denied" => "You do not have the required privileges to delete, please contact your administrator", "access" => "You do not have the privileges to add a user", "deniedbyadmin" => "Cannot delete this user until a new client admin role is assigned to this client", "self" => "Only a peer can perform this deletion", "freelancer" => "Cannot assign this domain"];
+  $lib = ['nousers' => "<h4>Unable to find any users</h4>", "addnotice" => "Please fill required fields", "selectuser" => "Please select a user for editing", "clientflag" => "Cannot assign this user to a new client", "lastuser" => "To remove this last user, please delete the client instead",  "userdom" => "Changing your email address will require you to log out", "denied" => "You do not have the required privileges to delete, please contact your administrator", "access" => "You do not have the privileges to add a user", "deniedbyadmin" => "Cannot delete this user until a new client admin role is assigned to this client", "self" => "Only a peer can perform this deletion", "freelancer" => "Cannot assign this domain"];
   $query = explode('=', $_SERVER["QUERY_STRING"]);
   $q = $query[1] ?? $query[0];
   return $lib[$q] ?? '';
@@ -26,8 +26,10 @@ $error = query();
 $manage = "Edit details";
 $message = '';
 $denied = false;
+setExtent(null);
 
 $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
+
 $is_client_sql = "SELECT client.id AS employer, domain, email FROM client LEFT JOIN user ON $domainstr = client.domain WHERE user.email=:email";
 
 $isContractor = function ($pdo, $email, $clientid = NULL) use ($is_client_sql) {
@@ -39,7 +41,7 @@ $isContractor = function ($pdo, $email, $clientid = NULL) use ($is_client_sql) {
 };
 
 $userdom = isset($_GET['userdom']) ? $_GET['userdom'] : NULL;
-$clientdom = isset($_GET['clientdom']) ? $_GET['clientdom'] : NULL;
+$clientflag = isset($_GET['clientflag']) ? $_GET['clientflag'] : NULL;
 $pwd = isset($_GET['pwd']) ? $_GET['pwd'] : NULL;
 
 
@@ -57,8 +59,6 @@ function updateUserDomain($old, $new, $id = 0)
     doQuery($pdo, $sql, '');
   }
 }
-
-
 
 function isFreelancer($pdo, $id)
 {
@@ -344,7 +344,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
 } //end of addform
 
 
-if ((isset($_GET['edit'])) || $userdom || $pwd || $clientdom) {
+if ((isset($_GET['edit'])) || $userdom || $pwd || $clientflag) {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
   $clientAdmin = preg_match('/admin/i', $priv) && preg_match('/client/i', $priv);
   $id = isset($_GET['edit']) ? $_GET['edit'] : (isset($userdom) ? $userdom : ($pwd ? $pwd : NULL));
@@ -355,18 +355,18 @@ if ((isset($_GET['edit'])) || $userdom || $pwd || $clientdom) {
   $row = $st->fetch(PDO::FETCH_ASSOC);
   $editor = $_SESSION['email'] === $row['email'];
   $userdom = $userdom && $editor;
-
   $warning = 'Polite Notice: changing an email or password will automatically log you out.';
   $message = ($pwd || $editor) ? $warning : '';
 
-  $message = $message ? $message : ($clientdom ? 'You do not have sufficient privileges to change the domain name. Please contact the database administrator.' : '');
+  $message = $message ? $message : ($clientflag ? 'You do not have sufficient privileges to change the domain name. Please contact the database administrator.' : '');
 
   if ($message && ($message === $warning) && isset($_GET['userdom'])) {
     $message .= ' You can proceed but you will need to log in again with your updated details.';
   }
-  if ($clientdom) {
-    $st = $pdo->prepare("SELECT id, name, email, $domainstr AS dom FROM user WHERE email LIKE :dom");
-    $st->bindValue(":dom", "%$clientdom");
+  if ($clientflag) {
+    $sql = "SELECT user.id, user.name, user.email FROM client LEFT JOIN user ON $domainstr = client.domain WHERE user.id=:dom";
+    $st = $pdo->prepare($sql);
+    $st->bindValue(":dom", $clientflag);
     doPreparedQuery($st, "<p>Error fetching user details.</p>");
     $row = $st->fetch(PDO::FETCH_ASSOC);
   }
@@ -449,7 +449,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     $freelancer = isFreelancer($pdo, $id);
     //$employerid only available from ADMIN; default to zero NOT NULL so it survives equality test with $clientid see $notice
     $employerid = empty($_POST['employer']) ? 0 : intval($_POST['employer']);
-    $relocation = "Location: ./?clientdom=$domain";
+
+    $relocation = "Location: ./?clientflag=$id";
     //should user BE a freelancer
     if ($freelancer) {
       if (isset($clientid)) { //attempt by freelancer to join client; no priv
@@ -462,7 +463,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
       $isEmployer = isEmployer($_POST, 'employer');
       list($clientid, $domain) = $isEmployer($pdo);
     } else {
-     
+
       if (!$clientid) {
         //allow addmin to = reinstate freelancer status
         if ($admin && !$employerid) {
@@ -470,7 +471,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
         } else {
           $isEmployer = isEmployer($_POST, 'id');
           list($clientid, $domain, $email) = $isEmployer($pdo);
-          $relocation = "Location: ./?clientdom=$domain";
+          $relocation = "Location: ./?clientflag=$id";
           header($relocation);
           exit();
         }
@@ -556,22 +557,28 @@ if (isset($_POST['act']) && $_POST['act'] == 'Choose') {
     $flag = true;
     $class = "edit";
 
-    if (count($users) === 1) {
+    $usercount = $priv === 'Admin' ? 2 : count($users);
+    setExtent($usercount);
+    if ($usercount === 1) {
       $key = $row['user_id'];
+      $usercount = 1;
       header("Location: ./?edit=$key");
       exit;
     } else {
       include 'users.html.php';
     }
-
   } else {
     $sql .= " AND user.id=$key";
   }
 } ///CHOOSE________________________________________________________________________
 
+
+
 if (!preg_match("/admin/i", $priv)) {
   $sql .= " AND user.id=$key";
   $manage = "Edit details";
+  $usercount = 1;
+} else {
 }
 $sql .= " ORDER BY name";
 if (!isset($flag)) {
@@ -589,17 +596,22 @@ if (!isset($flag)) {
 
 if (preg_match("/client/i", $priv)) {
   $email = $_SESSION['email'];
-  include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+
+  /*
+
   $st = $pdo->prepare("SELECT $domainstr FROM user WHERE user.email=:email");
   $st->bindValue(":email", $email);
   $res = doPreparedQuery($st, 'Error retrieving list:');
   $row = $res ? $st->fetch(PDO::FETCH_NUM) : null;
   $dom = isset($row) ? $row[0] : null;
+*/
+  $i = strpos($email, '@');
+  $dom = substr($email, $i + 1);
   $flag = true;
   if ($dom) {
     //$users = []; //!!! reset
-
     //https://stackoverflow.com/questions/18511645/use-bound-parameter-multiple-times
+    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
     $sqlc = "SELECT COUNT(*) AS dom FROM user INNER JOIN client ON $domainstr=client.domain WHERE $domainstr=:dom AND client.domain=:dommo";
     $st = $pdo->prepare($sqlc);
     $st->bindValue(":dom", $dom);
@@ -611,7 +623,7 @@ if (preg_match("/client/i", $priv)) {
       $flag = false;
       $domainstr = "user.email";
     } //full domain
-
+    setExtent($count);
     if ($count > 0) {
       $users = []; //!!! reset
       $sql = "SELECT employer.id, employer.name FROM user INNER JOIN (SELECT user.id, user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain";
@@ -629,27 +641,23 @@ if (preg_match("/client/i", $priv)) {
         $st->bindValue(":k", $key);
       }
       doPreparedQuery($st, 'Error retrieving list:');
-      if (!$res) {
-        $error = 'Database error fetching client list.' . $sql;
-        include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
-        exit();
-      }
       $rows = $st->fetchAll(PDO::FETCH_ASSOC);
       foreach ($rows as $row) {
         $users[$row['id']] = $row['name'];
       }
     }
     $denied = clientCheck($flag);
-
-    if (count($users) === 1) {
+    $usercount = $priv === 'Admin' ? 2 : count($users);
+    setExtent($usercount);
+    if ($usercount === 1) {
       $key = $row['id'];
+      $usercount = 1;
       header("Location: ./?edit=$key");
       exit;
     } else {
       include 'users.html.php';
       exit;
     }
-
   }
 }
 
@@ -665,7 +673,10 @@ if (preg_match("/admin/i", $priv)) {
 }
 
 $message = $message ? $message : $error;
-if (count($users) === 1) {
+$usercount = $priv === 'Admin' ? 2 : count($users);
+setExtent($usercount);
+if ($usercount === 1) {
+  $usercount = 1;
   header("Location: ./?edit=$key");
   exit;
 } else {

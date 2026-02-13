@@ -73,7 +73,7 @@ function userHasWhatRole()
 
     if (!$row) {
         $error = 'Error establishing user role:';
-       // echo "<h3>$error</h3>";
+        // echo "<h3>$error</h3>";
         header("Location: ./?action=logout&error=$error");
         exit();
     }
@@ -83,8 +83,8 @@ function userHasWhatRole()
 
 function clientCheck($flag = false)
 {
-   // $lib = ["Client" => ['add', 'delete'], ""]
-    
+    // $lib = ["Client" => ['add', 'delete'], ""]
+
     list($key, $priv) = userHasWhatRole();
     $c = preg_match("/client/i", $priv);
     $ca = $c && preg_match("/admin/i", $priv);
@@ -104,4 +104,15 @@ return mail($email, 'File upload complete', $body, "From: {$_SESSION['email']}")
 function email($em, $id)
 {
     echo $em;
+}
+
+function setExtent($count)
+{
+   if(is_int($count)){
+    $_SESSION['extent'] = $count;
+   }
+   else if(isset($_SESSION['extent'])){
+    unset($_SESSION['extent']);
+   }
+   
 }
