@@ -326,7 +326,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
     doPreparedQuery($st, 'Error fetching domain.');
     $row = $st->fetch(PDO::FETCH_ASSOC);
     updateUserDomain($row['dom'], $truedom);
-    if ($contractor) {
+
+    if ($contractor) {//required?
       doQuery($pdo, "UPDATE user INNER JOIN client ON $domainstr = client.domain SET client_id=$contractor WHERE $domainstr = client.domain", "Error updating client");
     }
   }
@@ -337,6 +338,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
 
 
 if ((isset($_GET['edit'])) || $userdom || $pwd || $clientflag) {
+
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
   $clientAdmin = preg_match('/admin/i', $priv) && preg_match('/client/i', $priv);
   $id = isset($_GET['edit']) ? $_GET['edit'] : (isset($userdom) ? $userdom : ($pwd ? $pwd : NULL));
@@ -552,6 +554,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'Choose') {
 
     $usercount = count($users);
     setExtent($usercount);
+
     if ($usercount === 1) {
       $key = $row['user_id'];
       $usercount = 1;
@@ -625,6 +628,7 @@ if (preg_match("/client/i", $priv)) {
       }
       doPreparedQuery($st, 'Error retrieving list:');
       $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+     
       foreach ($rows as $row) {
         $users[$row['id']] = $row['name'];
       }
@@ -633,7 +637,7 @@ if (preg_match("/client/i", $priv)) {
     $usercount = $priv === 'Admin' ? 2 : count($users);
     setExtent($usercount);
     if ($usercount === 1) {
-      $key = $row['id'];
+      $key = $row['id'] ?? $key;
       $usercount = 1;
       header("Location: ./?edit=$key");
       exit;
