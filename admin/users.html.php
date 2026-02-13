@@ -22,7 +22,7 @@
 		<h3 class='error'><?= $error; ?></h3>
 		<?php
 
-		if (($priv == 'Admin') && !isset($_POST['act'])): ?>
+		if (($priv == 'Admin') && !isset($selected)): ?>
 			<form action="" method="post" name="userform" class="choose">
 				<ul>
 					<li><label for="user">User: </label><select id="user" name="user">
@@ -38,11 +38,11 @@
 							$group = $users;
 							include '../templates/_optgroup.html.php'; ?>
 						</select>
-						<input type="submit" name="act" value="Choose" />
+						<input type="submit" name="action" value="Choose" />
 					</li>
 				</ul>
 			</form>
-		<?php elseif (preg_match("/client/i", $priv) || (isset($_POST['act']) && $_POST['act'] == 'Choose')):
+		<?php elseif (preg_match("/client/i", $priv) || (isset($selected))):
 		?>
 			<div class="clientgroup">
 				<?php

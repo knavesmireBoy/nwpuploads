@@ -9,15 +9,6 @@ function query()
   return $lib[$q] ?? '';
 }
 
-function getFormDirect($group, $key, $i = 1)
-{
-  if (count($group) === $i) {
-    header("Location: ./?edit=$key");
-    exit;
-  } else {
-    include 'users.html.php';
-  }
-}
 
 $super = "andrewsykes@btinternet.com";
 $users = [];
@@ -26,7 +17,9 @@ $error = query();
 $manage = "Edit details";
 $message = '';
 $denied = false;
+$usercount = 0;
 setExtent(null);
+$selected = null;
 
 $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
 
@@ -291,7 +284,7 @@ if (isset($_GET['add'])) {
 
 if (isset($_POST['action']) && $_POST['action'] === 'Add') {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-  $clientid = $_POST['employer'] !== '' ? $_POST['employer'] : NULL;
+  $clientid = $_POST['employer'] ?? NULL;
   $clientadmin = preg_match("/admin/i", $priv) && preg_match("/client/i", $priv);
 
   $essentials = [$_POST['name'], $_POST['email'], $_POST['password']];
@@ -314,28 +307,27 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
   $st->bindValue(':nom', $_POST['name']);
   $st->bindValue(':e', $_POST['email']);
   $st->bindValue(':pwd', $_POST['password']);
-  $st->bindValue(':clientid', $clientid);
+  $st->bindValue(':clientid', intval($clientid));
   $res = doPreparedQuery($st, 'Error adding user');
   $aid = lastInsert($pdo);
-  $contractor = $isContractor($pdo, $is_client_sql,  $_POST['email'], $clientid);
+  $contractor = $isContractor($pdo,  $_POST['email'], $clientid);
   if (isset($_POST['password']) && $_POST['password'] != '') {
     $res = updatePassword($pdo, $_POST['password'], $aid);
   }
   $roles = isset($_POST['roles']) ? $_POST['roles'] : [];
-
   if ($clientid || $contractor) {
-    $st = doQuery($pdo, "SELECT domain FROM client WHERE id='$clientid'", "Error retrieving clients from database!");
+    $st = doQuery($pdo, "SELECT domain FROM client WHERE id=$clientid", "Error retrieving clients from database!");
     $row = $st->fetch(PDO::FETCH_ASSOC);
     $truedom = $row['domain'];
     $sql = "SELECT $domainstr AS dom FROM user WHERE client_id=:cid AND id=:aid";
     $st = $pdo->prepare($sql);
     $st->bindValue(':aid', $aid);
-    $st->bindValue(':cid', $clientid);
+    $st->bindValue(':cid', intval($clientid));
     doPreparedQuery($st, 'Error fetching domain.');
     $row = $st->fetch(PDO::FETCH_ASSOC);
     updateUserDomain($row['dom'], $truedom);
     if ($contractor) {
-      doQuery($pdo, "UPDATE user INNER JOIN client ON $domainstr = client.domain SET client_id='$contractor' WHERE $domainstr = client.domain", "Error updating client");
+      doQuery($pdo, "UPDATE user INNER JOIN client ON $domainstr = client.domain SET client_id=$contractor WHERE $domainstr = client.domain", "Error updating client");
     }
   }
   resetRoles($pdo, $roles, $aid);
@@ -524,11 +516,12 @@ $sql = "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=c
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 //_______________________________________________________________________________
 
-if (isset($_POST['act']) && $_POST['act'] == 'Choose') {
+if (isset($_POST['action']) && $_POST['action'] == 'Choose') {
   if ($_POST['user'] === '') {
     header("Location: ./?selectuser");
     exit();
   }
+  $selected = true;
   $return = "Return to users";
   $manage = "Manage Users";
   $key = $_POST['user'];
@@ -557,7 +550,7 @@ if (isset($_POST['act']) && $_POST['act'] == 'Choose') {
     $flag = true;
     $class = "edit";
 
-    $usercount = $priv === 'Admin' ? 2 : count($users);
+    $usercount = count($users);
     setExtent($usercount);
     if ($usercount === 1) {
       $key = $row['user_id'];
@@ -571,7 +564,6 @@ if (isset($_POST['act']) && $_POST['act'] == 'Choose') {
     $sql .= " AND user.id=$key";
   }
 } ///CHOOSE________________________________________________________________________
-
 
 
 if (!preg_match("/admin/i", $priv)) {
@@ -596,15 +588,6 @@ if (!isset($flag)) {
 
 if (preg_match("/client/i", $priv)) {
   $email = $_SESSION['email'];
-
-  /*
-
-  $st = $pdo->prepare("SELECT $domainstr FROM user WHERE user.email=:email");
-  $st->bindValue(":email", $email);
-  $res = doPreparedQuery($st, 'Error retrieving list:');
-  $row = $res ? $st->fetch(PDO::FETCH_NUM) : null;
-  $dom = isset($row) ? $row[0] : null;
-*/
   $i = strpos($email, '@');
   $dom = substr($email, $i + 1);
   $flag = true;
@@ -672,8 +655,45 @@ if (preg_match("/admin/i", $priv)) {
   }
 }
 
+$arr = get_defined_vars();
+foreach ($arr as $key => $value) {
+  if (preg_match('/_[A-Z]+/', $key)) unset($arr[$key]);
+}
+
+
+$formvars = ['pagetitle', 'message', 'name', 'email', 'job', 'roles', 'id', 'route', 'override', 'button', 'priv'];
+
+$uservars = ['manage', 'priv', 'action', 'client', 'users'];
+
+$arr = get_defined_vars();
+foreach ($arr as $key => $value) {
+    if (preg_match('/_[A-Z]+/', $key)) unset($arr[$key]);
+}
+
+$arr = array_keys($arr);
+
+array_diff($uservars, $arr);
+$count = 0;
+
+foreach ($arr as $k => $v) {
+
+  if (!in_array($k, $uservars)) {
+    $count++;
+  }
+}
+$count = 0;
+foreach ($uservars as $v) {
+
+  if (in_array($v, $arr)) {
+    unset($uservars[$v]);
+  }
+}
+
+
 $message = $message ? $message : $error;
 $usercount = $priv === 'Admin' ? 2 : count($users);
+
+
 setExtent($usercount);
 if ($usercount === 1) {
   $usercount = 1;

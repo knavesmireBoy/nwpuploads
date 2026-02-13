@@ -8,6 +8,12 @@ function safeFilter($array, $cb)
 }
 
 
+function checkVars(){
+
+$vars = ['pagetitle', 'message', 'name', 'email', 'job', 'roles', 'id', 'route', 'override', 'button', 'priv'];
+    
+}
+
 function sanitizeInput($data) {
     $data = trim($data);
     $data = stripslashes($data);
