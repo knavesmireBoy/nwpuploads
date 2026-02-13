@@ -21,6 +21,9 @@ $usercount = 0;
 setExtent(null);
 $selected = null;
 
+$formvars = ['pagetitle', 'message', 'name', 'email', 'job', 'roles', 'id', 'route', 'override', 'button', 'priv'];
+$uservars = ['manage', 'priv', 'client', 'users'];
+
 $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
 
 $is_client_sql = "SELECT client.id AS employer, domain, email FROM client LEFT JOIN user ON $domainstr = client.domain WHERE user.email=:email";
@@ -327,7 +330,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
     $row = $st->fetch(PDO::FETCH_ASSOC);
     updateUserDomain($row['dom'], $truedom);
 
-    if ($contractor) {//required?
+    if ($contractor) { //required?
       doQuery($pdo, "UPDATE user INNER JOIN client ON $domainstr = client.domain SET client_id=$contractor WHERE $domainstr = client.domain", "Error updating client");
     }
   }
@@ -628,7 +631,7 @@ if (preg_match("/client/i", $priv)) {
       }
       doPreparedQuery($st, 'Error retrieving list:');
       $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-     
+
       foreach ($rows as $row) {
         $users[$row['id']] = $row['name'];
       }
@@ -637,9 +640,10 @@ if (preg_match("/client/i", $priv)) {
     $usercount = $priv === 'Admin' ? 2 : count($users);
     setExtent($usercount);
     if ($usercount === 1) {
-      $key = $row['id'] ?? $key;
+      //$key from $roleplay
+      $k = $row['id'] ?? $key;
       $usercount = 1;
-      header("Location: ./?edit=$key");
+      header("Location: ./?edit=$k");
       exit;
     } else {
       include 'users.html.php';
@@ -659,44 +663,10 @@ if (preg_match("/admin/i", $priv)) {
   }
 }
 
-$arr = get_defined_vars();
-foreach ($arr as $key => $value) {
-  if (preg_match('/_[A-Z]+/', $key)) unset($arr[$key]);
-}
-
-
-$formvars = ['pagetitle', 'message', 'name', 'email', 'job', 'roles', 'id', 'route', 'override', 'button', 'priv'];
-
-$uservars = ['manage', 'priv', 'action', 'client', 'users'];
-
-$arr = get_defined_vars();
-foreach ($arr as $key => $value) {
-    if (preg_match('/_[A-Z]+/', $key)) unset($arr[$key]);
-}
-
-$arr = array_keys($arr);
-
-array_diff($uservars, $arr);
-$count = 0;
-
-foreach ($arr as $k => $v) {
-
-  if (!in_array($k, $uservars)) {
-    $count++;
-  }
-}
-$count = 0;
-foreach ($uservars as $v) {
-
-  if (in_array($v, $arr)) {
-    unset($uservars[$v]);
-  }
-}
 
 
 $message = $message ? $message : $error;
 $usercount = $priv === 'Admin' ? 2 : count($users);
-
 
 setExtent($usercount);
 if ($usercount === 1) {

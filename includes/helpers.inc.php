@@ -1,30 +1,34 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
 
-
 function safeFilter($array, $cb)
 {
     return array_values(array_filter($array, $cb));
 }
 
-
-function checkVars(){
-
-$vars = ['pagetitle', 'message', 'name', 'email', 'job', 'roles', 'id', 'route', 'override', 'button', 'priv'];
-    
+function checkVars($arr, $pagevars)
+{
+    $arr = array_keys($arr);
+    foreach ($arr as $key => $value) {
+        if (preg_match('/_[A-Z]+/', $key)) unset($arr[$key]);
+    }
+    return empty(array_diff($pagevars, $arr));
 }
 
-function sanitizeInput($data) {
+function sanitizeInput($data)
+{
     $data = trim($data);
     $data = stripslashes($data);
     $data = htmlspecialchars($data);
     return $data;
 }
-function formatDate($date) {
+function formatDate($date)
+{
     return date('F j, Y', strtotime($date));
 }
-function generateRandomString($length = 10) {
-    return substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil($length/strlen($x)) )),1,$length);
+function generateRandomString($length = 10)
+{
+    return substr(str_shuffle(str_repeat($x = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil($length / strlen($x)))), 1, $length);
 }
 
 function identity($arg)
