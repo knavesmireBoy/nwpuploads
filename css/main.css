@@ -596,7 +596,7 @@ input[type=submit] {
 }
 
 form[name=deletions] {
-  padding: 0;
+  padding: 1em;
 }
 
 .searcher fieldset,
@@ -664,7 +664,7 @@ form[name=clientform] div:last-of-type input[type=checkbox] {
 
 form[name=downloads] div input {
   cursor: pointer;
-  background-image: url(../assets/trash_sprite.png);
+  background-image: url("../assets/trashsprite.png");
   background-repeat: no-repeat;
   background-size: cover;
   background-color: var(--main-color);
@@ -689,10 +689,10 @@ form[name=downloads] div input:hover {
 }
 #yesno label {
   cursor: pointer;
-  background-image: url(../assets/trash_sprite.png);
+  background-image: url("../assets/yesno.png");
   background-repeat: no-repeat;
   background-size: cover;
-  background-color: var(--main-color);
+  background-color: red;
   background-position: center 0%;
   display: inline-block;
   height: 30px;
@@ -704,11 +704,11 @@ form[name=downloads] div input:hover {
   opacity: 0.5;
 }
 #yesno label:last-of-type {
-  background-image: url(../assets/trash_sprite.png);
+  background-image: url("../assets/yesno.png");
   background-repeat: no-repeat;
   background-size: cover;
-  background-color: var(--main-color);
-  background-position: center 67%;
+  background-color: red;
+  background-position: center 17%;
   display: inline-block;
   height: 30px;
   width: 30px;
@@ -716,6 +716,9 @@ form[name=downloads] div input:hover {
   text-indent: 30px;
   overflow: hidden;
   border: none;
+}
+#yesno label:hover {
+  opacity: 1;
 }
 #yesno input[type=radio] {
   position: absolute;
@@ -731,7 +734,7 @@ form[name=downloads] div input:hover {
 }
 
 #upload > table > tbody > tr > td:last-child div input {
-  background-image: url(../assets/trash_sprite.png);
+  background-image: url("../assets/trashsprite.png");
   background-repeat: no-repeat;
   background-size: cover;
   background-color: var(--main-color);

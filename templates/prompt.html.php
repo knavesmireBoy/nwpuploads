@@ -30,10 +30,10 @@ if (isset($clientlist)): ?>
 <?php if (isset($del)): ?>
     <form action="." method="post" name="deletions" class="block prompt">
         <input type="hidden" name="id" value="<?= $id; ?>" />
-        <p><label for="ext_nwf">Delete this file only<input type="radio" id="ext_nwf" name="extent" value="f" /></label></p>
-        <p><label for="ext_nwu">Delete all files for this user<input type="radio" id="ext_nwu" name="extent" value="u" /></label></p>
+        <p><label for="ext_nwf">Delete this file only <input type="radio" id="ext_nwf" name="extent" value="f" /></label></p>
+        <p><label for="ext_nwu">Delete all files for this user <input type="radio" id="ext_nwu" name="extent" value="u" /></label></p>
         <?php if ($priv == 'Admin'): ?>
-            <p><label for="ext_nwc">Delete all files for this client<input type="radio" id="ext_nwc" name="extent" value="c" /></label></p>
+            <p><label for="ext_nwc">Delete all files for this client <input type="radio" id="ext_nwc" name="extent" value="c" /></label></p>
         <?php endif; ?>
         <input type="hidden" name="<?= $del; ?>" value="remove" />
         <input type="submit" value="Remove Files" />

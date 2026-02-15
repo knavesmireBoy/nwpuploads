@@ -224,7 +224,7 @@ if (isset($_POST['proceed']) and $_POST['proceed'] == 'remove') {
     exit();
 } //________________________end of confirm/delete
 
-if (isset($_POST['confirm']) and $_POST['confirm'] == 'No') { //swap
+if (isset($_POST['confirm']) and $_POST['confirm'] === 'No') { //swap
     $prompt = "Change ownership on ALL files?";
     $id = $_POST['id'];
     $swap = "swap";
@@ -243,13 +243,11 @@ if (isset($_POST['swap'])) {
     $answer = $_POST['swap'];
     $email = $_SESSION['email'];
 
-
     $sql = "SELECT upload.id, filename, description, upload.userid, user.name FROM upload INNER JOIN user ON upload.userid=user.id  WHERE upload.id=:id";
     $st = $pdo->prepare($sql);
     $st->bindValue(":id", $_POST['id']);
     doPreparedQuery($st, '<p>Database error fetching stored files.</p>');
     $row = $st->fetch(PDO::FETCH_ASSOC);
-
     $filename = $row['filename'];
     $diz = $row['description'];
     $userid = $row['userid'];
@@ -259,8 +257,7 @@ if (isset($_POST['swap'])) {
     $answer = $_POST['swap'];
     $rows = [];
     $id =  $_POST['id']; //CRUCIAL to pass id to file amend form (update.html.php)
-
-    if ($priv == 'Client') {
+    if (preg_match("/client/i", $priv)) {
         $sql = "SELECT employer.id, employer.name FROM upload INNER JOIN user ON upload.userid = user.id INNER JOIN (SELECT user.id, user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer ON $domainstr=employer.domain WHERE upload.id=:id ORDER BY name"; //colleagues
         $st = $pdo->prepare($sql);
         $st->bindValue(":id", $row['id']);
@@ -271,7 +268,7 @@ if (isset($_POST['swap'])) {
         }
     }
 
-    if ($priv == 'Admin') {
+    if ($priv === 'Admin') {
         $sql = "SELECT user.name, user.id FROM user LEFT JOIN client ON user.client_id=client.id  WHERE client.domain IS NULL UNION SELECT user.name, user.id FROM user INNER JOIN client ON user.client_id=client.id ORDER BY name";
         $st = doQuery($pdo, $sql, 'Database error fetching users.');
         $rows = $st->fetchAll(PDO::FETCH_ASSOC);
@@ -282,6 +279,8 @@ if (isset($_POST['swap'])) {
 } ///
 
 if (isset($_POST['original'])) {
+
+   
     //CAN ONLY BE SET BY ADMIN, 'original' is common to both options of file amend block
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
     $user = !empty($_POST['colleagues']) ? $_POST['colleagues'] : (!empty($_POST['user']) ? $_POST['user'] : $_POST['original']);
