@@ -53,7 +53,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'upload') {
         include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
         exit();
     }
-    if ($priv == 'Admin' and !empty($_POST['user'])) { //ie Admin selects user
+    if ($priv === 'Admin' && !empty($_POST['user'])) { //ie Admin selects user
         $key = $_POST['user'];
         include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
         $st = $pdo->prepare("SELECT domain FROM client WHERE domain=:id");
@@ -61,11 +61,13 @@ if (isset($_POST['action']) && $_POST['action'] == 'upload') {
         doPreparedQuery($st, 'Error fetching domain');
         $row = $st->fetch(PDO::FETCH_NUM);
         if ($row && count($row) > 0) {
-            $sql = "SELECT employer.user_name, employer.user_id FROM (SELECT user.name AS user_name, user.id AS user_id, client.domain FROM user INNER JOIN client ON $domainstr =client.domain) AS employer WHERE employer.domain=:id LIMIT 1";
+            $sql = "SELECT employer.user_name, employer.user_id FROM (SELECT user.name AS user_name, user.id AS user_id, client.domain FROM user INNER JOIN client ON $domainstr =client.domain INNER JOIN userrole ON user.client_id = userrole.userid WHERE userrole.roleid LIKE :myrole) AS employer WHERE employer.domain=:id LIMIT 1";
+
             //RETURNS one user, as relationship between file and user is one to one.
             //exit($sql);
             $st = $pdo->prepare($sql);
             $st->bindValue(":id", $key);
+            $st->bindValue(":myrole", '%Admin');
             doPreparedQuery($st, 'Error fetching user details');
             $row = $st->fetch(PDO::FETCH_ASSOC);
             $key = $row ? $row['user_id'] : null;
@@ -280,7 +282,7 @@ if (isset($_POST['swap'])) {
 
 if (isset($_POST['original'])) {
 
-   
+
     //CAN ONLY BE SET BY ADMIN, 'original' is common to both options of file amend block
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
     $user = !empty($_POST['colleagues']) ? $_POST['colleagues'] : (!empty($_POST['user']) ? $_POST['user'] : $_POST['original']);
@@ -408,7 +410,7 @@ if (isset($_GET['find'])) {
         $st->bindValue(":dommo", $dom);
         $row = $st->fetch(PDO::FETCH_ASSOC);
         $count = $row ? $row['dom'] : [];
-        
+
         if (count($count) > 0) {
             $where = " WHERE user.email=:email"; //client
         } else {
@@ -439,11 +441,6 @@ if (isset($_GET['find'])) {
         }
         $client = array();
     endif;
-
-   
-   // include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/base.html.php';
-  //  include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/search.html.php';
-  //  exit();
 }
 /// S E A R C H  M E !!
 
