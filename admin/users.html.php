@@ -1,15 +1,7 @@
-<!DOCTYPE html>
-<html class="no-js" lang="en">
-<head>
-	<meta charset="utf-8">
-	<meta content="IE=edge" http-equiv="X-UA-Compatible">
-	<meta content="width=device-width, initial-scale=1" name="viewport">
-	<title>Manage Users</title>
-	<link href="../css/main.css" type="text/css" rel="stylesheet" media="all" />
-	<script>
-		document.cookie = 'resolution=' + Math.max(screen.width, screen.height) + '; path=/';
-	</script>
-<body>
+<?php
+include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php';
+include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
+include TEMPLATE . 'base.html.php'; ?>
 	<div>
 		<h1><?php echo $manage; ?></h1>
 		<?php
@@ -25,7 +17,7 @@
 		if (($priv == 'Admin') && !isset($selected)): ?>
 			<form action="" method="post" name="userform" class="choose">
 				<ul>
-					<li><label for="user">User: </label><select id="user" name="user">
+					<li><label for="user"></label><select id="user" name="user">
 							<option value="">Select one</option>
 							<?php if ($priv === 'Admin') {
 								$optgroup = 'clients';

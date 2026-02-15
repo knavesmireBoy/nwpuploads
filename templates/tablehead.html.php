@@ -45,6 +45,7 @@ else {
 */
 
 ?>
+<div id="upload">
 <table>
     <thead>
         <tr>

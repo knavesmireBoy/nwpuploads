@@ -405,7 +405,7 @@ form[name=edituserform] p {
 form[name=usersform] {
   background-color: var(--prompt);
   border: solid 1px;
-  padding: 0.5em;
+  padding: 1em;
   margin: 0 auto 1em;
   border-radius: 8px;
   width: clamp(300px, 50vw, 1000px);
@@ -435,7 +435,7 @@ form[name=usersform] > ul li input[type=checkbox] {
 form[name=usersform] > ul li input#password {
   flex: 34 1 1em;
 }
-form[name=usersform] > fieldset {
+form[name=usersform] fieldset {
   margin: 1em 0;
   text-align: left;
   font: var(--georgiaform);
@@ -444,7 +444,7 @@ form[name=usersform] > fieldset {
   padding: 1em;
   background-color: rgba(255, 255, 255, 0.5);
 }
-form[name=usersform] > fieldset legend {
+form[name=usersform] fieldset legend {
   background-color: rgb(255, 255, 255);
   font-size: 1rem;
   text-align: center;
@@ -452,14 +452,18 @@ form[name=usersform] > fieldset legend {
   color: black;
   font-style: normal;
 }
-form[name=usersform] > fieldset label {
+form[name=usersform] fieldset label {
   color: black;
   font-style: normal;
 }
-form[name=usersform] > div select {
-  font-size: 1rem;
+form[name=usersform] > div {
+  text-align: center;
 }
-form[name=usersform] > div:last-child {
+form[name=usersform] > div fieldset select {
+  font-size: 1rem;
+  margin: 0 auto;
+}
+form[name=usersform] > div fieldset:last-child {
   margin: 0.5em 0;
   display: flex;
   justify-content: center;

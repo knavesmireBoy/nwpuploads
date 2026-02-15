@@ -22,9 +22,7 @@ $selected = null;
 
 $formvars = ['pagetitle', 'message', 'name', 'email', 'job', 'roles', 'id', 'route', 'override', 'button', 'priv'];
 $uservars = ['manage', 'priv', 'client', 'users'];
-
 $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
-
 $is_client_sql = "SELECT client.id AS employer, domain, email FROM client LEFT JOIN user ON $domainstr = client.domain WHERE user.email=:email";
 
 $isContractor = function ($pdo, $email, $clientid = NULL) use ($is_client_sql) {
@@ -37,6 +35,8 @@ $isContractor = function ($pdo, $email, $clientid = NULL) use ($is_client_sql) {
 
 $clientflag = isset($_GET['clientflag']) ? $_GET['clientflag'] : NULL;
 $pwd = isset($_GET['pwd']) ? $_GET['pwd'] : NULL;
+
+
 
 function updateUserDomain($old, $new, $id = 0)
 {
@@ -105,7 +105,7 @@ function resetRoles($pdo, $roles, $id)
     doPreparedQuery($st, '<p>Error assigning selected role to user.</p>');
   } //end foreach
 }
-
+//maybe require password of client to delete??
 function deleteAlready($pdo, $id)
 {
   $st = $pdo->prepare("DELETE FROM user WHERE id =:id");
@@ -236,7 +236,7 @@ if (isset($_GET['denied']) || isset($_GET['access']) || isset($_GET['self'])) {
 if (isset($_GET['add'])) {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
   $route = "Add";
-  $pagetitle = 'New User';
+  $pagehead = 'New User';
   //$action = '?';
   $button = 'Add User';
   $name = '';
@@ -277,6 +277,7 @@ if (isset($_GET['add'])) {
       return $role['id'] !== 'Admin';
     });
   }
+  $pagetitle = "Admin | Users";
   include 'form.html.php';
   exit();
 } //////////////END OF ASSIGN
@@ -365,7 +366,7 @@ if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
   }
 
   $route = "Edit";
-  $pagetitle = 'Edit User';
+  $pagehead = 'Edit User';
   $action = 'editform';
   $button = 'Update User';
   $name = $row['name'];
@@ -411,6 +412,7 @@ if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
   doPreparedQuery($st, "<p>Error retrieving client id from user!</p>");
   $row = $st->fetch(PDO::FETCH_ASSOC);
   $job = $row['client_id']; //selects client in drop down menu
+  $pagetitle = "Admin | Users";
   include 'form.html.php';
   exit();
 } //edit
@@ -560,6 +562,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'Choose') {
       header("Location: ./?edit=$key");
       exit;
     } else {
+      $pagetitle="Manage Users";
       include 'users.html.php';
     }
   } else {
@@ -642,6 +645,7 @@ if (preg_match("/client/i", $priv)) {
       header("Location: ./?edit=$k");
       exit;
     } else {
+      $pagetitle="Manage Users";
       include 'users.html.php';
       exit;
     }
@@ -659,7 +663,7 @@ if (preg_match("/admin/i", $priv)) {
   }
 }
 
-
+include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 
 $message = $message ? $message : $error;
 $usercount = $priv === 'Admin' ? 2 : count($users);
@@ -670,5 +674,6 @@ if ($usercount === 1) {
   header("Location: ./?edit=$key");
   exit;
 } else {
+  $pagetitle="Manage Users";
   include 'users.html.php';
 }

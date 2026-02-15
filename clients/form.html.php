@@ -1,21 +1,10 @@
-<?php include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php'; ?>
-<!DOCTYPE html>
-<html class="no-js" lang="en">
+<?php include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php'; 
 
-<head>
-	<meta charset="utf-8">
-	<meta content="IE=edge" http-equiv="X-UA-Compatible">
-	<meta content="width=device-width, initial-scale=1" name="viewport">
-	<title>Admin | Client</title>
-	<link href="../css/main.css" type="text/css" rel="stylesheet" media="all" />
-	<script>
-		document.cookie = 'resolution=' + Math.max(screen.width, screen.height) + '; path=/';
-	</script>
-</head>
+include TEMPLATE . 'base.html.php';
 
-<body>
+?>
 	<div>
-		<h1><?php htmlout($pagetitle); ?></h1>
+		<h1><?= $pagehead; ?></h1>
 		<form action="?<?= $action; ?>" method="post" name="clientform">
 			<div>
 				<label for="the_name">Name</label>
@@ -38,5 +27,3 @@
 		<p><a href="./">Return to Client List</a></p>
 	</div>
 </body>
-
-</html>

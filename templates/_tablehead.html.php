@@ -1,10 +1,9 @@
 <?php
-
 $tel = '';
 $sort = '';
 $toggle = ['f', 'u', 't'];
-
 ?>
+<div id="upload">
 <table>
     <thead>
         <tr>

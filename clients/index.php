@@ -1,12 +1,10 @@
 <?php
-
+require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
 if (!userIsLoggedIn()) {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/login.html.php';
   exit();
 }
-//clients page
-$domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
 
 function getDomain($pdo, $id)
 {
@@ -17,8 +15,10 @@ function getDomain($pdo, $id)
   return $row['domain'];
 }
 
-$roleplay = userHasWhatRole();
-list($key, $priv) = $roleplay;
+$domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
+$pagetitle = "Manage Clients";
+$selected = null;
+list($key, $priv) = userHasWhatRole();
 
 if ($priv !== 'Admin') {
   $error = 'Only Account Administrators may access this page!';
@@ -77,7 +77,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'Edited' || isset($_GET['dom'
 if (isset($_GET['add'])) {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
   $id = '';
-  $pagetitle = 'New Client';
+  $pagehead = 'New Client';
   $action = 'addform';
   $route = 'Added';
   $name = '';
@@ -85,6 +85,7 @@ if (isset($_GET['add'])) {
   $tel = '';
   $id = '';
   $button = 'Add Client';
+  $pagetitle = 'Admin | Client';
   include 'form.html.php';
   exit();
 } //////////////END OF ADD
@@ -153,16 +154,16 @@ include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 $sql = "SELECT id, name, domain from client"; // THE DEFAULT QUERY
 //$cid = 0; //$id MAY have been set by delete so don't overwrite;
 
-if (isset($_POST['act']) && $_POST['act'] == 'Choose' && $_POST['client'] != '') {
-
+if (isset($_POST['action']) && $_POST['action'] == 'Choose' && $_POST['client'] != '') {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+  $selected = true;
   $sql = "SELECT id, name, domain, tel FROM client WHERE id =:id";
   $id = $_POST['client'];
   $st = $pdo->prepare($sql);
   $st->bindValue(":id", $id);
   $res = doPreparedQuery($st, 'Error fetching client details.');
   $row = $st->fetch(PDO::FETCH_ASSOC);
-  $pagetitle = 'Edit Client';
+  $pagehead = 'Edit Client';
   $action = 'editform';
   $route = 'Edited';
   $name = $row['name'];
@@ -190,5 +191,4 @@ foreach ($rows as $row) {
     'domain' => $row['domain']
   );
 }
-
 include 'clients.html.php';

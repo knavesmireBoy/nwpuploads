@@ -1,13 +1,6 @@
 <section id=prompt>
 <?php include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php';
 
-
-/*
-NOT REQUIRED : WAS USED TO PROVIDE A CLIENT LIST DROP DOWN MENU
-FOR PRE-SELECTING A DOMAIN PRIOR TO ADDING A NEW USER TO AN EXISITING CLIENT
-NOT REALLY USED IN PRACTICE
-*/
-
 if (isset($clientlist)): ?>
     <form action="." method="post" name="clientform" class="prompt">
         <div><label for="employer">If existing client:</label>
@@ -21,8 +14,6 @@ if (isset($clientlist)): ?>
             <input type="submit" name="action" value="continue" />
         </div>
     </form>
-
-
 <?php elseif (!isset($clientlist) and !isset($del)):
     ?>
     <form action="<?= $action; ?>" method="post" name="choice" class="prompt" id="yesno">

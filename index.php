@@ -3,7 +3,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
 
-$base = 'Log In';
+$pagetitle = 'Log In';
 $error = '';
 $tmpl_error = '/nwp_uploads/includes/error.html.php';
 $myip = '86.160.57.166';
@@ -14,6 +14,7 @@ $lib = ['nofile' => "<h4>'There was no file uploaded!'</h4>", 'fetch_files' => '
 $clientlist = null;
 $display = 5;
 $template = '/upload.html.php';
+$tel = '';
 
 $uploaded = function ($arg) {
     return $_FILES['upload'][$arg];
@@ -526,7 +527,8 @@ if (isset($_GET['action']) and $_GET['action'] == 'search') {
             'file' => $row['file'],
             'origin' => $row['origin'],
             'time' => $row['time'],
-            'size' => $row['size']
+            'size' => $row['size'],
+            'tel' => $row['tel'] ?? ''
         );
     }
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/base.html.php';
@@ -604,7 +606,7 @@ foreach ($rows as $row) {
         'size' => $row['size']
     );
 }
-$base = 'North Wolds Printers | The File Uploads';
+$pagetitle = 'North Wolds Printers | The File Uploads';
 
 list($qs, $state) = qsort('sort=');
 $ufn = qUserHead('u');
@@ -617,6 +619,8 @@ $qs = preg_replace("/&&/", "&", $qs);
 $fhead = $qs . $ffn($state);
 $uhead = $qs . $ufn($state);
 $thead = $qs . $tfn($state);
+
+
 
 $arr = get_defined_vars();
 foreach ($arr as $key => $value) {

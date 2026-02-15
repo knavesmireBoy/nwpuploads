@@ -57,7 +57,7 @@ if (count($files) > 0): ?>
                 <?php endif; ?>
             </tr><?php endforeach; ?>
     </tbody>
-    </table>
+    </table></div>
 
 <?php else :
     $greeting = ($_SERVER['QUERY_STRING']) ? 'There were no files that matched your criteria' : 'There are currently no files in the database' ?>

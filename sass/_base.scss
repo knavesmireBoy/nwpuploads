@@ -304,7 +304,7 @@ form[name="edituserform"] {
 form[name="usersform"] {
   background-color: var(--prompt);
   border: solid 1px;
-  padding: 0.5em;
+  padding: 1em;
   margin: 0 auto 1em;
   border-radius: 8px;
   width: clamp(300px, 50vw, 1000px);
@@ -335,7 +335,7 @@ form[name="usersform"] {
       }
     }
   }
-  > fieldset {
+   fieldset {
     margin: 1em 0;
     text-align: left;
     font: var(--georgiaform);
@@ -357,13 +357,17 @@ form[name="usersform"] {
     }
   }
   > div {
-    select {
-      font-size: 1rem;
-    }
-    &:last-child {
-      margin: 0.5em 0;
-      display: flex;
-      justify-content: center;
+    text-align: center;
+    fieldset {
+      select {
+        font-size: 1rem;
+        margin: 0 auto;
+      }
+      &:last-child {
+        margin: 0.5em 0;
+        display: flex;
+        justify-content: center;
+      }
     }
   }
 }
@@ -466,7 +470,6 @@ form[name="logoutform"] {
 p.ret {
   margin: 1em 0;
 }
-
 
 input[type="text"] {
   font-size: 1em;
