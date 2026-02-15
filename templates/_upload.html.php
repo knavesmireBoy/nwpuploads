@@ -1,4 +1,4 @@
-<form action="<?php $_SERVER['PHP_SELF'] ?>" method="post" name="uploadform" enctype="multipart/form-data">
+<form action="." method="post" name="uploadform" enctype="multipart/form-data">
     <table class="up">
         <tr>
             <td><label for="uploadfiles">Upload File:</label></td>

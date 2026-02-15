@@ -2,7 +2,7 @@
 include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
 ?>
 <h1><a href="<?php $_SERVER['PHP_SELF'] ?>">North Wolds | File Uploads</a></h1>
-<h2><?php echo date('l F j, Y'); ?></h2>
+<h2><?= date('l F j, Y'); ?></h2>
 
 <?php
 include TEMPLATE . $template;
@@ -38,7 +38,7 @@ if (count($files) > 0): ?>
                     $stamp = $f["time"];
                     echo date("g:ia F j", strtotime($stamp)); ?></td>
                 <td title="download">
-                    <form action="<?php $_SERVER['PHP_SELF'] ?>" method="get" name="downloads">
+                    <form action="." method="get" name="downloads">
                         <div><input type="hidden" name="action" value="download" />
                             <input type="hidden" name="id" value="<?= $id; ?>" />
                             <input type="submit" value="Download" />
@@ -47,7 +47,7 @@ if (count($files) > 0): ?>
                 </td>
                 <?php if ($priv != 'Browser') : ?>
                     <td title="delete">
-                        <form action="<?php $_SERVER['PHP_SELF'] ?>" method="post" name="<?php htmlout($f['id']); ?>">
+                        <form action="." method="post" name="<?= $f['id']; ?>">
                             <div><input type="hidden" name="action" value="delete" />
                                 <input type="hidden" name="id" value="<?= $id; ?>" />
                                 <input type="submit" value="Delete" />
@@ -57,8 +57,8 @@ if (count($files) > 0): ?>
                 <?php endif; ?>
             </tr><?php endforeach; ?>
     </tbody>
-    </table></div>
-
+    </table>
+    </div>
 <?php else :
     $greeting = ($_SERVER['QUERY_STRING']) ? 'There were no files that matched your criteria' : 'There are currently no files in the database' ?>
     <h2><a href="<?php $_SERVER['PHP_SELF'] ?>" title="Click to return"><?= $greeting; ?>

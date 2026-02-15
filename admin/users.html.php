@@ -60,5 +60,4 @@ include TEMPLATE . 'base.html.php'; ?>
 		?>
 	</div>
 </body>
-
 </html>

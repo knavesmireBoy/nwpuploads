@@ -16,4 +16,4 @@ include_once 'base.html.php';
 	<div>
 		<input type="hidden" name="action" value="login" /><input type="submit" value="Log in" />
 	</div>
-</form><?php echo '</div></body></html>';
+</form></div></body></html>

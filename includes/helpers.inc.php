@@ -261,8 +261,8 @@ function seek()
         'user_id',
         'text',
         'ext',
-        'useroo',
-        'textme'
+        'byuser',
+        'bytext'
     );
     $i = count($arr);
     while ($i--) {
@@ -272,7 +272,6 @@ function seek()
     }
     return '?find';
 }
-
 
 function bbcode2html($text)
 {

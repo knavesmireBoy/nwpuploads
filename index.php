@@ -549,24 +549,24 @@ if ($priv == 'Admin') {
     $where  = ' WHERE TRUE';
     $ext = isset($_GET['ext']) ? $_GET['ext'] : null;
     $getuser = isset($_GET['u']) ? $_GET['u'] : '';
-    $textme = isset($_GET['t']) ? $_GET['t'] : '';
-    $useroo = isset($useroo) ? $useroo : $getuser;
+    $bytext = isset($_GET['t']) ? $_GET['t'] : '';
+    $byuser = isset($byuser) ? $byuser : $getuser;
     if ($ext) {
         if ($ext == 'owt') {
             $where .= " AND (upload.filename NOT LIKE '%pdf' AND upload.filename NOT LIKE '%zip')";
         } else $where .= " AND upload.filename LIKE '%$ext'";
     }
-    if (isset($useroo) && is_numeric($useroo)) { //CLIENTS USE EMAIL DOMAIN AS ID THERFORE NOT A NUMBER
-        if ($useroo = $getuser) {
-            $where .= " AND user.id=$useroo";
+    if (isset($byuser) && is_numeric($byuser)) { //CLIENTS USE EMAIL DOMAIN AS ID THERFORE NOT A NUMBER
+        if ($byuser = $getuser) {
+            $where .= " AND user.id=$byuser";
         }
     } else {
         if ($getuser) {
             $where .= " AND $domain='$getuser'";
         }
     }
-    if ($textme) {
-        $where .= " AND upload.filename LIKE '%$textme%'";
+    if ($bytext) {
+        $where .= " AND upload.filename LIKE '%$bytext%'";
     }
 } //admin
 else {

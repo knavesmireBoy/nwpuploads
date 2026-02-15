@@ -2,41 +2,41 @@
 include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
 include TEMPLATE . 'base.html.php'; ?>
-	<div>
-		<h1><?= $pagetitle; ?></h1>
-		<p><?= $message; ?></p>
-		<form action="?" method="post" name="usersform">
-			<ul>
-				<li><label for="name">Name:</label><input id="name" type="text" name="name" value="<?= $name; ?>" size="32" required /></li>
-				<li><label for="email">Email:</label><input type="email" id="email" name="email" value="<?= $email; ?>" size="32" required /></li>
-				<li><label for="password">Set password:</label><input id="password" type="password" name="password" /><input type="hidden" name="employer"
-						value="<?= $job ?? ''; ?>" size="32" /><label for="delete">Delete</label><input type="checkbox" id="delete" name="delete"></li>
-			</ul>
-			<?php if (preg_match("/admin/i", $priv)) : ?>
-				<fieldset>
-					<legend>Roles</legend>
-					<?php for ($i = 0; $i < count($roles); $i++): ?>
-						<div>
-							<label for="role<?= $i; ?>"><input id="role<?= $i; ?>" type="checkbox" name="roles[]" value="<?= $roles[$i]['id']; ?>"
-									<?= $roles[$i]['selected'] ? 'checked' : ''; ?> />
-								<?= $roles[$i]['id']; ?></label>: <?= $roles[$i]['description']; ?>
-						</div>
-					<?php endfor; ?>
-				</fieldset>
+<div>
+	<h1><?= $pagetitle; ?></h1>
+	<p><?= $message; ?></p>
+	<form action="?" method="post" name="usersform">
+		<ul>
+			<li><label for="name">Name:</label><input id="name" type="text" name="name" value="<?= $name; ?>" size="32" required /></li>
+			<li><label for="email">Email:</label><input type="email" id="email" name="email" value="<?= $email; ?>" size="32" required /></li>
+			<li><label for="password">Set password:</label><input id="password" type="password" name="password" /><input type="hidden" name="employer"
+					value="<?= $job ?? ''; ?>" size="32" /><label for="delete">Delete</label><input type="checkbox" id="delete" name="delete"></li>
+		</ul>
+		<?php if (preg_match("/admin/i", $priv)) : ?>
+			<fieldset>
+				<legend>Roles</legend>
+				<?php for ($i = 0; $i < count($roles); $i++): ?>
+					<div>
+						<label for="role<?= $i; ?>"><input id="role<?= $i; ?>" type="checkbox" name="roles[]" value="<?= $roles[$i]['id']; ?>"
+								<?= $roles[$i]['selected'] ? 'checked' : ''; ?> />
+							<?= $roles[$i]['id']; ?></label>: <?= $roles[$i]['description']; ?>
+					</div>
+				<?php endfor; ?>
+			</fieldset>
 
-			<?php if (!empty($clientlist)) {
-					include '../templates/_clientlist.html.php';
-				}
-			endif; ?>
-			<div><input type="hidden" name="id" value="<?= $id; ?>" />
-				<input type="hidden" name="action" value="<?= $route; ?>" />
-				<input type="hidden" name="override" value="<?= $override; ?>" />
-				<input type="submit" value="<?= $button; ?>" />
-			</div>
-		</form>
-		<?php include '_footer.html.php';
-		?>
-	</div>
+		<?php if (!empty($clientlist)) {
+				include '../templates/_clientlist.html.php';
+			}
+		endif; ?>
+		<div><input type="hidden" name="id" value="<?= $id; ?>" />
+			<input type="hidden" name="action" value="<?= $route; ?>" />
+			<input type="hidden" name="override" value="<?= $override; ?>" />
+			<input type="submit" value="<?= $button; ?>" />
+		</div>
+	</form>
+	<?php include '_footer.html.php';
+	?>
+</div>
 </body>
 
 </html>

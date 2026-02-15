@@ -1,14 +1,13 @@
 <footer>
     <?php
     if (isset($_GET['ext'])) $suffix = $ext;
-    if (isset($_GET['u'])) $user_id = $useroo;
-    if (isset($_GET['u'])) $text = $textme;
+    if (isset($_GET['u'])) $user_id = $byuser;
+    if (isset($_GET['u'])) $text = $bytext;
 
     $sort = explode('sort=', $_SERVER["QUERY_STRING"]);
     $sort = isset($sort[1]) ? $sort[1] : '';
     $sort = $sort ? "&sort=$sort" : '';
     $sort = preg_replace("/&&/", "&", $sort);
-
 
     if ($pages > 1) {
         $current_page = ($start / $display) + 1;
@@ -30,4 +29,4 @@
         </footer>
 <?php
         }
-    } //If Pages > 1
+    }
