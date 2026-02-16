@@ -552,15 +552,14 @@ if ($priv == 'Admin') {
     }
 } //admin
 else {
-
     $email = $_SESSION['email'];
-    $from .= " INNER JOIN userrole ON user.id=userrole.userid";
-   // $where = " WHERE user.email='$email' ";
-    $where = " WHERE client.domain = $domainstr AND user.email =  '$email'";
-    $where = " WHERE client.domain = $domainstr";
-    //$where = " WHERE true";
-};
-//$sql= $select . $from . $where . $order; //DEFAULT; TELEPHONE BLOCK REQUIRED TO OBTAIN CLIENT PHONE NUMBER
+    $st = $pdo->prepare("SELECT user.id, user.name FROM user WHERE user.client_id IS NULL AND user.email=:email");
+    $st->bindValue(":email", "$email");
+    doPreparedQuery($st, 'Error retreiving user details');
+    $row = $st->fetch(PDO::FETCH_ASSOC);
+    $where = $row ? " WHERE user.email='$email'" : " WHERE client.domain = $domainstr";
+}
+$sql = $select . $from . $where . $order; //DEFAULT; TELEPHONE BLOCK REQUIRED TO OBTAIN CLIENT PHONE NUMBER
 $sql = $select;
 $select_tel = ", client.name AS client, client.tel";
 //note LEFT join to include just 'users' also

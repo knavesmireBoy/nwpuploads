@@ -33,9 +33,8 @@ $isContractor = function ($pdo, $email, $clientid = NULL) use ($is_client_sql) {
   return (isset($row['employer']) && is_null($clientid)) ? $row['employer'] : $clientid;
 };
 
-$clientflag = isset($_GET['clientflag']) ? $_GET['clientflag'] : NULL;
-$pwd = isset($_GET['pwd']) ? $_GET['pwd'] : NULL;
-
+$clientflag = $_GET['clientflag'] ?? NULL;
+$pwd = $_GET['pwd'] ?? NULL;
 
 
 function updateUserDomain($old, $new, $id = 0)
@@ -93,6 +92,17 @@ function isEmployer($o, $p = '')
     doPreparedQuery($st, 'Error fetching client.');
     return $st->fetch(PDO::FETCH_NUM);
   };
+}
+
+function fetchAllRoles($pdo, $selectedRoles = [])
+{
+  //Build the list of all roles
+  $st = doQuery($pdo, "SELECT id, description FROM role", '<p>Error fetching list of roles.</p>');
+  $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+  foreach ($rows as $row) {
+    $roles[] = array('id' => $row['id'], 'description' => $row['description'], 'selected' => in_array($row['id'], $selectedRoles));
+  }
+  return $roles;
 }
 
 function resetRoles($pdo, $roles, $id)
@@ -252,13 +262,7 @@ if (isset($_GET['add'])) {
     exit();
   }
 
-  $st = doQuery($pdo, "SELECT id, description FROM role", "Error fetching list of roles.");
-  $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-
-  //Build the list of roles
-  foreach ($rows as $row) {
-    $roles[] = array('id' => $row['id'], 'description' => $row['description'], 'selected' => FALSE);
-  }
+  $roles = fetchAllRoles($pdo);
 
   if ($admin) {
     $rows = doQuery($pdo, "SELECT * FROM client", "");
@@ -278,6 +282,7 @@ if (isset($_GET['add'])) {
     });
   }
   $pagetitle = "Admin | Users";
+  $pagehead = "Add User";
   include 'form.html.php';
   exit();
 } //////////////END OF ASSIGN
@@ -287,7 +292,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
   $clientid = $_POST['employer'] ?? NULL;
   $clientadmin = preg_match("/admin/i", $priv) && preg_match("/client/i", $priv);
-
   $essentials = [$_POST['name'], $_POST['email'], $_POST['password']];
   $essentials = array_filter($essentials, function ($item) {
     return $item;
@@ -341,7 +345,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
 if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
 
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-  $clientAdmin = preg_match('/admin/i', $priv) && preg_match('/client/i', $priv);
   $id = isset($_GET['edit']) ? $_GET['edit'] : ($pwd ? $pwd : NULL);
   $id = !empty($id) ? $id : $_POST['id'] ?? '';
   $st = $pdo->prepare("SELECT id, name, email, $domainstr AS dom FROM user WHERE id =:id");
@@ -365,54 +368,56 @@ if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
     $row = $st->fetch(PDO::FETCH_ASSOC);
   }
 
+  $pagetitle = "Edit Users";
   $route = "Edit";
   $pagehead = 'Edit User';
   $action = 'editform';
   $button = 'Update User';
+  $roles = [];
+
+  $id = $row['id'];
   $name = $row['name'];
   $email = $row['email'];
-  $id = $row['id'];
-
   $override = $pwd ? $pwd : NULL;
 
-  $st = $pdo->prepare("SELECT roleid FROM userrole WHERE userid=:id");
-  $st->bindValue(":id", $id);
-  doPreparedQuery($st, "<p>Error fetching list of assigned roles.</p>");
-  $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+  $admin = ($priv === 'Admin');
+  $clientadmin = preg_match("/admin/i", $priv) || preg_match("/client/i", $priv);
+  $adminClient = preg_match('/admin/i', $priv) && preg_match('/client/i', $priv);
 
-  $selectedRoles = array();
-  foreach ($rows as $row) {
-    $selectedRoles[] = $row['roleid'];
+
+  if ($clientadmin) {
+    $st = $pdo->prepare("SELECT roleid FROM userrole WHERE userid=:id");
+    $st->bindValue(":id", $id);
+    doPreparedQuery($st, "<p>Error fetching list of assigned roles.</p>");
+    $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($rows as $row) {
+      $selectedRoles[] = $row['roleid'];
+    }
+    $roles = fetchAllRoles($pdo, $selectedRoles);
   }
-  // Build the list of all roles
-  $st = doQuery($pdo, "SELECT id, description FROM role", '<p>Error fetching list of roles.</p>');
-  $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-  foreach ($rows as $row) {
-    $_roles[] = array('id' => $row['id'], 'description' => $row['description'], 'selected' => in_array($row['id'], $selectedRoles));
+  if ($admin) {
+    $st = doQuery($pdo, "SELECT id, name FROM client ORDER BY name", '<p>Error retrieving clients from database!</p>');
+    $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($rows as $row) {
+      $clientlist[$row['id']] = $row['name'];
+    }
   }
-  $st = doQuery($pdo, "SELECT id, name FROM client ORDER BY name", '<p>Error retrieving clients from database!</p>');
-  $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-  foreach ($rows as $row) {
-    $clientlist[$row['id']] = $row['name'];
-  }
-  $roles = [];
-  if ($clientAdmin) {
-    foreach ($_roles as $role) {
+
+  if ($adminClient) {
+    $tmp = [];
+    foreach ($roles as $role) {
       if ($role['id'] !== 'Admin') {
-        $roles[] = $role;
+        $tmp[] = $role;
       }
     }
-    unset($clientlist);
-  } else {
-    $roles = $_roles;
-  }
+    $roles = $tmp;
+  } 
 
   $st = $pdo->prepare("SELECT client_id FROM user WHERE id=:id");
   $st->bindValue(":id", $id);
   doPreparedQuery($st, "<p>Error retrieving client id from user!</p>");
   $row = $st->fetch(PDO::FETCH_ASSOC);
   $job = $row['client_id']; //selects client in drop down menu
-  $pagetitle = "Admin | Users";
   include 'form.html.php';
   exit();
 } //edit
@@ -499,6 +504,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
       doPreparedQuery($st, '<p>Error removing obsolete user role entries.</p>');
     }
     resetRoles($pdo, $roles, $id);
+    dump($id);
     //$clientid is allowed to be null if a user wants to disassociate from a client
     $sql = "UPDATE user SET client_id=:cid WHERE id =:id";
     $st = $pdo->prepare($sql);
@@ -562,7 +568,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'Choose') {
       header("Location: ./?edit=$key");
       exit;
     } else {
-      $pagetitle="Manage Users";
+      $pagetitle = "Manage Users";
       include 'users.html.php';
     }
   } else {
@@ -645,7 +651,7 @@ if (preg_match("/client/i", $priv)) {
       header("Location: ./?edit=$k");
       exit;
     } else {
-      $pagetitle="Manage Users";
+      $pagetitle = "Manage Users";
       include 'users.html.php';
       exit;
     }
@@ -666,7 +672,6 @@ if (preg_match("/admin/i", $priv)) {
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 
 //reOrderTable($pdo);
-
 reAssignClient($pdo);
 
 $message = $message ? $message : $error;
@@ -678,6 +683,6 @@ if ($usercount === 1) {
   header("Location: ./?edit=$key");
   exit;
 } else {
-  $pagetitle="Manage Users";
+  $pagetitle = "Manage Users";
   include 'users.html.php';
 }
