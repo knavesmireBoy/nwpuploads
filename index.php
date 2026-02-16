@@ -31,7 +31,8 @@ if ($roleplay = userHasWhatRole()) {
     $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))"; //!!?!! V. USEFUL VARIABLE IN GLOBAL SPACE
 } else {
     $error = 'Only valid clients may access this page.';
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/accessdenied.html.php';
+   // include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/accessdenied.html.php';
+    include TEMPLATE . 'accessdenied.html.php';
     exit(); // endof OBTAIN access level
 }
 

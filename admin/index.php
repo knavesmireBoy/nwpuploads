@@ -36,7 +36,6 @@ $isContractor = function ($pdo, $email, $clientid = NULL) use ($is_client_sql) {
 $clientflag = $_GET['clientflag'] ?? NULL;
 $pwd = $_GET['pwd'] ?? NULL;
 
-
 function updateUserDomain($old, $new, $id = 0)
 {
   if ($old && $new) {
@@ -93,7 +92,6 @@ function isEmployer($o, $p = '')
     return $st->fetch(PDO::FETCH_NUM);
   };
 }
-
 
 function fetchAllRoles($pdo, $selectedRoles = [])
 {
@@ -462,12 +460,13 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     $edom = substr($_POST['email'], $i + 1);
     $isEmployer = isEmployer($edom);
     list($clientid, $domain) = $isEmployer($pdo);
+
     $freelancer = isFreelancer($pdo, $id);
     //$employerid only available from ADMIN; default to zero NOT NULL so it survives equality test with $clientid see $notice
     $employerid = empty($_POST['employer']) ? 0 : intval($_POST['employer']);
-
     $relocation = "Location: ./?clientflag=$id";
     //should user BE a freelancer
+
     if ($freelancer) {
       if (isset($clientid)) { //attempt by freelancer to join client; no priv
         $assoc = $admin ? true : false;
@@ -479,19 +478,20 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
       $isEmployer = isEmployer($_POST, 'employer');
       list($clientid, $domain) = $isEmployer($pdo);
     } else {
+      $isEmployer = isEmployer($_POST, 'id');
+      list($clientid, $domain, $email) = $isEmployer($pdo);
       if (!$clientid) {
         //allow admin to = reinstate freelancer status
         if ($admin && !$employerid) {
           $domain = $edom;
         } else {
-          $isEmployer = isEmployer($_POST, 'id');
-          list($clientid, $domain, $email) = $isEmployer($pdo);
           $relocation = "Location: ./?clientflag=$id";
           header($relocation);
           exit();
         }
       }
     }
+
     $sql = "UPDATE user SET name=:name, email=:email";
     $sql .= $assoc ? ", client_id=:cid" : ' ';
     $sql .= " WHERE id=:id";
@@ -504,7 +504,9 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     $st->bindValue(":email", $revert ? $email : $_POST['email']);
     $st->bindValue(":id", $id);
     doPreparedQuery($st, '<p>Error setting user details.</p>');
+    //check EXISTING email not $_POST
     $editor = $_SESSION['email'] === $email;
+
     if (isset($_POST['password']) && $_POST['password'] != '') {
       if ($override) {
         $res = updatePassword($pdo, $_POST['password'], $id);
@@ -528,6 +530,12 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     $st->bindValue(":id", $id);
     doPreparedQuery($st, '<p>Error setting client id</p>');
     updateUserDomain($edom, $domain, $id);
+
+    if (($email !== $_POST['email']) && $editor) {
+      header("Location: ../?action=logout");
+      exit();
+    }
+
     header('Location: .');
     exit();
   }  //not delete
