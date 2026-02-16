@@ -6,16 +6,14 @@ function safeFilter($array, $cb)
     return array_values(array_filter($array, $cb));
 }
 
-function reAssignClient()
+function reAssignClient($pdo)
 {
   $sql = "SELECT user.id, RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email)) AS dom FROM user LEFT JOIN userrole ON userid = user.id WHERE roleid = 'Client Admin' ORDER by dom";
-  include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
   $update = "UPDATE userrole SET roleid = 'Client' WHERE userid=:id";
-  $st = doQuery($pdo, $sql, 'fail');
+  $st = doQuery($pdo, $sql, 'Failed to Update Role');
   $rows = $st->fetchAll(PDO::FETCH_ASSOC);
   $l = count($rows);
   for ($i = 0; $i < $l; $i++) {
-
     if ($i && $rows[$i - 1]['dom'] === $rows[$i]['dom']) {
       $st = $pdo->prepare($update);
       $st->bindValue(":id", $rows[$i]['id']);
@@ -24,9 +22,8 @@ function reAssignClient()
   }
 }
 
-function reOrderTable() {
+function reOrderTable($pdo) {
 
-/*
 $st = doQuery($pdo, "SELECT id FROM user ORDER by id", "");
 $count = 1;
 $sql = "UPDATE user SET id=:count WHERE id=:current";
@@ -44,8 +41,8 @@ for ($i = 0; $i < $l; $i++) {
   }
   $count++;
 }
-  $sql = ALTER table X AUTO_INCREMENT = $count;...
-*/
+  $sql = "ALTER table user AUTO_INCREMENT = $count";
+  doQuery($pdo, $sql, "Error on Auto Increment");
 }
 
 function checkVars($arr, $pagevars = [])

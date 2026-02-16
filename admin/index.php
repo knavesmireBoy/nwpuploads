@@ -665,6 +665,10 @@ if (preg_match("/admin/i", $priv)) {
 
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 
+//reOrderTable($pdo);
+
+reAssignClient($pdo);
+
 $message = $message ? $message : $error;
 $usercount = $priv === 'Admin' ? 2 : count($users);
 

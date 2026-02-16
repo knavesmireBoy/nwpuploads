@@ -67,7 +67,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'upload') {
             //exit($sql);
             $st = $pdo->prepare($sql);
             $st->bindValue(":id", $key);
-            $st->bindValue(":myrole", '%Admin');
+            $st->bindValue(":myrole", 'Client%');
             doPreparedQuery($st, 'Error fetching user details');
             $row = $st->fetch(PDO::FETCH_ASSOC);
             $key = $row ? $row['user_id'] : null;
@@ -269,7 +269,6 @@ if (isset($_POST['swap'])) {
             $colleagues[$row['id']] = $row['name'];
         }
     }
-
     if ($priv === 'Admin') {
         $sql = "SELECT user.name, user.id FROM user LEFT JOIN client ON user.client_id=client.id  WHERE client.domain IS NULL UNION SELECT user.name, user.id FROM user INNER JOIN client ON user.client_id=client.id ORDER BY name";
         $st = doQuery($pdo, $sql, 'Database error fetching users.');
@@ -281,8 +280,6 @@ if (isset($_POST['swap'])) {
 } ///
 
 if (isset($_POST['original'])) {
-
-
     //CAN ONLY BE SET BY ADMIN, 'original' is common to both options of file amend block
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
     $user = !empty($_POST['colleagues']) ? $_POST['colleagues'] : (!empty($_POST['user']) ? $_POST['user'] : $_POST['original']);
@@ -314,17 +311,14 @@ if (isset($_GET['p']) and is_numeric($_GET['p'])) {
     if ($priv == 'Client') {
         $sql .= " INNER JOIN user on upload.userid = user.id WHERE user.email=:email";
     }
-
     $st = $pdo->prepare($sql);
     $st->bindValue(":email", $_SESSION['email']);
     doPreparedQuery($st, "<p>Database error  requesting THE list of files:</p>");
     $row = $st->fetch(PDO::FETCH_ASSOC);
-
     if (!$row) {
         header("Location: ./?file_list");
         exit();
     }
-
     $records = $row['total'];
     if ($records > $display) {
         $pages = ceil($records / $display);
@@ -354,37 +348,27 @@ switch ($sort) {
         break;
 }
 
-
 //D I S P L A Y_______________________________________________________________
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php'; ///Present list of users for administrators
 $sqlu = "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS NULL ORDER BY name";
 
-$st = doQuery($pdo, $sqlu, "<p>Error retrieving details</p>");
+$st = doQuery($pdo, $sqlu, "Error retrieving details");
 $result = $st->fetchAll(PDO::FETCH_ASSOC);
-if (!$result) {
-    $error = 'Database error fetching users.';
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
-    exit();
-}
+
 foreach ($result as $row) {
     $users[$row['id']] = $row['name'];
 }
 
-/*
-$sqlc ="SELECT employer.user_id, employer.name from
-(SELECT user.name, user.id as user_id, client.domain FROM user INNER JOIN client ON RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))=client.domain) AS employer";
-*/
 
-$sqlc = "SELECT name, domain, tel FROM client ORDER BY name";
-$st = doQuery($pdo, $sqlc, "<p>Database error fetching clients.</p>");
+$sqlc = "SELECT employer.user_id, employer.name, employer.domain FROM
+(SELECT user.name, user.id as user_id, client.domain FROM user INNER JOIN client ON RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))=client.domain) AS employer";
+
+
+//$sqlc = "SELECT name, domain, tel FROM client ORDER BY name";
+$st = doQuery($pdo, $sqlc, "Database error fetching clients");
 $result = $st->fetchAll(PDO::FETCH_ASSOC);
 
-
-if (!$result) {
-    $error = 'Database error fetching clients.';
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
-    exit();
-}
+//dump($result);
 
 foreach ($result as $row) {
     $client[$row['domain']] = $row['name'];
@@ -447,6 +431,7 @@ if (isset($_GET['find'])) {
 //_______//_______//_______//_______//_______//_______//_______//_______//_______//_____
 $select = "SELECT upload.id, filename, mimetype, description, filepath, file, size, time,  MID(file, 11, 14) AS origin, user.email, user.name";
 $from = " FROM upload INNER JOIN user ON upload.userid=user.id";
+
 $order = " ORDER BY $order_by LIMIT $start, $display";
 $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
 //_______//_______//_______//_______//_______//_______//_______//_______//_______//_____
@@ -552,7 +537,8 @@ if ($priv == 'Admin') {
             $where .= " AND (upload.filename NOT LIKE '%pdf' AND upload.filename NOT LIKE '%zip')";
         } else $where .= " AND upload.filename LIKE '%$ext'";
     }
-    if (isset($byuser) && is_numeric($byuser)) { //CLIENTS USE EMAIL DOMAIN AS ID THERFORE NOT A NUMBER
+    //CLIENTS USE EMAIL DOMAIN AS ID THERFORE NOT A NUMBER
+    if (isset($byuser) && is_numeric($byuser)) {
         if ($byuser = $getuser) {
             $where .= " AND user.id=$byuser";
         }
@@ -566,23 +552,24 @@ if ($priv == 'Admin') {
     }
 } //admin
 else {
+
     $email = $_SESSION['email'];
     $from .= " INNER JOIN userrole ON user.id=userrole.userid";
-    //$where .=" WHERE user.email='$email' ";
-    $where = " WHERE user.email='$email' ";
-}
+   // $where = " WHERE user.email='$email' ";
+    $where = " WHERE client.domain = $domainstr AND user.email =  '$email'";
+    $where = " WHERE client.domain = $domainstr";
+    //$where = " WHERE true";
+};
 //$sql= $select . $from . $where . $order; //DEFAULT; TELEPHONE BLOCK REQUIRED TO OBTAIN CLIENT PHONE NUMBER
 $sql = $select;
 $select_tel = ", client.name AS client, client.tel";
-$from .= " LEFT JOIN client ON user.client_id=client.id"; //note LEFT join to include just 'users' also
+//note LEFT join to include just 'users' also
+$from .= " LEFT JOIN client ON user.client_id=client.id";
 $sql .= $select_tel . $from . $where . $order;
-
 //______________________________________________END OF TELEPHONE
-
 
 $st = doQuery($pdo, $sql, 'Database error fetching files. ');
 $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-
 $files = array();
 foreach ($rows as $row) {
     $files[] = array(
@@ -616,14 +603,10 @@ $fhead = $qs . $ffn($state);
 $uhead = $qs . $ufn($state);
 $thead = $qs . $tfn($state);
 
-
-
 $arr = get_defined_vars();
 foreach ($arr as $key => $value) {
     if (preg_match('/_[A-Z]+/', $key)) unset($arr[$key]);
 }
-
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/base.html.php';
 $error =  $lib[$_SERVER["QUERY_STRING"]] ?? '';
-ob_start();
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/files.html.php';
