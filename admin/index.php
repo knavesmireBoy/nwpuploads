@@ -158,9 +158,10 @@ if (!userIsLoggedIn()) {
   exit();
 }
 
-if (!$roleplay = userHasWhatRole()) {
+if (!$roleplay = userHasWhatRole(true)) {
   $error = 'Only Account Administrators may access this page!';
-  include 'accessdenied.html.php';
+  $pagetitle = "Access Denied";
+  include TEMPLATE . 'accessdenied.html.php';
   exit();
 }
 $sql = "SELECT id, name FROM user "; // THE DEFAULT QUERY___________________________________
@@ -598,8 +599,10 @@ if (!preg_match("/admin/i", $priv)) {
 } else {
 }
 $sql .= " ORDER BY name";
+
+dump($sql);
 if (!isset($flag)) {
-  $result = doQuery($pdo, $sql, 'Error retrieving list:');
+  $result = doQuery($pdo, $sql, 'Error retrieving listo');
   $rows = $result->fetchAll();
   if (!$result) {
     $error = "Error retrieving users from t'database!";

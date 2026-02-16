@@ -8,41 +8,42 @@ function safeFilter($array, $cb)
 
 function reAssignClient($pdo)
 {
-  $sql = "SELECT user.id, RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email)) AS dom FROM user LEFT JOIN userrole ON userid = user.id WHERE roleid = 'Client Admin' ORDER by dom";
-  $update = "UPDATE userrole SET roleid = 'Client' WHERE userid=:id";
-  $st = doQuery($pdo, $sql, 'Failed to Update Role');
-  $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-  $l = count($rows);
-  for ($i = 0; $i < $l; $i++) {
-    if ($i && $rows[$i - 1]['dom'] === $rows[$i]['dom']) {
-      $st = $pdo->prepare($update);
-      $st->bindValue(":id", $rows[$i]['id']);
-      doPreparedQuery($st, 'failure');
+    $sql = "SELECT user.id, RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email)) AS dom FROM user LEFT JOIN userrole ON userid = user.id WHERE roleid = 'Client Admin' ORDER by dom";
+    $update = "UPDATE userrole SET roleid = 'Client' WHERE userid=:id";
+    $st = doQuery($pdo, $sql, 'Failed to Update Role');
+    $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+    $l = count($rows);
+    for ($i = 0; $i < $l; $i++) {
+        if ($i && $rows[$i - 1]['dom'] === $rows[$i]['dom']) {
+            $st = $pdo->prepare($update);
+            $st->bindValue(":id", $rows[$i]['id']);
+            doPreparedQuery($st, 'failure');
+        }
     }
-  }
 }
 
-function reOrderTable($pdo) {
+function reOrderTable($pdo)
+{
 
-$st = doQuery($pdo, "SELECT id FROM user ORDER by id", "");
-$count = 1;
-$sql = "UPDATE user SET id=:count WHERE id=:current";
-$all = $st->fetchAll(PDO::FETCH_NUM);
-$all = array_merge(...$all);
-$l = count($all);
+    $st = doQuery($pdo, "SELECT id FROM user ORDER by id", "");
+    $count = 1;
+    $sql = "UPDATE user SET id=:count WHERE id=:current";
+    $all = $st->fetchAll(PDO::FETCH_NUM);
+    $all = array_merge(...$all);
+    $l = count($all);
 
-for ($i = 0; $i < $l; $i++) {
-  $cur = $all[$i];
-  if ($cur !== $count) {
-    $st = $pdo->prepare($sql);
-    $st->bindValue(":count", $count);
-    $st->bindValue(":current", $cur);
-    doPreparedQuery($st, "Error updating table");
-  }
-  $count++;
-}
-  $sql = "ALTER table user AUTO_INCREMENT = $count";
-  doQuery($pdo, $sql, "Error on Auto Increment");
+    for ($i = 0; $i < $l; $i++) {
+        $cur = $all[$i];
+        if ($cur !== $count) {
+            $st = $pdo->prepare($sql);
+            $st->bindValue(":count", $count);
+            $st->bindValue(":current", $cur);
+            doPreparedQuery($st, "Error updating table");
+        }
+        $count++;
+    }
+    $sql = "ALTER table user AUTO_INCREMENT = $count";
+    doQuery($pdo, $sql, "Error on Auto Increment");
 }
 
 function checkVars($arr, $pagevars = [])
@@ -219,7 +220,8 @@ function doQuery($pdo, $sql, $msg)
         $error = $msg . ' ' . $e->getMessage();
         $root =  $_SERVER['DOCUMENT_ROOT'] . '/api/';
         $root =  $_SERVER['DOCUMENT_ROOT'];
-        include '../templates/error.html.php';
+        include TEMPLATE . 'output.html.php';
+        //include '../templates/error.html.php';
         exit();
     }
 }
@@ -238,11 +240,13 @@ function doPreparedQuery($st, $msg, $flag = false)
         }
         return $st->execute();
     } catch (PDOException $e) {
-        $error = $msg . ' ' . $e->getMessage();
-        $root =  $_SERVER['DOCUMENT_ROOT'] . '/api/';
-        $root =  $_SERVER['DOCUMENT_ROOT'];
-        include '../templates/output.html.php';
-        exit();
+        if ($msg) {
+            $error = $msg . ' ' . $e->getMessage();
+            $root =  $_SERVER['DOCUMENT_ROOT'] . '/api/';
+            $root =  $_SERVER['DOCUMENT_ROOT'];
+            include TEMPLATE . 'output.html.php';
+            exit();
+        }
     }
 }
 

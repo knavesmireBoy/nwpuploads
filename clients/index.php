@@ -18,11 +18,10 @@ function getDomain($pdo, $id)
 $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
 $pagetitle = "Manage Clients";
 $selected = null;
-list($key, $priv) = userHasWhatRole();
-
+list($key, $priv) = userHasWhatRole(true);
 if ($priv !== 'Admin') {
-  $error = 'Only Account Administrators may access this page!';
-  include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/accessdenied.html.php';
+  $error = 'Only Account Administrators may access this page!!';
+  include TEMPLATE . 'accessdenied.html.php';
   exit();
 }
 

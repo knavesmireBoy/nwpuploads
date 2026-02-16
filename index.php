@@ -58,14 +58,13 @@ if (isset($_POST['action']) && $_POST['action'] == 'upload') {
         $key = $_POST['user'];
         include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
         $st = $pdo->prepare("SELECT domain FROM client WHERE domain=:id");
+
         $st->bindValue(":id", $key);
         doPreparedQuery($st, 'Error fetching domain');
         $row = $st->fetch(PDO::FETCH_NUM);
         if ($row && count($row) > 0) {
-            $sql = "SELECT employer.user_name, employer.user_id FROM (SELECT user.name AS user_name, user.id AS user_id, client.domain FROM user INNER JOIN client ON $domainstr =client.domain INNER JOIN userrole ON user.client_id = userrole.userid WHERE userrole.roleid LIKE :myrole) AS employer WHERE employer.domain=:id LIMIT 1";
-
             //RETURNS one user, as relationship between file and user is one to one.
-            //exit($sql);
+            $sql = "SELECT employer.user_name, employer.user_id FROM (SELECT user.name AS user_name, user.id AS user_id, client.domain, client.id FROM user INNER JOIN client ON $domainstr = client.domain INNER JOIN userrole ON user.id = userrole.userid WHERE userrole.roleid LIKE :myrole ORDER BY client.id) AS employer WHERE employer.domain=:id LIMIT 1";
             $st = $pdo->prepare($sql);
             $st->bindValue(":id", $key);
             $st->bindValue(":myrole", 'Client%');
@@ -91,6 +90,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'upload') {
     $size =  $uploaded('size') / 1024;
 
     $sql = "INSERT INTO upload (filename, mimetype, description, filepath, file, size, userid, time) VALUES(:realname, :uploadtype,:uploaddesc,:pth,:uploadname,:sized,:userid, NOW())";
+
     $st = $pdo->prepare($sql);
     $st->bindValue(":realname", $realname);
     $st->bindValue(":uploadtype", $uploaded('type'));
@@ -175,23 +175,39 @@ if (isset($_POST['action']) and $_POST['action'] == 'delete') {
     $template = '/prompt.html.php';
 }
 
-if (isset($_POST['confirm']) and $_POST['confirm'] == 'Yes') {
+if (isset($_POST['confirm']) && $_POST['confirm'] == 'Yes') {
     $prompt = "Select the extent of deletions";
     $id = $_POST['id'];
     $del = "proceed";
     $template = '/prompt.html.php';
 }
 
-if (isset($_POST['proceed']) and $_POST['proceed'] == 'remove') {
+if (isset($_POST['proceed']) && $_POST['proceed'] == 'remove') {
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
     $path = '../../filestore/';
 
+    $deletejoins = array(
+        /*doozy, obtain client id from file id to filter list of client files */
+        "DELETE upload FROM user INNER JOIN client ON client.id = user.client_id INNER JOIN upload  ON user.id = upload.userid INNER JOIN (SELECT client.id FROM client INNER JOIN user on user.client_id = client.id  INNER JOIN (SELECT upload.userid FROM user INNER JOIN upload ON upload.userid = user.id WHERE upload.id=:id) AS tmp WHERE user.id = tmp.userid) AS T ON client.id = T.id WHERE client.id = T.id",
+
+        "DELETE upload FROM upload INNER JOIN user ON upload.userid = user.id INNER JOIN (SELECT userid FROM upload  WHERE id =:id) AS owt ON user.id = owt.userid WHERE user.id = owt.userid",
+
+        "DELETE FROM upload WHERE id =:id   "
+    );
+
+    $selectors = [
+        "SELECT upload.file FROM user INNER JOIN client ON client.id = user.client_id INNER JOIN upload ON user.id = upload.userid INNER JOIN (SELECT client.id FROM client INNER JOIN user on user.client_id = client.id  INNER JOIN (SELECT upload.userid FROM user INNER JOIN upload ON upload.userid = user.id WHERE upload.id=:id) AS tmp WHERE user.id = tmp.userid) AS T ON client.id = T.id WHERE client.id = T.id",
+
+        "SELECT upload.file FROM upload INNER JOIN user ON upload.userid = user.id INNER JOIN (SELECT userid FROM upload  WHERE id=:id) AS owt ON user.id = owt.userid WHERE user.id = owt.userid",
+        "SELECT upload.file FROM upload WHERE id=:id"
+    ];
+
     if ($_POST['extent'] == "c") {
-        $sql = "SELECT c.file FROM user INNER JOIN client ON user.client_id = client.id INNER JOIN upload AS c ON user.id = c.userid INNER JOIN upload AS d ON d.userid=user.id WHERE d.id=:id";
+        $sql = $selectors[0];
     } elseif ($_POST['extent'] == "u") {
-        $sql = "SELECT upload.file FROM upload INNER JOIN user ON upload.userid=user.id INNER JOIN upload AS d ON upload.userid=d.userid WHERE d.id=:id";
+        $sql = $selectors[1];
     } elseif ($_POST['extent'] == "f") {
-        $sql = "SELECT file FROM upload WHERE id=:id";
+        $sql = $selectors[2];
     } else {
         header('Location: .');
         exit();
@@ -354,24 +370,20 @@ include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php'; ///Prese
 $sqlu = "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS NULL ORDER BY name";
 
 $st = doQuery($pdo, $sqlu, "Error retrieving details");
-$result = $st->fetchAll(PDO::FETCH_ASSOC);
+$rows = $st->fetchAll(PDO::FETCH_ASSOC);
 
-foreach ($result as $row) {
+foreach ($rows as $row) {
     $users[$row['id']] = $row['name'];
 }
-
-
+/*
 $sqlc = "SELECT employer.user_id, employer.name, employer.domain FROM
 (SELECT user.name, user.id as user_id, client.domain FROM user INNER JOIN client ON RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))=client.domain) AS employer";
-
-
-//$sqlc = "SELECT name, domain, tel FROM client ORDER BY name";
+*/
+$sqlc = "SELECT name, domain, tel FROM client ORDER BY name";
 $st = doQuery($pdo, $sqlc, "Database error fetching clients");
-$result = $st->fetchAll(PDO::FETCH_ASSOC);
+$rows = $st->fetchAll(PDO::FETCH_ASSOC);
 
-//dump($result);
-
-foreach ($result as $row) {
+foreach ($rows as $row) {
     $client[$row['domain']] = $row['name'];
 }
 //end of default_______________________________________________________________________

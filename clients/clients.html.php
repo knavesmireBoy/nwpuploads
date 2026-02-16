@@ -33,7 +33,7 @@ include TEMPLATE . 'base.html.php';
 		<?php } ?>
 		<p><a href="../admin/">Return to users</a></p>
 		<?php
-		include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/logout.inc.html.php';
+		include TEMPLATE . '_logout.html.php';
 		exit();
 		?>
 	</div>

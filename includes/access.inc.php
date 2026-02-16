@@ -55,43 +55,43 @@ function userIsLoggedIn()
         exit();
     } //end of logout
 
+    if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'log') {
+        $e = $_GET['error'] ?? '';
+        header("Location: ./?loginError=$e");
+        exit();
+    } //end of logout
+
     session_start();
     if (isset($_SESSION['loggedIn'])) {
         return databaseContainsUser($_SESSION['email'], $_SESSION['password']);
     }
 } // end of user check
 
-function userHasWhatRole()
+function userHasWhatRole($flag = false)
 {
     include 'db.inc.php';
-    $sql = "SELECT userrole.roleid, user.id, count(*) as total FROM userrole INNER JOIN user ON user.id=userrole.userid where user.email=:email GROUP BY roleid";
+    $sql = "SELECT user.id, userrole.roleid FROM userrole INNER JOIN user ON user.id=userrole.userid where user.email=:email";
+    if ($flag) {
+        $sql = "SELECT user.id, userrole.roleid FROM user INNER JOIN userrole ON user.id=userrole.userid WHERE (userrole.roleid LIKE 'Client' OR userrole.roleid LIKE 'Admin') AND user.email=:email";
+    }
     $email = $_SESSION['email'];
     $st = $pdo->prepare($sql);
     $st->bindValue(":email", $email);
-    doPreparedQuery($st, "<p>Error establishing user role!:</p>");
+    doPreparedQuery($st, "");
     $row = $st->fetch(PDO::FETCH_ASSOC);
-
     if (!$row) {
-        $error = 'Error establishing user role:';
-        // echo "<h3>$error</h3>";
-        header("Location: ./?action=logout&error=$error");
-        exit();
+        return null;
     }
     return [$row['id'], $row['roleid']];
-    return $roleplay;
 }
 
 function clientCheck($flag = false)
 {
-    // $lib = ["Client" => ['add', 'delete'], ""]
-
     list($key, $priv) = userHasWhatRole();
     $c = preg_match("/client/i", $priv);
     $ca = $c && preg_match("/admin/i", $priv);
     return $flag ? !($ca || !$c) : ($ca || !$c);
 }
-
-
 /*
 function email($em, $id) {
 $email = html($em);
@@ -108,11 +108,9 @@ function email($em, $id)
 
 function setExtent($count)
 {
-   if(is_int($count)){
-    $_SESSION['extent'] = $count;
-   }
-   else if(isset($_SESSION['extent'])){
-    unset($_SESSION['extent']);
-   }
-   
+    if (is_int($count)) {
+        $_SESSION['extent'] = $count;
+    } else if (isset($_SESSION['extent'])) {
+        unset($_SESSION['extent']);
+    }
 }

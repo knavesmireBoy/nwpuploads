@@ -8,6 +8,6 @@ include TEMPLATE .'/base.html.php';
     <h3>
         <?= $error; ?>
 </h3>
-    <p><a href="..">Back</a></p>
+    <p><a href=".">Back</a></p>
 </body>
 </html>
