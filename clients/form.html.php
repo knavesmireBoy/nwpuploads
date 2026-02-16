@@ -24,6 +24,6 @@ include TEMPLATE . 'base.html.php';
 			<input type="hidden" name="action" value="<?= $route; ?>" />
 			<input type="submit" value="<?= $button; ?>" />
 		</form>
-		<p><a href="./">Return to Client List</a></p>
+		<p><a href=".">Return to Client List</a></p>
 	</div>
 </body>

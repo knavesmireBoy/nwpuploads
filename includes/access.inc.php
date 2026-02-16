@@ -72,7 +72,7 @@ function userHasWhatRole($flag = false)
     include 'db.inc.php';
     $sql = "SELECT user.id, userrole.roleid FROM userrole INNER JOIN user ON user.id=userrole.userid where user.email=:email";
     if ($flag) {
-        $sql = "SELECT user.id, userrole.roleid FROM user INNER JOIN userrole ON user.id=userrole.userid WHERE (userrole.roleid LIKE 'Client' OR userrole.roleid LIKE 'Admin') AND user.email=:email";
+        $sql = "SELECT user.id, userrole.roleid FROM user INNER JOIN userrole ON user.id=userrole.userid WHERE (userrole.roleid LIKE 'Client%' OR userrole.roleid LIKE '%Admin') AND user.email=:email";
     }
     $email = $_SESSION['email'];
     $st = $pdo->prepare($sql);

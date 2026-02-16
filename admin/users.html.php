@@ -50,12 +50,12 @@ include TEMPLATE . 'base.html.php'; ?>
 		endif;
 		if (isset($prompt)) {
 			ob_end_clean();
-			include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/prompt.html.php';
+			include TEMPLATE . 'prompt.html.php';
 		}
 		?>
 		<p><a href="..">Return to uploads</a></p>
 		<?php
-		include '../includes/logout.inc.html.php';
+		include TEMPLATE . '_logout.html.php';
 		exit();
 		?>
 	</div>

@@ -600,7 +600,6 @@ if (!preg_match("/admin/i", $priv)) {
 }
 $sql .= " ORDER BY name";
 
-dump($sql);
 if (!isset($flag)) {
   $result = doQuery($pdo, $sql, 'Error retrieving listo');
   $rows = $result->fetchAll();

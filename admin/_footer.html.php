@@ -6,5 +6,5 @@
 		if ($priv == 'Admin') { ?>
 			<p><a href="../clients/">Edit Clients</a></p>
 		<?php }
-		include '_logout.html.php';
+		include TEMPLATE . '_logout.html.php';
 		exit();
