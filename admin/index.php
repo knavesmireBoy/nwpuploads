@@ -451,7 +451,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
     $override = $_POST['override'];
     $id = $_POST['id'];
-    $roles = isset($_POST['roles']) ? $_POST['roles'] : [];
+    $roles = $_POST['roles'] ?? [];
     $assoc = false;
     $revert = false;
     $email = null;
@@ -514,13 +514,11 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     }
 
     if (preg_match("/admin/i", $priv)) {
-      $roles = fetchSelectedRoles($pdo, $id);
       $sql = "DELETE FROM userrole WHERE userid=:id";
       $st = $pdo->prepare($sql);
       $st->bindValue(":id", $id);
       doPreparedQuery($st, '<p>Error removing obsolete user role entries.</p>');
     }
-dump($roles);
     resetRoles($pdo, $roles, $id);
     //$clientid is allowed to be null if a user wants to disassociate from a client
     $sql = "UPDATE user SET client_id=:cid WHERE id =:id";
