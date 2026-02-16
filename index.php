@@ -4,6 +4,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php'
 require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
 
 $pagetitle = 'Log In';
+$pagehead = 'Log In!';
 $error = '';
 $tmpl_error = '/nwp_uploads/includes/error.html.php';
 $myip = '86.160.57.166';

@@ -94,6 +94,7 @@ function isEmployer($o, $p = '')
   };
 }
 
+
 function fetchAllRoles($pdo, $selectedRoles = [])
 {
   //Build the list of all roles
@@ -105,6 +106,18 @@ function fetchAllRoles($pdo, $selectedRoles = [])
   return $roles;
 }
 
+function fetchSelectedRoles($pdo, $id)
+{
+  $st = $pdo->prepare("SELECT roleid FROM userrole WHERE userid=:id");
+  $st->bindValue(":id", $id);
+  doPreparedQuery($st, "<p>Error fetching list of assigned roles.</p>");
+  $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+  foreach ($rows as $row) {
+    $selectedRoles[] = $row['roleid'];
+  }
+  return fetchAllRoles($pdo, $selectedRoles);
+}
+
 function resetRoles($pdo, $roles, $id)
 {
   foreach ($roles as $role) {
@@ -114,6 +127,7 @@ function resetRoles($pdo, $roles, $id)
     $st->bindValue(":rol", $role);
     doPreparedQuery($st, '<p>Error assigning selected role to user.</p>');
   } //end foreach
+  return $roles;
 }
 //maybe require password of client to delete??
 function deleteAlready($pdo, $id)
@@ -139,6 +153,7 @@ if (isset($_GET['domain'])) {
   updateUserDomain($_GET['domain'], $_GET['updated']);
 }
 if (!userIsLoggedIn()) {
+  $pagetitle = "Log In";
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/login.html.php';
   exit();
 }
@@ -374,6 +389,7 @@ if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
   $action = 'editform';
   $button = 'Update User';
   $roles = [];
+  $clientlist = [];
 
   $id = $row['id'];
   $name = $row['name'];
@@ -384,8 +400,7 @@ if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
   $clientadmin = preg_match("/admin/i", $priv) || preg_match("/client/i", $priv);
   $adminClient = preg_match('/admin/i', $priv) && preg_match('/client/i', $priv);
 
-
-  if ($clientadmin) {
+  if ($adminClient) {
     $st = $pdo->prepare("SELECT roleid FROM userrole WHERE userid=:id");
     $st->bindValue(":id", $id);
     doPreparedQuery($st, "<p>Error fetching list of assigned roles.</p>");
@@ -401,6 +416,11 @@ if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
     foreach ($rows as $row) {
       $clientlist[$row['id']] = $row['name'];
     }
+    $st = $pdo->prepare("SELECT client_id FROM user WHERE id=:id");
+    $st->bindValue(":id", $id);
+    doPreparedQuery($st, "<p>Error retrieving client id from user!</p>");
+    $row = $st->fetch(PDO::FETCH_ASSOC);
+    $job = $row['client_id']; //selects client in drop down menu
   }
 
   if ($adminClient) {
@@ -411,13 +431,8 @@ if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
       }
     }
     $roles = $tmp;
-  } 
+  }
 
-  $st = $pdo->prepare("SELECT client_id FROM user WHERE id=:id");
-  $st->bindValue(":id", $id);
-  doPreparedQuery($st, "<p>Error retrieving client id from user!</p>");
-  $row = $st->fetch(PDO::FETCH_ASSOC);
-  $job = $row['client_id']; //selects client in drop down menu
   include 'form.html.php';
   exit();
 } //edit
@@ -463,9 +478,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
       $isEmployer = isEmployer($_POST, 'employer');
       list($clientid, $domain) = $isEmployer($pdo);
     } else {
-
       if (!$clientid) {
-        //allow addmin to = reinstate freelancer status
+        //allow admin to = reinstate freelancer status
         if ($admin && !$employerid) {
           $domain = $edom;
         } else {
@@ -481,6 +495,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     $sql .= $assoc ? ", client_id=:cid" : ' ';
     $sql .= " WHERE id=:id";
     $st = $pdo->prepare($sql);
+
     if ($assoc) {
       $st->bindValue(":cid", $clientid);
     }
@@ -497,14 +512,16 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
         exit();
       }
     }
+
     if (preg_match("/admin/i", $priv)) {
+      $roles = fetchSelectedRoles($pdo, $id);
       $sql = "DELETE FROM userrole WHERE userid=:id";
       $st = $pdo->prepare($sql);
       $st->bindValue(":id", $id);
       doPreparedQuery($st, '<p>Error removing obsolete user role entries.</p>');
     }
+dump($roles);
     resetRoles($pdo, $roles, $id);
-    dump($id);
     //$clientid is allowed to be null if a user wants to disassociate from a client
     $sql = "UPDATE user SET client_id=:cid WHERE id =:id";
     $st = $pdo->prepare($sql);
@@ -512,7 +529,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     $st->bindValue(":id", $id);
     doPreparedQuery($st, '<p>Error setting client id</p>');
     updateUserDomain($edom, $domain, $id);
-
     header('Location: .');
     exit();
   }  //not delete

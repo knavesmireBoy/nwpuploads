@@ -12,20 +12,10 @@ include TEMPLATE . 'base.html.php'; ?>
 			<li><label for="password">Set password:</label><input id="password" type="password" name="password" /><input type="hidden" name="employer"
 					value="<?= $job ?? ''; ?>" size="32" /><label for="delete">Delete</label><input type="checkbox" id="delete" name="delete"></li>
 		</ul>
-		<fieldset>
-			<legend>Roles</legend>
-			<?php for ($i = 0; $i < count($roles); $i++): ?>
-				<div>
-					<label for="role<?= $i; ?>"><input id="role<?= $i; ?>" type="checkbox" name="roles[]" value="<?= $roles[$i]['id']; ?>"
-							<?= $roles[$i]['selected'] ? 'checked' : ''; ?> />
-						<?= $roles[$i]['id']; ?></label>: <?= $roles[$i]['description']; ?>
-				</div>
-			<?php endfor; ?>
-		</fieldset>
 
-		<?php if (isset($clientlist)) {
-			include '../templates/_clientlist.html.php';
-		} ?>
+		<?php include TEMPLATE . '_roles.html.php'; ?>
+		<?php include '../templates/_clientlist.html.php'; ?>
+
 		<div><input type="hidden" name="id" value="<?= $id; ?>" />
 			<input type="hidden" name="action" value="<?= $route; ?>" />
 			<input type="hidden" name="override" value="<?= $override; ?>" />
