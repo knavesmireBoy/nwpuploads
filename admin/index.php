@@ -616,7 +616,6 @@ if (preg_match("/client/i", $priv)) {
   $i = strpos($email, '@');
   $dom = substr($email, $i + 1);
   $flag = true;
-
   if ($dom) {
     //https://stackoverflow.com/questions/18511645/use-bound-parameter-multiple-times
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
@@ -633,15 +632,14 @@ if (preg_match("/client/i", $priv)) {
     } //full domain
     setExtent($count);
     if ($count > 0) {
-      //$users = []; //!!! reset
       $sql = "SELECT employer.id, employer.name FROM user INNER JOIN (SELECT user.id, user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain";
-
       $sqlend = " AS employer ON $domainstr=employer.domain WHERE user.email=:email";
-     
       if (!preg_match("/admin/i", $priv)) {
         $sqlkey = " WHERE user.id=:k)";
         $sql .= $sqlkey;
       } else {
+        //!!! reset if "Client Admin" OR obtain client/employer.id;
+        $users = []; 
         $ca = 'AND WHERE client.id=:c';
         $sql .= ")";
       }

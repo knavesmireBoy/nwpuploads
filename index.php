@@ -166,7 +166,8 @@ if (isset($_GET['action']) and isset($_GET['id'])) {
 } // end of download
 
 if (isset($_POST['action']) and $_POST['action'] == 'delete') {
-    $id = $_POST['id'];//id of file
+    //obtain user id/client name
+    $id = $_POST['id']; //id of file
     $title = "Prompt";
     $prompt = "Are you sure you want to delete this file? ";
     $call = "confirm";
@@ -177,11 +178,20 @@ if (isset($_POST['action']) and $_POST['action'] == 'delete') {
 }
 
 if (isset($_POST['confirm']) && $_POST['confirm'] == 'Yes') {
-    $prompt = "Select the extent of deletions";
     $id = $_POST['id'];
+    $prompt = "Select the extent of deletions";
     $del = "proceed";
     $template = '/prompt.html.php';
-}
+
+    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+   // $sql = "SELECT userid FROM upload WHERE id=:id";
+    $sql = "SELECT upload.userid, client.domain, user.name FROM user INNER JOIN client ON client.id = user.client_id INNER JOIN upload ON user.id = upload.userid INNER JOIN (SELECT client.id FROM client INNER JOIN user on user.client_id = client.id  INNER JOIN (SELECT upload.userid FROM user INNER JOIN upload ON upload.userid = user.id WHERE upload.id=:id) AS tmp WHERE user.id = tmp.userid) AS T ON client.id = T.id WHERE client.id = T.id LIMIT 1";
+
+    $st = $pdo->prepare($sql);
+    $st->bindValue(":id", $id);
+    doPreparedQuery($st, 'Failed to obtain userid');
+    list($userid, $domain, $name) = $st->fetch(PDO::FETCH_NUM);
+}   
 
 if (isset($_POST['proceed']) && $_POST['proceed'] == 'remove') {
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
