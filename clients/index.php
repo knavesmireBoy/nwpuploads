@@ -2,9 +2,11 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
 if (!userIsLoggedIn()) {
-  include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/login.html.php';
+  include TEMPLATE . 'login.html.php';
   exit();
 }
+
+$goto = '..';
 
 function getDomain($pdo, $id)
 {
@@ -19,10 +21,14 @@ $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
 $pagetitle = "Manage Clients";
 $selected = null;
 list($key, $priv) = userHasWhatRole(true);
+
 if ($priv !== 'Admin') {
-  $error = 'Only Account Administrators may access this page!!';
-  include TEMPLATE . 'accessdenied.html.php';
+  $e = 'Only Account Administrators may access this page!!';
+  header("Location: ../?loginerror=$e");
   exit();
+
+//  include TEMPLATE . 'accessdenied.html.php';
+ // exit();
 }
 
 if (isset($_POST['confirm'])) {

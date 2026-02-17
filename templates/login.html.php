@@ -1,6 +1,6 @@
 <?php
 include_once 'base.html.php';
-$e = $loginError ?? $_GET['loginError'] ?? '';
+$e = $loginerror ?? $_GET['loginerror'] ?? '';
 ?>
 <h1>Log In</h1>
 <p>Please log in to upload or download files</p>
@@ -13,5 +13,4 @@ $e = $loginError ?? $_GET['loginError'] ?? '';
 	<input type="hidden" name="action" value="login" /><input type="submit" value="Log in" />
 </form>
 </body>
-
 </html>

@@ -16,6 +16,7 @@ $clientlist = null;
 $display = 5;
 $template = '/upload.html.php';
 $tel = '';
+$goto = __DIR__;
 
 $uploaded = function ($arg) {
     return $_FILES['upload'][$arg];
@@ -31,7 +32,6 @@ if ($roleplay = userHasWhatRole()) {
     $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))"; //!!?!! V. USEFUL VARIABLE IN GLOBAL SPACE
 } else {
     $error = 'Only valid clients may access this page.';
-   // include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/accessdenied.html.php';
     include TEMPLATE . 'accessdenied.html.php';
     exit(); // endof OBTAIN access level
 }
@@ -166,7 +166,7 @@ if (isset($_GET['action']) and isset($_GET['id'])) {
 } // end of download
 
 if (isset($_POST['action']) and $_POST['action'] == 'delete') {
-    $id = $_POST['id'];
+    $id = $_POST['id'];//id of file
     $title = "Prompt";
     $prompt = "Are you sure you want to delete this file? ";
     $call = "confirm";
@@ -616,10 +616,8 @@ $fhead = $qs . $ffn($state);
 $uhead = $qs . $ufn($state);
 $thead = $qs . $tfn($state);
 
-$arr = get_defined_vars();
-foreach ($arr as $key => $value) {
-    if (preg_match('/_[A-Z]+/', $key)) unset($arr[$key]);
-}
+
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/base.html.php';
 $error =  $lib[$_SERVER["QUERY_STRING"]] ?? '';
+$arr = getDefinedVars();
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/files.html.php';

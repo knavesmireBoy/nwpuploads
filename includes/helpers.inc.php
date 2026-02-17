@@ -6,6 +6,15 @@ function safeFilter($array, $cb)
     return array_values(array_filter($array, $cb));
 }
 
+function getDefinedVars()
+{
+    $arr = get_defined_vars();
+    foreach ($arr as $key => $value) {
+        if (preg_match('/_[A-Z]+/', $key)) unset($arr[$key]);
+    }
+    return $arr;
+}
+
 function reAssignClient($pdo)
 {
     $sql = "SELECT user.id, RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email)) AS dom FROM user LEFT JOIN userrole ON userid = user.id WHERE roleid = 'Client Admin' ORDER by dom";

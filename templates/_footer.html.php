@@ -1,3 +1,7 @@
+<?php
+include '_logout.html.php';
+?>
+
 <footer>
     <?php
     if (isset($_GET['ext'])) $suffix = $ext;
@@ -26,7 +30,7 @@
         }
         if ($current_page <> $pages) { ?>
             <a href="?s=<?= $start + $display; ?>&p=<?= $pages; ?>&u=<?= $user_id; ?>&t=<?= $text; ?>&ext=<?= $suffix; ?><?= $sort; ?>">Next</a>
-        </footer>
+</footer>
 <?php
         }
     }

@@ -22,8 +22,8 @@ function databaseContainsUser($email, $password)
 function userIsLoggedIn()
 {
     if (isset($_POST['action']) && $_POST['action'] == 'login') {
-        if (!isset($_POST['email']) or $_POST['email'] == '' or !isset($_POST['password']) or $_POST['password'] == '') {
-            $GLOBALS['loginError'] = 'Please fill in both fields';
+        if (!isset($_POST['email']) || $_POST['email'] == '' || !isset($_POST['password']) || $_POST['password'] == '') {
+            $GLOBALS['loginerror'] = 'Please fill in both fields';
             return FALSE;
         }
         $password = md5($_POST['password'] . 'uploads');
@@ -31,7 +31,7 @@ function userIsLoggedIn()
         if (databaseContainsUser($_POST['email'], $password)) {
             session_start();
             $_SESSION['loggedIn'] = TRUE;
-            $_SESSION['email'] = $_POST['email'];
+            $_SESSION['email'] = trim($_POST['email']);
             $_SESSION['password'] = $password;
             return TRUE;
         } else {
@@ -39,7 +39,7 @@ function userIsLoggedIn()
             unset($_SESSION['loggedIn']);
             unset($_SESSION['email']);
             unset($_SESSION['password']);
-            $GLOBALS['loginError'] = 'The specified email address or password was incorrect.';
+            $GLOBALS['loginerror'] = 'The specified email address or password was incorrect.';
             return FALSE;
         }
     } //end of log in attempt
@@ -51,16 +51,9 @@ function userIsLoggedIn()
         unset($_SESSION['password']);
         //header("Location: " . $_POST['goto']);
         $e = $_GET['error'] ?? '';
-        header("Location: ./?loginError=$e");
+        header("Location: ./?loginerror=$e");
         exit();
     } //end of logout
-
-    if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'log') {
-        $e = $_GET['error'] ?? '';
-        header("Location: ./?loginError=$e");
-        exit();
-    } //end of logout
-
     session_start();
     if (isset($_SESSION['loggedIn'])) {
         return databaseContainsUser($_SESSION['email'], $_SESSION['password']);

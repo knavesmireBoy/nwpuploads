@@ -19,6 +19,7 @@ $denied = false;
 $usercount = 0;
 setExtent(null);
 $selected = null;
+$goto = '.';
 
 $formvars = ['pagetitle', 'message', 'name', 'email', 'job', 'roles', 'id', 'route', 'override', 'button', 'priv'];
 $uservars = ['manage', 'priv', 'client', 'users'];
@@ -162,7 +163,8 @@ if (!$roleplay = userHasWhatRole(true)) {
   include TEMPLATE . 'accessdenied.html.php';
   exit();
 }
-$sql = "SELECT id, name FROM user "; // THE DEFAULT QUERY___________________________________
+//THE DEFAULT QUERY___________________________________
+$sql = "SELECT id, name FROM user "; 
 list($key, $priv) = $roleplay;
 
 if (preg_match("/client/i", $priv)) {
@@ -193,8 +195,6 @@ if (isset($_POST['confirm'])) {
     $st->bindValue(':id',  $id);
     doPreparedQuery($st, 'Error fetching client.');
     $row = $st->fetch(PDO::FETCH_ASSOC);
-
-
     //https: //stackoverflow.com/questions/20009076/php-undefined-index-notice-not-raised-when-indexing-null-variable
     $dom = $row['domain'];
     $email = $row['email'];
@@ -253,6 +253,58 @@ if (isset($_POST['confirm'])) {
   exit();
 } ////////////END OF CONFIRM
 
+if (isset($_POST['action']) && $_POST['action'] == 'Choose') {
+  if ($_POST['user'] === '') {
+    header("Location: ./?selectuser");
+    exit();
+  }
+  $selected = true;
+  $return = "Return to users";
+  $manage = "Manage Users";
+  $key = $_POST['user'];
+  $sqlc = "SELECT domain FROM client WHERE domain=:domain";
+  $st = $pdo->prepare($sqlc);
+  $st->bindValue(":domain", $key);
+  doPreparedQuery($st, "<p>Error:</p>");
+  $row = $st->fetch(PDO::FETCH_ASSOC);
+  //some clients need full domain for identification, in which case the query is simplified to a straight match to a users email address which corresponds to the client domain.
+  if (strrpos($key, "@")) {
+    $domainstr = "user.email";
+  }
+  if ($row) {
+    $sqlc = "SELECT employer.user_name, employer.user_id FROM (SELECT user.name AS user_name, user.id AS user_id, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer WHERE employer.domain=:domain"; //
+    $st = $pdo->prepare($sqlc);
+    $st->bindValue(":domain", $row['domain']);
+    doPreparedQuery($st, "<p>'Database error fetching users.'</p>");
+    $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+
+    if (empty($rows)) {
+      header("Location: ./?nousers");
+    }
+    foreach ($rows as $row) {
+      $users[$row['user_id']] = $row['user_name'];
+    }
+    $flag = true;
+    $class = "edit";
+
+    $usercount = count($users);
+    setExtent($usercount);
+
+    if ($usercount === 1) {
+      $key = $row['user_id'];
+      $usercount = 1;
+      header("Location: ./?edit=$key");
+      exit;
+    } else {
+      $pagetitle = "Manage Users";
+      include 'users.html.php';
+    }
+  } else {
+    $sql .= " AND user.id=$key";
+  }
+} ///CHOOSE________________________________________________________________________
+
+
 if (isset($_GET['denied']) || isset($_GET['access']) || isset($_GET['self'])) {
   $error =  $lib[$_SERVER["QUERY_STRING"]] ?? '';
 }
@@ -275,9 +327,7 @@ if (isset($_GET['add'])) {
     header("Location: ./?access");
     exit();
   }
-
   $roles = fetchAllRoles($pdo);
-
   if ($admin) {
     $rows = doQuery($pdo, "SELECT * FROM client", "");
     foreach ($rows as $row) {
@@ -357,7 +407,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
 
 
 if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
-
   include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
   $id = isset($_GET['edit']) ? $_GET['edit'] : ($pwd ? $pwd : NULL);
   $id = !empty($id) ? $id : $_POST['id'] ?? '';
@@ -431,13 +480,11 @@ if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
     }
     $roles = $tmp;
   }
-
   include 'form.html.php';
   exit();
 } //edit
 
 if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
-
   if (isset($_POST['delete'])) {
     $id = $_POST['id'];
     $title = "Prompt";
@@ -544,78 +591,21 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
 
 //display users___________________________________________________________________
 $sql = "SELECT user.id, user.name FROM user LEFT JOIN (SELECT user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer ON $domainstr=employer.domain WHERE employer.domain IS NULL"; //this overwrites above query to filter out users as employees
+
 $sql = "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS NULL"; //USING ID NOT DOMAIN
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 //_______________________________________________________________________________
-
-if (isset($_POST['action']) && $_POST['action'] == 'Choose') {
-  if ($_POST['user'] === '') {
-    header("Location: ./?selectuser");
-    exit();
-  }
-  $selected = true;
-  $return = "Return to users";
-  $manage = "Manage Users";
-  $key = $_POST['user'];
-  $sqlc = "SELECT domain FROM client WHERE domain=:domain";
-  $st = $pdo->prepare($sqlc);
-  $st->bindValue(":domain", $key);
-  doPreparedQuery($st, "<p>Error:</p>");
-  $row = $st->fetch(PDO::FETCH_ASSOC);
-  //some clients need full domain for identification, in which case the query is simplified to a straight match to a users email address which corresponds to the client domain.
-  if (strrpos($key, "@")) {
-    $domainstr = "user.email";
-  }
-  if ($row) {
-    $sqlc = "SELECT employer.user_name, employer.user_id FROM (SELECT user.name AS user_name, user.id AS user_id, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer WHERE employer.domain=:domain"; //
-    $st = $pdo->prepare($sqlc);
-    $st->bindValue(":domain", $row['domain']);
-    doPreparedQuery($st, "<p>'Database error fetching users.'</p>");
-    $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-
-    if (empty($rows)) {
-      header("Location: ./?nousers");
-    }
-    foreach ($rows as $row) {
-      $users[$row['user_id']] = $row['user_name'];
-    }
-    $flag = true;
-    $class = "edit";
-
-    $usercount = count($users);
-    setExtent($usercount);
-
-    if ($usercount === 1) {
-      $key = $row['user_id'];
-      $usercount = 1;
-      header("Location: ./?edit=$key");
-      exit;
-    } else {
-      $pagetitle = "Manage Users";
-      include 'users.html.php';
-    }
-  } else {
-    $sql .= " AND user.id=$key";
-  }
-} ///CHOOSE________________________________________________________________________
 
 
 if (!preg_match("/admin/i", $priv)) {
   $sql .= " AND user.id=$key";
   $manage = "Edit details";
   $usercount = 1;
-} else {
-}
+} 
 $sql .= " ORDER BY name";
-
 if (!isset($flag)) {
-  $result = doQuery($pdo, $sql, 'Error retrieving listo');
-  $rows = $result->fetchAll();
-  if (!$result) {
-    $error = "Error retrieving users from t'database!";
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
-    exit();
-  }
+  $result = doQuery($pdo, $sql, 'Error retrieving list');
+  $rows = $result->fetchAll(PDO::FETCH_ASSOC);
   foreach ($rows as $row) {
     $users[$row['id']] = $row['name'];
   }
@@ -626,8 +616,8 @@ if (preg_match("/client/i", $priv)) {
   $i = strpos($email, '@');
   $dom = substr($email, $i + 1);
   $flag = true;
+
   if ($dom) {
-    //$users = []; //!!! reset
     //https://stackoverflow.com/questions/18511645/use-bound-parameter-multiple-times
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
     $sqlc = "SELECT COUNT(*) AS dom FROM user INNER JOIN client ON $domainstr=client.domain WHERE $domainstr=:dom AND client.domain=:dommo";
@@ -643,13 +633,16 @@ if (preg_match("/client/i", $priv)) {
     } //full domain
     setExtent($count);
     if ($count > 0) {
-      $users = []; //!!! reset
+      //$users = []; //!!! reset
       $sql = "SELECT employer.id, employer.name FROM user INNER JOIN (SELECT user.id, user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain";
+
       $sqlend = " AS employer ON $domainstr=employer.domain WHERE user.email=:email";
+     
       if (!preg_match("/admin/i", $priv)) {
         $sqlkey = " WHERE user.id=:k)";
         $sql .= $sqlkey;
       } else {
+        $ca = 'AND WHERE client.id=:c';
         $sql .= ")";
       }
       $sql .= $sqlend;
@@ -665,9 +658,11 @@ if (preg_match("/client/i", $priv)) {
         $users[$row['id']] = $row['name'];
       }
     }
+
     $denied = clientCheck($flag);
     $usercount = $priv === 'Admin' ? 2 : count($users);
     setExtent($usercount);
+
     if ($usercount === 1) {
       //$key from $roleplay
       $k = $row['id'] ?? $key;
@@ -680,7 +675,7 @@ if (preg_match("/client/i", $priv)) {
       exit;
     }
   }
-}
+}//CLIENT
 
 if (preg_match("/admin/i", $priv)) {
   $manage = "Manage Users";
@@ -692,11 +687,9 @@ if (preg_match("/admin/i", $priv)) {
     $client[$row['domain']] = $row['name'];
   }
 }
-
-include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-
+//include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
 //reOrderTable($pdo);
-reAssignClient($pdo);
+//reAssignClient($pdo);
 
 $message = $message ? $message : $error;
 $usercount = $priv === 'Admin' ? 2 : count($users);
@@ -704,7 +697,7 @@ $usercount = $priv === 'Admin' ? 2 : count($users);
 setExtent($usercount);
 if ($usercount === 1) {
   $usercount = 1;
-  header("Location: ./?edit=$key");
+  header("Location: ./?edit=$key");//GO DIRECT TO EDIT FORM
   exit;
 } else {
   $pagetitle = "Manage Users";

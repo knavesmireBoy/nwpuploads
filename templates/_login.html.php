@@ -3,8 +3,8 @@ include_once 'base.html.php';
 ?>
 <h1>Log In</h1>
 <p>Please log in to upload or download files</p>
-<?php if (isset($loginError)): ?>
-	<p><?= $loginError; ?></p>
+<?php if (isset($loginerror)): ?>
+	<p><?= $loginerror; ?></p>
 <?php endif; ?>
 <form action="." method="post" name="loginform">
 	<div>
