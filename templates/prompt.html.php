@@ -41,7 +41,7 @@
         <form action="." method="post" name="deletions" class="<?= $k; ?> ">
             <input type="hidden" name="id" value="<?= $id; ?>" />
             <p><label for="ext_nwf">Delete this file only?</label>&nbsp;<input type="radio" id="ext_nwf" name="extent" value="f" /></p>
-            <p><label for="ext_nwu">Delete all files for <span>?= $n; ?></span>?</label>&nbsp;<input type="radio" id="ext_nwu" name="extent" value="u" /></p>
+            <p><label for="ext_nwu">Delete all files for <span><?= $n; ?></span>?</label>&nbsp;<input type="radio" id="ext_nwu" name="extent" value="u" /></p>
             <?php if (preg_match("/admin/i", $priv)): ?>
                 <p><label for="ext_nwc">Delete all files for <span><?= $c; ?></span>?</label>&nbsp;<input type="radio" id="ext_nwc" name="extent" value="c" /></p>
             <?php endif; ?>

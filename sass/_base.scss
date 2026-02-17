@@ -492,6 +492,17 @@ input[type="submit"] {
 }
 form[name="deletions"] {
   padding: 1em;
+  label span {
+    text-transform: uppercase;
+    text-decoration: underline;
+    font-style: italic;
+    &:before {
+      content: '"';
+    }
+    &:after {
+      content: '"';
+    }
+  }
 }
 .searcher fieldset,
 .upload fieldset {

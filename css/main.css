@@ -598,6 +598,17 @@ input[type=submit] {
 form[name=deletions] {
   padding: 1em;
 }
+form[name=deletions] label span {
+  text-transform: uppercase;
+  text-decoration: underline;
+  font-style: italic;
+}
+form[name=deletions] label span:before {
+  content: '"';
+}
+form[name=deletions] label span:after {
+  content: '"';
+}
 
 .searcher fieldset,
 .upload fieldset {
