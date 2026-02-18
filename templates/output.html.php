@@ -1,5 +1,5 @@
 <?php
-include TEMPLATE .'/base.html.php';
+include_once TEMPLATE .'/base.html.php';
 ?>
 <body>
 

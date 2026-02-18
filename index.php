@@ -20,7 +20,6 @@ function clientFromUpload($txt, ...$args)
 $pagetitle = 'Log In';
 $pagehead = 'Log In!';
 $error = '';
-$tmpl_error = '/nwp_uploads/includes/error.html.php';
 $myip = '86.160.57.166';
 $user_id = 0;
 $text = '';
@@ -37,13 +36,14 @@ $uploaded = function ($arg) {
 };
 
 if (!userIsLoggedIn()) {
-    include __DIR__ . '/templates/login.html.php';
+    include TEMPLATE . 'login.html.php';
     exit();
 }
 //public page
 if ($roleplay = userHasWhatRole()) {
     list($key, $priv) = $roleplay;
-    $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))"; //!!?!! V. USEFUL VARIABLE IN GLOBAL SPACE
+    //!!?!! V. USEFUL VARIABLE IN GLOBAL SPACE
+    $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))"; 
 } else {
     $error = 'Only valid clients may access this page.';
     include TEMPLATE . 'accessdenied.html.php';
@@ -66,7 +66,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'upload') {
     // Copy the file (if it is deemed safe)
     if (!copy($uploadfile, $filedname)) {
         $error = "Could not  save file as $filedname!";
-        include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
+        include TEMPLATE . 'error.html.php';
         exit();
     }
     if ($priv === 'Admin' && !empty($_POST['user'])) { //ie Admin selects user
@@ -149,7 +149,7 @@ if (isset($_GET['action']) and isset($_GET['id'])) {
 
     if (!$file) {
         $error = 'File with specified ID not found in the database!';
-        include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
+        include TEMPLATE . 'error.html.php';
         exit();
     }
     $filename = $file['filename'];
@@ -220,13 +220,10 @@ if (isset($_POST['proceed']) && $_POST['proceed'] === 'remove') {
     );
 
     $selectors = [
-        "SELECT upload.file FROM user INNER JOIN client ON client.id = user.client_id INNER JOIN upload ON user.id = upload.userid INNER JOIN (SELECT client.id FROM client INNER JOIN user on user.client_id = client.id  INNER JOIN (SELECT upload.userid FROM user INNER JOIN upload ON upload.userid = user.id WHERE upload.id=:id) AS tmp WHERE user.id = tmp.userid) AS T ON client.id = T.id WHERE client.id = T.id",
-
+        clientFromUpload("SELECT upload.file FROM "),
         "SELECT upload.file FROM upload INNER JOIN user ON upload.userid = user.id INNER JOIN (SELECT userid FROM upload  WHERE id=:id) AS owt ON user.id = owt.userid WHERE user.id = owt.userid",
         "SELECT upload.file FROM upload WHERE id=:id"
     ];
-
-    $selectors[0] = clientFromUpload("SELECT upload.file FROM ");
 
 
     if ($_POST['extent'] == "c") {

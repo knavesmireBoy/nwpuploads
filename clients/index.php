@@ -64,7 +64,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'Edited' || isset($_GET['dom'
     $res = doPreparedQuery($st, 'Error updating client.');
     if (!$res) {
       $error = 'Error updating client.';
-      include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
+      include TEMPLATE . 'error.html.php';
       exit();
     }
     $id = $_POST['id'];
@@ -139,7 +139,7 @@ if (isset($_GET['addform'])) {
   //alert required for non unique domains. I attempted to enter uni.com
   if (!$res) {
     $error = 'Error adding client.';
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
+    include TEMPLATE . 'error.html.php';
     exit();
   }
 

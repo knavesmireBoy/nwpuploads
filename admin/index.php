@@ -153,7 +153,7 @@ if (isset($_GET['domain'])) {
 }
 if (!userIsLoggedIn()) {
   $pagetitle = "Log In";
-  include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/login.html.php';
+  include TEMPLATE . 'login.html.php';
   exit();
 }
 

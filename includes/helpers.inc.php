@@ -1,5 +1,10 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
+function dump($arg)
+{
+    var_dump($arg);
+    exit;
+}
 
 function safeFilter($array, $cb)
 {
@@ -259,11 +264,6 @@ function doPreparedQuery($st, $msg, $flag = false)
     }
 }
 
-function dump($arg)
-{
-    var_dump($arg);
-    exit;
-}
 function seek()
 {
     $arr = array(
@@ -331,25 +331,6 @@ function remove_querystring_var($url, $key)
     $url = preg_replace('/(.*)(\?|&)' . $key . '=[^&]+?(&)(.*)/i', '$1$2$4', $url . '&');
     $url = substr($url, 0, -1);
     return ($url);
-}
-function doSanitize($lnk, $arg)
-{
-    return mysqli_real_escape_string($lnk, $arg);
-}
-function doSafeFetch($lnk, $sql)
-{
-    //assumes query works!!
-    return mysqli_fetch_array(mysqli_query($lnk, $sql));
-}
-function doFetch($lnk, $sql, $msg)
-{
-    $result = mysqli_query($lnk, $sql);
-    if (!$result) {
-        $error = $msg;
-        include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/error.html.php';
-        exit();
-    }
-    return $result;
 }
 
 function formatFileSize($size)
