@@ -26,9 +26,6 @@ if ($priv !== 'Admin') {
   $e = 'Only Account Administrators may access this page!!';
   header("Location: ../?loginerror=$e");
   exit();
-
-//  include TEMPLATE . 'accessdenied.html.php';
- // exit();
 }
 
 if (isset($_POST['confirm'])) {

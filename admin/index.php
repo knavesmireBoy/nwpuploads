@@ -157,14 +157,18 @@ if (!userIsLoggedIn()) {
   exit();
 }
 
-if (!$roleplay = userHasWhatRole(true)) {
-  $error = 'Only Account Administrators may access this page!';
+$roleplay = userHasWhatRole();
+$manager_role = $roleplay && !userHasWhatRole(true);
+
+if (!$roleplay || $manager_role) {
+  $e = 'Only Account Administrators may access this page!';
   $pagetitle = "Access Denied";
-  include TEMPLATE . 'accessdenied.html.php';
+  //a manager role would be allowed to visit the landing page so redirect to there ../
+  header("Location: ../?loginerror=$e");
   exit();
 }
 //THE DEFAULT QUERY___________________________________
-$sql = "SELECT id, name FROM user "; 
+$sql = "SELECT id, name FROM user ";
 list($key, $priv) = $roleplay;
 
 if (preg_match("/client/i", $priv)) {
@@ -446,12 +450,11 @@ if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
   $email = $row['email'];
   $override = $pwd ? $pwd : NULL;
 
-  //$roles = fetchAllRoles($pdo);
 
   $admin = ($priv === 'Admin');
   $clientadmin = preg_match("/admin/i", $priv) || preg_match("/client/i", $priv);
   $adminClient = preg_match('/admin/i', $priv) && preg_match('/client/i', $priv);
-  if ($clientadmin)  {
+  if ($clientadmin) {
     $st = $pdo->prepare("SELECT roleid FROM userrole WHERE userid=:id");
     $st->bindValue(":id", $id);
     doPreparedQuery($st, "<p>Error fetching list of assigned roles.</p>");
@@ -498,7 +501,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     $pos = "Yes";
     $neg = "No";
     $action = '';
-   
   } else {
     include CONNECT;
     $action = "editform";
@@ -606,7 +608,7 @@ if (!preg_match("/admin/i", $priv)) {
   $sql .= " AND user.id=$key";
   $manage = "Edit details";
   $usercount = 1;
-} 
+}
 $sql .= " ORDER BY name";
 if (!isset($flag)) {
   $result = doQuery($pdo, $sql, 'Error retrieving list');
@@ -644,7 +646,7 @@ if (preg_match("/client/i", $priv)) {
         $sql .= $sqlkey;
       } else {
         //!!! reset if "Client Admin" OR obtain client/employer.id;
-        $users = []; 
+        $users = [];
         $ca = 'AND WHERE client.id=:c';
         $sql .= ")";
       }
@@ -678,7 +680,7 @@ if (preg_match("/client/i", $priv)) {
       exit;
     }
   }
-}//CLIENT
+} //CLIENT
 
 if (preg_match("/admin/i", $priv)) {
   $manage = "Manage Users";
@@ -700,7 +702,7 @@ $usercount = $priv === 'Admin' ? 2 : count($users);
 setExtent($usercount);
 if ($usercount === 1) {
   $usercount = 1;
-  header("Location: ./?edit=$key");//GO DIRECT TO EDIT FORM
+  header("Location: ./?edit=$key"); //GO DIRECT TO EDIT FORM
   exit;
 } else {
   $pagetitle = "Manage Users";
