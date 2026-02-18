@@ -17,6 +17,11 @@ function clientFromUpload($txt, ...$args)
     return $str . $derived;
 }
 
+function userFromUpload()
+{
+    return "SELECT user.id, user.name, user.client_id FROM upload INNER JOIN user ON upload.userid = user.id INNER JOIN (SELECT userid FROM upload  WHERE id=:id) AS owt ON user.id = owt.userid WHERE user.id = owt.userid";
+}
+
 $pagetitle = 'Log In';
 $pagehead = 'Log In!';
 $error = '';
@@ -43,7 +48,7 @@ if (!userIsLoggedIn()) {
 if ($roleplay = userHasWhatRole()) {
     list($key, $priv) = $roleplay;
     //!!?!! V. USEFUL VARIABLE IN GLOBAL SPACE
-    $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))"; 
+    $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
 } else {
     $error = 'Only valid clients may access this page.';
     include TEMPLATE . 'accessdenied.html.php';
@@ -197,12 +202,21 @@ if (isset($_POST['confirm']) && $_POST['confirm'] == 'Yes') {
     $del = "proceed";
     $template = '/prompt.html.php';
     include CONNECT;
-    $sql = clientFromUpload("SELECT ", "upload.userid,", "client.domain,", "user.name FROM ");
-    $sql .= " LIMIT 1";
+
+
+    if (preg_match("/admin/i", $priv)) {
+        $sql = clientFromUpload("SELECT ", "upload.userid,", "user.name,", "client.domain FROM ");
+        $sql .= " LIMIT 1";
+    }
+    else {
+        $sql = userFromUpload();
+    }
+
     $st = $pdo->prepare($sql);
     $st->bindValue(":id", $id);
     doPreparedQuery($st, 'Failed to obtain userid');
-    list($userid, $domain, $name) = $st->fetch(PDO::FETCH_NUM);
+    
+    list($userid, $name, $domain) = $st->fetch(PDO::FETCH_NUM);
 }
 
 if (isset($_POST['proceed']) && $_POST['proceed'] === 'remove') {
@@ -346,7 +360,7 @@ if (isset($_POST['original'])) {
 if (isset($_GET['p']) and is_numeric($_GET['p'])) {
     $pages = $_GET['p'];
 } else { // counts all files
-   include CONNECT;
+    include CONNECT;
     $sql = "SELECT COUNT(upload.id) as total from upload ";
     if ($priv == 'Client') {
         $sql .= " INNER JOIN user on upload.userid = user.id WHERE user.email=:email";
@@ -389,7 +403,7 @@ switch ($sort) {
 }
 
 //D I S P L A Y_______________________________________________________________
- ///Present list of users for administrators
+///Present list of users for administrators
 include CONNECT;
 
 $sqlu = "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS NULL ORDER BY name";
@@ -526,8 +540,8 @@ if (isset($_GET['action']) and $_GET['action'] == 'search') {
 
     $where .= " GROUP BY upload.id ";
     $sqlcount = $select . ', COUNT(upload.id) as total ' . $from . $where . $order;
-   
-    
+
+
     $st =  doQuery($pdo, $sqlcount, '<p>Error getting file count, innit</p>');
     $rows = $st->fetchAll(PDO::FETCH_ASSOC);
     $records = empty($rows) ? 0 : $rows[0]['total'];
