@@ -263,6 +263,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'Choose') {
   $manage = "Manage Users";
   $key = $_POST['user'];
   $sqlc = "SELECT domain FROM client WHERE domain=:domain";
+  include CONNECT;
   $st = $pdo->prepare($sqlc);
   $st->bindValue(":domain", $key);
   doPreparedQuery($st, "<p>Error:</p>");
@@ -313,7 +314,7 @@ if (isset($_GET['add'])) {
   include CONNECT;
   $route = "Add";
   $pagehead = 'New User';
-  //$action = '?';
+  $action = 'addform';
   $button = 'Add User';
   $name = '';
   $email = '';
@@ -408,6 +409,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
 
 if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
   include CONNECT;
+
   $id = isset($_GET['edit']) ? $_GET['edit'] : ($pwd ? $pwd : NULL);
   $id = !empty($id) ? $id : $_POST['id'] ?? '';
   $st = $pdo->prepare("SELECT id, name, email, $domainstr AS dom FROM user WHERE id =:id");
@@ -444,11 +446,12 @@ if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
   $email = $row['email'];
   $override = $pwd ? $pwd : NULL;
 
+  //$roles = fetchAllRoles($pdo);
+
   $admin = ($priv === 'Admin');
   $clientadmin = preg_match("/admin/i", $priv) || preg_match("/client/i", $priv);
   $adminClient = preg_match('/admin/i', $priv) && preg_match('/client/i', $priv);
-
-  if ($adminClient) {
+  if ($clientadmin)  {
     $st = $pdo->prepare("SELECT roleid FROM userrole WHERE userid=:id");
     $st->bindValue(":id", $id);
     doPreparedQuery($st, "<p>Error fetching list of assigned roles.</p>");
@@ -458,6 +461,7 @@ if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
     }
     $roles = fetchAllRoles($pdo, $selectedRoles);
   }
+
   if ($admin) {
     $st = doQuery($pdo, "SELECT id, name FROM client ORDER BY name", '<p>Error retrieving clients from database!</p>');
     $rows = $st->fetchAll(PDO::FETCH_ASSOC);
@@ -480,6 +484,7 @@ if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
     }
     $roles = $tmp;
   }
+  $action = "editform";
   include 'form.html.php';
   exit();
 } //edit
@@ -493,8 +498,10 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     $pos = "Yes";
     $neg = "No";
     $action = '';
+   
   } else {
     include CONNECT;
+    $action = "editform";
     $override = $_POST['override'];
     $id = $_POST['id'];
     $roles = $_POST['roles'] ?? [];
@@ -538,7 +545,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
         }
       }
     }
-
     $sql = "UPDATE user SET name=:name, email=:email";
     $sql .= $assoc ? ", client_id=:cid" : ' ';
     $sql .= " WHERE id=:id";
@@ -569,6 +575,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
       $st->bindValue(":id", $id);
       doPreparedQuery($st, '<p>Error removing obsolete user role entries.</p>');
     }
+
     resetRoles($pdo, $roles, $id);
     //$clientid is allowed to be null if a user wants to disassociate from a client
     $sql = "UPDATE user SET client_id=:cid WHERE id =:id";

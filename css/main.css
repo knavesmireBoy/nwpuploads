@@ -422,18 +422,8 @@ form[name=usersform] > ul li label {
   flex: 10 1 1em;
   text-align: right;
 }
-form[name=usersform] > ul li label[for=delete] {
-  flex: 3 1 1em;
-}
 form[name=usersform] > ul li input {
   flex: 40 1 1em;
-}
-form[name=usersform] > ul li input[type=checkbox] {
-  flex: 1 1 1em;
-  margin: auto;
-}
-form[name=usersform] > ul li input#password {
-  flex: 34 1 1em;
 }
 form[name=usersform] fieldset {
   margin: 1em 0;
@@ -467,6 +457,16 @@ form[name=usersform] > div fieldset:last-child {
   margin: 0.5em 0;
   display: flex;
   justify-content: center;
+}
+form[name=usersform][action="?editform"] input[type=checkbox] {
+  flex: 1 1 1em;
+  margin: auto;
+}
+form[name=usersform][action="?editform"] input#password {
+  flex: 34 1 1em;
+}
+form[name=usersform][action="?editform"] label[for=delete] {
+  flex: 3 1 1em;
 }
 
 form[name=uploadform] {
@@ -665,10 +665,10 @@ form[name=clientform] div label {
 form[name=clientform] div:last-of-type {
   margin: 0 0 1em;
 }
-form[name=clientform] div:last-of-type input {
+form[name=clientform][action="?editform"] div:last-of-type input {
   flex: 25 1 1em;
 }
-form[name=clientform] div:last-of-type input[type=checkbox] {
+form[name=clientform][action="?editform"] div:last-of-type input[type=checkbox] {
   flex: 0 0 auto;
   margin: auto;
 }
