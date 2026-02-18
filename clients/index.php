@@ -33,7 +33,7 @@ if ($priv !== 'Admin') {
 
 if (isset($_POST['confirm'])) {
   if ($_POST['confirm'] == 'Yes') {
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+    include CONNECT;
     $st = $pdo->prepare("DELETE FROM client WHERE id =:id");
     $st->bindValue(":id", $_POST['id']);
     $res = doPreparedQuery($st, 'Error deleting client.');
@@ -54,7 +54,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'Edited' || isset($_GET['dom'
     $neg = "No";
     $action = '';
   } else {
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+    include CONNECT;
     $dom = getDomain($pdo, $_POST['id']);
     $st = $pdo->prepare("UPDATE client SET name=:nom, domain=:dom, tel=:tel WHERE id=:id");
     $st->bindValue(':nom', $_POST['name']);
@@ -80,7 +80,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'Edited' || isset($_GET['dom'
 }
 
 if (isset($_GET['add'])) {
-  include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+  include CONNECT;
   $id = '';
   $pagehead = 'New Client';
   $action = 'addform';
@@ -98,7 +98,7 @@ if (isset($_GET['add'])) {
 
 if (isset($_GET['associate'])) {
   $dom = $_GET['associate'];
-  include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+  include CONNECT;
   $sql = "SELECT id, name, domain FROM client WHERE domain='$dom'";
   $st = doQuery($pdo, $sql, 'Error fetching id.');
   $row = $st->fetch(PDO::FETCH_ASSOC);
@@ -112,7 +112,7 @@ if (isset($_GET['associate'])) {
 }
 
 if (isset($_POST['associate'])) {
-  include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+  include CONNECT;
   $dom = strtolower($_POST['dom']);
   $_cid = strtolower($_POST['id']);
   $sql = "SELECT id FROM user WHERE $domainstr = '$dom'";
@@ -125,9 +125,9 @@ if (isset($_POST['associate'])) {
     doQuery($pdo, $sql, 'Error updating user.');
   }
 }
-
-if (isset($_GET['addform'])) {
-  include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+if (isset($_POST['action']) && $_POST['action'] === 'Added') {
+//if (isset($_GET['addform'])) {
+  include CONNECT;
   $dom = $_POST['domain'];
   $sql = "INSERT INTO client (name, domain, tel) VALUES (:nom, :dom, :tel)";
   $st = $pdo->prepare($sql);
@@ -155,12 +155,12 @@ if (isset($_GET['addform'])) {
 } //end of addform
 
 /// DEFAULT /////
-include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+include CONNECT;
 $sql = "SELECT id, name, domain from client"; // THE DEFAULT QUERY
 //$cid = 0; //$id MAY have been set by delete so don't overwrite;
 
 if (isset($_POST['action']) && $_POST['action'] == 'Choose' && $_POST['client'] != '') {
-  include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+  include CONNECT;
   $selected = true;
   $sql = "SELECT id, name, domain, tel FROM client WHERE id =:id";
   $id = $_POST['client'];

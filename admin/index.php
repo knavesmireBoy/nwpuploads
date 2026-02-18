@@ -40,7 +40,7 @@ $pwd = $_GET['pwd'] ?? NULL;
 function updateUserDomain($old, $new, $id = 0)
 {
   if ($old && $new) {
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+    include CONNECT;
     $concat = replaceStrPos($new);
     //update email of employees IF the domain of client changes
     $sql = "UPDATE user SET email = $concat WHERE email LIKE '%$old'";
@@ -185,7 +185,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Delete') {
 if (isset($_POST['confirm'])) {
   $location = " .";
   if ($_POST['confirm'] == 'Yes') {
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+    include CONNECT;
     $admin = ($priv == 'Admin');
     $id = $_POST['id'];
     $role = null;
@@ -310,7 +310,7 @@ if (isset($_GET['denied']) || isset($_GET['access']) || isset($_GET['self'])) {
 }
 
 if (isset($_GET['add'])) {
-  include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+  include CONNECT;
   $route = "Add";
   $pagehead = 'New User';
   //$action = '?';
@@ -353,7 +353,7 @@ if (isset($_GET['add'])) {
 
 
 if (isset($_POST['action']) && $_POST['action'] === 'Add') {
-  include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+  include CONNECT;
   $clientid = $_POST['employer'] ?? NULL;
   $clientadmin = preg_match("/admin/i", $priv) && preg_match("/client/i", $priv);
   $essentials = [$_POST['name'], $_POST['email'], $_POST['password']];
@@ -407,7 +407,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
 
 
 if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
-  include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+  include CONNECT;
   $id = isset($_GET['edit']) ? $_GET['edit'] : ($pwd ? $pwd : NULL);
   $id = !empty($id) ? $id : $_POST['id'] ?? '';
   $st = $pdo->prepare("SELECT id, name, email, $domainstr AS dom FROM user WHERE id =:id");
@@ -494,7 +494,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     $neg = "No";
     $action = '';
   } else {
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+    include CONNECT;
     $override = $_POST['override'];
     $id = $_POST['id'];
     $roles = $_POST['roles'] ?? [];
@@ -591,11 +591,9 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
 
 //display users___________________________________________________________________
 $sql = "SELECT user.id, user.name FROM user LEFT JOIN (SELECT user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer ON $domainstr=employer.domain WHERE employer.domain IS NULL"; //this overwrites above query to filter out users as employees
-
 $sql = "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS NULL"; //USING ID NOT DOMAIN
-include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-//_______________________________________________________________________________
 
+include CONNECT;
 
 if (!preg_match("/admin/i", $priv)) {
   $sql .= " AND user.id=$key";
@@ -618,7 +616,7 @@ if (preg_match("/client/i", $priv)) {
   $flag = true;
   if ($dom) {
     //https://stackoverflow.com/questions/18511645/use-bound-parameter-multiple-times
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+    include CONNECT;
     $sqlc = "SELECT COUNT(*) AS dom FROM user INNER JOIN client ON $domainstr=client.domain WHERE $domainstr=:dom AND client.domain=:dommo";
     $st = $pdo->prepare($sqlc);
     $st->bindValue(":dom", $dom);
@@ -685,7 +683,7 @@ if (preg_match("/admin/i", $priv)) {
     $client[$row['domain']] = $row['name'];
   }
 }
-//include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+//include CONNECT;
 //reOrderTable($pdo);
 //reAssignClient($pdo);
 
