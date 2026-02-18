@@ -28,7 +28,6 @@
     <?php endif;  ?>
 
     <?php if (isset($del)):
-
         $n = $name ?? $users[$userid] ?? null;
         $c = $client[$domain] ?? null;
         $k = 'block prompt';

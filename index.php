@@ -3,6 +3,20 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
 
+
+function fromPayload($str, ...$args)
+{
+    return implode(' ', array_merge([$str], $args));
+}
+
+function clientFromUpload($txt, ...$args)
+{
+    $str = fromPayload($txt, ...$args);
+    $tmptable = "(SELECT upload.userid FROM user INNER JOIN upload ON upload.userid = user.id WHERE upload.id=:id) AS tmp";
+    $derived = " user INNER JOIN client ON client.id = user.client_id INNER JOIN upload ON user.id = upload.userid INNER JOIN (SELECT client.id FROM client INNER JOIN user on user.client_id = client.id INNER JOIN $tmptable WHERE user.id = tmp.userid) AS T ON client.id = T.id WHERE client.id = T.id";
+    return $str . $derived;
+}
+
 $pagetitle = 'Log In';
 $pagehead = 'Log In!';
 $error = '';
@@ -182,20 +196,19 @@ if (isset($_POST['confirm']) && $_POST['confirm'] == 'Yes') {
     $prompt = "Select the extent of deletions";
     $del = "proceed";
     $template = '/prompt.html.php';
-
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
-   // $sql = "SELECT userid FROM upload WHERE id=:id";
-    $sql = "SELECT upload.userid, client.domain, user.name FROM user INNER JOIN client ON client.id = user.client_id INNER JOIN upload ON user.id = upload.userid INNER JOIN (SELECT client.id FROM client INNER JOIN user on user.client_id = client.id  INNER JOIN (SELECT upload.userid FROM user INNER JOIN upload ON upload.userid = user.id WHERE upload.id=:id) AS tmp WHERE user.id = tmp.userid) AS T ON client.id = T.id WHERE client.id = T.id LIMIT 1";
-
+    $sql = clientFromUpload("SELECT ", "upload.userid,", "client.domain,", "user.name FROM ");
+    $sql .= " LIMIT 1";
     $st = $pdo->prepare($sql);
     $st->bindValue(":id", $id);
     doPreparedQuery($st, 'Failed to obtain userid');
     list($userid, $domain, $name) = $st->fetch(PDO::FETCH_NUM);
-}   
+}
 
-if (isset($_POST['proceed']) && $_POST['proceed'] == 'remove') {
+if (isset($_POST['proceed']) && $_POST['proceed'] === 'remove') {
     include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
     $path = '../../filestore/';
+
 
     $deletejoins = array(
         /*doozy, obtain client id from file id to filter list of client files */
@@ -212,6 +225,9 @@ if (isset($_POST['proceed']) && $_POST['proceed'] == 'remove') {
         "SELECT upload.file FROM upload INNER JOIN user ON upload.userid = user.id INNER JOIN (SELECT userid FROM upload  WHERE id=:id) AS owt ON user.id = owt.userid WHERE user.id = owt.userid",
         "SELECT upload.file FROM upload WHERE id=:id"
     ];
+
+    $selectors[0] = clientFromUpload("SELECT upload.file FROM ");
+
 
     if ($_POST['extent'] == "c") {
         $sql = $selectors[0];
@@ -625,7 +641,6 @@ $qs = preg_replace("/&&/", "&", $qs);
 $fhead = $qs . $ffn($state);
 $uhead = $qs . $ufn($state);
 $thead = $qs . $tfn($state);
-
 
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/base.html.php';
 $error =  $lib[$_SERVER["QUERY_STRING"]] ?? '';
