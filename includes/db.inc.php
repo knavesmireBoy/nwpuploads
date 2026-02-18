@@ -9,6 +9,6 @@ try {
 } catch (PDOException $e) {
     $output = 'Unable to connect to the database server: ' . $e->getMessage();
     $error = $output;
-    include TEMPLATE . './output.html.php';
+    include TEMPLATE . 'output.html.php';
     exit();
 }

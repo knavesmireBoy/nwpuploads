@@ -10,3 +10,4 @@ date_default_timezone_set( "Europe/London" );
 define("TEMPLATE", __DIR__ . '/templates/');
 define("WEBSITE", '/nwp_uploads/');
 define('BASE_PATH', __DIR__);
+define('CONNECT', __DIR__  . '/includes/db.inc.php');

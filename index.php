@@ -71,7 +71,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'upload') {
     }
     if ($priv === 'Admin' && !empty($_POST['user'])) { //ie Admin selects user
         $key = $_POST['user'];
-        include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+        include CONNECT;
         $st = $pdo->prepare("SELECT domain FROM client WHERE domain=:id");
 
         $st->bindValue(":id", $key);
@@ -100,7 +100,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'upload') {
     } //Admin uploading for user
 
     // Prepare user-submitted values for safe database insert
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+    include CONNECT;
     $uploaddesc = isset($_POST['desc']) ? $_POST['desc'] : '';
     $size =  $uploaded('size') / 1024;
 
@@ -140,7 +140,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'upload') {
 } // end of upload_____________________________________________________________________
 
 if (isset($_GET['action']) and isset($_GET['id'])) {
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+    include CONNECT;
     $sql = "SELECT filename, mimetype, filepath, file, size FROM upload WHERE id =:id";
     $st = $pdo->prepare($sql);
     $st->bindValue(":id", $_GET['id']);
@@ -196,7 +196,7 @@ if (isset($_POST['confirm']) && $_POST['confirm'] == 'Yes') {
     $prompt = "Select the extent of deletions";
     $del = "proceed";
     $template = '/prompt.html.php';
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+    include CONNECT;
     $sql = clientFromUpload("SELECT ", "upload.userid,", "client.domain,", "user.name FROM ");
     $sql .= " LIMIT 1";
     $st = $pdo->prepare($sql);
@@ -206,7 +206,7 @@ if (isset($_POST['confirm']) && $_POST['confirm'] == 'Yes') {
 }
 
 if (isset($_POST['proceed']) && $_POST['proceed'] === 'remove') {
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+    include CONNECT;
     $path = '../../filestore/';
 
 
@@ -281,7 +281,7 @@ if (isset($_POST['confirm']) and $_POST['confirm'] === 'No') { //swap
 //SWITCH OWNER OF FILE OR JUST UPDATE DESCRIPTION (FILE AMEND BLOCK)
 if (isset($_POST['swap'])) {
     // $colleagues = [];
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+    include CONNECT;
     $template = '/update.html.php';
     $answer = $_POST['swap'];
     $email = $_SESSION['email'];
@@ -322,7 +322,7 @@ if (isset($_POST['swap'])) {
 
 if (isset($_POST['original'])) {
     //CAN ONLY BE SET BY ADMIN, 'original' is common to both options of file amend block
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+    include CONNECT;
     $user = !empty($_POST['colleagues']) ? $_POST['colleagues'] : (!empty($_POST['user']) ? $_POST['user'] : $_POST['original']);
     $id = intval($_POST['fileid']);
     $filename = $_POST['filename'];
@@ -347,7 +347,7 @@ if (isset($_POST['original'])) {
 if (isset($_GET['p']) and is_numeric($_GET['p'])) {
     $pages = $_GET['p'];
 } else { // counts all files
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+   include CONNECT;
     $sql = "SELECT COUNT(upload.id) as total from upload ";
     if ($priv == 'Client') {
         $sql .= " INNER JOIN user on upload.userid = user.id WHERE user.email=:email";
@@ -390,7 +390,9 @@ switch ($sort) {
 }
 
 //D I S P L A Y_______________________________________________________________
-include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php'; ///Present list of users for administrators
+ ///Present list of users for administrators
+include CONNECT;
+
 $sqlu = "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS NULL ORDER BY name";
 
 $st = doQuery($pdo, $sqlu, "Error retrieving details");
@@ -399,6 +401,7 @@ $rows = $st->fetchAll(PDO::FETCH_ASSOC);
 foreach ($rows as $row) {
     $users[$row['id']] = $row['name'];
 }
+
 /*
 $sqlc = "SELECT employer.user_id, employer.name, employer.domain FROM
 (SELECT user.name, user.id as user_id, client.domain FROM user INNER JOIN client ON RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))=client.domain) AS employer";
@@ -417,7 +420,7 @@ if (isset($_GET['find'])) {
     if ($priv != "Admin"): //CUSTOMISES SELECT MENU overwriting DEFAULT $client and $users
         $email = $_SESSION['email'];
         $iskey = false;
-        include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+        include CONNECT;
         $sql = "SELECT $domainstr FROM user WHERE user.email=:email";
         $st = $pdo->prepare($sql);
         $st->bindValue(":email", $email);
@@ -474,7 +477,7 @@ $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
 //_______//_______//_______//_______//_______//_______//_______//_______//_______//_____
 
 if (isset($_GET['action']) and $_GET['action'] == 'search') {
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/db.inc.php';
+    include CONNECT;
     $tel = '';
     $from .= " INNER JOIN userrole ON user.id=userrole.userid";
     $user_id =  $_GET['user'];
@@ -524,7 +527,8 @@ if (isset($_GET['action']) and $_GET['action'] == 'search') {
 
     $where .= " GROUP BY upload.id ";
     $sqlcount = $select . ', COUNT(upload.id) as total ' . $from . $where . $order;
-
+   
+    
     $st =  doQuery($pdo, $sqlcount, '<p>Error getting file count, innit</p>');
     $rows = $st->fetchAll(PDO::FETCH_ASSOC);
     $records = empty($rows) ? 0 : $rows[0]['total'];
