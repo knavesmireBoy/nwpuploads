@@ -159,9 +159,9 @@ h2.error {
 }
 
 label {
-  font-size: 1em;
-  font-weight: bold;
+  font: var(--georgia);
   padding: 0.3em 0;
+  font-size: 1em;
 }
 
 table {
@@ -188,6 +188,14 @@ td:nth-child(even), td:last-child {
 th {
   font: bold 1.1em Georgia, sans-serif;
   background-color: #9c0;
+  border: solid 1px white;
+  border-width: 0 1px;
+}
+th:first-child {
+  border-left-color: #9c0;
+}
+th:last-child {
+  border-right-color: #9c0;
 }
 
 a {
@@ -598,10 +606,11 @@ input[type=submit] {
 form[name=deletions] {
   padding: 1em;
 }
+form[name=deletions] label {
+  font-weight: normal;
+}
 form[name=deletions] label span {
-  text-transform: uppercase;
-  text-decoration: underline;
-  font-style: italic;
+  font-weight: bold;
 }
 form[name=deletions] label span:before {
   content: '"';

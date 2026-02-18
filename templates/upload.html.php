@@ -2,7 +2,7 @@
     <div><label for="uploadfiles">Upload File</label>
             <input id="uploadfiles" type="file" name="upload" />
     </div>
-           <div><label for="desc">File Description</label>
+           <div><label for="desc">Description</label>
             <input id="desc" type="text" name="desc" maxlength="255" />
 </div>
         <?php if ($priv == 'Admin') : ?>

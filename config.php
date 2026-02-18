@@ -8,6 +8,7 @@ ini_set('pcre.jit', false);
 date_default_timezone_set( "Europe/London" );
 
 define("TEMPLATE", __DIR__ . '/templates/');
+define("INCLUDES", __DIR__ . '/includes/');
 define("WEBSITE", '/nwp_uploads/');
 define('BASE_PATH', __DIR__);
 define('CONNECT', __DIR__  . '/includes/db.inc.php');

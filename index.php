@@ -3,7 +3,6 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
 
-
 function fromPayload($str, ...$args)
 {
     return implode(' ', array_merge([$str], $args));
@@ -19,8 +18,9 @@ function clientFromUpload($txt, ...$args)
 
 function userFromUpload()
 {
-    return "SELECT user.id, user.name, user.client_id FROM upload INNER JOIN user ON upload.userid = user.id INNER JOIN (SELECT userid FROM upload  WHERE id=:id) AS owt ON user.id = owt.userid WHERE user.id = owt.userid";
+    return "SELECT user.id, user.name, user.client_id FROM upload INNER JOIN user ON upload.userid = user.id INNER JOIN (SELECT userid FROM upload WHERE id=:id) AS owt ON user.id = owt.userid WHERE user.id = owt.userid";
 }
+
 
 $pagetitle = 'Log In';
 $pagehead = 'Log In!';
@@ -59,6 +59,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'upload') {
     //Bail out if the file isn't really an upload
     if (!is_uploaded_file($_FILES['upload']['tmp_name'])) {
         header("Location: ./?nofile");
+        exit();
     }
     $uploadfile = $uploaded('tmp_name');
     $realname = $uploaded('name');
@@ -70,7 +71,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'upload') {
     $filedname =  $path . $uploadname;
     // Copy the file (if it is deemed safe)
     if (!copy($uploadfile, $filedname)) {
-        $error = "Could not  save file as $filedname!";
+        $error = "Could not save file as $filedname!";
         include TEMPLATE . 'error.html.php';
         exit();
     }
@@ -106,7 +107,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'upload') {
 
     // Prepare user-submitted values for safe database insert
     include CONNECT;
-    $uploaddesc = isset($_POST['desc']) ? $_POST['desc'] : '';
+    $uploaddesc = $_POST['desc'] ?? '';
     $size =  $uploaded('size') / 1024;
 
     $sql = "INSERT INTO upload (filename, mimetype, description, filepath, file, size, userid, time) VALUES(:realname, :uploadtype,:uploaddesc,:pth,:uploadname,:sized,:userid, NOW())";
@@ -120,13 +121,8 @@ if (isset($_POST['action']) && $_POST['action'] == 'upload') {
     $st->bindValue(":sized", $size);
     $st->bindValue(":userid", $key);
     $res = doPreparedQuery($st, "<p>Database error storing file information!</p>");
-    /*
-    "select user.whatever from user INNER JOIN upload ON user.id=upload.userid INNER JOIN (SELECT MAX(id) AS big FROM upload) AS last ON last.big = upload.id";
-    NOT REQUIRED - USING mysqli_INSERT_ID INSTEAD - BUT KEPT AS AN EXAMPLE OF A SUBQUERY
-    */
     $insertId = lastInsert($pdo);
     $sql = "SELECT user.email, user.name, upload.id, upload.filename FROM user INNER JOIN upload ON user.id=upload.userid WHERE upload.id=:id";
-
     $st = $pdo->prepare($sql);
     $st->bindValue(":id", $insertId);
     doPreparedQuery($st, 'Error selecting email address.');
@@ -169,11 +165,8 @@ if (isset($_GET['action']) and isset($_GET['id'])) {
         exit();
     }
     $filedata = file_get_contents($fullpath);
-    $disposition = 'inline';
+    $disposition = $_GET['action'] == 'download' ? 'attachment' : 'inline';
     //$mimetype = 'application/x-unknown'; application/octet-stream
-    if ($_GET['action'] == 'download') {
-        $disposition = 'attachment';
-    }
     //Content-type must come before Content-disposition
     header("Content-type: $mimetype");
     //this works..
@@ -198,38 +191,43 @@ if (isset($_POST['action']) and $_POST['action'] == 'delete') {
 
 if (isset($_POST['confirm']) && $_POST['confirm'] == 'Yes') {
     $id = $_POST['id'];
+    include CONNECT;
     $prompt = "Select the extent of deletions";
     $del = "proceed";
     $template = '/prompt.html.php';
-    include CONNECT;
-
-
-    if (preg_match("/admin/i", $priv)) {
-        $sql = clientFromUpload("SELECT ", "upload.userid,", "user.name,", "client.domain FROM ");
-        $sql .= " LIMIT 1";
-    }
-    else {
-        $sql = userFromUpload();
-    }
-
+    $sql = clientFromUpload("SELECT ", "upload.userid,", "user.name,", "client.domain FROM ");
+    $sql .= " LIMIT 1";
+   // $_multi = false;
     $st = $pdo->prepare($sql);
     $st->bindValue(":id", $id);
     doPreparedQuery($st, 'Failed to obtain userid');
-    
     list($userid, $name, $domain) = $st->fetch(PDO::FETCH_NUM);
+    if (!$domain) {
+        $sql = userFromUpload();
+        $st = $pdo->prepare($sql);
+        $st->bindValue(":id", $id);
+        doPreparedQuery($st, 'Failed to obtain userid');
+        $rows = $st->fetchAll(PDO::FETCH_NUM);
+        $multi = count($rows) > 1;
+        $st = $pdo->prepare($sql);
+        $st->bindValue(":id", $id);
+        doPreparedQuery($st, 'Failed to obtain userid');
+        list($userid, $name) = $st->fetch(PDO::FETCH_NUM);
+    }
+    else {
+        $multi = true; 
+    }
 }
 
-if (isset($_POST['proceed']) && $_POST['proceed'] === 'remove') {
+if (isset($_POST['proceed']) && $_POST['proceed'] === 'destroy') {
     include CONNECT;
     $path = '../../filestore/';
-
+    $_extent = $_POST['extent'];
 
     $deletejoins = array(
         /*doozy, obtain client id from file id to filter list of client files */
         "DELETE upload FROM user INNER JOIN client ON client.id = user.client_id INNER JOIN upload  ON user.id = upload.userid INNER JOIN (SELECT client.id FROM client INNER JOIN user on user.client_id = client.id  INNER JOIN (SELECT upload.userid FROM user INNER JOIN upload ON upload.userid = user.id WHERE upload.id=:id) AS tmp WHERE user.id = tmp.userid) AS T ON client.id = T.id WHERE client.id = T.id",
-
         "DELETE upload FROM upload INNER JOIN user ON upload.userid = user.id INNER JOIN (SELECT userid FROM upload  WHERE id =:id) AS owt ON user.id = owt.userid WHERE user.id = owt.userid",
-
         "DELETE FROM upload WHERE id =:id   "
     );
 
@@ -239,12 +237,9 @@ if (isset($_POST['proceed']) && $_POST['proceed'] === 'remove') {
         "SELECT upload.file FROM upload WHERE id=:id"
     ];
 
-    if ($_POST['extent'] == "c") {
-        $sql = $selectors[0];
-    } elseif ($_POST['extent'] == "u") {
-        $sql = $selectors[1];
-    } elseif ($_POST['extent'] == "f") {
-        $sql = $selectors[2];
+    $lib = ['c' => $selectors[0], 'u' => $selectors[1], 'f' => $selectors[2]];
+    if (isset($lib[$_extent])) {
+        $sql = $lib[$_extent];
     } else {
         header('Location: .');
         exit();
@@ -428,149 +423,23 @@ foreach ($rows as $row) {
 }
 //end of default_______________________________________________________________________
 
+///may amend $users and $clients
 if (isset($_GET['find'])) {
-    $template = '/search.html.php';
-    if ($priv != "Admin"): //CUSTOMISES SELECT MENU overwriting DEFAULT $client and $users
-        $email = $_SESSION['email'];
-        $iskey = false;
-        include CONNECT;
-        $sql = "SELECT $domainstr FROM user WHERE user.email=:email";
-        $st = $pdo->prepare($sql);
-        $st->bindValue(":email", $email);
-        doPreparedQuery($st, "<p>Error finding domain</p>");
-        $row = $st->fetch(PDO::FETCH_NUM);
-        $dom = $row[0];
-        $sql = "SELECT COUNT(*) AS dom FROM user INNER JOIN client ON $domainstr=client.domain WHERE $domainstr=:dom AND client.domain=:dommo";
-
-        $st = $pdo->prepare($sql);
-        $st->bindValue(":dom", $dom);
-        $st->bindValue(":dommo", $dom);
-        $row = $st->fetch(PDO::FETCH_ASSOC);
-        $count = $row ? $row['dom'] : [];
-
-        if (count($count) > 0) {
-            $where = " WHERE user.email=:email"; //client
-        } else {
-            $where = " WHERE user.id=:key"; //user
-            $iskey = true;
-        }
-        $sql = "SELECT employer.id, employer.name FROM user INNER JOIN (SELECT user.id, user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer ON $domainstr=employer.domain $where";
-
-        $st = $pdo->prepare($sql);
-
-        if ($iskey) {
-            $st->bindValue(":key", $key);
-        } else {
-            $st->bindValue(":email", $email);
-        }
-        doPreparedQuery($st, '<p>Database error fetching clients.</p>');
-        $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-        if (!empty($rows)) {
-            $users = array(); //resets user array to display users of current client
-            foreach ($rows as $row) {
-                $users[$row['id']] = $row['name'];
-            }
-        }
-        //SELECT MENU in SEARCH for only more than one "employee"
-        else {
-            $users = array();
-            $zero = true;
-        }
-        $client = array();
-    endif;
+    include INCLUDES . "find.inc.php";
 }
-/// S E A R C H  M E !!
 
 //_______//_______//_______//_______//_______//_______//_______//_______//_______//_____
 $select = "SELECT upload.id, filename, mimetype, description, filepath, file, size, time,  MID(file, 11, 14) AS origin, user.email, user.name";
 $from = " FROM upload INNER JOIN user ON upload.userid=user.id";
-
 $order = " ORDER BY $order_by LIMIT $start, $display";
-$domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
 //_______//_______//_______//_______//_______//_______//_______//_______//_______//_____
 
-if (isset($_GET['action']) and $_GET['action'] == 'search') {
-    include CONNECT;
-    $tel = '';
-    $from .= " INNER JOIN userrole ON user.id=userrole.userid";
-    $user_id =  $_GET['user'];
-    $select .= ", user.name as user";
-    if ($priv == 'Admin') {
-        //will either return empty set(no error) or produce count. Test to see if a client has been selected.
-        $sql = "SELECT domain FROM client WHERE domain=:id";
-        $st = $pdo->prepare($sql);
-        $st->bindValue(":id", $user_id);
-        doPreparedQuery($st, "<p>Unable to find domain</p>");
-        $row = $st->fetch(PDO::FETCH_NUM);
-        //user_id is text(domain) for Clients
-        if ($row) {
-            $dom = $row[0];
-            $from .= " INNER JOIN client ON $domainstr = client.domain ";
-            $where = " WHERE domain='$dom'";
-            $check = count($row);
-        } else {
-            $where = ' WHERE TRUE';
-        }
-    } //admin
-    else {
-        $email = $_SESSION['email'];
-        $where = " WHERE user.email='$email'";
-    }
-    if ($user_id != '') { // A user is selected 
-        if (!isset($check)) $where .= " AND user.id='$user_id'";
-    }
-
-    $text = $_GET['text'];
-    if ($text != '') { // Some search text was specified 
-        $where .= " AND upload.filename LIKE '%$text%'";
-    }
-    $suffix = $_GET['suffix'];
-    if (isset($suffix)) {
-        if ($suffix == 'owt') {
-            $where .= " AND (upload.filename NOT LIKE '%pdf' AND upload.filename NOT LIKE '%zip')";
-        } elseif ($suffix == 'pdf' || $suffix == 'zip') {
-            $where .= " AND upload.filename LIKE '%$suffix'";
-            //$where .= sprintf(" AND upload.filename LIKE %s", GetSQLValueString('%'.$suffix, "text"));//Tricky percent symbol
-        }
-    }
-
-    $sql =  $select . $from . $where . $order;
-    $st = doQuery($pdo, $sql, '<p>Error fetching file details!</p>');
-    $res = $st->fetch();
-
-    $where .= " GROUP BY upload.id ";
-    $sqlcount = $select . ', COUNT(upload.id) as total ' . $from . $where . $order;
-
-
-    $st =  doQuery($pdo, $sqlcount, '<p>Error getting file count, innit</p>');
-    $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-    $records = empty($rows) ? 0 : $rows[0]['total'];
-    if ($records > $display) {
-        $pages = ceil($records / $display);
-    } else $pages = 1;
-
-    $files = array();
-    foreach ($rows as $row) {
-        $files[] = array(
-            'id' => $row['id'],
-            'user' => $row['user'],
-            'email' => $row['email'],
-            'filename' => $row['filename'],
-            'mimetype' => $row['mimetype'],
-            'description' => $row['description'],
-            'filepath' => $row['filepath'],
-            'file' => $row['file'],
-            'origin' => $row['origin'],
-            'time' => $row['time'],
-            'size' => $row['size'],
-            'tel' => $row['tel'] ?? ''
-        );
-    }
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/base.html.php';
-    include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/files.html.php';
+if (isset($_GET['action']) && $_GET['action'] == 'search') {
+    include INCLUDES . 'search.inc.php';
+    include_once TEMPLATE . 'base.html.php';
+    include TEMPLATE . 'files.html.php';
     exit();
 }
-//ENDEND S E A R C H//ENDEND S E A R C H//ENDEND S E A R C H//ENDEND S E A R C H
 
 if ($priv == 'Admin') {
     //by default listing by user will list by first name "Amanda White, Sally Bowles"
@@ -591,7 +460,7 @@ if ($priv == 'Admin') {
             $where .= " AND (upload.filename NOT LIKE '%pdf' AND upload.filename NOT LIKE '%zip')";
         } else $where .= " AND upload.filename LIKE '%$ext'";
     }
-    //CLIENTS USE EMAIL DOMAIN AS ID THERFORE NOT A NUMBER
+    //CLIENTS USE EMAIL DOMAIN AS ID IN DROP DOWN THERFORE NOT A NUMBER
     if (isset($byuser) && is_numeric($byuser)) {
         if ($byuser = $getuser) {
             $where .= " AND user.id=$byuser";
@@ -613,11 +482,12 @@ else {
     $row = $st->fetch(PDO::FETCH_ASSOC);
     $where = $row ? " WHERE user.email='$email'" : " WHERE client.domain = $domainstr";
 }
-$sql = $select . $from . $where . $order; //DEFAULT; TELEPHONE BLOCK REQUIRED TO OBTAIN CLIENT PHONE NUMBER
+$sql = $select . $from . $where . $order; //DEFAULT;
+//TELEPHONE BLOCK REQUIRED TO OBTAIN CLIENT PHONE NUMBER
 $sql = $select;
 $select_tel = ", client.name AS client, client.tel";
 //note LEFT join to include just 'users' also
-$from .= " LEFT JOIN client ON user.client_id=client.id";
+$from .= " LEFT JOIN client ON user.client_id = client.id";
 $sql .= $select_tel . $from . $where . $order;
 //______________________________________________END OF TELEPHONE
 

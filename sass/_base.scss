@@ -77,9 +77,9 @@ h2 {
   }
 }
 label {
-  font-size: 1em;
-  font-weight: bold;
+  font: var(--georgia);
   padding: 0.3em 0;
+  font-size: 1em;
 }
 table {
   margin-bottom: 1em;
@@ -104,6 +104,14 @@ td {
 th {
   font: bold 1.1em Georgia, sans-serif;
   background-color: #9c0;
+  border: solid 1px white;
+  border-width: 0 1px;
+  &:first-child {
+    border-left-color:#9c0; 
+  }
+  &:last-child {
+    border-right-color:#9c0; 
+  }
 }
 a {
   text-decoration: none;
@@ -498,10 +506,10 @@ input[type="submit"] {
 }
 form[name="deletions"] {
   padding: 1em;
-  label span {
-    text-transform: uppercase;
-    text-decoration: underline;
-    font-style: italic;
+  label {
+    font-weight: normal;
+    span {
+      font-weight: bold;
     &:before {
       content: '"';
     }
@@ -509,6 +517,7 @@ form[name="deletions"] {
       content: '"';
     }
   }
+}
 }
 .searcher fieldset,
 .upload fieldset {

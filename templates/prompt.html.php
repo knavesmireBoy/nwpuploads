@@ -28,6 +28,7 @@
     <?php endif;  ?>
 
     <?php if (isset($del)):
+
         $n = $name ?? $users[$userid] ?? null;
         $c = $client[$domain] ?? null;
         $k = 'block prompt';
@@ -36,16 +37,22 @@
         }
         $c = $c ?? 'this client';
         $n = $n ?? 'this user';
+        $dl = $multi ? 'Delete this file only' : 'Delete this file';
+
     ?>
         <form action="." method="post" name="deletions" class="<?= $k; ?> ">
             <input type="hidden" name="id" value="<?= $id; ?>" />
-            <p><label for="ext_nwf">Delete this file only?</label>&nbsp;<input type="radio" id="ext_nwf" name="extent" value="f" /></p>
-            <p><label for="ext_nwu">Delete all files for <span><?= $n; ?></span>?</label>&nbsp;<input type="radio" id="ext_nwu" name="extent" value="u" /></p>
-            <?php if (preg_match("/admin/i", $priv)): ?>
-                <p><label for="ext_nwc">Delete all files for <span><?= $c; ?></span>?</label>&nbsp;<input type="radio" id="ext_nwc" name="extent" value="c" /></p>
+            <p><label for="ext_nwf"><?= $dl; ?></label>&nbsp;<input type="radio" id="ext_nwf" name="extent" value="f" /></p>
+            <?php if ($multi) { ?>
+                <p><label for="ext_nwu">Delete all files for <span><?= $n; ?></span></label>&nbsp;<input type="radio" id="ext_nwu" name="extent" value="u" /></p>
+
+            <?php }
+
+            if ($c != 'this client'): ?>
+                <p><label for="ext_nwc">Delete all files for <span><?= $c; ?></span></label>&nbsp;<input type="radio" id="ext_nwc" name="extent" value="c" /></p>
             <?php endif; ?>
             <p><label for="cancel">Cancel deletion</label>&nbsp;<input type="radio" id="cancel" name="extent" /></p>
-            <input type="hidden" name="<?= $del; ?>" value="remove" />
+            <input type="hidden" name="<?= $del; ?>" value="destroy" />
             <input type="submit" value="Remove Files" />
         </form>
     <?php endif; ?>
