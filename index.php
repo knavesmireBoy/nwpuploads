@@ -225,7 +225,6 @@ if (isset($_POST['proceed']) && $_POST['proceed'] === 'remove') {
         "SELECT upload.file FROM upload WHERE id=:id"
     ];
 
-
     if ($_POST['extent'] == "c") {
         $sql = $selectors[0];
     } elseif ($_POST['extent'] == "u") {
