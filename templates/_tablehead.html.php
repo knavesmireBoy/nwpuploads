@@ -2,6 +2,7 @@
 $tel = '';
 $sort = '';
 $toggle = ['f', 'u', 't'];
+$uhead = ($priv === 'Admin') ? $uhead : '.';
 ?>
 <div id="upload">
 <table>

@@ -3,7 +3,7 @@
 <?php
 
 }
-if ((isset($_SESSION['extent']) && $_SESSION['extent'] == 1)) { ?>
+if ((isset($_SESSION['extent']) && $_SESSION['extent'] == 1) && $priv !== 'Admin') { ?>
 	<p><a href="..">Return to Uploads</a></p>
 <?php
 }

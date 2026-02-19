@@ -52,7 +52,6 @@ function myDomain($fileid)
     return [$ownerid, $ownername, $domain, $multi, $editor];
 }
 
-
 $pagetitle = 'Log In';
 $pagehead = 'Log In!';
 $error = '';
@@ -67,6 +66,10 @@ $tel = '';
 $call = '';
 $goto = __DIR__;
 $disabled  = '';
+$ext = null;
+$getuser = '';
+$bytext = '';
+$byuser = '';
 
 $uploaded = function ($arg) {
     return $_FILES['upload'][$arg];
@@ -379,13 +382,12 @@ if (isset($_POST['original'])) {
 }
 ///end of F I L E AMEND BLOCK___________________________________________________________________
 //a default block___________________________________________________________________
-
-if (isset($_GET['p']) and is_numeric($_GET['p'])) {
+if (isset($_GET['p']) && is_numeric($_GET['p'])) {
     $pages = $_GET['p'];
 } else { // counts all files
     include CONNECT;
     $sql = "SELECT COUNT(upload.id) as total from upload ";
-    if ($priv == 'Client') {
+    if (preg_match("/client/i", $priv)) {
         $sql .= " INNER JOIN user on upload.userid = user.id WHERE user.email=:email";
     }
     $st = $pdo->prepare($sql);
@@ -401,6 +403,7 @@ if (isset($_GET['p']) and is_numeric($_GET['p'])) {
         $pages = ceil($records / $display);
     } else $pages = 1; //INITIAL SETTING OF PAGES
 } //end of IF NOT PAGES SET
+
 
 if (isset($_GET['s']) and is_numeric($_GET['s'])) {
     $start = $_GET['s'];
@@ -509,18 +512,21 @@ else {
     doPreparedQuery($st, 'Error retreiving user details');
     $row = $st->fetch(PDO::FETCH_ASSOC);
     $where = $row ? " WHERE user.email='$email'" : " WHERE client.domain = $domainstr";
+    $i = strpos($email, '@');
+    $dom = substr($email, $i + 1);
+    if (!$row) {
+        $tel = ", client.name AS client, client.tel";
+        $where .= " AND client.domain = '$dom'";
+    }
 }
-$sql = $select . $from . $where . $order; //DEFAULT;
-//TELEPHONE BLOCK REQUIRED TO OBTAIN CLIENT PHONE NUMBER
+//$sql = $select . $from . $where . $order; //DEFAULT;
 $sql = $select;
-$select_tel = ", client.name AS client, client.tel";
 //note LEFT join to include just 'users' also
 $from .= " LEFT JOIN client ON user.client_id = client.id";
-$sql .= $select_tel . $from . $where . $order;
-//______________________________________________END OF TELEPHONE
-
+$sql .= $tel . $from . $where . $order;
 $st = doQuery($pdo, $sql, 'Database error fetching files. ');
 $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+
 $files = array();
 foreach ($rows as $row) {
     $files[] = array(

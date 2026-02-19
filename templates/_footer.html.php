@@ -4,6 +4,7 @@ include '_logout.html.php';
 
 <footer>
     <?php
+
     if (isset($_GET['ext'])) $suffix = $ext;
     if (isset($_GET['u'])) $user_id = $byuser;
     if (isset($_GET['u'])) $text = $bytext;
