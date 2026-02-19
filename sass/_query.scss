@@ -1,18 +1,4 @@
-h1 {
-  color: var(--main-color);
-}
-html {
-  max-width: 100%;
-  height: 100%;
-  > body {
-    margin: auto;
-    text-align: center;
-    //box-shadow: 0 0 20px #000;
-    background-color: white;
-    min-width: 100%;
-    min-height: 100%;
-  }
-}
+
 @media screen and (min-width: 768px) {
   html body {
     text-align: center;
@@ -23,7 +9,6 @@ html {
   }
   form[name="usersform"],
   form[name="updatefileinfo"],
-  form[name="deletions"] p,
   .searcher {
     text-align: left;
   }

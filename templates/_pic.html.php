@@ -1,6 +1,10 @@
 <?php
 include 'base.html.php'; 
-echo $filedata;
+
 ?>
 
-<p><a href="."><?= $filedata; ?></a></p>
+<h1>HI</h1>
+
+<p><img src="<?= $filepath; ?>"></p>
+
+

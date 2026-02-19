@@ -181,7 +181,7 @@ if (isset($_POST['action']) and $_POST['action'] == 'delete') {
     //obtain user id/client name
     $id = $_POST['id']; //id of file
     $title = "Prompt";
-    $prompt = "Are you sure you want to delete this file? ";
+    $prompt = "Are you sure you want to delete this file?";
     $call = "confirm";
     $pos = "Yes";
     $neg = "No";
@@ -209,7 +209,7 @@ if (isset($_POST['confirm']) && $_POST['confirm'] == 'Yes') {
         doPreparedQuery($st, 'Failed to obtain userid');
         $rows = $st->fetchAll(PDO::FETCH_NUM);
         $multi = count($rows) > 1;
-        $st = $pdo->prepare($sql);
+         $st = $pdo->prepare($sql);
         $st->bindValue(":id", $id);
         doPreparedQuery($st, 'Failed to obtain userid');
         list($userid, $name) = $st->fetch(PDO::FETCH_NUM);

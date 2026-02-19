@@ -99,17 +99,32 @@ ol, ul, dl {
   --main-color: #496600;
   --main-color-alt: hsl(77, 100%, 10%);
   --prompt: #d9ebad;
+  --bg: radial-gradient( hsl(77, 90%, 40%), white);
   --pale: #edf8d0;
   --georgia: bold 2.2em/1 Georgia, sans-serif;
   --georgiaform: bold italic 1.8em/1 Georgia, sans-serif;
   --deleter: bold italic 1.1em/1 Georgia, sans-serif;
-  --invert: #8560cc;
+  --label: 1.25em;
+  --invert: #5f0202;
 }
 
-body {
+html {
+  max-width: 100%;
+  height: 100%;
+}
+html > body {
   font-size: 0.75em;
   font-family: Helvetica, Geneva, Arial, SunSans-Regular, sans-serif;
   padding: 1em 0 0;
+  margin: auto;
+  text-align: center;
+  background-color: white;
+  min-width: 100%;
+  min-height: 100%;
+}
+
+h1 {
+  color: var(--main-color);
 }
 
 h1,
@@ -305,13 +320,39 @@ p a,
   margin: 0 0 1em;
 }
 
+input[type=text] {
+  font-size: 1em;
+  height: 1.5em;
+}
+
+input[type=submit] {
+  border: 1px solid #000;
+  color: white;
+  border-radius: 20px;
+  background-color: #496600;
+  font: 1em Arial;
+  font: 1em/1.35 Georgia, serif;
+  font-style: italic;
+  font-weight: bold;
+  margin: 0;
+}
+
 .prompt {
-  background-color: var(--prompt);
+  background-color: var(--invert);
   display: inline-block;
   padding: 1em;
   border: solid 1px #000;
-  border-radius: 5px;
+  border-radius: 8px;
   margin: 1em 0;
+  color: white;
+}
+.prompt input[type=submit] {
+  border-color: white;
+  background-color: yellowgreen;
+  color: black;
+}
+.prompt input[type=submit]:hover {
+  color: white;
 }
 
 .commit {
@@ -435,7 +476,6 @@ form[name=usersform] > ul li input {
 }
 form[name=usersform] fieldset {
   margin: 1em 0;
-  text-align: left;
   font: var(--georgiaform);
   color: var(--main-color);
   font-size: 1em;
@@ -581,23 +621,6 @@ p.ret {
   margin: 1em 0;
 }
 
-input[type=text] {
-  font-size: 1em;
-  height: 1.5em;
-}
-
-input[type=submit] {
-  border: 1px solid #000;
-  color: white;
-  border-radius: 20px;
-  background-color: #496600;
-  font: 1em Arial;
-  font: 1em/1.35 Georgia, serif;
-  font-style: italic;
-  font-weight: bold;
-  margin: 0;
-}
-
 .edit ~ p,
 .clients .commit ~ p {
   margin: 1em 0 0;
@@ -606,17 +629,43 @@ input[type=submit] {
 form[name=deletions] {
   padding: 1em;
 }
-form[name=deletions] label {
-  font-weight: normal;
+form[name=deletions] p {
+  margin: 0 auto;
+  text-align: center;
 }
-form[name=deletions] label span {
+form[name=deletions] p label {
+  font-weight: normal;
+  font-size: var(--label);
+  display: block;
+}
+form[name=deletions] p label span {
   font-weight: bold;
 }
-form[name=deletions] label span:before {
+form[name=deletions] p label span:before {
   content: '"';
 }
-form[name=deletions] label span:after {
+form[name=deletions] p label span:after {
   content: '"';
+}
+form[name=deletions] p label:hover {
+  color: yellow;
+}
+form[name=deletions] p input[type=radio] {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+}
+form[name=deletions] p input[type=radio]:checked + label {
+  color: yellowgreen;
+}
+form[name=deletions] input[type=submit] {
+  margin: 0.5em auto 0;
+  text-align: center;
+  display: inline-block;
+  cursor: pointer;
+}
+form[name=deletions].span p {
+  text-align: left;
 }
 
 .searcher fieldset,
@@ -704,38 +753,11 @@ form[name=downloads] div input:hover {
 #yesno {
   margin: 0;
   font: var(--deleter);
-  background-color: white;
-  box-shadow: inset 0 0 10px 5px var(--prompt);
 }
 #yesno label {
   cursor: pointer;
-  background-image: url("../assets/yesno.png");
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-color: red;
-  background-position: center 0%;
-  display: inline-block;
-  height: 30px;
-  width: 30px;
-  align-self: center;
-  text-indent: 30px;
-  overflow: hidden;
-  border: none;
+  font-size: var(--label);
   opacity: 0.5;
-}
-#yesno label:last-of-type {
-  background-image: url("../assets/yesno.png");
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-color: red;
-  background-position: center 17%;
-  display: inline-block;
-  height: 30px;
-  width: 30px;
-  align-self: center;
-  text-indent: 30px;
-  overflow: hidden;
-  border: none;
 }
 #yesno label:hover {
   opacity: 1;
@@ -792,22 +814,6 @@ form[name=updatefileinfo] > div input[type=text] {
   min-width: 30em;
 }
 
-h1 {
-  color: var(--main-color);
-}
-
-html {
-  max-width: 100%;
-  height: 100%;
-}
-html > body {
-  margin: auto;
-  text-align: center;
-  background-color: white;
-  min-width: 100%;
-  min-height: 100%;
-}
-
 @media screen and (min-width: 768px) {
   html body {
     text-align: center;
@@ -817,7 +823,6 @@ html > body {
   }
   form[name=usersform],
 form[name=updatefileinfo],
-form[name=deletions] p,
 .searcher {
     text-align: left;
   }

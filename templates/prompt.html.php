@@ -31,29 +31,27 @@
 
         $n = $name ?? $users[$userid] ?? null;
         $c = $client[$domain] ?? null;
-        $k = 'block prompt';
+        $k = 'prompt';
         if ($c || $n) {
-            $k = 'block prompt span';
+            $k .= ' span';
         }
         $c = $c ?? 'this client';
         $n = $n ?? 'this user';
-        $dl = $multi ? 'Delete this file only' : 'Delete this file';
+        $dl = $multi ? 'delete this file only' : 'delete';
 
     ?>
-        <form action="." method="post" name="deletions" class="<?= $k; ?> ">
+        <form action="." method="post" name="deletions" class="<?= $k;?>">
             <input type="hidden" name="id" value="<?= $id; ?>" />
-            <p><label for="ext_nwf"><?= $dl; ?></label>&nbsp;<input type="radio" id="ext_nwf" name="extent" value="f" /></p>
+            <p><input type="radio" id="ext_nwf" name="extent" value="f" /><label for="ext_nwf"><?= $dl; ?></label></p>
             <?php if ($multi) { ?>
-                <p><label for="ext_nwu">Delete all files for <span><?= $n; ?></span></label>&nbsp;<input type="radio" id="ext_nwu" name="extent" value="u" /></p>
-
+                <p><input type="radio" id="ext_nwu" name="extent" value="u" /><label for="ext_nwu">delete all files for <span><?= $n; ?></span></label></p>
             <?php }
-
             if ($c != 'this client'): ?>
-                <p><label for="ext_nwc">Delete all files for <span><?= $c; ?></span></label>&nbsp;<input type="radio" id="ext_nwc" name="extent" value="c" /></p>
+                <p><input type="radio" id="ext_nwc" name="extent" value="c" /><label for="ext_nwc">delete all files for <span><?= $c; ?></span></label></p>
             <?php endif; ?>
-            <p><label for="cancel">Cancel deletion</label>&nbsp;<input type="radio" id="cancel" name="extent" /></p>
+            <p><input type="radio" id="cancel" name="extent" /><label for="cancel">cancel</label></p>
             <input type="hidden" name="<?= $del; ?>" value="destroy" />
-            <input type="submit" value="Remove Files" />
+            <input type="submit" />
         </form>
     <?php endif; ?>
 </section>
