@@ -1,5 +1,5 @@
 <h1>Search Files</h1>
-<form action="?" method="get" name="search" class="prompt">
+<form action="?" method="get" name="search">
 	<p>View files satisfying the following criteria:</p>
 	<?php if (!isset($zero)) : ?>
 		<div><label for="user">By user: </label><select id="user" name="user">

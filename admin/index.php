@@ -128,6 +128,24 @@ function resetRoles($pdo, $roles, $id)
   } //end foreach
   return $roles;
 }
+
+function getCurrentRole($id)
+{
+  include CONNECT;
+  $sql = "SELECT roleid FROM userrole WHERE userid=:id";
+  $st = $pdo->prepare($sql);
+  $st->bindValue(":id", $id);
+  doPreparedQuery($st, 'Error obtaining role id.');
+  return $st->fetch(PDO::FETCH_ASSOC)['roleid'];
+}
+
+function verifyRole($old, $new)
+{
+  if ($old === $new) {
+    return false;
+  }
+  return true;
+}
 //maybe require password of client to delete??
 function deleteAlready($pdo, $id)
 {
@@ -437,7 +455,7 @@ if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
     $row = $st->fetch(PDO::FETCH_ASSOC);
   }
 
-  $pagetitle = "Edit Users";
+  $pagetitle = preg_match("/client/i", $priv) ? "Admin" : "Admin | Edit Users";
   $route = "Edit";
   $pagehead = 'Edit User';
   $action = 'editform';
@@ -454,7 +472,8 @@ if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
   $admin = ($priv === 'Admin');
   $clientadmin = preg_match("/admin/i", $priv) || preg_match("/client/i", $priv);
   $adminClient = preg_match('/admin/i', $priv) && preg_match('/client/i', $priv);
-  if ($clientadmin) {
+
+  if (preg_match('/admin/i', $priv)) {
     $st = $pdo->prepare("SELECT roleid FROM userrole WHERE userid=:id");
     $st->bindValue(":id", $id);
     doPreparedQuery($st, "<p>Error fetching list of assigned roles.</p>");
@@ -510,6 +529,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     $assoc = false;
     $revert = false;
     $email = null;
+    $role = null;
     //$domcheck = true;
     $admin = $priv === 'Admin';
     $i = strpos($_POST['email'], '@');
@@ -572,26 +592,28 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     }
 
     if (preg_match("/admin/i", $priv)) {
+      $role = getCurrentRole($id);
       $sql = "DELETE FROM userrole WHERE userid=:id";
       $st = $pdo->prepare($sql);
       $st->bindValue(":id", $id);
-      doPreparedQuery($st, '<p>Error removing obsolete user role entries.</p>');
+      doPreparedQuery($st, 'Error removing obsolete user role entries.');
     }
-
     resetRoles($pdo, $roles, $id);
+    $rolechange = verifyRole($role, getCurrentRole($id));
+
     //$clientid is allowed to be null if a user wants to disassociate from a client
     $sql = "UPDATE user SET client_id=:cid WHERE id =:id";
     $st = $pdo->prepare($sql);
     $st->bindValue(":cid", $clientid);
     $st->bindValue(":id", $id);
-    doPreparedQuery($st, '<p>Error setting client id</p>');
+    doPreparedQuery($st, 'Error setting client id');
     updateUserDomain($edom, $domain, $id);
-
-    if (($email !== $_POST['email']) && $editor) {
-      header("Location: ../?action=logout");
-      exit();
+    if ($editor) {
+      if ($email !== $_POST['email'] || ($rolechange && $editor)) {
+        header("Location: ../?action=logout");
+        exit();
+      }
     }
-
     header('Location: .');
     exit();
   }  //not delete

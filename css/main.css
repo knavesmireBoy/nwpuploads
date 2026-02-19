@@ -578,6 +578,7 @@ form[name=search] {
   background-color: var(--prompt);
   width: clamp(300px, 70vw, 600px);
   margin: 1em auto;
+  border-radius: 8px;
 }
 
 form[name=search] div {

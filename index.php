@@ -94,8 +94,7 @@ if ($priv === 'Browser') {
     $disabled = 'disabled';
 }
 $template = '/upload.html.php';
-
-
+$pagetitle = 'File Uploads';
 
 if (isset($_POST['action']) && $_POST['action'] == 'upload') {
     //Bail out if the file isn't really an upload
