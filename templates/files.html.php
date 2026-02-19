@@ -45,7 +45,8 @@ if (count($files) > 0): ?>
                         </div>
                     </form>
                 </td>
-                <?php if ($priv != 'Browser') : ?>
+                <?php                 
+                if ($priv !== 'Browser') : ?>
                     <td title="delete">
                         <form action="." method="post" name="<?= $f['id']; ?>">
                             <div><input type="hidden" name="action" value="delete" />

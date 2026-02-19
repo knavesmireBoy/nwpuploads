@@ -22,6 +22,32 @@ function userFromUpload()
 }
 
 
+function myDomain($fileid)
+{
+    include CONNECT;
+    $sql = clientFromUpload("SELECT ", "upload.userid,", "user.name,", "client.domain FROM ");
+    $sql .= " LIMIT 1";
+    $st = $pdo->prepare($sql);
+    $st->bindValue(":id", $fileid);
+    doPreparedQuery($st, 'Failed to obtain userid');
+    list($userid, $name, $domain) = $st->fetch(PDO::FETCH_NUM);
+    $multi = false;
+    if (!$domain) {
+        $sql = userFromUpload();
+        $st = $pdo->prepare($sql);
+        $st->bindValue(":id", $fileid);
+        doPreparedQuery($st, 'Failed to obtain userid');
+        $rows = $st->fetchAll(PDO::FETCH_NUM);
+        $multi = count($rows) > 1;
+        $st = $pdo->prepare($sql);
+        $st->bindValue(":id", $fileid);
+        doPreparedQuery($st, 'Failed to obtain userid');
+        list($userid, $name) = $st->fetch(PDO::FETCH_NUM);
+    }
+    return [$userid, $name, $domain, $multi];
+}
+
+
 $pagetitle = 'Log In';
 $pagehead = 'Log In!';
 $error = '';
@@ -34,6 +60,7 @@ $clientlist = null;
 $display = 5;
 $template = '/upload.html.php';
 $tel = '';
+$call = '';
 $goto = __DIR__;
 
 $uploaded = function ($arg) {
@@ -177,7 +204,7 @@ if (isset($_GET['action']) and isset($_GET['id'])) {
     exit();
 } // end of download
 
-if (isset($_POST['action']) and $_POST['action'] == 'delete') {
+if (isset($_POST['action']) && $_POST['action'] == 'delete') {
     //obtain user id/client name
     $id = $_POST['id']; //id of file
     $title = "Prompt";
@@ -186,37 +213,19 @@ if (isset($_POST['action']) and $_POST['action'] == 'delete') {
     $pos = "Yes";
     $neg = "No";
     $action = '';
+    list($userid, $name, $domain, $multi) = myDomain($id);
     $template = '/prompt.html.php';
 }
 
 if (isset($_POST['confirm']) && $_POST['confirm'] == 'Yes') {
     $id = $_POST['id'];
-    include CONNECT;
     $prompt = "Select the extent of deletions";
     $del = "proceed";
+    $userid = $_POST['userid'];
+    $name = $_POST['username'];
+    $domain = $_POST['domain'];
+    $multi = $_POST['multi'];
     $template = '/prompt.html.php';
-    $sql = clientFromUpload("SELECT ", "upload.userid,", "user.name,", "client.domain FROM ");
-    $sql .= " LIMIT 1";
-   // $_multi = false;
-    $st = $pdo->prepare($sql);
-    $st->bindValue(":id", $id);
-    doPreparedQuery($st, 'Failed to obtain userid');
-    list($userid, $name, $domain) = $st->fetch(PDO::FETCH_NUM);
-    if (!$domain) {
-        $sql = userFromUpload();
-        $st = $pdo->prepare($sql);
-        $st->bindValue(":id", $id);
-        doPreparedQuery($st, 'Failed to obtain userid');
-        $rows = $st->fetchAll(PDO::FETCH_NUM);
-        $multi = count($rows) > 1;
-         $st = $pdo->prepare($sql);
-        $st->bindValue(":id", $id);
-        doPreparedQuery($st, 'Failed to obtain userid');
-        list($userid, $name) = $st->fetch(PDO::FETCH_NUM);
-    }
-    else {
-        $multi = true; 
-    }
 }
 
 if (isset($_POST['proceed']) && $_POST['proceed'] === 'destroy') {
@@ -275,23 +284,35 @@ if (isset($_POST['proceed']) && $_POST['proceed'] === 'destroy') {
     exit();
 } //________________________end of confirm/delete
 
-if (isset($_POST['confirm']) and $_POST['confirm'] === 'No') { //swap
-    $prompt = "Change ownership on ALL files?";
+if (isset($_POST['confirm']) && $_POST['confirm'] === 'No') { //swap
+
     $id = $_POST['id'];
-    $swap = "swap";
+    $userid = $_POST['userid'];
+    $name = $_POST['username'];
+    $domain = $_POST['domain'];
+    $multi = $_POST['multi'];
+
+   //$swap = "swap";
     $call = "swap";
     $pos = "Yes";
     $neg = "No";
     $action = '';
-    $template = '/prompt.html.php';
+
+    if ($multi) {
+        $prompt = "Change ownership on ALL files?";
+        $template = '/prompt.html.php';
+    } else {
+        $answer = 'No';
+        $template = '/update.html.php';
+    }
 }
 
 //SWITCH OWNER OF FILE OR JUST UPDATE DESCRIPTION (FILE AMEND BLOCK)
-if (isset($_POST['swap'])) {
+if ($call === 'swap' || isset($_POST['swap']) ) {
     // $colleagues = [];
     include CONNECT;
     $template = '/update.html.php';
-    $answer = $_POST['swap'];
+    $answer = $answer ?? $_POST['swap'];
     $email = $_SESSION['email'];
 
     $sql = "SELECT upload.id, filename, description, upload.userid, user.name FROM upload INNER JOIN user ON upload.userid=user.id  WHERE upload.id=:id";
@@ -300,14 +321,15 @@ if (isset($_POST['swap'])) {
     doPreparedQuery($st, '<p>Database error fetching stored files.</p>');
     $row = $st->fetch(PDO::FETCH_ASSOC);
     $filename = $row['filename'];
-    $diz = $row['description'];
+    $description = $row['description'];
     $userid = $row['userid'];
     $aname = $row['name'];
     $button = "Update";
     $action = '';
-    $answer = $_POST['swap'];
+    //$answer = $_POST['swap'];
     $rows = [];
     $id =  $_POST['id']; //CRUCIAL to pass id to file amend form (update.html.php)
+
     if (preg_match("/client/i", $priv)) {
         $sql = "SELECT employer.id, employer.name FROM upload INNER JOIN user ON upload.userid = user.id INNER JOIN (SELECT user.id, user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer ON $domainstr=employer.domain WHERE upload.id=:id ORDER BY name"; //colleagues
         $st = $pdo->prepare($sql);

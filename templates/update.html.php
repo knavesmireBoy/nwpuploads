@@ -1,22 +1,24 @@
-<form action="<?= $action; ?>" method="post" name="updatefileinfo"  class="prompt">
-	<?php if ($_POST['swap'] == 'No'){ 
-		?>
+<form action="<?= $action; ?>" method="post" name="updatefileinfo" class="prompt">
+	<?php
+	$swap = $answer ?? $_POST['swap'] ?? NULL;
+	if ($swap === 'No') {
+	?>
 		<div>
 			<label for="filename">Name</label><input id="filename" type="text" name="filename" value="<?= $filename; ?>" />
 		</div>
 		<div>
-			<label for="description">Description</label><input id="description" type="text" name="description" value="<?= $diz; ?>" />
+			<label for="description">Description</label><input id="description" type="text" name="description" value="<?= $description; ?>" />
 		</div>
-		<?php } ?>
-		<?php if (!isset($colleagues) && isset($all_users)) { ?>
-			<div>
+	<?php } ?>
+	<?php if (!isset($colleagues) && isset($all_users)) { ?>
+		<div>
 			<label for="user">User</label><select id="user" name="user">
 				<option value="">Select one</option><?php foreach ($all_users as $i => $a): ?>
 					<option value="<?= $i; ?>"><?= $a; ?></option><?php endforeach; ?>
 			</select>
 		</div>
 	<?php }
-	if(isset($colleagues)) { ?>
+	if (isset($colleagues)) { ?>
 		<div>
 			<label for="colleagues">Colleagues:&nbsp;</label> <select id="colleagues" name="colleagues">
 				<option value="">Select one</option><?php foreach ($colleagues as $i => $c): ?>

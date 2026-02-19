@@ -14,10 +14,15 @@
                 <input type="submit" name="action" value="continue" />
             </div>
         </form>
-    <?php elseif (!isset($clientlist) and !isset($del)):
+    <?php elseif (!isset($clientlist) && !isset($del)):
+
     ?>
         <form action="<?= $action; ?>" method="post" name="choice" class="prompt" id="yesno">
             <input type="hidden" name="id" value="<?= $id; ?>" />
+            <input type="hidden" name="userid" value="<?= $userid; ?>" />
+            <input type="hidden" name="username" value="<?= $name; ?>" />
+            <input type="hidden" name="multi" value="<?= !!$multi; ?>" />
+            <input type="hidden" name="domain" value="<?= $domain ?? ''; ?>" />
             <p><?= $prompt; ?></p>
             <input id="yes" type="radio" name="<?= $call; ?>" value="<?= $pos; ?>" />
             <label for="yes">Yes</label>
@@ -31,8 +36,9 @@
 
         $n = $name ?? $users[$userid] ?? null;
         $c = $client[$domain] ?? null;
+
         $k = 'prompt';
-        if ($c || $n) {
+        if ($c || $multi) {
             $k .= ' span';
         }
         $c = $c ?? 'this client';
