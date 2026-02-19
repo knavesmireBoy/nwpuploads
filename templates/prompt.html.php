@@ -15,47 +15,53 @@
             </div>
         </form>
     <?php elseif (!isset($clientlist) && !isset($del)):
-
     ?>
         <form action="<?= $action; ?>" method="post" name="choice" class="prompt" id="yesno">
             <input type="hidden" name="id" value="<?= $id; ?>" />
-            <input type="hidden" name="userid" value="<?= $userid; ?>" />
-            <input type="hidden" name="username" value="<?= $name; ?>" />
+            <input type="hidden" name="ownerid" value="<?= $ownerid; ?>" />
+            <input type="hidden" name="ownername" value="<?= $ownername; ?>" />
             <input type="hidden" name="multi" value="<?= !!$multi; ?>" />
             <input type="hidden" name="domain" value="<?= $domain ?? ''; ?>" />
+            <input type="hidden" name="editor" value="<?= !!$editor; ?>" />
             <p><?= $prompt; ?></p>
             <input id="yes" type="radio" name="<?= $call; ?>" value="<?= $pos; ?>" />
             <label for="yes">Yes</label>
             <input id="no" type="radio" name="<?= $call; ?>" value="<?= $neg; ?>" />
             <label for="no">No</label>
-            <input type="submit" value="Submit" />
+            <input type="submit" />
         </form>
     <?php endif;  ?>
 
     <?php if (isset($del)):
 
-        $n = $name ?? $users[$userid] ?? null;
+        $n = $ownername ?? null;
         $c = $client[$domain] ?? null;
-
         $k = 'prompt';
         if ($c || $multi) {
             $k .= ' span';
         }
-        $c = $c ?? 'this client';
+        $c = $c ? $c : 'this client';
         $n = $n ?? 'this user';
-        $dl = $multi ? 'delete this file only' : 'delete';
-
+        $dl = "delete file";
+        $dlu = "delete all files for <span>$n</span>";
+        if ($multi) {
+            $dl = "delete this file only";
+            $dlu = $editor ? "delete all your files" : $dlu;
+        }
+        else {
+            $dl = $editor ? "delete file" : "delete file for <span>$n</span>";
+        }
     ?>
-        <form action="." method="post" name="deletions" class="<?= $k;?>">
-            <input type="hidden" name="id" value="<?= $id; ?>" />
-            <p><input type="radio" id="ext_nwf" name="extent" value="f" /><label for="ext_nwf"><?= $dl; ?></label></p>
+        <form action="." method="post" name="deletions" class="<?= $k; ?>">
+            <input type="radio" id="ext_nwf" name="extent" value="f" /><label for="ext_nwf"><?= $dl; ?></label>
             <?php if ($multi) { ?>
-                <p><input type="radio" id="ext_nwu" name="extent" value="u" /><label for="ext_nwu">delete all files for <span><?= $n; ?></span></label></p>
+                <input type="radio" id="ext_nwu" name="extent" value="u" /><label for="ext_nwu"><?= $dlu; ?></label>
             <?php }
             if ($c != 'this client'): ?>
-                <p><input type="radio" id="ext_nwc" name="extent" value="c" /><label for="ext_nwc">delete all files for <span><?= $c; ?></span></label></p>
+                <input type="radio" id="ext_nwc" name="extent" value="c" /><label for="ext_nwc">delete all files for <span><?= $c; ?></span></label>
             <?php endif; ?>
-            <p><input type="radio" id="cancel" name="extent" /><label for="cancel">cancel</label></p>
+            <input type="radio" id="cancel" name="extent" /><label for="cancel">cancel</label>
+            <input type="hidden" name="id" value="<?= $id; ?>" />
             <input type="hidden" name="<?= $del; ?>" value="destroy" />
             <input type="submit" />
         </form>

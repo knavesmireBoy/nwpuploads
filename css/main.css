@@ -99,13 +99,16 @@ ol, ul, dl {
   --main-color: #496600;
   --main-color-alt: hsl(77, 100%, 10%);
   --prompt: #d9ebad;
-  --bg: radial-gradient( hsl(77, 90%, 40%), white);
+  --bg: radial-gradient(hsl(77, 90%, 40%), white);
   --pale: #edf8d0;
+  --bright: #9c0;
+  --invert: hsl(215, 79%, 55%);
+  --invert: #5f0202;
+  --head: #7a9f33;
   --georgia: bold 2.2em/1 Georgia, sans-serif;
   --georgiaform: bold italic 1.8em/1 Georgia, sans-serif;
   --deleter: bold italic 1.1em/1 Georgia, sans-serif;
   --label: 1.25em;
-  --invert: #5f0202;
 }
 
 html {
@@ -123,8 +126,8 @@ html > body {
   min-height: 100%;
 }
 
-h1 {
-  color: var(--main-color);
+h1 a {
+  color: var(--invert);
 }
 
 h1,
@@ -152,7 +155,7 @@ p {
 }
 
 fieldset {
-  border: solid 1px #000;
+  border: solid 1px black;
   margin: 0 0 1em;
 }
 
@@ -166,7 +169,7 @@ select {
 }
 
 h2 {
-  color: #7a9f33;
+  color: var(--head);
   font-size: 1.5em;
 }
 h2.error {
@@ -192,30 +195,30 @@ td {
   padding: 0.25em;
   vertical-align: middle;
   text-align: center;
-  border: solid 0 #9c0;
+  border: solid 0 var(--bright);
   border-width: 1px;
 }
 td:nth-child(even), td:last-child {
-  border: solid 1px #9c0;
+  border: solid 1px var(--bright);
   border-width: 0 1px 1px;
 }
 
 th {
   font: bold 1.1em Georgia, sans-serif;
-  background-color: #9c0;
+  background-color: var(--bright);
   border: solid 1px white;
   border-width: 0 1px;
 }
 th:first-child {
-  border-left-color: #9c0;
+  border-left-color: var(--bright);
 }
 th:last-child {
-  border-right-color: #9c0;
+  border-right-color: var(--bright);
 }
 
 a {
   text-decoration: none;
-  color: #000;
+  color: black;
 }
 
 table a {
@@ -253,23 +256,24 @@ form div {
 
 input[type=submit] {
   padding: 0.25em 0.5em;
+  cursor: pointer;
 }
 
 footer > * {
   border: solid 1px black;
   border-radius: 0;
   font: 1em Arial, sans-serif;
-  color: #000;
+  color: black;
   display: inline-block;
   margin-right: 0.5em;
   padding: 0.5rem 0.75rem;
 }
 footer > *:hover {
   color: white;
-  background-color: #9c0;
+  background-color: var(--bright);
 }
 footer span.current {
-  background-color: #9c0;
+  background-color: var(--bright);
 }
 
 p a {
@@ -277,17 +281,17 @@ p a {
 }
 p a:hover {
   text-decoration: none;
-  background: #000;
+  background: black;
   color: white;
 }
 
 p a,
 .log input[type=submit] {
   font: bold 1em Georgia, serif;
-  color: #6e9900;
+  color: var(--head);
   border-radius: 10px;
   padding: 0.15em 0.3em;
-  border: solid 1px #000;
+  border: solid 1px black;
 }
 
 /* Preview */
@@ -326,10 +330,10 @@ input[type=text] {
 }
 
 input[type=submit] {
-  border: 1px solid #000;
+  border: 1px solid black;
   color: white;
   border-radius: 20px;
-  background-color: #496600;
+  background-color: var(--main-color);
   font: 1em Arial;
   font: 1em/1.35 Georgia, serif;
   font-style: italic;
@@ -341,7 +345,7 @@ input[type=submit] {
   background-color: var(--invert);
   display: inline-block;
   padding: 1em;
-  border: solid 1px #000;
+  border: solid 1px black;
   border-radius: 8px;
   margin: 1em 0;
   color: white;
@@ -357,11 +361,11 @@ input[type=submit] {
 
 .commit {
   padding: 1em;
-  border: solid 1px #000;
+  border: solid 1px black;
 }
 
 .warning {
-  background-color: #000;
+  background-color: black;
 }
 
 /*div form*/
@@ -385,7 +389,7 @@ input[type=submit] {
   color: var(--main-color-alt);
 }
 .clientgroup a:hover {
-  color: rgb(0, 119, 255);
+  color: var(--invert);
 }
 
 .select,
@@ -415,7 +419,7 @@ input[type=submit] {
 .select,
 .fieldset,
 form.clientlist {
-  border: solid 1px #000;
+  border: solid 1px black;
   border-radius: 5px;
 }
 
@@ -628,44 +632,54 @@ p.ret {
 
 form[name=deletions] {
   padding: 1em;
-}
-form[name=deletions] p {
   margin: 0 auto;
   text-align: center;
 }
-form[name=deletions] p label {
+form[name=deletions] label {
   font-weight: normal;
   font-size: var(--label);
   display: block;
 }
-form[name=deletions] p label span {
+form[name=deletions] label span {
   font-weight: bold;
 }
-form[name=deletions] p label span:before {
+form[name=deletions] label span:before {
   content: '"';
 }
-form[name=deletions] p label span:after {
+form[name=deletions] label span:after {
   content: '"';
 }
-form[name=deletions] p label:hover {
+form[name=deletions] label:hover {
   color: yellow;
 }
-form[name=deletions] p input[type=radio] {
+form[name=deletions] input[type=radio] {
   position: absolute;
   left: -9999px;
   top: auto;
 }
-form[name=deletions] p input[type=radio]:checked + label {
+form[name=deletions] input[type=radio]:checked + label {
   color: yellowgreen;
 }
 form[name=deletions] input[type=submit] {
   margin: 0.5em auto 0;
-  text-align: center;
-  display: inline-block;
+  display: block;
   cursor: pointer;
 }
-form[name=deletions].span p {
+form[name=deletions] label[for=cancel] {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+}
+form[name=deletions] input:checked ~ label[for=cancel] {
+  position: relative;
+  left: 0;
+  text-align: center;
+}
+form[name=deletions].span {
   text-align: left;
+}
+form[name=deletions].span input[type=submit] {
+  text-align: center;
 }
 
 .searcher fieldset,
@@ -679,7 +693,7 @@ form[name=deletions].span p {
 .edit legend {
   padding: 0.4em;
   color: #c6e085;
-  background-color: #000;
+  background-color: black;
   font: bold 1.1em Georgia, serif;
 }
 
@@ -747,7 +761,7 @@ form[name=downloads] div input {
   border: none;
 }
 form[name=downloads] div input:hover {
-  background-color: orange;
+  background-color: var(--invert);
 }
 
 #yesno {
@@ -775,7 +789,7 @@ form[name=downloads] div input:hover {
   margin: 1em auto 0;
 }
 
-#upload > table > tbody > tr > td:last-child div input {
+#upload > table > tbody > tr > td[title=delete] div input {
   background-image: url("../assets/trashsprite.png");
   background-repeat: no-repeat;
   background-size: cover;
@@ -790,7 +804,7 @@ form[name=downloads] div input:hover {
   border: none;
   cursor: pointer;
 }
-#upload > table > tbody > tr > td:last-child div input:hover {
+#upload > table > tbody > tr > td[title=delete] div input:hover {
   background-color: darkred;
 }
 

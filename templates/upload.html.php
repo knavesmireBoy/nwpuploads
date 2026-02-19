@@ -1,6 +1,6 @@
 <form action="<?php $_SERVER['PHP_SELF'] ?>" method="post" name="uploadform" enctype="multipart/form-data">
     <div><label for="uploadfiles">Upload File</label>
-            <input id="uploadfiles" type="file" name="upload" />
+            <input id="uploadfiles" type="file" name="upload" <?= $disabled; ?>/>
     </div>
            <div><label for="desc">Description</label>
             <input id="desc" type="text" name="desc" maxlength="255" />

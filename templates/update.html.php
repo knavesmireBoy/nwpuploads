@@ -1,6 +1,6 @@
 <form action="<?= $action; ?>" method="post" name="updatefileinfo" class="prompt">
 	<?php
-	$swap = $answer ?? $_POST['swap'] ?? NULL;
+	$swap = $_POST['swap'] ?? $_POST['affirm'] ?? NULL;
 	if ($swap === 'No') {
 	?>
 		<div>
