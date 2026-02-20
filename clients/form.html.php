@@ -16,8 +16,8 @@ include_once TEMPLATE . 'base.html.php';
 			<label for="the_tel">Phone</label>
 			<input id="the_tel" type="text" name="tel" value="<?= $tel; ?>" />
 			<?php if (preg_match('/edit/', $action)) { ?>
-				<label for="delete">Delete</label>
 				<input id="delete" type="checkbox" name="delete" />
+				<label for="delete">Delete</label>
 			<?php } ?>
 		</div>
 		<input type="hidden" name="id" value="<?= $id; ?>" />

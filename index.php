@@ -536,7 +536,7 @@ if (isset($_GET['find'])) {
 
 list($select, $from, $order) = selectUploaded($order_by, $start, $display);
 //!!comes AFTER $select etc..
-if (isset($_GET['action']) && $_GET['action'] == 'search') {
+if (isset($_GET['action']) && $_GET['action'] === 'search') {
     include INCLUDES . 'search.inc.php';
     include_once TEMPLATE . 'base.html.php';
     include TEMPLATE . 'files.html.php';

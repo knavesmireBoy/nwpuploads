@@ -3,7 +3,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php'
 include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
 include TEMPLATE . 'base.html.php'; ?>
 	<div>
-		<h1><?php echo $manage; ?></h1>
+		<h1><?= $pagehead; ?></h1>
 		<?php
 		if (preg_match("/admin/i", $priv)) {
 		?>

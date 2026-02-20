@@ -7,12 +7,12 @@ include TEMPLATE . 'base.html.php'; ?>
 	<p><?= $message; ?></p>
 	<form action="?<?= $action; ?>" method="post" name="usersform">
 		<ul>
-			<li><label for="name">Name:</label><input id="name" type="text" name="name" value="<?= $name; ?>" size="32" required /></li>
-			<li><label for="email">Email:</label><input type="email" id="email" name="email" value="<?= $email; ?>" size="32" required /></li>
+			<li><label for="name">Name:</label><input id="name" type="text" name="name" value="<?= $name; ?>"  required /></li>
+			<li><label for="email">Email:</label><input type="email" id="email" name="email" value="<?= $email; ?>"  required /></li>
 			<li><label for="password">Set password:</label><input id="password" type="password" name="password" /><input type="hidden" name="employer"
-					value="<?= $job ?? ''; ?>" size="32" />
+					value="<?= $job ?? ''; ?>" />
 				<?php if (preg_match('/edit/', $action)) { ?>
-					<label for="delete">Delete</label><input type="checkbox" id="delete" name="delete">
+					<input type="checkbox" id="delete" name="delete"><label for="delete">Delete</label>
 			</li>
 		<?php } ?>
 		</ul>
