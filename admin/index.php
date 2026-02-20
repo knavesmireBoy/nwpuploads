@@ -67,7 +67,6 @@ function filterUsers($sql, $key, $pagetitle)
     foreach ($rows as $row) {
       $users[$row['user_id']] = $row['user_name'];
     }
-    $flag = true;
     $usercount = count($users);
     setExtent($usercount);
     if ($usercount === 1) {
@@ -294,7 +293,7 @@ if (isset($_GET['add'])) {
       return $role['id'] !== 'Admin';
     });
   }
-  $pagetitle = "Admin | Users";
+ //$pagetitle = "Admin | Users";
   $pagehead = "Add User";
   include 'form.html.php';
   exit();
@@ -342,7 +341,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
     $st->bindValue(':cid', intval($clientid));
     doPreparedQuery($st, 'Error fetching domain.');
     $row = $st->fetch(PDO::FETCH_ASSOC);
-    updateUserDomain($row['dom'], $truedom);
+    updateUserDomain($row['dom'], $truedom, $aid);
 
     if ($contractor) { //required?
       doQuery($pdo, "UPDATE user INNER JOIN client ON $domainstr = client.domain SET client_id=$contractor WHERE $domainstr = client.domain", "Error updating client");
@@ -546,7 +545,7 @@ if (isset($_GET['denied']) || isset($_GET['access']) || isset($_GET['self'])) {
 //directly load form.html.php if only one user/client
 if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
   include CONNECT;
-
+  $class = '';
   $admin = ($priv === 'Admin');
   $clientadmin = preg_match("/admin/i", $priv) || preg_match("/client/i", $priv);
   $adminClient = preg_match('/admin/i', $priv) && preg_match('/client/i', $priv);
@@ -584,6 +583,7 @@ if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
   $name = $row['name'];
   $email = $row['email'];
   $override = $pwd ? $pwd : NULL;
+  $class = $override ? 'override' : '';
 
   if (preg_match('/admin/i', $priv)) {
     $st = $pdo->prepare("SELECT roleid FROM userrole WHERE userid=:id");
