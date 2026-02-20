@@ -144,7 +144,6 @@ function myDomain($fileid)
     $st->bindValue(":id", $fileid);
     doPreparedQuery($st, 'Failed to obtain userid');
     list($userid, $name, $domain) = $st->fetch(PDO::FETCH_NUM);
-
     return [$ownerid, $ownername, $domain, $multi, $editor];
 }
 
@@ -212,11 +211,10 @@ if (isset($_POST['action']) && $_POST['action'] == 'upload') {
         include TEMPLATE . 'error.html.php';
         exit();
     }
-    if ($priv === 'Admin' && !empty($_POST['user'])) { //ie Admin selects user
+    if (!empty($_POST['user'])) { //ie Admin selects user
         $key = $_POST['user'];
         include CONNECT;
         $st = $pdo->prepare("SELECT domain FROM client WHERE domain=:id");
-
         $st->bindValue(":id", $key);
         doPreparedQuery($st, 'Error fetching domain');
         $row = $st->fetch(PDO::FETCH_NUM);
@@ -476,10 +474,13 @@ if (isset($_POST['original'])) {
     exit();
 }
 ///end of F I L E AMEND BLOCK___________________________________________________________________
-//a default block___________________________________________________________________
+
+//
+
 if (isset($_GET['p']) && is_numeric($_GET['p'])) {
     $pages = $_GET['p'];
 } else { // counts all files
+    $pages = 1;
     include CONNECT;
     $sql = "SELECT COUNT(upload.id) as total from upload ";
     if (preg_match("/client/i", $priv)) {
@@ -487,7 +488,7 @@ if (isset($_GET['p']) && is_numeric($_GET['p'])) {
     }
     $st = $pdo->prepare($sql);
     $st->bindValue(":email", $_SESSION['email']);
-    doPreparedQuery($st, "<p>Database error  requesting THE list of files:</p>");
+    doPreparedQuery($st, "Database error requesting the list of files:");
     $row = $st->fetch(PDO::FETCH_ASSOC);
     if (!$row) {
         header("Location: ./?file_list");
@@ -496,7 +497,7 @@ if (isset($_GET['p']) && is_numeric($_GET['p'])) {
     $records = $row['total'];
     if ($records > $display) {
         $pages = ceil($records / $display);
-    } else $pages = 1; //INITIAL SETTING OF PAGES
+    }
 } //end of IF NOT PAGES SET
 
 
@@ -506,16 +507,16 @@ if (isset($_GET['s']) and is_numeric($_GET['s'])) {
     $start = 0;
 }
 
-$meswitch = array('f' => 'filename ASC', 'ff' => 'filename DESC', 'u' => 'user ASC', 'uu' => 'user DESC', 'uf' => 'user ASC, filename ASC', 'uuf' => 'user DESC, filename ASC',  'uff' => 'user ASC, filename DESC',  'uuff' => 'user DESC, filename DESC', 'ut' => 'user ASC, time ASC', 'utt' => 'user ASC, time DESC', 'uut' => 'user DESC, time ASC', 'uutt' => 'user DESC, time DESC', 't' => 'time ASC', 'tt' => 'time DESC');
+$sorter = array('f' => 'filename ASC', 'ff' => 'filename DESC', 'u' => 'user ASC', 'uu' => 'user DESC', 'uf' => 'user ASC, filename ASC', 'uuf' => 'user DESC, filename ASC',  'uff' => 'user ASC, filename DESC',  'uuff' => 'user DESC, filename DESC', 'ut' => 'user ASC, time ASC', 'utt' => 'user ASC, time DESC', 'uut' => 'user DESC, time ASC', 'uutt' => 'user DESC, time DESC', 't' => 'time ASC', 'tt' => 'time DESC');
 
 $sort = (isset($_GET['sort']) ? $_GET['sort'] : '1');
 
-foreach ($meswitch as $ix => $u) {
+foreach ($sorter as $ix => $u) {
     if ($ix == $sort) break;
 }
 switch ($sort) {
     case $ix:
-        $order_by = $meswitch[$ix];
+        $order_by = $sorter[$ix];
         break;
     default:
         $order_by = 'time DESC';
@@ -525,19 +526,16 @@ switch ($sort) {
 
 //D I S P L A Y_______________________________________________________________
 ///Present list of users for administrators
-//end of default_______________________________________________________________________
-
 list($users, $client) = presentList($priv);
 
-///may amend $users and $clients
+//comes AFTER $users, $client
+///will amend $users and $clients for non admin
 if (isset($_GET['find'])) {
     include INCLUDES . "find.inc.php";
 }
 
-//_______//_______//_______//_______//_______//_______//_______//_______//_______//_____
-
 list($select, $from, $order) = selectUploaded($order_by, $start, $display);
-
+//comes AFTER $select etc..
 if (isset($_GET['action']) && $_GET['action'] == 'search') {
     include INCLUDES . 'search.inc.php';
     include_once TEMPLATE . 'base.html.php';
@@ -553,7 +551,6 @@ $files = array();
 foreach ($rows as $row) {
     $files[] = array(
         'id' => $row['id'],
-        //'user' => (isset($row['user'])) ? $row['user'] : '',
         'user' => $row['name'],
         'client' => $row['client'],
         'email' => $row['email'],
