@@ -13,8 +13,7 @@ $super = "andrewsykes@btinternet.com";
 $users = [];
 $id = '';
 $error = query();
-$pagehead = "Edit detailz";
-$pagetitle = "Manage Users";
+$pagehead = "Edit details";
 $message = '';
 $denied = false;
 $usercount = 0;
@@ -45,7 +44,6 @@ function filterUsers($sql, $key, $pagetitle)
   $selected = true;
   $return = "Return to users";
   $pagehead = "Manage Users";
-  $flag = false;
   $users = [];
   include CONNECT;
   $st = $pdo->prepare("SELECT domain FROM client WHERE domain=:domain");
@@ -83,7 +81,7 @@ function filterUsers($sql, $key, $pagetitle)
     exit;
   }
   //load users
-  return [$sql, $users, $selected, $return, $pagehead, $pagetitle, $flag];
+  return [$sql, $users, $selected, $return, $pagehead, $pagetitle];
 }
 function defaultQuery($key, $priv)
 {
@@ -246,17 +244,18 @@ if (!userIsLoggedIn()) {
 }
 
 $roleplay = userHasWhatRole();
-$pageheadr_role = $roleplay && !userHasWhatRole(true);
+$pagehead_role = $roleplay && !userHasWhatRole(true);
 
 
-if (!$roleplay || $pageheadr_role) {
+if (!$roleplay || $pagehead_role) {
   $e = 'Only Account Administrators may access this page!';
   $pagetitle = "Access Denied";
   //a manager role would be allowed to visit the landing page so redirect to there ../
   header("Location: ../?loginerror=$e");
   exit();
 }
-
+list($key, $priv) = $roleplay;
+$pagetitle = preg_match("/client/i", $priv) ? "Admin" : "Admin | Edit Users";
 
 //exits
 if (isset($_GET['add'])) {
@@ -373,7 +372,7 @@ if (isset($_POST['confirm'])) {
     $email = $row['email'];
 
     if (!$dom) {
-      if (!$role) { //must be a freelancer/admin
+      if (!$role) { //then must be a freelancer/admin
         $st = doQuery($pdo, "SELECT email from user where id=$id", "fail");
         $email = $st->fetch(PDO::FETCH_ASSOC)['email'];
         if ($admin && ($email === $_SESSION['email'])) {
@@ -530,9 +529,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
 }
 ///END OF editform
 
-list($key, $priv) = $roleplay;
-$sql = defaultQuery($key, $priv);
-
 if (isset($_POST['action']) && $_POST['action'] === 'Delete') {
   $id = $_POST['id'];
   $title = "Prompt";
@@ -564,8 +560,6 @@ if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
   $editor = $_SESSION['email'] === $row['email'];
   $warning = 'Polite Notice: changing an email or password will automatically log you out.';
   $message = ($pwd || $editor) ? $warning : '';
-
-
   $message = $message ? $message : ($clientflag ? 'You do not have sufficient privileges to change the domain name. Please contact the database administrator.' : '');
 
   if ($message && ($message === $warning)) {
@@ -579,7 +573,6 @@ if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
     $row = $st->fetch(PDO::FETCH_ASSOC);
   }
 
-  $pagetitle = preg_match("/client/i", $priv) ? "Admin" : "Admin | Edit Users";
   $route = "Edit";
   $pagehead = 'Edit User';
   $action = 'editform';
@@ -591,7 +584,6 @@ if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
   $name = $row['name'];
   $email = $row['email'];
   $override = $pwd ? $pwd : NULL;
-
 
   if (preg_match('/admin/i', $priv)) {
     $st = $pdo->prepare("SELECT roleid FROM userrole WHERE userid=:id");
@@ -631,33 +623,35 @@ if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
   exit();
 } //edit
 
-
-
+//$sql = defaultQuery($key, $priv);
 //display users___________________________________________________________________
 $sql = "SELECT user.id, user.name FROM user LEFT JOIN (SELECT user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer ON $domainstr=employer.domain WHERE employer.domain IS NULL"; //this overwrites above query to filter out users as employees
-
 $sql = "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS NULL"; //USING ID NOT DOMAIN
 
-if (isset($_POST['action']) && $_POST['action'] == 'Choose') {
+if (isset($_POST['user'])) {//dropdown
   if ($_POST['user'] === '') {
     header("Location: ./?selectuser");
     exit();
   }
-  list($sql, $users, $selected, $return, $pagehead, $pagetitle, $flag) = filterUsers($sql, $_POST['user'], $pagetitle);
+  list($sql, $users, $selected, $return, $pagehead, $pagetitle) = filterUsers($sql, $_POST['user'], $pagetitle);
 }
 
-
+//on landing try client; a single client will redirect to form.html.php, a multi team client will prepare variables for users.html.php
 if ($users === []) {
   include CONNECT;
   $st = doQuery($pdo, "SELECT domain FROM client LEFT JOIN user ON $domainstr = client.domain WHERE user.id=$key", '');
   $row = $st->fetch(PDO::FETCH_ASSOC);
   if ($row['domain']) {
-    list($sql, $users, $selected, $return, $pagehead, $pagetitle, $flag) = filterUsers($sql, $row['domain'], $pagetitle);
+    list($sql, $users, $selected, $return, $pagehead, $pagetitle) = filterUsers($sql, $row['domain'], $pagetitle);
   }
 }
 
 if ($users === []) {
   include CONNECT;
+  if (isApproved($priv, '!admin')) {
+    $sql .= " AND user.id=$key";
+  }
+  $sql .= " ORDER BY name";
   $st = doQuery($pdo, $sql, '');
   $rows = $st->fetchAll(PDO::FETCH_ASSOC);
   foreach ($rows as $row) {
@@ -666,9 +660,8 @@ if ($users === []) {
 }
 
 //prepare list
-if (preg_match("/admin/i", $priv)) {
+if (isApproved($priv, 'ADMIN')) {
   include CONNECT;
-  $pagehead = "Manage Users";
   $result = doQuery($pdo, "SELECT client.domain, client.name FROM client ORDER BY name", 'Database error fetching clients:');
   $rows = $result->fetchAll();
   foreach ($rows as $row) {
@@ -680,14 +673,13 @@ if (preg_match("/admin/i", $priv)) {
 //reAssignClient($pdo);
 
 $message = $message ? $message : $error;
-$usercount = $priv === 'Admin' ? 2 : count($users);
+$usercount = isApproved($priv, 'ADMIN') ? 2 : count($users);
+//setExtent is largely used for displaying conditional content, appropriate buttons etc..
 setExtent($usercount);
-
 if ($usercount === 1) {
-  $usercount = 1;
   header("Location: ./?edit=$key"); //GO DIRECT TO EDIT FORM
   exit;
 } else {
-  $pagetitle = "Manage Users";
+  $pagehead = isApproved($priv, 'client') ? "Manage Team" : "Manage Users";
   include 'users.html.php';
 }
