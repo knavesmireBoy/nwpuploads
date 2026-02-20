@@ -60,63 +60,64 @@ function presentList($role, $flag = 'admin')
     }
 }
 
-function buildQuery($role, $select, $from, $order)
+function buildQuery($role, $flag = 'admin')
 {
-    $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
-    include CONNECT;
-    if (isApproved($role)) {
-        //by default listing by user will list by first name "Amanda White, Sally Bowles"
-        //where as lastname may be more desirable, so lets do that if you hit the file heading
-        if (isset($_GET['sort']) && preg_match("/uf/", $_GET['sort'])) {
-            $select .= ", COALESCE(NULLIF(SUBSTR(user.name, LENGTH(user.name) - LOCATE(' ', REVERSE(user.name)) +1), ''), user.name) AS `user`";
-        } else {
-            $select .= ", user.name as user";
-        }
-        $from .= " INNER JOIN userrole ON user.id=userrole.userid";
-        $where  = ' WHERE TRUE';
-        $ext = isset($_GET['ext']) ? $_GET['ext'] : null;
-        $getuser = isset($_GET['u']) ? $_GET['u'] : '';
-        $bytext = isset($_GET['t']) ? $_GET['t'] : '';
-        $byuser = isset($byuser) ? $byuser : $getuser;
-        if ($ext) {
-            if ($ext == 'owt') {
-                $where .= " AND (upload.filename NOT LIKE '%pdf' AND upload.filename NOT LIKE '%zip')";
-            } else $where .= " AND upload.filename LIKE '%$ext'";
-        }
-        //CLIENTS USE EMAIL DOMAIN AS ID IN DROP DOWN THERFORE NOT A NUMBER
-        if (isset($byuser) && is_numeric($byuser)) {
-            if ($byuser = $getuser) {
-                $where .= " AND user.id=$byuser";
+    return function ($select, $from, $order) use ($role, $flag) {
+        $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
+        include CONNECT;
+        if (isApproved($role, $flag)) {
+            //by default listing by user will list by first name "Amanda White, Sally Bowles"
+            //where as lastname may be more desirable, so lets do that if you hit the file heading
+            if (isset($_GET['sort']) && preg_match("/uf/", $_GET['sort'])) {
+                $select .= ", COALESCE(NULLIF(SUBSTR(user.name, LENGTH(user.name) - LOCATE(' ', REVERSE(user.name)) +1), ''), user.name) AS `user`";
+            } else {
+                $select .= ", user.name as user";
+            }
+            $from .= " INNER JOIN userrole ON user.id=userrole.userid";
+            $where  = ' WHERE TRUE';
+            $ext = isset($_GET['ext']) ? $_GET['ext'] : null;
+            $getuser = isset($_GET['u']) ? $_GET['u'] : '';
+            $bytext = isset($_GET['t']) ? $_GET['t'] : '';
+            $byuser = isset($byuser) ? $byuser : $getuser;
+            if ($ext) {
+                if ($ext == 'owt') {
+                    $where .= " AND (upload.filename NOT LIKE '%pdf' AND upload.filename NOT LIKE '%zip')";
+                } else $where .= " AND upload.filename LIKE '%$ext'";
+            }
+            //CLIENTS USE EMAIL DOMAIN AS ID IN DROP DOWN THERFORE NOT A NUMBER
+            if (isset($byuser) && is_numeric($byuser)) {
+                if ($byuser = $getuser) {
+                    $where .= " AND user.id=$byuser";
+                }
+            } else {
+                if ($getuser) {
+                    $where .= " AND $domainstr='$getuser'";
+                }
+            }
+            if ($bytext) {
+                $where .= " AND upload.filename LIKE '%$bytext%'";
             }
         } else {
-            if ($getuser) {
-                $where .= " AND $domainstr='$getuser'";
+            $email = $_SESSION['email'];
+            $st = $pdo->prepare("SELECT user.id, user.name FROM user WHERE user.client_id IS NULL AND user.email=:email");
+            $st->bindValue(":email", "$email");
+            doPreparedQuery($st, 'Error retreiving user details');
+            $row = $st->fetch(PDO::FETCH_ASSOC);
+            $where = $row ? " WHERE user.email='$email'" : " WHERE client.domain = $domainstr";
+            $i = strpos($email, '@');
+            $dom = substr($email, $i + 1);
+            if (!$row) {
+                $where .= " AND client.domain = '$dom'";
             }
         }
-        if ($bytext) {
-            $where .= " AND upload.filename LIKE '%$bytext%'";
-        }
-    } else {
-        $email = $_SESSION['email'];
-        $st = $pdo->prepare("SELECT user.id, user.name FROM user WHERE user.client_id IS NULL AND user.email=:email");
-        $st->bindValue(":email", "$email");
-        doPreparedQuery($st, 'Error retreiving user details');
-        $row = $st->fetch(PDO::FETCH_ASSOC);
-        $where = $row ? " WHERE user.email='$email'" : " WHERE client.domain = $domainstr";
-        $i = strpos($email, '@');
-        $dom = substr($email, $i + 1);
-        if (!$row) {
-            $where .= " AND client.domain = '$dom'";
-        }
-    }
-    $sql = $select;
-    $tel = ", client.name AS client, client.tel";
-    //note LEFT join to include just 'users' also
-    $from .= " LEFT JOIN client ON user.client_id = client.id";
-    $sql .= $tel . $from . $where . $order;
-    return [$pdo, $sql];
+        $sql = $select;
+        $tel = ", client.name AS client, client.tel";
+        //note LEFT join to include just 'users' also
+        $from .= " LEFT JOIN client ON user.client_id = client.id";
+        $sql .= $tel . $from . $where . $order;
+        return [$pdo, $sql];
+    };
 }
-
 
 function myDomain($fileid)
 {
@@ -527,24 +528,22 @@ switch ($sort) {
 //D I S P L A Y_______________________________________________________________
 ///Present list of users for administrators
 list($users, $client) = presentList($priv);
-
-//comes AFTER $users, $client
+//!!comes AFTER $users, $client
 ///will amend $users and $clients for non admin
 if (isset($_GET['find'])) {
     include INCLUDES . "find.inc.php";
 }
 
 list($select, $from, $order) = selectUploaded($order_by, $start, $display);
-//comes AFTER $select etc..
+//!!comes AFTER $select etc..
 if (isset($_GET['action']) && $_GET['action'] == 'search') {
     include INCLUDES . 'search.inc.php';
     include_once TEMPLATE . 'base.html.php';
     include TEMPLATE . 'files.html.php';
     exit();
 }
-
-list($pdo, $sql) = buildQuery($priv, $select, $from, $order);
-
+$build = buildQuery($priv, 'ADMIN');
+list($pdo, $sql) = $build($select, $from, $order);
 $st = doQuery($pdo, $sql, 'Database error fetching files. ');
 $rows = $st->fetchAll(PDO::FETCH_ASSOC);
 $files = array();
@@ -561,7 +560,7 @@ foreach ($rows as $row) {
         'file' => $row['file'],
         'origin' => $row['origin'],
         'time' => $row['time'],
-        'tel' => $row['tel'], // ONLY REQUIRED FOR TELEPHONE BLOCK
+        'tel' => $row['tel'],
         'size' => $row['size']
     );
 }

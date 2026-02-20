@@ -8,7 +8,7 @@ include TEMPLATE . 'base.html.php';
 		<p><a href="./?add">Add New Client</a></p>
 		<?php
 		ob_start();
-		if (preg_match("/admin/i", $priv) && !isset($_POST['action'])) { ?>
+		if (preg_match("/admin/i", $priv)) { ?>
 			<form action="" method="post" name="clientsform" class="choose">
 				<label for="the_client"></label>
 				<select name="client" id="the_client">
@@ -21,7 +21,7 @@ include TEMPLATE . 'base.html.php';
 				<input type="submit" name="action" value="Choose" />
 			</form>
 		<?php }
-		if (isset($selected) && $_POST['client'] != '') {
+		if (isset($selected) && $_POST['client'] !== '') {
 			include 'form.html.php';
 		}
 		if (isset($template)) {

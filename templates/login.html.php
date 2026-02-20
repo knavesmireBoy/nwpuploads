@@ -1,5 +1,6 @@
 <?php
 include_once 'base.html.php';
+$pagetitle = isset($pagetitle) ? $pagetitle :  "Log In";
 $e = $loginerror ?? $_GET['loginerror'] ?? '';
 ?>
 <h1>Log In</h1>

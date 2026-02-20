@@ -1,7 +1,10 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
+
+
 if (!userIsLoggedIn()) {
+  $pagetitle = "Log In";
   include TEMPLATE . 'login.html.php';
   exit();
 }
@@ -20,6 +23,7 @@ function getDomain($pdo, $id)
 $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
 $pagetitle = "Manage Clients";
 $selected = null;
+
 list($key, $priv) = userHasWhatRole(true);
 
 if ($priv !== 'Admin') {
@@ -178,7 +182,10 @@ if (isset($_POST['action']) && $_POST['action'] == 'Choose' && $_POST['client'] 
   $sql .= " WHERE id=:id";
 }
 $sql .= " ORDER BY name";
+
+
 $st = $pdo->prepare($sql);
+
 if (isset($clientid)) {
   $st->bindValue(":id", $clientid);
 }
