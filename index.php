@@ -514,21 +514,17 @@ else {
     $where = $row ? " WHERE user.email='$email'" : " WHERE client.domain = $domainstr";
     $i = strpos($email, '@');
     $dom = substr($email, $i + 1);
-
-    dump($row);
     if (!$row) {
-        $tel = ", client.name AS client, client.tel";
         $where .= " AND client.domain = '$dom'";
     }
 }
-//$sql = $select . $from . $where . $order; //DEFAULT;
 $sql = $select;
+$tel = ", client.name AS client, client.tel";
 //note LEFT join to include just 'users' also
 $from .= " LEFT JOIN client ON user.client_id = client.id";
 $sql .= $tel . $from . $where . $order;
 $st = doQuery($pdo, $sql, 'Database error fetching files. ');
 $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-dump($rows[0]);
 $files = array();
 foreach ($rows as $row) {
     $files[] = array(
