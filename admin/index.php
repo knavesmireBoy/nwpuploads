@@ -117,16 +117,19 @@ function fetchSelectedRoles($pdo, $id)
   return fetchAllRoles($pdo, $selectedRoles);
 }
 
-function resetRoles($pdo, $roles, $id)
+function resetRoles($role, $roles, $id)
 {
-  foreach ($roles as $role) {
-    $sql = "INSERT INTO userrole SET userid=:id, roleid=:rol";
-    $st = $pdo->prepare($sql);
-    $st->bindValue(":id", $id);
-    $st->bindValue(":rol", $role);
-    doPreparedQuery($st, '<p>Error assigning selected role to user.</p>');
-  } //end foreach
-  return $roles;
+  if (isQualified($role)) {
+    include CONNECT;
+    foreach ($roles as $role) {
+      $sql = "INSERT INTO userrole SET userid=:id, roleid=:rol";
+      $st = $pdo->prepare($sql);
+      $st->bindValue(":id", $id);
+      $st->bindValue(":rol", $role);
+      doPreparedQuery($st, '<p>Error assigning selected role to user.</p>');
+    } //end foreach
+    return $roles;
+  }
 }
 
 function getCurrentRole($id)
@@ -146,9 +149,29 @@ function verifyRole($old, $new)
   }
   return true;
 }
-//maybe require password of client to delete??
-function deleteAlready($pdo, $id)
+
+function isQualified($role, $flag = false)
 {
+  $a = preg_match("/^admin/i", $role);
+  $ca = preg_match("/admin/i", $role);
+  return $flag ? $a : $ca;
+}
+
+function deleteRole($id, $role)
+{
+  if (isQualified($role)) {
+    include CONNECT;
+    $role = getCurrentRole($id);
+    $sql = "DELETE FROM userrole WHERE userid=:id";
+    $st = $pdo->prepare($sql);
+    $st->bindValue(":id", $id);
+    doPreparedQuery($st, 'Error removing obsolete user role entries.');
+  }
+}
+//maybe require password of client to delete??
+function deleteAlready($id)
+{
+  include CONNECT;
   $st = $pdo->prepare("DELETE FROM user WHERE id =:id");
   $st->bindValue(':id', $id);
   doPreparedQuery($st, 'Error deleting user.');
@@ -229,7 +252,7 @@ if (isset($_POST['confirm'])) {
           header("Location: ./?self");
           exit();
         } else {
-          deleteAlready($pdo, $id);
+          deleteAlready($id);
           header("Location: .");
           exit();
         }
@@ -266,7 +289,7 @@ if (isset($_POST['confirm'])) {
 
     $denied = $admin ? false : ($role === 'Client');
     if (!$denied && !$danger) {
-      deleteAlready($pdo, $id);
+      deleteAlready($id);
     } else {
       $location .= "/?denied";
     }
@@ -423,7 +446,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
       doQuery($pdo, "UPDATE user INNER JOIN client ON $domainstr = client.domain SET client_id=$contractor WHERE $domainstr = client.domain", "Error updating client");
     }
   }
-  resetRoles($pdo, $roles, $aid);
+  resetRoles($priv, $roles, $aid);
   header('Location: .');
   exit();
 } //end of addform
@@ -591,17 +614,12 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
       }
     }
 
-    if (preg_match("/admin/i", $priv)) {
       $role = getCurrentRole($id);
-      $sql = "DELETE FROM userrole WHERE userid=:id";
-      $st = $pdo->prepare($sql);
-      $st->bindValue(":id", $id);
-      doPreparedQuery($st, 'Error removing obsolete user role entries.');
-    }
-    resetRoles($pdo, $roles, $id);
-    $rolechange = verifyRole($role, getCurrentRole($id));
+      deleteRole($id, $priv);
+      resetRoles($priv, $roles, $id);
+      $rolechange = verifyRole($role, getCurrentRole($id));
 
-    //$clientid is allowed to be null if a user wants to disassociate from a client
+    //$clientid is allowed to be NULL (not any other empty) if a user wants to disassociate from a client
     $sql = "UPDATE user SET client_id=:cid WHERE id =:id";
     $st = $pdo->prepare($sql);
     $st->bindValue(":cid", $clientid);

@@ -34,6 +34,11 @@
 
     <?php if (isset($del)):
 
+    /*
+    We need to determine the logic of what messages to display
+    
+    */
+
         $n = $ownername ?? null;
         $c = $client[$domain] ?? null;
         $k = 'prompt';
