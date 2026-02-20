@@ -20,6 +20,33 @@ function getDefinedVars()
     return $arr;
 }
 
+function isQualified($role, $flag = false)
+{
+    $a = preg_match("/^admin/i", $role);
+    $ca = preg_match("/admin/i", $role);
+
+    return $flag ? $a : $ca;
+}
+
+
+function isApproved($role, $str = 'admin')
+{
+    $m = '';
+    $flag = false;
+    if (is_numeric(strpos($str, '!'))) {
+        $str = preg_replace('/\W?(\w+)\W?/', '$1', $str);
+        $flag = true;
+    }
+    if (strtoupper($str) === $str) {
+        $str = strtolower($str);
+        $m = "/^$str/i";
+    } else {
+        $m = "/$str/i";
+    }
+    $ret = preg_match($m, $role);
+    return $flag ? !$ret : $ret;
+}
+
 function reAssignClient($pdo)
 {
     $sql = "SELECT user.id, RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email)) AS dom FROM user LEFT JOIN userrole ON userid = user.id WHERE roleid = 'Client Admin' ORDER by dom";

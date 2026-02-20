@@ -150,13 +150,6 @@ function verifyRole($old, $new)
   return true;
 }
 
-function isQualified($role, $flag = false)
-{
-  $a = preg_match("/^admin/i", $role);
-  $ca = preg_match("/admin/i", $role);
-  return $flag ? $a : $ca;
-}
-
 function deleteRole($id, $role)
 {
   if (isQualified($role)) {

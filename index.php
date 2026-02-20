@@ -21,6 +21,102 @@ function userFromUpload()
     return "SELECT user.id, user.name, user.email, user.client_id FROM upload INNER JOIN user ON upload.userid = user.id INNER JOIN (SELECT userid FROM upload WHERE id=:id) AS owt ON user.id = owt.userid WHERE user.id = owt.userid";
 }
 
+function selectUploaded($order, $start, $limit)
+{
+    $select = "SELECT upload.id, filename, mimetype, description, filepath, file, size, time,  MID(file, 11, 14) AS origin, user.email, user.name";
+    $from = " FROM upload INNER JOIN user ON upload.userid=user.id";
+    $order = " ORDER BY $order LIMIT $start, $limit";
+    return [$select, $from, $order];
+}
+
+
+function presentList($role, $flag = 'admin')
+{
+    $users = [];
+    $client = [];
+    if (isApproved($role, $flag)) {
+        include CONNECT;
+        $sqlu = "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS NULL ORDER BY name";
+
+        $st = doQuery($pdo, $sqlu, "Error retrieving details");
+        $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($rows as $row) {
+            $users[$row['id']] = $row['name'];
+        }
+        /*
+    $sqlc = "SELECT employer.user_id, employer.name, employer.domain FROM
+    (SELECT user.name, user.id as user_id, client.domain FROM user INNER JOIN client ON RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))=client.domain) AS employer";
+    */
+        $sqlc = "SELECT name, domain, tel FROM client ORDER BY name";
+        $st = doQuery($pdo, $sqlc, "Database error fetching clients");
+        $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($rows as $row) {
+            $client[$row['domain']] = $row['name'];
+        }
+
+        return [$users, $client];
+    }
+}
+
+function buildQuery($role, $select, $from, $order)
+{
+    $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
+    include CONNECT;
+    if (isApproved($role)) {
+        //by default listing by user will list by first name "Amanda White, Sally Bowles"
+        //where as lastname may be more desirable, so lets do that if you hit the file heading
+        if (isset($_GET['sort']) && preg_match("/uf/", $_GET['sort'])) {
+            $select .= ", COALESCE(NULLIF(SUBSTR(user.name, LENGTH(user.name) - LOCATE(' ', REVERSE(user.name)) +1), ''), user.name) AS `user`";
+        } else {
+            $select .= ", user.name as user";
+        }
+        $from .= " INNER JOIN userrole ON user.id=userrole.userid";
+        $where  = ' WHERE TRUE';
+        $ext = isset($_GET['ext']) ? $_GET['ext'] : null;
+        $getuser = isset($_GET['u']) ? $_GET['u'] : '';
+        $bytext = isset($_GET['t']) ? $_GET['t'] : '';
+        $byuser = isset($byuser) ? $byuser : $getuser;
+        if ($ext) {
+            if ($ext == 'owt') {
+                $where .= " AND (upload.filename NOT LIKE '%pdf' AND upload.filename NOT LIKE '%zip')";
+            } else $where .= " AND upload.filename LIKE '%$ext'";
+        }
+        //CLIENTS USE EMAIL DOMAIN AS ID IN DROP DOWN THERFORE NOT A NUMBER
+        if (isset($byuser) && is_numeric($byuser)) {
+            if ($byuser = $getuser) {
+                $where .= " AND user.id=$byuser";
+            }
+        } else {
+            if ($getuser) {
+                $where .= " AND $domainstr='$getuser'";
+            }
+        }
+        if ($bytext) {
+            $where .= " AND upload.filename LIKE '%$bytext%'";
+        }
+    } else {
+        $email = $_SESSION['email'];
+        $st = $pdo->prepare("SELECT user.id, user.name FROM user WHERE user.client_id IS NULL AND user.email=:email");
+        $st->bindValue(":email", "$email");
+        doPreparedQuery($st, 'Error retreiving user details');
+        $row = $st->fetch(PDO::FETCH_ASSOC);
+        $where = $row ? " WHERE user.email='$email'" : " WHERE client.domain = $domainstr";
+        $i = strpos($email, '@');
+        $dom = substr($email, $i + 1);
+        if (!$row) {
+            $where .= " AND client.domain = '$dom'";
+        }
+    }
+    $sql = $select;
+    $tel = ", client.name AS client, client.tel";
+    //note LEFT join to include just 'users' also
+    $from .= " LEFT JOIN client ON user.client_id = client.id";
+    $sql .= $tel . $from . $where . $order;
+    return [$pdo, $sql];
+}
+
 
 function myDomain($fileid)
 {
@@ -429,29 +525,9 @@ switch ($sort) {
 
 //D I S P L A Y_______________________________________________________________
 ///Present list of users for administrators
-include CONNECT;
-
-$sqlu = "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS NULL ORDER BY name";
-
-$st = doQuery($pdo, $sqlu, "Error retrieving details");
-$rows = $st->fetchAll(PDO::FETCH_ASSOC);
-
-foreach ($rows as $row) {
-    $users[$row['id']] = $row['name'];
-}
-
-/*
-$sqlc = "SELECT employer.user_id, employer.name, employer.domain FROM
-(SELECT user.name, user.id as user_id, client.domain FROM user INNER JOIN client ON RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))=client.domain) AS employer";
-*/
-$sqlc = "SELECT name, domain, tel FROM client ORDER BY name";
-$st = doQuery($pdo, $sqlc, "Database error fetching clients");
-$rows = $st->fetchAll(PDO::FETCH_ASSOC);
-
-foreach ($rows as $row) {
-    $client[$row['domain']] = $row['name'];
-}
 //end of default_______________________________________________________________________
+
+list($users, $client) = presentList($priv);
 
 ///may amend $users and $clients
 if (isset($_GET['find'])) {
@@ -459,10 +535,8 @@ if (isset($_GET['find'])) {
 }
 
 //_______//_______//_______//_______//_______//_______//_______//_______//_______//_____
-$select = "SELECT upload.id, filename, mimetype, description, filepath, file, size, time,  MID(file, 11, 14) AS origin, user.email, user.name";
-$from = " FROM upload INNER JOIN user ON upload.userid=user.id";
-$order = " ORDER BY $order_by LIMIT $start, $display";
-//_______//_______//_______//_______//_______//_______//_______//_______//_______//_____
+
+list($select, $from, $order) = selectUploaded($order_by, $start, $display);
 
 if (isset($_GET['action']) && $_GET['action'] == 'search') {
     include INCLUDES . 'search.inc.php';
@@ -471,58 +545,8 @@ if (isset($_GET['action']) && $_GET['action'] == 'search') {
     exit();
 }
 
-if ($priv == 'Admin') {
-    //by default listing by user will list by first name "Amanda White, Sally Bowles"
-    //where as lastname may be more desirable, so lets do that if you hit the file heading
-    if (isset($_GET['sort']) && preg_match("/uf/", $_GET['sort'])) {
-        $select .= ", COALESCE(NULLIF(SUBSTR(user.name, LENGTH(user.name) - LOCATE(' ', REVERSE(user.name)) +1), ''), user.name) AS `user`";
-    } else {
-        $select .= ", user.name as user";
-    }
-    $from .= " INNER JOIN userrole ON user.id=userrole.userid";
-    $where  = ' WHERE TRUE';
-    $ext = isset($_GET['ext']) ? $_GET['ext'] : null;
-    $getuser = isset($_GET['u']) ? $_GET['u'] : '';
-    $bytext = isset($_GET['t']) ? $_GET['t'] : '';
-    $byuser = isset($byuser) ? $byuser : $getuser;
-    if ($ext) {
-        if ($ext == 'owt') {
-            $where .= " AND (upload.filename NOT LIKE '%pdf' AND upload.filename NOT LIKE '%zip')";
-        } else $where .= " AND upload.filename LIKE '%$ext'";
-    }
-    //CLIENTS USE EMAIL DOMAIN AS ID IN DROP DOWN THERFORE NOT A NUMBER
-    if (isset($byuser) && is_numeric($byuser)) {
-        if ($byuser = $getuser) {
-            $where .= " AND user.id=$byuser";
-        }
-    } else {
-        if ($getuser) {
-            $where .= " AND $domain='$getuser'";
-        }
-    }
-    if ($bytext) {
-        $where .= " AND upload.filename LIKE '%$bytext%'";
-    }
-} //admin
-else {
-    dump(99);
-    $email = $_SESSION['email'];
-    $st = $pdo->prepare("SELECT user.id, user.name FROM user WHERE user.client_id IS NULL AND user.email=:email");
-    $st->bindValue(":email", "$email");
-    doPreparedQuery($st, 'Error retreiving user details');
-    $row = $st->fetch(PDO::FETCH_ASSOC);
-    $where = $row ? " WHERE user.email='$email'" : " WHERE client.domain = $domainstr";
-    $i = strpos($email, '@');
-    $dom = substr($email, $i + 1);
-    if (!$row) {
-        $where .= " AND client.domain = '$dom'";
-    }
-}
-$sql = $select;
-$tel = ", client.name AS client, client.tel";
-//note LEFT join to include just 'users' also
-$from .= " LEFT JOIN client ON user.client_id = client.id";
-$sql .= $tel . $from . $where . $order;
+list($pdo, $sql) = buildQuery($priv, $select, $from, $order);
+
 $st = doQuery($pdo, $sql, 'Database error fetching files. ');
 $rows = $st->fetchAll(PDO::FETCH_ASSOC);
 $files = array();
