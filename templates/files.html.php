@@ -1,7 +1,7 @@
 <?php include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
 ?>
-<h1><a href="<?php $_SERVER['PHP_SELF'] ?>">North Wolds | File Uploads</a></h1>
+<h1><a href=".">File Uploads</a></h1>
 <h2><?= date('l F j, Y'); ?></h2>
 
 <?php

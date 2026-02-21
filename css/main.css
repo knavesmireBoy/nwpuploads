@@ -121,7 +121,7 @@ html > body {
   padding: 1em 0 0;
   margin: auto;
   text-align: center;
-  background-color: white;
+  background-color: var(--prompt);
   min-width: 100%;
   min-height: 100%;
 }
@@ -238,9 +238,8 @@ ul input {
 }
 
 form {
-  border: solid 1px green;
   margin: 0 0 1em;
-  padding: 1em 0.25em;
+  padding: 0;
 }
 form li {
   padding: 0.2em 0;
@@ -288,12 +287,13 @@ p a:hover {
 }
 
 p a,
-.log input[type=submit] {
+p .log input[type=submit] {
   font: bold 1em Georgia, serif;
   color: var(--head);
   border-radius: 10px;
   padding: 0.15em 0.3em;
   border: solid 1px black;
+  background-color: white;
 }
 
 /* Preview */
@@ -545,7 +545,7 @@ form[name=uploadform] {
   margin: 0 auto 1em;
   border: solid 1px;
   border-radius: 8px;
-  background-color: var(--prompt);
+  background-color: white;
   width: clamp(300px, 70vw, 700px);
 }
 form[name=uploadform] > div {
@@ -555,11 +555,12 @@ form[name=uploadform] > div {
 }
 form[name=uploadform] > div input,
 form[name=uploadform] > div select {
-  flex: 7 1 1em;
+  flex: 2 1 1em;
+  background-color: #5f0202;
 }
 form[name=uploadform] > div label {
   text-align: right;
-  flex: 2 1 2em;
+  flex: 2 1 4em;
 }
 form[name=uploadform] > div input[type=submit] {
   margin: 0.5em 0 0;

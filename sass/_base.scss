@@ -54,7 +54,7 @@ html {
     margin: auto;
     text-align: center;
     //box-shadow: 0 0 20px black;
-    background-color: white;
+    background-color: var(--prompt);
     min-width: 100%;
     min-height: 100%;
   }
@@ -155,9 +155,8 @@ ul input {
   margin-left: 0.5em;
 }
 form {
-  border: solid 1px green;
   margin: 0 0 1em;
-  padding: 1em .25em;
+  padding: 0;
   li {
     padding: 0.2em 0;
   }
@@ -170,7 +169,7 @@ form {
   }
   input[type="submit"] {
     padding: 0.25em 0.5em;
-    margin: .5em 0 0;
+    margin: 0.5em 0 0;
     cursor: pointer;
   }
   p {
@@ -209,13 +208,16 @@ p {
   }
 }
 
-p a,
-.log input[type="submit"] {
-  font: bold 1em Georgia, serif;
-  color: var(--head);
-  border-radius: 10px;
-  padding: 0.15em 0.3em;
-  border: solid 1px black;
+p {
+  a,
+  .log input[type="submit"] {
+    font: bold 1em Georgia, serif;
+    color: var(--head);
+    border-radius: 10px;
+    padding: 0.15em 0.3em;
+    border: solid 1px black;
+    background-color: white;
+  }
 }
 /* Preview */
 
@@ -450,7 +452,7 @@ form[name="uploadform"] {
   margin: 0 auto 1em;
   border: solid 1px;
   border-radius: 8px;
-  background-color: var(--prompt);
+  background-color: white;
   width: clamp(300px, 70vw, 700px);
   > div {
     display: flex;
@@ -458,11 +460,12 @@ form[name="uploadform"] {
     justify-content: center;
     input,
     select {
-      flex: 7 1 1em;
+      flex: 2 1 1em;
+      background-color: #5f0202;
     }
     label {
       text-align: right;
-      flex: 2 1 2em;
+      flex: 2 1 4em;
     }
     input[type="submit"] {
       margin: 0.5em 0 0;
