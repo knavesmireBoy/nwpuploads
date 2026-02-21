@@ -45,6 +45,13 @@
   html body {
     width: 70%;
   }
+
+  form[name="usersform"] {
+    padding: 1em;
+    margin: 0 auto 1em;
+  }
+
+
 }
 @media screen and (max-width: 767px) {
   #canvas .select,

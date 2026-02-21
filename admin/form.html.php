@@ -9,7 +9,7 @@ include TEMPLATE . 'base.html.php'; ?>
 		<ul>
 			<li><label for="name">Name:</label><input id="name" type="text" name="name" value="<?= $name; ?>" required /></li>
 			<li><label for="email">Email:</label><input type="email" id="email" name="email" value="<?= $email; ?>" required /></li>
-			<li><label for="password">Set password:</label><input id="password" type="password" name="password" /><input type="hidden" name="employer"
+			<li><label for="password">Password:</label><input id="password" type="password" name="password" /><input type="hidden" name="employer"
 					value="<?= $job ?? ''; ?>" />
 				<?php if (preg_match('/edit/', $action)) { ?>
 					<input type="checkbox" id="delete" name="delete"><label for="delete">Delete</label>

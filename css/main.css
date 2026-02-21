@@ -150,10 +150,6 @@ ul {
   padding: 0;
 }
 
-p {
-  margin: 0 0 1em;
-}
-
 fieldset {
   border: solid 1px black;
   margin: 0 0 1em;
@@ -241,22 +237,28 @@ ul input {
   margin-left: 0.5em;
 }
 
+form {
+  border: solid 1px green;
+  margin: 0 0 1em;
+  padding: 1em 0.25em;
+}
 form li {
   padding: 0.2em 0;
 }
-
 form div {
   padding: 0.2em 0;
 }
-
-.container {
+form .container {
   border-radius: 3px;
   display: inline-block;
 }
-
-input[type=submit] {
+form input[type=submit] {
   padding: 0.25em 0.5em;
+  margin: 0.5em 0 0;
   cursor: pointer;
+}
+form p {
+  margin: 0 0 1em;
 }
 
 footer > * {
@@ -300,7 +302,6 @@ p a,
 }
 
 /* Button 
-
   .button {
       border: 0px;
       background-color: #00bfff;
@@ -452,15 +453,11 @@ form[name=edituserform] p {
 
 form[name=usersform] {
   background-color: var(--prompt);
-  border: solid 1px;
-  padding: 1em;
-  margin: 0 auto 1em;
   border-radius: 8px;
-  width: clamp(300px, 50vw, 1000px);
+  width: clamp(318px, 50vw, 1000px);
 }
 form[name=usersform] > ul {
   border-radius: 8px;
-  padding: 1em;
 }
 form[name=usersform] > ul li {
   display: flex;
@@ -515,8 +512,8 @@ form[name=usersform][action="?editform"] input[type=checkbox] {
   top: auto;
 }
 form[name=usersform][action="?editform"] label[for=delete] {
-  flex: 1 1 1em;
-  padding: 1em 0;
+  flex: 3 1 1em;
+  padding: 1.2em 0;
   border-radius: 50%;
   cursor: pointer;
   background-image: url("../assets/trashsprite.png");
@@ -537,7 +534,10 @@ form[name=usersform][action="?editform"] #delete:checked + label {
   background-color: red;
 }
 form[name=usersform][action="?editform"] input#password {
-  flex: 38 1 1em;
+  flex: 36 1 1em;
+}
+form[name=usersform].override {
+  background-color: var(--bright);
 }
 
 form[name=uploadform] {
@@ -639,6 +639,8 @@ div#upload > table {
 
 form[name=logoutform] {
   border-width: 0;
+  padding: 0;
+  margin: 0;
 }
 
 p.ret {
@@ -917,6 +919,10 @@ table th {
 @media screen and (min-width: 768px) and (orientation: portrait) {
   html body {
     width: 70%;
+  }
+  form[name=usersform] {
+    padding: 1em;
+    margin: 0 auto 1em;
   }
 }
 @media screen and (max-width: 767px) {

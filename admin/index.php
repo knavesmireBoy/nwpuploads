@@ -90,6 +90,14 @@ function defaultQuery($key, $priv)
   return "SELECT id, name FROM user ";
 }
 
+
+function whoAmI($email, $priv)
+{
+  $editor = $_SESSION['email'] === $email;
+  $admin = isApproved($priv, 'admin');
+  return [$editor, $admin];
+}
+
 function updateUserDomain($old, $new, $id = 0)
 {
   if ($old && $new) {
@@ -293,7 +301,7 @@ if (isset($_GET['add'])) {
       return $role['id'] !== 'Admin';
     });
   }
- //$pagetitle = "Admin | Users";
+  //$pagetitle = "Admin | Users";
   $pagehead = "Add User";
   include 'form.html.php';
   exit();
@@ -558,11 +566,11 @@ if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
   $row = $st->fetch(PDO::FETCH_ASSOC);
   $editor = $_SESSION['email'] === $row['email'];
   $warning = 'Polite Notice: changing an email or password will automatically log you out.';
-  $message = ($pwd || $editor) ? $warning : '';
+  $message = ($pwd && $editor) ? $warning : '';
   $message = $message ? $message : ($clientflag ? 'You do not have sufficient privileges to change the domain name. Please contact the database administrator.' : '');
 
   if ($message && ($message === $warning)) {
-    $message .= ' You can proceed but you will need to log in again with your updated details.';
+    $message .= ' You can proceed now that the form is in override mode but you will need to log in again with your updated details.';
   }
   if ($clientflag) {
     $sql = "SELECT user.id, user.name, user.email FROM client LEFT JOIN user ON $domainstr = client.domain WHERE user.id=:dom";
@@ -628,7 +636,7 @@ if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
 $sql = "SELECT user.id, user.name FROM user LEFT JOIN (SELECT user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer ON $domainstr=employer.domain WHERE employer.domain IS NULL"; //this overwrites above query to filter out users as employees
 $sql = "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS NULL"; //USING ID NOT DOMAIN
 
-if (isset($_POST['user'])) {//dropdown
+if (isset($_POST['user'])) { //dropdown
   if ($_POST['user'] === '') {
     header("Location: ./?selectuser");
     exit();

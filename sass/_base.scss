@@ -78,9 +78,6 @@ ul {
   margin: 0;
   padding: 0;
 }
-p {
-  margin: 0 0 1em;
-}
 fieldset {
   border: solid 1px black;
   margin: 0 0 1em;
@@ -157,20 +154,28 @@ h1 {
 ul input {
   margin-left: 0.5em;
 }
-form li {
-  padding: 0.2em 0;
-}
-form div {
-  padding: 0.2em 0;
-}
-.container {
-  border-radius: 3px;
-  display: inline-block;
-}
-
-input[type="submit"] {
-  padding: 0.25em 0.5em;
-  cursor: pointer;
+form {
+  border: solid 1px green;
+  margin: 0 0 1em;
+  padding: 1em .25em;
+  li {
+    padding: 0.2em 0;
+  }
+  div {
+    padding: 0.2em 0;
+  }
+  .container {
+    border-radius: 3px;
+    display: inline-block;
+  }
+  input[type="submit"] {
+    padding: 0.25em 0.5em;
+    margin: .5em 0 0;
+    cursor: pointer;
+  }
+  p {
+    margin: 0 0 1em;
+  }
 }
 
 footer {
@@ -218,7 +223,6 @@ p a,
   margin: 0 auto 1em;
 }
 /* Button 
-  
   .button {
       border: 0px;
       background-color: #00bfff;
@@ -362,14 +366,10 @@ form[name="edituserform"] {
 
 form[name="usersform"] {
   background-color: var(--prompt);
-  border: solid 1px;
-  padding: 1em;
-  margin: 0 auto 1em;
   border-radius: 8px;
-  width: clamp(300px, 50vw, 1000px);
+  width: clamp(318px, 50vw, 1000px);
   > ul {
     border-radius: 8px;
-    padding: 1em;
     li {
       display: flex;
       column-gap: 3px;
@@ -380,7 +380,7 @@ form[name="usersform"] {
       }
       input {
         flex: 40 1 1em;
-        padding: .3em 0;
+        padding: 0.3em 0;
       }
     }
   }
@@ -426,8 +426,8 @@ form[name="usersform"] {
       @include hide;
     }
     label[for="delete"] {
-      flex: 1 1 1em;
-      padding: 1em 0;
+      flex: 3 1 1em;
+      padding: 1.2em 0;
       border-radius: 50%;
       cursor: pointer;
       @include trash(10px, center 0%);
@@ -437,8 +437,11 @@ form[name="usersform"] {
       background-color: red;
     }
     input#password {
-      flex: 38 1 1em;
+      flex: 36 1 1em;
     }
+  }
+  &.override {
+    background-color: var(--bright);
   }
 }
 
@@ -537,6 +540,8 @@ div#upload {
 }
 form[name="logoutform"] {
   border-width: 0;
+  padding: 0;
+  margin: 0;
 }
 p.ret {
   margin: 1em 0;
