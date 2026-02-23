@@ -2,60 +2,59 @@
 include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
 include TEMPLATE . 'base.html.php'; ?>
-	<div>
-		<h1><?= $pagehead; ?></h1>
-		<?php
-		if (preg_match("/admin/i", $priv)) {
-		?>
-			<p><a href="?add">Add New User</a></p>
-		<?php }
+<div>
+	<h1><?= $pagehead; ?></h1>
+	<h3 class='error'><?= $error; ?></h3>
+	<?php
+	if (preg_match("/admin/i", $priv)) {
 		ob_start();
-		?>
-		<h3 class='error'><?= $error; ?></h3>
-		<?php
+		include TEMPLATE . '_call.html.php';
+	}
+	?>
+	<?php
+	if (($priv == 'Admin') && !isset($selected)): ?>
+		<form action="" method="post" name="userform" class="choose">
+			<label for="user"></label><select id="user" name="user">
+				<option value="">Select one</option>
+				<?php if ($priv === 'Admin') {
+					$optgroup = 'clients';
+				}
+				$group = $client;
+				include '../templates/_optgroup.html.php';
+				if ($priv === 'Admin') {
+					$optgroup = 'users';
+				}
+				$group = $users;
+				include '../templates/_optgroup.html.php'; ?>
+			</select>
+			<input type="submit" name="action" value="Choose" />
 
-		if (($priv == 'Admin') && !isset($selected)): ?>
-			<form action="" method="post" name="userform" class="choose">
-				<label for="user"></label><select id="user" name="user">
-							<option value="">Select one</option>
-							<?php if ($priv === 'Admin') {
-								$optgroup = 'clients';
-							}
-							$group = $client;
-							include '../templates/_optgroup.html.php';
-							if ($priv === 'Admin') {
-								$optgroup = 'users';
-							}
-							$group = $users;
-							include '../templates/_optgroup.html.php'; ?>
-						</select>
-						<input type="submit" name="action" value="Choose" />
-
-			</form>
-		<?php elseif (preg_match("/client/i", $priv) || (isset($selected))):
-		?>
-			<div class="clientgroup">
-				<?php
-				foreach ($users as $k => $user):
-					include '_users.html.php';
-				endforeach;
-				?>
-			</div>
+		</form>
+	<?php elseif (preg_match("/client/i", $priv) || (isset($selected))):
+	?>
+		<div class="clientgroup">
 			<?php
-			if ($priv === 'Admin') { ?>
-				<p><a href=".">Return to user list</a></p>
-		<?php }
-		endif;
-		if (isset($prompt)) {
-			ob_end_clean();
-			include TEMPLATE . 'prompt.html.php';
-		}
-		?>
-		<p><a href="..">Return to uploads</a></p>
+			foreach ($users as $k => $user):
+				include '_users.html.php';
+			endforeach;
+			?>
+		</div>
 		<?php
-		include TEMPLATE . '_logout.html.php';
-		exit();
-		?>
-	</div>
+		if ($priv === 'Admin') { ?>
+			<p><a href=".">Return to user list</a></p>
+	<?php }
+	endif;
+	if (isset($prompt)) {
+		ob_end_clean();
+		include TEMPLATE . 'prompt.html.php';
+	}
+	?>
+	<p><a href="..">Return to uploads</a></p>
+	<?php
+	include TEMPLATE . '_logout.html.php';
+	exit();
+	?>
+</div>
 </body>
+
 </html>

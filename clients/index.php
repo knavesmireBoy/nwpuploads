@@ -34,7 +34,6 @@ if ($priv !== 'Admin') {
   exit();
 }
 
-
 if (isset($_GET['delete'])) {
   $id = $_GET['delete'];
   $title = "Prompt for deletion";
@@ -184,7 +183,6 @@ if (isset($_POST['action']) && $_POST['action'] == 'Choose' && $_POST['client'] 
   $sql .= " WHERE id=:id";
 }
 $sql .= " ORDER BY name";
-
 
 $st = $pdo->prepare($sql);
 

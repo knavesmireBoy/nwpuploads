@@ -21,6 +21,10 @@ setExtent(null);
 $selected = null;
 $goto = '.';
 
+$calltext = "Add New User";
+$callroute = 'add';
+
+
 $formvars = ['pagetitle', 'message', 'name', 'email', 'job', 'roles', 'id', 'route', 'override', 'button', 'priv'];
 $uservars = ['manage', 'priv', 'client', 'users'];
 $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
@@ -45,6 +49,7 @@ function filterUsers($sql, $key, $pagetitle)
   $return = "Return to users";
   $pagehead = "Manage Users";
   $users = [];
+  $calltext = "Delete User";
   include CONNECT;
   $st = $pdo->prepare("SELECT domain FROM client WHERE domain=:domain");
   $st->bindValue(":domain", $key);
@@ -76,6 +81,7 @@ function filterUsers($sql, $key, $pagetitle)
       exit;
     }
   } else {
+    $callroute = "delete=$key";
     header("Location: ./?edit=$key");
     exit;
   }
@@ -271,10 +277,6 @@ if (isset($_GET['add'])) {
   $pagehead = 'New User';
   $action = 'addform';
   $button = 'Add User';
-  $name = '';
-  $email = '';
-  $job = '';
-  $id = '';
   $override = '';
   $admin = ($priv === 'Admin');
   $clientadmin = preg_match("/admin/i", $priv) || preg_match("/client/i", $priv);
@@ -432,119 +434,114 @@ if (isset($_POST['confirm'])) {
   exit();
 }
 
-if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
-  if (isset($_POST['delete'])) {
-    $id = $_POST['id'];
-    $title = "Prompt";
-    $prompt = "Are you sure you want to delete this user? ";
-    $call = "confirm";
-    $pos = "Yes";
-    $neg = "No";
-    $action = '';
-  } else {
-    include CONNECT;
-    $action = "editform";
-    $override = $_POST['override'];
-    $id = $_POST['id'];
-    $roles = $_POST['roles'] ?? [];
-    $assoc = false;
-    $revert = false;
-    $email = null;
-    $role = null;
-    //$domcheck = true;
-    $admin = $priv === 'Admin';
-    $i = strpos($_POST['email'], '@');
-    $edom = substr($_POST['email'], $i + 1);
-    $isEmployer = isEmployer($edom);
-    list($clientid, $domain) = $isEmployer($pdo);
 
-    $freelancer = isFreelancer($pdo, $id);
-    //$employerid only available from ADMIN; default to zero NOT NULL so it survives equality test with $clientid see $notice
-    $employerid = empty($_POST['employer']) ? 0 : intval($_POST['employer']);
-    $relocation = "Location: ./?clientflag=$id";
-    //should user BE a freelancer
-
-    if ($freelancer) {
-      if (isset($clientid)) { //attempt by freelancer to join client; no priv
-        $assoc = $admin ? true : false;
-        header($relocation);
-        exit();
-      } else {
-        $assoc = true;
-      }
-      $isEmployer = isEmployer($_POST, 'employer');
-      list($clientid, $domain) = $isEmployer($pdo);
-    } else {
-      $isEmployer = isEmployer($_POST, 'id');
-      list($clientid, $domain, $email) = $isEmployer($pdo);
-      if (!$clientid) {
-        //allow admin to = reinstate freelancer status
-        if ($admin && !$employerid) {
-          $domain = $edom;
-        } else {
-          $relocation = "Location: ./?clientflag=$id";
-          header($relocation);
-          exit();
-        }
-      }
-    }
-    $sql = "UPDATE user SET name=:name, email=:email";
-    $sql .= $assoc ? ", client_id=:cid" : ' ';
-    $sql .= " WHERE id=:id";
-    $st = $pdo->prepare($sql);
-
-    if ($assoc) {
-      $st->bindValue(":cid", $clientid);
-    }
-    $st->bindValue(":name", $_POST['name']);
-    $st->bindValue(":email", $revert ? $email : $_POST['email']);
-    $st->bindValue(":id", $id);
-    doPreparedQuery($st, '<p>Error setting user details.</p>');
-    //check EXISTING email not $_POST
-    $editor = $_SESSION['email'] === $email;
-
-    if (isset($_POST['password']) && $_POST['password'] != '') {
-      if ($override) {
-        $res = updatePassword($pdo, $_POST['password'], $id);
-      } else {
-        header("Location: ./?pwd=$id");
-        exit();
-      }
-    }
-
-    $role = getCurrentRole($id);
-    deleteRole($id, $priv);
-    resetRoles($priv, $roles, $id);
-    $rolechange = verifyRole($role, getCurrentRole($id));
-
-    //$clientid is allowed to be NULL (not any other empty) if a user wants to disassociate from a client
-    $sql = "UPDATE user SET client_id=:cid WHERE id =:id";
-    $st = $pdo->prepare($sql);
-    $st->bindValue(":cid", $clientid);
-    $st->bindValue(":id", $id);
-    doPreparedQuery($st, 'Error setting client id');
-    updateUserDomain($edom, $domain, $id);
-    if ($editor) {
-      if ($email !== $_POST['email'] || ($rolechange && $editor)) {
-        header("Location: ../?action=logout");
-        exit();
-      }
-    }
-    header('Location: .');
-    exit();
-  }  //not delete
-}
-///END OF editform
-
-if (isset($_POST['action']) && $_POST['action'] === 'Delete') {
-  $id = $_POST['id'];
+if (isset($_GET['delete'])) {
+  $id = $_GET['delete'];
   $title = "Prompt";
   $prompt = "Are you sure you want to delete this user? ";
   $call = "confirm";
   $pos = "Yes";
   $neg = "No";
   $action = '';
+  $formname = 'deleteuserform';
+  $template = 'confirm.html.php';
 }
+
+if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
+
+  include CONNECT;
+  $action = "editform";
+  $override = $_POST['override'];
+  $id = $_POST['id'];
+  $roles = $_POST['roles'] ?? [];
+  $assoc = false;
+  $revert = false;
+  $email = null;
+  $role = null;
+  //$domcheck = true;
+  $admin = $priv === 'Admin';
+  $i = strpos($_POST['email'], '@');
+  $edom = substr($_POST['email'], $i + 1);
+  $isEmployer = isEmployer($edom);
+  list($clientid, $domain) = $isEmployer($pdo);
+
+  $freelancer = isFreelancer($pdo, $id);
+  //$employerid only available from ADMIN; default to zero NOT NULL so it survives equality test with $clientid see $notice
+  $employerid = empty($_POST['employer']) ? 0 : intval($_POST['employer']);
+  $relocation = "Location: ./?clientflag=$id";
+  //should user BE a freelancer
+
+  if ($freelancer) {
+    if (isset($clientid)) { //attempt by freelancer to join client; no priv
+      $assoc = $admin ? true : false;
+      header($relocation);
+      exit();
+    } else {
+      $assoc = true;
+    }
+    $isEmployer = isEmployer($_POST, 'employer');
+    list($clientid, $domain) = $isEmployer($pdo);
+  } else {
+    $isEmployer = isEmployer($_POST, 'id');
+    list($clientid, $domain, $email) = $isEmployer($pdo);
+    if (!$clientid) {
+      //allow admin to = reinstate freelancer status
+      if ($admin && !$employerid) {
+        $domain = $edom;
+      } else {
+        $relocation = "Location: ./?clientflag=$id";
+        header($relocation);
+        exit();
+      }
+    }
+  }
+  $sql = "UPDATE user SET name=:name, email=:email";
+  $sql .= $assoc ? ", client_id=:cid" : ' ';
+  $sql .= " WHERE id=:id";
+  $st = $pdo->prepare($sql);
+
+  if ($assoc) {
+    $st->bindValue(":cid", $clientid);
+  }
+  $st->bindValue(":name", $_POST['name']);
+  $st->bindValue(":email", $revert ? $email : $_POST['email']);
+  $st->bindValue(":id", $id);
+  doPreparedQuery($st, '<p>Error setting user details.</p>');
+  //check EXISTING email not $_POST
+  $editor = $_SESSION['email'] === $email;
+
+  if (isset($_POST['password']) && $_POST['password'] != '') {
+    if ($override) {
+      $res = updatePassword($pdo, $_POST['password'], $id);
+    } else {
+      header("Location: ./?pwd=$id");
+      exit();
+    }
+  }
+
+  $role = getCurrentRole($id);
+  deleteRole($id, $priv);
+  resetRoles($priv, $roles, $id);
+  $rolechange = verifyRole($role, getCurrentRole($id));
+
+  //$clientid is allowed to be NULL (not any other empty) if a user wants to disassociate from a client
+  $sql = "UPDATE user SET client_id=:cid WHERE id =:id";
+  $st = $pdo->prepare($sql);
+  $st->bindValue(":cid", $clientid);
+  $st->bindValue(":id", $id);
+  doPreparedQuery($st, 'Error setting client id');
+  updateUserDomain($edom, $domain, $id);
+  if ($editor) {
+    if ($email !== $_POST['email'] || ($rolechange && $editor)) {
+      header("Location: ../?action=logout");
+      exit();
+    }
+  }
+  header('Location: .');
+  exit();
+}
+///END OF editform
+
 
 if (isset($_GET['denied']) || isset($_GET['access']) || isset($_GET['self'])) {
   $error =  $lib[$_SERVER["QUERY_STRING"]] ?? '';
@@ -552,6 +549,8 @@ if (isset($_GET['denied']) || isset($_GET['access']) || isset($_GET['self'])) {
 
 //directly load form.html.php if only one user/client
 if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
+
+
   include CONNECT;
   $class = '';
   $admin = ($priv === 'Admin');
@@ -560,6 +559,9 @@ if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
 
   $id = isset($_GET['edit']) ? $_GET['edit'] : ($pwd ? $pwd : NULL);
   $id = !empty($id) ? $id : $_POST['id'] ?? '';
+  $calltext = "Delete User";
+  $callroute = "delete=$id";
+
   $st = $pdo->prepare("SELECT id, name, email, $domainstr AS dom FROM user WHERE id =:id");
   $st->bindValue(":id", $id);
   doPreparedQuery($st, "Error fetching user details");
@@ -685,6 +687,8 @@ $usercount = isApproved($priv, 'ADMIN') ? 2 : count($users);
 //setExtent is largely used for displaying conditional content, appropriate buttons etc..
 setExtent($usercount);
 if ($usercount === 1) {
+  $calltext = "Delete User";
+  $callroute = "delete=$key";
   header("Location: ./?edit=$key"); //GO DIRECT TO EDIT FORM
   exit;
 } else {
