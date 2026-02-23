@@ -16,8 +16,7 @@ include TEMPLATE . 'base.html.php'; ?>
 
 		if (($priv == 'Admin') && !isset($selected)): ?>
 			<form action="" method="post" name="userform" class="choose">
-				<ul>
-					<li><label for="user"></label><select id="user" name="user">
+				<label for="user"></label><select id="user" name="user">
 							<option value="">Select one</option>
 							<?php if ($priv === 'Admin') {
 								$optgroup = 'clients';
@@ -31,8 +30,7 @@ include TEMPLATE . 'base.html.php'; ?>
 							include '../templates/_optgroup.html.php'; ?>
 						</select>
 						<input type="submit" name="action" value="Choose" />
-					</li>
-				</ul>
+
 			</form>
 		<?php elseif (preg_match("/client/i", $priv) || (isset($selected))):
 		?>

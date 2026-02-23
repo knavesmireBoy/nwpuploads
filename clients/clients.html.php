@@ -5,9 +5,11 @@ include TEMPLATE . 'base.html.php';
 ?>
 	<div>
 		<h1>Manage Clients</h1>
-		<p><a href="./?add">Add New Client</a></p>
 		<?php
 		ob_start();
+		include TEMPLATE . '_call.html.php';
+		?>
+		<?php
 		if (preg_match("/admin/i", $priv)) { ?>
 			<form action="" method="post" name="clientsform" class="choose">
 				<label for="the_client"></label>

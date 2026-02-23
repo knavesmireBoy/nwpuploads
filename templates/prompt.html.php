@@ -17,28 +17,21 @@
     <?php elseif (!isset($clientlist) && !isset($del)):
     ?>
         <form action="<?= $action; ?>" method="post" name="choice" class="prompt" id="yesno">
-            <input type="hidden" name="id" value="<?= $id; ?>" />
             <input type="hidden" name="ownerid" value="<?= $ownerid; ?>" />
             <input type="hidden" name="ownername" value="<?= $ownername; ?>" />
             <input type="hidden" name="multi" value="<?= !!$multi; ?>" />
             <input type="hidden" name="domain" value="<?= $domain ?? ''; ?>" />
             <input type="hidden" name="editor" value="<?= !!$editor; ?>" />
-            <p><?= $prompt; ?></p>
-            <input id="yes" type="radio" name="<?= $call; ?>" value="<?= $pos; ?>" />
-            <label for="yes">Yes</label>
-            <input id="no" type="radio" name="<?= $call; ?>" value="<?= $neg; ?>" />
-            <label for="no">No</label>
-            <input type="submit" />
+            <?php
+            include '_confirm.html.php';
+            ?>
         </form>
     <?php endif;  ?>
 
     <?php if (isset($del)):
-
-    /*
+        /*
     We need to determine the logic of what messages to display
-    
     */
-
         $n = $ownername ?? null;
         $c = $client[$domain] ?? null;
         $k = 'prompt';
@@ -52,8 +45,7 @@
         if ($multi) {
             $dl = "delete this file only";
             $dlu = $editor ? "delete all your files" : $dlu;
-        }
-        else {
+        } else {
             $dl = $editor ? "delete file" : "delete file for <span>$n</span>";
         }
     ?>

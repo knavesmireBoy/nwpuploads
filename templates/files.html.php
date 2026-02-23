@@ -9,7 +9,7 @@ include TEMPLATE . $template;
 echo $error;
 if (count($files) > 0): ?>
     </form>
-    <p><?= "The following files are stored in the database:" ?></p>
+    <h5>The following files are stored in the database:</h5>
     <?php
     include '_tablehead.html.php'; ?>
     <tbody>

@@ -10,6 +10,8 @@ if (!userIsLoggedIn()) {
 }
 
 $goto = '..';
+$calltext = "Add New Client";
+$callroute = 'add';
 
 function getDomain($pdo, $id)
 {
@@ -32,8 +34,21 @@ if ($priv !== 'Admin') {
   exit();
 }
 
+
+if (isset($_GET['delete'])) {
+  $id = $_GET['delete'];
+  $title = "Prompt for deletion";
+  $prompt = "Are you sure you want to delete this client? ";
+  $call = "confirm";
+  $pos = "Yes";
+  $neg = "No";
+  $action = '?';
+  $formname = 'deleteclientform';
+  $template = 'confirm.html.php';
+}
+
 if (isset($_POST['confirm'])) {
-  if ($_POST['confirm'] == 'Yes') {
+  if ($_POST['confirm'] == 'Yes' && isset($_POST['id'])) {
     include CONNECT;
     $st = $pdo->prepare("DELETE FROM client WHERE id =:id");
     $st->bindValue(":id", $_POST['id']);
@@ -45,51 +60,36 @@ if (isset($_POST['confirm'])) {
 ////////////END OF DELETE....START OF EDIT
 
 if (isset($_POST['action']) && $_POST['action'] == 'Edited' || isset($_GET['dom'])) {
-  if (isset($_POST['delete'])) {
-    $id = $_POST['id'];
-    $title = "Prompt for deletion";
-    $template = 'prompt.html.php';
-    $prompt = "Are you sure you want to delete this client? ";
-    $call = "confirm";
-    $pos = "Yes";
-    $neg = "No";
-    $action = '';
-  } else {
-    include CONNECT;
-    $dom = getDomain($pdo, $_POST['id']);
-    $st = $pdo->prepare("UPDATE client SET name=:nom, domain=:dom, tel=:tel WHERE id=:id");
-    $st->bindValue(':nom', $_POST['name']);
-    $st->bindValue(':dom', $_POST['domain']);
-    $st->bindValue(':tel', $_POST['tel']);
-    $st->bindValue(':id',  $_POST['id']);
-    $res = doPreparedQuery($st, 'Error updating client.');
-    if (!$res) {
-      $error = 'Error updating client.';
-      include TEMPLATE . 'error.html.php';
-      exit();
-    }
-    $id = $_POST['id'];
-    $newdom = getDomain($pdo, $_POST['id']);
 
-    if ($dom !== $newdom) {
-      header("Location: ../admin/?domain=$dom&updated=$newdom");
-      exit();
-    }
-    header('Location: . ');
+  include CONNECT;
+  $dom = getDomain($pdo, $_POST['id']);
+  $st = $pdo->prepare("UPDATE client SET name=:nom, domain=:dom, tel=:tel WHERE id=:id");
+  $st->bindValue(':nom', $_POST['name']);
+  $st->bindValue(':dom', $_POST['domain']);
+  $st->bindValue(':tel', $_POST['tel']);
+  $st->bindValue(':id',  $_POST['id']);
+  $res = doPreparedQuery($st, 'Error updating client.');
+  if (!$res) {
+    $error = 'Error updating client.';
+    include TEMPLATE . 'error.html.php';
     exit();
   }
+  $id = $_POST['id'];
+  $newdom = getDomain($pdo, $_POST['id']);
+
+  if ($dom !== $newdom) {
+    header("Location: ../admin/?domain=$dom&updated=$newdom");
+    exit();
+  }
+  header('Location: . ');
+  exit();
 }
 
 if (isset($_GET['add'])) {
   include CONNECT;
-  $id = '';
   $pagehead = 'New Client';
   $action = 'addform';
   $route = 'Added';
-  $name = '';
-  $domain = '';
-  $tel = '';
-  $id = '';
   $button = 'Add Client';
   $pagetitle = 'Admin | Client';
   include 'form.html.php';
@@ -127,7 +127,7 @@ if (isset($_POST['associate'])) {
   }
 }
 if (isset($_POST['action']) && $_POST['action'] === 'Added') {
-//if (isset($_GET['addform'])) {
+  //if (isset($_GET['addform'])) {
   include CONNECT;
   $dom = $_POST['domain'];
   $sql = "INSERT INTO client (name, domain, tel) VALUES (:nom, :dom, :tel)";
@@ -172,6 +172,8 @@ if (isset($_POST['action']) && $_POST['action'] == 'Choose' && $_POST['client'] 
   $pagehead = 'Edit Client';
   $action = 'editform';
   $route = 'Edited';
+  $calltext = "Delete Client";
+  $callroute = "delete=$id";
   $name = $row['name'];
   $domain = $row['domain'];
   $tel = $row['tel'];

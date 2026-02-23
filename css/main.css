@@ -125,6 +125,9 @@ html > body {
   min-width: 100%;
   min-height: 100%;
 }
+html > body > p {
+  margin: 0 0 0.5em;
+}
 
 h1 a {
   color: var(--invert);
@@ -182,6 +185,7 @@ table {
   margin-bottom: 1em;
   border-collapse: collapse;
   table-layout: auto;
+  background-color: white;
 }
 table tr:nth-child(even) {
   background-color: var(--pale);
@@ -204,6 +208,7 @@ th {
   background-color: var(--bright);
   border: solid 1px white;
   border-width: 0 1px;
+  text-align: center;
 }
 th:first-child {
   border-left-color: var(--bright);
@@ -284,6 +289,9 @@ p a:hover {
   text-decoration: none;
   background: black;
   color: white;
+}
+p.call {
+  margin: 0 0 1em;
 }
 
 p a,
@@ -425,32 +433,33 @@ form.clientlist {
 }
 
 form[name=loginform] {
-  display: flex;
-  column-gap: 0.5em;
-  justify-content: center;
   margin: 0 auto;
-  padding: 1em;
-  border: solid 1px;
-  border-radius: 8px;
   background-color: var(--prompt);
   width: clamp(300px, 60vw, 1000px);
+  text-align: center;
+  line-height: 1.75;
+}
+form[name=loginform] > * {
+  display: inline-block;
 }
 form[name=loginform] input {
-  flex: 3 1 10em;
+  width: 100%;
 }
-form[name=loginform] input:last-child {
-  flex: 1 1 1em;
+form[name=loginform] input[type=submit] {
+  margin: 1em 0 0;
+  width: auto;
 }
 
-form[name=edituserform] {
+/*
+form[name="edituserform"] {
+  p {
+    font: var(--georgiaform);
+    color: white;
+    text-shadow: 1px 1px 1px black;
+  }
   margin: 0 0 1em;
 }
-form[name=edituserform] p {
-  font: var(--georgiaform);
-  color: white;
-  text-shadow: 1px 1px 1px black;
-}
-
+*/
 form[name=usersform] {
   background-color: var(--prompt);
   border-radius: 8px;
@@ -474,10 +483,12 @@ form[name=usersform] > ul li input {
 }
 form[name=usersform] fieldset {
   margin: 1em 0;
+  text-align: left;
   font: var(--georgiaform);
   color: var(--main-color);
   font-size: 1em;
-  padding: 1em;
+  padding: 1em 0;
+  width: 100%;
   background-color: rgba(255, 255, 255, 0.5);
 }
 form[name=usersform] fieldset legend {
@@ -488,9 +499,36 @@ form[name=usersform] fieldset legend {
   color: black;
   font-style: normal;
 }
-form[name=usersform] fieldset label {
+form[name=usersform] fieldset div {
+  margin: 0 0 0.4em;
+  display: table;
+  border-collapse: separate;
+  border-spacing: 10px 0;
+  position: relative;
+  line-height: 1.2;
+  background-color: white;
+}
+form[name=usersform] fieldset div > * {
+  vertical-align: middle;
+}
+form[name=usersform] fieldset div span {
+  display: table-cell;
+  width: 100%;
+}
+form[name=usersform] fieldset div label {
   color: black;
   font-style: normal;
+  white-space: nowrap;
+  display: table-cell;
+  min-width: 7em;
+  padding: 0;
+}
+form[name=usersform] fieldset div input[type=radio] {
+  display: table-cell;
+  position: absolute;
+  top: 0;
+  left: 3px;
+  height: 100%;
 }
 form[name=usersform] > div {
   text-align: center;
@@ -541,30 +579,35 @@ form[name=usersform].override {
 }
 
 form[name=uploadform] {
-  padding: 1em;
-  margin: 0 auto 1em;
+  text-align: center;
+  padding: 0.5em 0 0 0.5em;
+  margin: auto;
   border: solid 1px;
   border-radius: 8px;
-  background-color: white;
   width: clamp(300px, 70vw, 700px);
-}
-form[name=uploadform] > div {
-  display: flex;
-  column-gap: 0.5em;
+  flex-wrap: wrap;
+  column-gap: 2%;
   justify-content: center;
 }
-form[name=uploadform] > div input,
-form[name=uploadform] > div select {
-  flex: 2 1 1em;
-  background-color: #5f0202;
-}
-form[name=uploadform] > div label {
-  text-align: right;
-  flex: 2 1 4em;
-}
-form[name=uploadform] > div input[type=submit] {
+form[name=uploadform] input,
+form[name=uploadform] #uploadfiles,
+form[name=uploadform] select {
   margin: 0.5em 0 0;
-  flex: 0 0 auto;
+  width: 69%;
+}
+form[name=uploadform] label {
+  text-align: right;
+  width: 29%;
+}
+form[name=uploadform] input[type=submit] {
+  margin: 0.5em auto;
+  flex: 1 1 1em;
+  text-align: center;
+  width: auto;
+  display: inline-block;
+}
+form[name=uploadform] + h5 {
+  margin: 1em 0;
 }
 
 form.choose {
@@ -594,43 +637,47 @@ form[name=editclientform] > input {
 }
 
 form[name=search] {
-  padding: 1em;
+  padding: 1em 0.5em;
   background-color: var(--prompt);
-  width: clamp(300px, 70vw, 600px);
+  background-color: rgba(255, 255, 255, 0.5);
+  width: clamp(320px, 70vw, 600px);
   margin: 1em auto;
-  border-radius: 8px;
+  border: solid 0;
+  text-align: center;
 }
-
-form[name=search] div {
-  display: flex;
-  justify-content: center;
-  column-gap: 0.5em;
-}
-
-form[name=search] div label {
+form[name=search] label {
   flex: 1 1 1em;
-  text-align: right;
+  width: 20%;
+  display: inline-block;
+}
+form[name=search] label[for=text] {
+  width: 100%;
+  margin: 0.5em 0 0;
+}
+form[name=search] input {
+  display: inline-block;
+}
+form[name=search] input#text {
+  width: 100%;
+  padding: 0.5em 0;
+  margin: 0 0 0.5em;
+}
+form[name=search] input [type=search] {
+  font-size: 1rem;
+  padding: 0.5em 0;
+  width: 69%;
+}
+form[name=search] select {
+  font-size: 1rem;
+  width: 78%;
 }
 
 form[name=search] div :not(label, input[type=submit]) {
   flex: 4 1 1em;
 }
 
-form[name=search] input[name=text] {
-  width: clamp(200px, 60%, 300px);
-}
-
-form[name=search] select {
-  font-size: 1rem;
-}
-
-form[name=search] input[type=search] {
-  font-size: 1rem;
-  padding: 0.5em 0;
-}
-
 div#upload {
-  margin: 0 auto;
+  margin: 1em auto 0;
   width: clamp(320px, 70vw, 1000px);
 }
 div#upload > table {
@@ -739,58 +786,48 @@ section#prompt {
 }
 
 form[name=clientform] {
-  width: clamp(30em, 50%, 60em);
+  width: clamp(320px, 50%, 60em);
   margin: 0 auto 1em;
   border-radius: 8px;
   border: solid 1px;
   background-color: var(--prompt);
-  padding: 1em 1em 1em 0.5em;
+  padding: 1em;
+  text-align: left;
 }
-form[name=clientform] div {
-  display: flex;
-  column-gap: 0.5em;
-}
-form[name=clientform] div input {
-  flex: 32 1 1em;
+form[name=clientform] input {
   padding: 1em 0;
+  display: block;
+  width: 100%;
 }
-form[name=clientform] div label {
-  text-align: right;
-  flex: 4 1 1em;
+form[name=clientform] input[type=submit] {
+  width: auto;
+  padding: 0.5em 1em;
+  margin: 1em auto 0;
 }
-form[name=clientform] div:last-of-type {
-  margin: 0 0 1em;
+form[name=clientform] label {
+  display: block;
+  margin: 0.5em 0;
 }
-form[name=clientform][action="?editform"] div:last-of-type input {
-  flex: 30 1 1em;
+form[name=clientform][action="?editform"] p {
+  display: table;
+  border-spacing: 0.5em 0;
+  position: relative;
+  margin: 1em 0 0;
 }
-form[name=clientform][action="?editform"] div:last-of-type input[type=checkbox] {
-  flex: 0 0 auto;
+form[name=clientform][action="?editform"] p input[type=checkbox] {
   margin: auto;
-  position: absolute;
-  left: -9999px;
-  top: auto;
+  display: table-cell;
+  width: auto;
+  vertical-align: middle;
 }
-form[name=clientform][action="?editform"] div:last-of-type label[for=delete] {
-  flex: 1 1 1em;
-  padding: 1.2em 0;
-  border-radius: 50%;
+form[name=clientform][action="?editform"] p label[for=delete] {
+  display: table-cell;
+  vertical-align: middle;
+  padding: 0;
+  width: 100%;
   cursor: pointer;
-  background-image: url("../assets/trashsprite.png");
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-color: var(--main-color);
-  background-position: center 0%;
-  display: inline-block;
-  height: 10px;
-  width: 10px;
-  align-self: center;
-  text-indent: 10px;
-  overflow: hidden;
-  border: none;
-  text-indent: 35px;
 }
-form[name=clientform][action="?editform"] div:last-of-type #delete:checked + label {
+form[name=clientform][action="?editform"] p #delete:checked + label {
   background-color: red;
 }
 
@@ -858,23 +895,25 @@ form[name=downloads] div input:hover {
 }
 
 form[name=updatefileinfo] {
+  border-radius: 0;
+  background-color: rgba(255, 255, 255, 0.5);
   margin: 0 0 1em;
+  border-width: 0;
+  color: black;
+  width: 100%;
 }
-form[name=updatefileinfo] > div {
-  display: flex;
-  justify-content: center;
-  column-gap: 0.4em;
+form[name=updatefileinfo] > * {
+  display: block;
+  text-align: center;
+  width: 100%;
 }
-form[name=updatefileinfo] > div input[type=text],
-form[name=updatefileinfo] > div select {
-  flex: 4 1 10em;
+form[name=updatefileinfo] input {
+  padding: 0.5em 0;
 }
-form[name=updatefileinfo] > div label {
-  flex: 1 1 1em;
-  text-align: right;
-}
-form[name=updatefileinfo] > div input[type=text] {
-  min-width: 30em;
+form[name=updatefileinfo] input[type=submit] {
+  width: auto;
+  padding: 0.5em;
+  margin: 1em auto 0;
 }
 
 @media screen and (min-width: 768px) {
