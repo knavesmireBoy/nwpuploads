@@ -1,5 +1,4 @@
-<h1>Search Files</h1>
-<form action="?" method="get" name="search">
+<form action="?" method="get" name="search" class="details">
 	<p>View files satisfying the following criteria:</p>
 	<?php if (!isset($zero)) : ?>
 		<label for="user">By user: </label><select id="user" name="user">
@@ -22,8 +21,7 @@
 
 	<?php endif; ?>
 	<label for="text">Containing text:</label><input id="text" type="search" name="text" />
-	<label for="suffix">Suffix: </label>
-	<select id="suffix" name="suffix">
+	<label for="suffix">Suffix: </label><select id="suffix" name="suffix">
 		<option value="">Search files</option>
 		<option value="pdf">pdf</option>
 		<option value="zip">zip</option>
@@ -33,4 +31,4 @@
 	<input type="hidden" name="flag" />
 	<input type="submit" value="Search" />
 </form>
-<p><a href=".">Return</a></p>
+<p><a href=".">Clear Search</a></p>

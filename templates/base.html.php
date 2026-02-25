@@ -14,4 +14,5 @@ $css =  is_dir('../css') ? '../css/main.css' : 'css/main.css';
 		document.cookie = 'resolution=' + Math.max(screen.width, screen.height) + '; path=/';
 	</script>
 </head>
-<body>
+<body id="<?= $pageid ?? ''; ?>">
+	<main>

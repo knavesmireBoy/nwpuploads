@@ -12,6 +12,7 @@ if (!userIsLoggedIn()) {
 $goto = '..';
 $calltext = "Add New Client";
 $callroute = 'add';
+$pageid = 'admin_client';
 
 function getDomain($pdo, $id)
 {

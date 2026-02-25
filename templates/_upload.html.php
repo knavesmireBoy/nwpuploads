@@ -13,13 +13,13 @@
                 <td><label for="user">User:</label></td>
                 <td><select id="user" name="user">
                         <option value="">Select one</option>
-                        <optgroup label="clients"><?php foreach ($client as $x => $c): ?>
-                                <option value="<?= $x; ?>"><?= $c; ?>
+                        <optgroup label="clients"><?php foreach ($client as $k => $v): ?>
+                                <option value="<?= $k; ?>"><?= $v; ?>
                                 </option><?php endforeach; ?>
                         </optgroup>
                         <optgroup label="users">
-                            <?php foreach ($users as $ix => $u): ?>
-                                <option value="<?= $ix; ?>"><?= $u; ?>
+                            <?php foreach ($users as $k => $v): ?>
+                                <option value="<?= $k; ?>"><?= $v; ?>
                                 </option><?php endforeach; ?>
                         </optgroup>
                     </select>

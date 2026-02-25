@@ -7,11 +7,13 @@
   --bright: #9c0;
   --invert: hsl(215, 79%, 55%);
   --invert: #5f0202;
+  --invert: hsl(77, 100%, 10%);
   --head: #7a9f33;
   --georgia: bold 2.2em/1 Georgia, sans-serif;
   --georgiaform: bold italic 1.8em/1 Georgia, sans-serif;
   --deleter: bold italic 1.1em/1 Georgia, sans-serif;
   --label: 1.25em;
+  --button: 12px;
 }
 
 @mixin trash(
@@ -47,27 +49,67 @@
 html {
   max-width: 100%;
   height: 100%;
+  box-sizing: border-box;
   > body {
-    font-size: 0.75em;
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    font-size: 1em;
     font-family: Helvetica, Geneva, Arial, SunSans-Regular, sans-serif;
-    padding: 1em 0 0;
+    padding: 0;
     margin: auto;
     text-align: center;
     //box-shadow: 0 0 20px black;
-    background-color: var(--prompt);
+    //background-color: var(--prompt);
     min-width: 100%;
-    min-height: 100%;
     > p {
       margin: 0 0 0.5em;
     }
+    > main {
+      flex: 1;
+    }
   }
 }
+input[type="search"] {
+    -webkit-appearance: textfield;
+}
+
+input[type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
+}
+
+#admin_user, #admin_client{
+  background-color: var(--prompt);
+  main form {
+    background-color: rgba(255, 255, 255, 0.5);
+    &#yesno{
+      background-color: var(--invert);
+    }
+  }
+}
+#admin_client{
+  background-color: var(--pale);
+}
+select {
+  width: 100%;
+  font-family: Helvetica, Geneva, Arial, SunSans-Regular, sans-serif;
+  font-style: normal;
+  font-size: 1rem;
+}
 h1 a {
-  color: var(--invert);
+  color: white;
 }
 h1,
 h2 {
   font: var(--georgia);
+}
+
+h1 {
+  padding: 0.75em 0;
+  background-color: var(--invert);
+  border: solid 1px white;
+  border-width: 0 0 1px;
+  color: white;
 }
 h2 {
   font-size: 1.75em;
@@ -89,9 +131,7 @@ fieldset,
 legend {
   border-radius: 10px;
 }
-select {
-  font-size: 1rem;
-}
+
 h2 {
   color: var(--head);
   font-size: 1.5em;
@@ -109,6 +149,7 @@ table {
   border-collapse: collapse;
   table-layout: auto;
   background-color: white;
+  width: 100%;
   tr:nth-child(even) {
     background-color: var(--pale);
   }
@@ -162,27 +203,26 @@ ul input {
 form {
   margin: 0 0 1em;
   padding: 0;
-  li {
-    padding: 0.2em 0;
-  }
-  div {
-    padding: 0.2em 0;
-  }
-  .container {
-    border-radius: 3px;
-    display: inline-block;
-  }
   input[type="submit"] {
     padding: 0.25em 0.5em;
-    margin: 0.5em 0 0;
     cursor: pointer;
+    &:hover {
+      background-color: black;
+    }
   }
   p {
     margin: 0 0 1em;
   }
 }
+main > p {
+  margin: 1em 0;
+}
 
 footer {
+  background-color: var(--invert);
+  padding: 1.2em 0;
+  border: solid 1px white;
+  border-width: 1px 0 0;
   > * {
     border: solid 1px black;
     border-radius: 0;
@@ -191,14 +231,17 @@ footer {
     display: inline-block;
     margin-right: 0.5em;
     padding: 0.5rem 0.75rem;
-
+    //background-color: white;
     &:hover {
       color: white;
-      background-color: var(--bright);
+      // background-color: var(--bright);
     }
   }
   span.current {
     background-color: var(--bright);
+  }
+  #upload & {
+    background-color: white;
   }
 }
 
@@ -221,7 +264,7 @@ p {
   .log input[type="submit"] {
     font: bold 1em Georgia, serif;
     color: var(--head);
-    border-radius: 10px;
+    border-radius: var(--button);
     padding: 0.15em 0.3em;
     border: solid 1px black;
     background-color: white;
@@ -255,15 +298,14 @@ p {
 }
 
 input[type="submit"] {
-  border: 1px solid black;
+  border: 1px solid white;
   color: white;
   border-radius: 20px;
   background-color: var(--main-color);
-  font: 1em Arial;
   font: 1em/1.35 Georgia, serif;
   font-style: italic;
   font-weight: bold;
-  margin: 0;
+  margin: 1em 0 0;
 }
 
 .prompt {
@@ -271,7 +313,7 @@ input[type="submit"] {
   display: inline-block;
   padding: 1em;
   border: solid 1px black;
-  border-radius: 8px;
+  border-radius: var(--button);
   margin: 1em 0;
   color: white;
   input[type="submit"] {
@@ -297,7 +339,7 @@ input[type="submit"] {
   background-image: radial-gradient(white, var(--prompt));
   padding: 1em;
   border: solid 1px;
-  border-radius: 8px;
+  border-radius: var(--button);
   line-height: 2;
   font-weight: bold;
   margin: 0 auto 1em;
@@ -315,37 +357,6 @@ input[type="submit"] {
   }
 }
 
-.select,
-.clientlist {
-  padding: 1em;
-}
-.select {
-  border-radius: 20px;
-  padding: 0.7em;
-}
-.clientlist {
-  background-color: var(--prompt);
-}
-.name {
-  margin: 0 0 0.3em;
-}
-.upload,
-.update,
-.searcher {
-  display: inline-block;
-}
-.select,
-.fieldset,
-form.clientlist {
-  border: solid 1px black;
-  border-radius: 5px;
-}
-
-/*div form*/
-
-form.clientlist {
-  display: inline-block;
-}
 
 form[name="loginform"] {
   margin: 0 auto;
@@ -364,45 +375,49 @@ form[name="loginform"] {
     }
   }
 }
-/*
-form[name="edituserform"] {
-  p {
-    font: var(--georgiaform);
-    color: white;
-    text-shadow: 1px 1px 1px black;
-  }
-  margin: 0 0 1em;
-}
-*/
-form[name="usersform"] {
+
+form.details {
   background-color: var(--prompt);
-  border-radius: 8px;
-  width: clamp(318px, 50vw, 1000px);
-  > ul {
-    border-radius: 8px;
-    li {
-      display: flex;
-      column-gap: 3px;
-      label {
-        flex: 10 1 1em;
-        text-align: right;
-        align-self: center;
-      }
-      input {
-        flex: 40 1 1em;
-        padding: 0.3em 0;
-      }
+  border-radius: var(--button);
+  padding: 1em;
+  width: clamp(318px, 98vw, 1000px);
+  margin: 0 auto 1em;
+  > input {
+    padding: 1em 0.2em;
+    display: block;
+    width: 100%;
+    &[type="submit"] {
+      width: auto;
+      padding: 0.5em 1em;
+      margin: 1em auto 0;
+    }
+    &[type=file]{
+      background-color: white;
+      border-radius: var(--button);
     }
   }
+  select {
+    padding: 0.5em;
+    font-size: 1rem;
+  }
+  > label {
+    display: block;
+    margin: 0.5em 0;
+  }
+}
+form[name="usersform"] {
   fieldset {
     margin: 1em 0;
     text-align: left;
     font: var(--georgiaform);
     color: var(--main-color);
-    font-size: 1em;
+    font-size: .75em;
     padding: 1em 0;
     width: 100%;
     background-color: rgba(255, 255, 255, 0.5);
+    &:last-of-type {
+      padding: 1em;
+    }
 
     legend {
       background-color: rgba(255, 255, 255, 1);
@@ -416,18 +431,17 @@ form[name="usersform"] {
       margin: 0 0 0.4em;
       display: table;
       border-collapse: separate;
-      border-spacing: 10px 0;
+      border-spacing: 1em 0;
       position: relative;
       line-height: 1.2;
-      background-color: white;
-      > * {
+      border-bottom: dotted 1px;
+      * {
         vertical-align: middle;
       }
       span {
         display: table-cell;
         width: 100%;
       }
-
       label {
         color: black;
         font-style: normal;
@@ -449,7 +463,7 @@ form[name="usersform"] {
     text-align: center;
     fieldset {
       select {
-        font-size: 1rem;
+        // font-size: 1rem;
         margin: 0 auto;
       }
       &:last-child {
@@ -487,50 +501,23 @@ form[name="usersform"] {
 
 form[name="uploadform"] {
   text-align: center;
-  padding: 0.5em 0 0 0.5em;
-  margin: auto;
-  border: solid 1px;
-  border-radius: 8px;
-  width: clamp(300px, 70vw, 700px);
-  flex-wrap: wrap;
-  column-gap: 2%;
-  justify-content: center;
-  input,
-  #uploadfiles,
-  select {
-    margin: 0.5em 0 0;
-    width: 69%;
-  }
-  label {
-    text-align: right;
-    width: 29%;
-  }
-  input[type="submit"] {
-    margin: 0.5em auto;
-    flex: 1 1 1em;
-    text-align: center;
-    width: auto;
-    display: inline-block;
-  }
-  + h5 {
-    margin: 1em 0;
-  }
+  width: clamp(300px, 98vw, 800px);
 }
 
 form.choose {
   border: solid 1px;
   background-color: var(--prompt);
   margin: 0 auto 1em;
-  border-radius: 8px;
+  border-radius: var(--button);
   padding: 1em;
-  width: clamp(300px, 40vw, 600px);
+  width: clamp(300px, 90vw, 800px);
 }
 
 form[name="editclientform"] {
   border: solid 1px;
   background-color: var(--prompt);
   margin: 0 auto 1em;
-  border-radius: 8px;
+  border-radius: var(--button);
   width: clamp(300px, 30vw, 600px);
   padding: 1em 0;
   h1 {
@@ -543,53 +530,23 @@ form[name="editclientform"] {
   }
 }
 
-form[name="search"] {
-  padding: 1em 0.5em;
-  background-color: var(--prompt);
-  background-color: rgba(255, 255, 255, 0.5);
-  width: clamp(320px, 70vw, 600px);
-  margin: 1em auto;
-  border: solid 0;
-  text-align: center;
-  label {
-    flex: 1 1 1em;
-    width: 20%;
-    display: inline-block;
-    &[for="text"] {
-      width: 100%;
-      margin: 0.5em 0 0;
-      //width: clamp(200px, 60%, 300px);
-    }
-  }
-  input {
-    display: inline-block;
-    &#text {
-      width: 100%;
-      padding: 0.5em 0;
-      margin: 0 0 0.5em;
-    }
-    [type="search"] {
-      font-size: 1rem;
-      padding: 0.5em 0;
-      width: 69%;
-    }
-  }
-  select {
-    font-size: 1rem;
-    width: 78%;
-  }
-}
-
 form[name="search"] div :not(label, input[type="submit"]) {
   flex: 4 1 1em;
 }
 div#upload {
   margin: 1em auto 0;
-  width: clamp(320px, 70vw, 1000px);
 
   > table {
-    width: 100%;
+    font-size: .75rem;
+    width: clamp(320px, 80vw, 1000px);
     margin: 0 auto 1em;
+    form {
+      margin: 0;
+      input[type="submit"] {
+        padding: 0;
+        margin: 0;
+      }
+    }
   }
 }
 form[name="logoutform"] {
@@ -655,6 +612,7 @@ form[name="deletions"] {
   }
 }
 
+/*
 .searcher fieldset,
 .upload fieldset {
   background-color: var(--prompt);
@@ -668,7 +626,7 @@ form[name="deletions"] {
   background-color: black;
   font: bold 1.1em Georgia, serif;
 }
-
+*/
 th.control {
   vertical-align: middle;
 }
@@ -676,56 +634,46 @@ tr.admin {
   background-color: white;
 }
 footer {
-  margin: 1em 0;
+  margin: 1em 0 0;
+  form[name=logoutform]{
+    margin: 0;
+    border-radius: 19px;
+    input[type=submit] {
+      margin: 0;
+    }
+  }
 }
 section#prompt {
   margin: 1em 0;
   padding: 1em;
-  border-radius: 8px;
+  border-radius: var(--button);
 }
 
 form[name="clientform"] {
   width: clamp(320px, 50%, 60em);
   margin: 0 auto 1em;
-  border-radius: 8px;
+  border-radius: var(--button);
   border: solid 1px;
   background-color: var(--prompt);
   padding: 1em;
   text-align: left;
-  input {
-    padding: 1em 0;
-    display: block;
-    width: 100%;
-    &[type=submit] {
-      width: auto;
-      padding: .5em 1em;
-      margin: 1em auto 0;
-    }
-  }
-  label {
-    display: block;
-    margin: .5em 0;
-  }
- 
+
   &[action="?editform"] {
     p {
       display: table;
-      border-spacing: .5em 0;
+      border-spacing: 0.5em 0;
       position: relative;
       margin: 1em 0 0;
-      input {
-       // flex: 30 1 1em;
-      }
       input[type="checkbox"] {
-      //  flex: 0 0 auto;
+        //  flex: 0 0 auto;
         margin: auto;
         display: table-cell;
         width: auto;
         vertical-align: middle;
-       // @include hide;
+        // @include hide;
       }
       label[for="delete"] {
-      //  flex: 1 1 1em;
+        //  flex: 1 1 1em;
         //padding: 1.2em 0;
         //border-radius: 50%;
         display: table-cell;
@@ -734,7 +682,7 @@ form[name="clientform"] {
         width: 100%;
         cursor: pointer;
         //@include trash(10px, center 0%);
-       // text-indent: 35px;
+        // text-indent: 35px;
       }
       #delete:checked + label {
         background-color: red;
@@ -752,7 +700,7 @@ form[name="downloads"] div input {
 }
 
 #yesno {
-  margin: 0;
+  margin: 0 0 1em;
   font: var(--deleter);
   label {
     cursor: pointer;
@@ -787,14 +735,6 @@ form[name="downloads"] div input {
 }
 
 form[name="updatefileinfo"] {
-  // padding: 1em clamp(1em, 20%, 10em) 1em clamp(1em, 20%, 10em);
-  border-radius: 0;
-  background-color: rgba(255, 255, 255, 0.5);
-  margin: 0 0 1em;
-  border-width: 0;
-  color: black;
-  width: 100%;
-
   > * {
     display: block;
     text-align: center;

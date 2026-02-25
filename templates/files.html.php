@@ -1,12 +1,26 @@
 <?php include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
+
+
 ?>
-<h1><a href=".">File Uploads</a></h1>
+<h1>File Uploads</h1>
 <h2><?= date('l F j, Y'); ?></h2>
 
 <?php
-include TEMPLATE . $template;
-echo $error;
+if (isset($template)) {
+    ob_start();
+}
+echo $error; ?>
+
+<p><a href="./?upload">Upload A File</a></p>
+
+
+<?php
+if (isset($template)) {
+    ob_end_clean();
+    include TEMPLATE . $template;
+}
+
 if (count($files) > 0): ?>
     </form>
     <h5>The following files are stored in the database:</h5>
@@ -45,7 +59,7 @@ if (count($files) > 0): ?>
                         </div>
                     </form>
                 </td>
-                <?php                 
+                <?php
                 if ($priv !== 'Browser') : ?>
                     <td title="delete">
                         <form action="." method="post" name="<?= $f['id']; ?>">

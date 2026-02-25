@@ -367,3 +367,65 @@ function formatFileSize($size)
     }
     return ceil($size) . 'kb';
 }
+
+
+function payment1($total, $rate, $pay, $fixed = 0)
+{
+    $count = 0;
+    while ($total > 0) {
+        //interest
+        $total *= $rate;
+        //monthly payment
+        $total -= $pay;
+        //fixed charges (before or after rate applied?)
+        $total += $fixed;
+        //duration
+        $count++;
+    }
+    return [$total, $count];
+}
+
+function paymentZero($total, $rate, $min = 100)
+{
+    $count = 0;
+    $x = ($total * $rate);
+    $y = $total * .01;
+    $pay = $x + $y;
+
+    $pay = max($pay, $min);
+
+    while ($total > 0) {
+        //monthly payment
+        $total -= $pay;
+        //interest
+        //$total *= $rate;
+        //fixed charges (before or after rate applied?)
+        //duration
+        $count++;
+    }
+    return [$total, $count];
+}
+
+
+function interest($total, $rate, $dur, $min = 100)
+{
+   $count = 0;
+
+   $x = ($total * $rate);
+   $y = $total * .01;
+   $pay = $x + $y;
+
+   
+
+   $pay = max($pay, $min);
+    while ($count < $dur) {
+        //monthly payment
+        $total -= $pay;
+        //interest
+       // $total *= $rate;
+        //fixed charges (before or after rate applied?)
+        //duration
+        $count++;
+    }
+    return [$total, $count];
+}

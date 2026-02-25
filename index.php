@@ -19,6 +19,8 @@ function clientFromUpload($txt, ...$args)
 function userFromUpload()
 {
     return "SELECT user.id, user.name, user.email, user.client_id FROM upload INNER JOIN user ON upload.userid = user.id INNER JOIN (SELECT userid FROM upload WHERE id=:id) AS owt ON user.id = owt.userid WHERE user.id = owt.userid";
+
+    return "SELECT user.id, user.name, user.email, user.client_id FROM upload INNER JOIN user ON upload.userid = user.id WHERE user.id =:id";
 }
 
 function selectUploaded($order, $start, $limit)
@@ -189,7 +191,7 @@ if ($roleplay = userHasWhatRole()) {
 if ($priv === 'Browser') {
     $disabled = 'disabled';
 }
-$template = '/upload.html.php';
+//$template = '/upload.html.php';
 $pagetitle = 'File Uploads';
 
 if (isset($_POST['action']) && $_POST['action'] == 'upload') {
@@ -338,6 +340,10 @@ if (isset($_POST['confirm']) && $_POST['confirm'] == 'Yes') {
     $template = '/prompt.html.php';
 }
 
+if(isset($_GET['upload'])){
+    $template = 'upload.html.php';
+}
+
 if (isset($_POST['proceed']) && $_POST['proceed'] === 'destroy') {
     include CONNECT;
     $path = '../../filestore/';
@@ -395,28 +401,38 @@ if (isset($_POST['proceed']) && $_POST['proceed'] === 'destroy') {
 
 if (isset($_POST['confirm']) && $_POST['confirm'] === 'No') { //swap
     $id = $_POST['id'];
+    $prompt = 'Proceed to Update';
     $ownerid = $_POST['ownerid'];
     $ownername = $_POST['ownername'];
     $domain = $_POST['domain'];
     $multi = $_POST['multi'];
+    $editor = $_POST['editor'];
     $pos = "Yes";
     $neg = "No";
     $action = '';
+    $call = "update";
+    $prompt = $multi ? "Change ownership on ALL files?" : $prompt;
+    $template = '/prompt.html.php';
+    $call = $multi ? 'swap' : $call;
 
-    if ($multi) {
-        $call = "affirm";
-        $prompt = "Change ownership on ALL files?";
-        $template = '/prompt.html.php';
-    } else {
-        $call = "swap";
-    }
 }
-
+//$call === 'swap' || isset($_POST['swap']) || 
 //SWITCH OWNER OF FILE OR JUST UPDATE DESCRIPTION (FILE AMEND BLOCK)
-if ($call === 'swap' || isset($_POST['swap']) || isset($_POST['affirm'])) {
+if (isset($_POST['update']) || isset($_POST['swap'])) {
     include CONNECT;
+
+    $swap = 'No';
+
+    if(isset($_POST['update']) && $_POST['update'] === 'No'){
+        header("Location: .");
+        exit();
+    }
+
+    if(isset($_POST['swap'])){
+        $swap = $_POST['swap'];
+    }
     $template = '/update.html.php';
-    $answer = $answer ?? $_POST['swap'] ?? NULL;
+    $answer = $answer ?? $_POST['affirm'] ?? NULL;
     $email = $_SESSION['email'];
 
     $sql = "SELECT upload.id, filename, description, upload.userid, user.name FROM upload INNER JOIN user ON upload.userid=user.id  WHERE upload.id=:id";
@@ -565,6 +581,7 @@ foreach ($rows as $row) {
     );
 }
 $pagetitle = 'North Wolds Printers | The File Uploads';
+$pageid = 'upload';
 
 list($qs, $state) = qsort('sort=');
 $ufn = qUserHead('u');

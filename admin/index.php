@@ -20,6 +20,7 @@ $usercount = 0;
 setExtent(null);
 $selected = null;
 $goto = '.';
+$pageid = 'admin_user';
 
 $calltext = "Add New User";
 $callroute = 'add';
@@ -41,25 +42,70 @@ $isContractor = function ($pdo, $email, $clientid = NULL) use ($is_client_sql) {
 $clientflag = $_GET['clientflag'] ?? NULL;
 $pwd = $_GET['pwd'] ?? NULL;
 
+function presentList($role, $flag = 'admin')
+{
+    $users = [];
+    $client = [];
+    if (isApproved($role, $flag)) {
+        include CONNECT;
+        $sqlu = "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS NULL ORDER BY name";
+
+        $st = doQuery($pdo, $sqlu, "Error retrieving details");
+        $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($rows as $row) {
+            $users[$row['id']] = $row['name'];
+        }
+        /*
+    $sqlc = "SELECT employer.user_id, employer.name, employer.domain FROM
+    (SELECT user.name, user.id as user_id, client.domain FROM user INNER JOIN client ON RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))=client.domain) AS employer";
+    */
+
+      /*  //from filter list
+
+      "SELECT domain FROM client WHERE domain=:domain"
+
+    $sqlc = "SELECT employer.user_name, employer.user_id FROM (SELECT user.name AS user_name, user.id AS user_id, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer WHERE employer.domain=:domain"; //
+
+    
+    */
+
+        $sqlc = "SELECT name, domain, tel FROM client ORDER BY name";
+        $st = doQuery($pdo, $sqlc, "Database error fetching clients");
+        $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($rows as $row) {
+            $client[$row['domain']] = $row['name'];
+        }
+
+        return [$users, $client];
+    }
+}
+
+
 function filterUsers($sql, $key, $pagetitle)
 {
   //$key expected to be freelance id or domain
   $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
-  $selected = true;
   $return = "Return to users";
   $pagehead = "Manage Users";
   $users = [];
   $calltext = "Delete User";
+  $selected = true;
+
   include CONNECT;
   $st = $pdo->prepare("SELECT domain FROM client WHERE domain=:domain");
   $st->bindValue(":domain", $key);
   doPreparedQuery($st, "Unable to identify domain");
   $row = $st->fetch(PDO::FETCH_ASSOC);
-  //some clients need full domain for identification, in which case the query is simplified to a straight match to a users email address which corresponds to the client domain.
+  /*some clients need full domain for identification, in which case the query is simplified to a straight match to a users email address which corresponds to the client domain.
   if (strrpos($key, "@")) {
     $domainstr = "user.email";
   }
+    */
   if ($row) {
+   // $selected = true;
+    //a client is logged in
     $sqlc = "SELECT employer.user_name, employer.user_id FROM (SELECT user.name AS user_name, user.id AS user_id, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer WHERE employer.domain=:domain"; //
     $st = $pdo->prepare($sqlc);
     $st->bindValue(":domain", $row['domain']);
@@ -274,7 +320,6 @@ $pagetitle = preg_match("/client/i", $priv) ? "Admin" : "Admin | Edit Users";
 if (isset($_GET['add'])) {
   include CONNECT;
   $route = "Add";
-  $pagehead = 'New User';
   $action = 'addform';
   $button = 'Add User';
   $override = '';
@@ -304,7 +349,7 @@ if (isset($_GET['add'])) {
     });
   }
   //$pagetitle = "Admin | Users";
-  $pagehead = "Add User";
+  $pagehead = "New User";
   include 'form.html.php';
   exit();
 } //////////////END OF ASSIGN
@@ -656,12 +701,14 @@ if ($users === []) {
   }
 }
 
+
 if ($users === []) {
   include CONNECT;
   if (isApproved($priv, '!admin')) {
     $sql .= " AND user.id=$key";
   }
   $sql .= " ORDER BY name";
+
   $st = doQuery($pdo, $sql, '');
   $rows = $st->fetchAll(PDO::FETCH_ASSOC);
   foreach ($rows as $row) {
@@ -678,6 +725,7 @@ if (isApproved($priv, 'ADMIN')) {
     $client[$row['domain']] = $row['name'];
   }
 }
+
 //include CONNECT;
 //reOrderTable($pdo);
 //reAssignClient($pdo);

@@ -1,11 +1,9 @@
-<form action="<?= $action; ?>" method="post" name="updatefileinfo" class="prompt">
+<form action="<?= $action; ?>" method="post" name="updatefileinfo" class="details">
 	<?php
-	$swap = $_POST['swap'] ?? $_POST['affirm'] ?? NULL;
 	if ($swap === 'No') {
 	?>
 		<label for="filename">Name</label><input id="filename" type="text" name="filename" value="<?= $filename; ?>" />
 		<label for="description">Description</label><input id="description" type="text" name="description" value="<?= $description; ?>" />
-
 	<?php } ?>
 	<?php if (!isset($colleagues) && isset($all_users)) { ?>
 		<label for="user">User</label><select id="user" name="user">

@@ -1,8 +1,9 @@
 <?php
 include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
-include TEMPLATE . 'base.html.php'; ?>
-<div>
+include TEMPLATE . 'base.html.php'; 
+$optgroup = $priv === 'Admin' ? 'clients' : '';
+?>
 	<h1><?= $pagehead; ?></h1>
 	<h3 class='error'><?= $error; ?></h3>
 	<?php
@@ -12,20 +13,19 @@ include TEMPLATE . 'base.html.php'; ?>
 	}
 	?>
 	<?php
-	if (($priv == 'Admin') && !isset($selected)): ?>
+	if (empty($selected)): 
+	?>
 		<form action="" method="post" name="userform" class="choose">
 			<label for="user"></label><select id="user" name="user">
 				<option value="">Select one</option>
-				<?php if ($priv === 'Admin') {
-					$optgroup = 'clients';
-				}
+				<?php if ($optgroup) {
 				$group = $client;
-				include '../templates/_optgroup.html.php';
-				if ($priv === 'Admin') {
-					$optgroup = 'users';
-				}
+				include TEMPLATE . '_optgroup.html.php';
+				$optgroup = 'users';
 				$group = $users;
-				include '../templates/_optgroup.html.php'; ?>
+				include TEMPLATE . '_optgroup.html.php';
+				}
+				?>
 			</select>
 			<input type="submit" name="action" value="Choose" />
 
@@ -40,21 +40,11 @@ include TEMPLATE . 'base.html.php'; ?>
 			?>
 		</div>
 		<?php
-		if ($priv === 'Admin') { ?>
-			<p><a href=".">Return to user list</a></p>
-	<?php }
 	endif;
 	if (isset($prompt)) {
 		ob_end_clean();
 		include TEMPLATE . 'prompt.html.php';
 	}
 	?>
-	<p><a href="..">Return to uploads</a></p>
-	<?php
-	include TEMPLATE . '_logout.html.php';
-	exit();
-	?>
-</div>
-</body>
-
-</html>
+<?php
+include "_footer.html.php";
