@@ -1,48 +1,33 @@
 @media screen and (min-width: 500px) {
   form.details {
-    > label {
+    label {
       width: 25%;
       display: inline-block;
       text-align: right;
       margin-right: 2%;
     }
-    > input, select {
+    input,
+    select {
       display: inline-block;
       margin: 0 0 1em;
       width: 72%;
+    }
+
+    & > div {
+      width: clamp(300px, 100%, 650px);
     }
   }
 
   form[name="clientform"] {
     input {
-      width: 75%; 
+      width: 75%;
       &:last-of-type {
         width: auto;
-        display:block;
-       }
+        display: block;
+      }
     }
     label {
       width: 20%;
-    }
-  }
-
-  form[name="search"] {
-
-    label {
-      &[for="text"] {
-
-      }
-    }
-    input {
-      &#text {
-
-      }
-      [type="search"] {
-
-      }
-    }
-    select {
-   
     }
   }
 }
@@ -50,11 +35,10 @@
 @media screen and (min-width: 768px) {
   html body {
     text-align: center;
+    // font-size: calc(16px - 2 * ((100vw - 751px) / (1280 - 751)));
   }
-
-  body > * {
-    margin: 1em auto;
-  }
+}
+/*
   form[name="usersform"],
   form[name="updatefileinfo"],
   .searcher {
@@ -90,74 +74,6 @@
   }
 }
 @media screen and (min-width: 768px) and (orientation: portrait) {
-  html body {
-    width: 70%;
-  }
 
-  form[name="usersform"] {
-    padding: 1em;
-    margin: 0 auto 1em;
-  }
 }
-@media screen and (max-width: 767px) {
-  #canvas .select,
-  #canvas form[name="edituserform"]:last-child {
-    margin-bottom: 0;
-  }
-  #canvas form,
-  #canvas form[name="clientsform"].select {
-    margin-bottom: 1em;
-  }
-  form[name="clientform"].commit + p {
-    margin: 0 0 1em;
-  }
-}
-
-@media screen and (max-width: 667px) and (orientation: portrait) {
-  div.select {
-    font-size: 0.9em;
-  }
-}
-
-@media screen and (max-width: 320px) and (orientation: portrait) {
-  div.select {
-    font-size: 0.8em;
-  }
-  .button button {
-    padding: 0;
-    width: 16px;
-    height: 14px;
-  }
-}
-
-@supports (background-size: contain) {
-  button.action {
-    background-size: 100%;
-  }
-}
-
-@supports (column-gap: 20px) {
-  .edit form {
-    display: grid;
-    grid-template-columns: repeat(19, 1fr);
-    column-gap: 0.4em;
-    margin: 0 auto;
-  }
-  .edit form fieldset {
-    grid-column-start: 1;
-    grid-column-end: 20;
-  }
-  .edit form > div {
-    grid-column-start: 19;
-    grid-column-end: 20;
-  }
-
-  .edit form .select {
-    grid-column-start: 1;
-    grid-column-end: 19;
-  }
-  .button button {
-    width: 30px;
-    height: 25px;
-  }
-}
+*/

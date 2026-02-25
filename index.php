@@ -150,6 +150,7 @@ function myDomain($fileid)
     return [$ownerid, $ownername, $domain, $multi, $editor];
 }
 
+$pageid = 'upload';
 $pagetitle = 'Log In';
 $pagehead = 'Log In!';
 $error = '';
@@ -168,6 +169,9 @@ $ext = null;
 $getuser = '';
 $bytext = '';
 $byuser = '';
+
+
+
 
 $uploaded = function ($arg) {
     return $_FILES['upload'][$arg];
@@ -191,8 +195,19 @@ if ($roleplay = userHasWhatRole()) {
 if ($priv === 'Browser') {
     $disabled = 'disabled';
 }
-//$template = '/upload.html.php';
 $pagetitle = 'File Uploads';
+
+list($qs, $state) = qsort('sort=');
+$ufn = qUserHead('u');
+$tfn = qHead('t');
+$ffn = qHead('f', 'u');
+$tmp = $qs ? "&sort=" : "?sort=";
+$qs = $qs ? "?$qs" : '';
+$qs = $qs . $tmp;
+$qs = preg_replace("/&&/", "&", $qs);
+$fhead = $qs . $ffn($state);
+$uhead = $qs . $ufn($state);
+$thead = $qs . $tfn($state);
 
 if (isset($_POST['action']) && $_POST['action'] == 'upload') {
     //Bail out if the file isn't really an upload
@@ -340,7 +355,7 @@ if (isset($_POST['confirm']) && $_POST['confirm'] == 'Yes') {
     $template = '/prompt.html.php';
 }
 
-if(isset($_GET['upload'])){
+if (isset($_GET['upload'])) {
     $template = 'upload.html.php';
 }
 
@@ -414,7 +429,6 @@ if (isset($_POST['confirm']) && $_POST['confirm'] === 'No') { //swap
     $prompt = $multi ? "Change ownership on ALL files?" : $prompt;
     $template = '/prompt.html.php';
     $call = $multi ? 'swap' : $call;
-
 }
 //$call === 'swap' || isset($_POST['swap']) || 
 //SWITCH OWNER OF FILE OR JUST UPDATE DESCRIPTION (FILE AMEND BLOCK)
@@ -423,12 +437,12 @@ if (isset($_POST['update']) || isset($_POST['swap'])) {
 
     $swap = 'No';
 
-    if(isset($_POST['update']) && $_POST['update'] === 'No'){
+    if (isset($_POST['update']) && $_POST['update'] === 'No') {
         header("Location: .");
         exit();
     }
 
-    if(isset($_POST['swap'])){
+    if (isset($_POST['swap'])) {
         $swap = $_POST['swap'];
     }
     $template = '/update.html.php';
@@ -517,7 +531,7 @@ if (isset($_GET['p']) && is_numeric($_GET['p'])) {
     }
 } //end of IF NOT PAGES SET
 
-
+$mainclass = $pages === 1 ? '' : 'paginate';
 if (isset($_GET['s']) and is_numeric($_GET['s'])) {
     $start = $_GET['s'];
 } else {
@@ -553,10 +567,16 @@ if (isset($_GET['find'])) {
 list($select, $from, $order) = selectUploaded($order_by, $start, $display);
 //!!comes AFTER $select etc..
 if (isset($_GET['action']) && $_GET['action'] === 'search') {
-    include INCLUDES . 'search.inc.php';
-    include_once TEMPLATE . 'base.html.php';
-    include TEMPLATE . 'files.html.php';
-    exit();
+
+    if (!empty($_POST)) {
+        include INCLUDES . 'search.inc.php';
+        include_once TEMPLATE . 'base.html.php';
+        include TEMPLATE . 'files.html.php';
+        exit();
+    } else {
+        header("Location: .");
+        exit();
+    }
 }
 $build = buildQuery($priv, 'ADMIN');
 list($pdo, $sql) = $build($select, $from, $order);
@@ -580,20 +600,7 @@ foreach ($rows as $row) {
         'size' => $row['size']
     );
 }
-$pagetitle = 'North Wolds Printers | The File Uploads';
-$pageid = 'upload';
 
-list($qs, $state) = qsort('sort=');
-$ufn = qUserHead('u');
-$tfn = qHead('t');
-$ffn = qHead('f', 'u');
-$tmp = $qs ? "&sort=" : "?sort=";
-$qs = $qs ? "?$qs" : '';
-$qs = $qs . $tmp;
-$qs = preg_replace("/&&/", "&", $qs);
-$fhead = $qs . $ffn($state);
-$uhead = $qs . $ufn($state);
-$thead = $qs . $tfn($state);
 
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/base.html.php';
 $error =  $lib[$_SERVER["QUERY_STRING"]] ?? '';

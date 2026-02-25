@@ -144,13 +144,16 @@ input[type=search]::-webkit-search-decoration {
   -webkit-appearance: none;
 }
 
-#admin_user, #admin_client {
+#admin_user,
+#admin_client {
   background-color: var(--prompt);
 }
-#admin_user main form, #admin_client main form {
+#admin_user main form,
+#admin_client main form {
   background-color: rgba(255, 255, 255, 0.5);
 }
-#admin_user main form#yesno, #admin_client main form#yesno {
+#admin_user main form#yesno,
+#admin_client main form#yesno {
   background-color: var(--invert);
 }
 
@@ -304,27 +307,32 @@ main > p {
 
 footer {
   background-color: var(--invert);
-  padding: 1.2em 0;
+  padding: 1.2rem 0;
   border: solid 1px white;
   border-width: 1px 0 0;
 }
 footer > * {
-  border: solid 1px black;
+  color: white;
+  border: solid 1px white;
   border-radius: 0;
   font: 1em Arial, sans-serif;
-  color: black;
   display: inline-block;
   margin-right: 0.5em;
   padding: 0.5rem 0.75rem;
+  border-radius: var(--button);
 }
 footer > *:hover {
   color: white;
 }
 footer span.current {
   background-color: var(--bright);
+  color: black;
 }
 #upload footer {
-  background-color: white;
+  padding: 2rem 0;
+}
+#upload footer.paginate {
+  margin: -1rem 0 0;
 }
 
 p a {
@@ -393,7 +401,6 @@ input[type=submit] {
   background-color: var(--invert);
   display: inline-block;
   padding: 1em;
-  border: solid 1px black;
   border-radius: var(--button);
   margin: 1em 0;
   color: white;
@@ -407,15 +414,15 @@ input[type=submit] {
   color: white;
 }
 
+/*
 .commit {
   padding: 1em;
   border: solid 1px black;
 }
-
 .warning {
   background-color: black;
 }
-
+  */
 /*div form*/
 .clientgroup {
   background-color: var(--prompt);
@@ -462,20 +469,20 @@ form.details {
   background-color: var(--prompt);
   border-radius: var(--button);
   padding: 1em;
-  width: clamp(318px, 98vw, 1000px);
+  width: clamp(318px, 98vw, 768px);
   margin: 0 auto 1em;
 }
-form.details > input {
+form.details input {
   padding: 1em 0.2em;
   display: block;
   width: 100%;
 }
-form.details > input[type=submit] {
+form.details input[type=submit] {
   width: auto;
   padding: 0.5em 1em;
   margin: 1em auto 0;
 }
-form.details > input[type=file] {
+form.details input[type=file] {
   background-color: white;
   border-radius: var(--button);
 }
@@ -483,19 +490,19 @@ form.details select {
   padding: 0.5em;
   font-size: 1rem;
 }
-form.details > label {
+form.details label {
   display: block;
   margin: 0.5em 0;
 }
 
 form[name=usersform] fieldset {
-  margin: 1em 0;
+  margin: 1em auto;
   text-align: left;
   font: var(--georgiaform);
   color: var(--main-color);
   font-size: 0.75em;
   padding: 1em 0;
-  width: 100%;
+  width: clamp(320px, 100%, 580px);
   background-color: rgba(255, 255, 255, 0.5);
 }
 form[name=usersform] fieldset:last-of-type {
@@ -509,7 +516,7 @@ form[name=usersform] fieldset legend {
   color: black;
   font-style: normal;
 }
-form[name=usersform] fieldset div {
+form[name=usersform] fieldset > div {
   margin: 0 0 0.4em;
   display: table;
   border-collapse: separate;
@@ -518,70 +525,35 @@ form[name=usersform] fieldset div {
   line-height: 1.2;
   border-bottom: dotted 1px;
 }
-form[name=usersform] fieldset div * {
+form[name=usersform] fieldset > div * {
   vertical-align: middle;
 }
-form[name=usersform] fieldset div span {
+form[name=usersform] fieldset > div span {
   display: table-cell;
-  width: 100%;
+  text-align: left;
 }
-form[name=usersform] fieldset div label {
+form[name=usersform] fieldset > div label {
   color: black;
   font-style: normal;
   white-space: nowrap;
   display: table-cell;
-  min-width: 7em;
+  min-width: 8em;
   padding: 0;
+  text-align: left;
 }
-form[name=usersform] fieldset div input[type=radio] {
+form[name=usersform] fieldset > div input[type=radio] {
   display: table-cell;
-  position: absolute;
-  top: 0;
-  left: 3px;
   height: 100%;
+  width: 100%;
 }
-form[name=usersform] > div {
-  text-align: center;
-}
-form[name=usersform] > div fieldset select {
+form[name=usersform] fieldset select:first-of-type {
   margin: 0 auto;
+  width: 100%;
 }
-form[name=usersform] > div fieldset:last-child {
+form[name=usersform] fieldset:last-child {
   margin: 0.5em 0;
   display: flex;
   justify-content: center;
-}
-form[name=usersform][action="?editform"] input[type=checkbox] {
-  flex: 1 1 1em;
-  margin: auto;
-  position: absolute;
-  left: -9999px;
-  top: auto;
-}
-form[name=usersform][action="?editform"] label[for=delete] {
-  flex: 3 1 1em;
-  padding: 1.2em 0;
-  border-radius: 50%;
-  cursor: pointer;
-  background-image: url("../assets/trashsprite.png");
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-color: var(--main-color);
-  background-position: center 0%;
-  display: inline-block;
-  height: 10px;
-  width: 10px;
-  align-self: center;
-  text-indent: 10px;
-  overflow: hidden;
-  border: none;
-  text-indent: 35px;
-}
-form[name=usersform][action="?editform"] #delete:checked + label {
-  background-color: red;
-}
-form[name=usersform][action="?editform"] input#password {
-  flex: 36 1 1em;
 }
 form[name=usersform].override {
   background-color: var(--bright);
@@ -626,7 +598,7 @@ div#upload {
   margin: 1em auto 0;
 }
 div#upload > table {
-  font-size: 0.75rem;
+  font-size: calc(12px + 2 * (100vw - 751px) / 529);
   width: clamp(320px, 80vw, 1000px);
   margin: 0 auto 1em;
 }
@@ -642,6 +614,17 @@ form[name=logoutform] {
   border-width: 0;
   padding: 0;
   margin: 0;
+}
+#upload form[name=logoutform] input {
+  position: relative;
+  top: 4rem;
+  background-color: var(--invert);
+}
+#upload form[name=logoutform] input:hover {
+  background-color: black;
+}
+#upload .paginate form[name=logoutform] input {
+  top: 0;
 }
 
 p.ret {
@@ -705,21 +688,6 @@ form[name=deletions].span input[type=submit] {
   text-align: center;
 }
 
-/*
-.searcher fieldset,
-.upload fieldset {
-  background-color: var(--prompt);
-}
-.searcher legend,
-.upload legend,
-.commit legend,
-.edit legend {
-  padding: 0.4em;
-  color: #c6e085;
-  background-color: black;
-  font: bold 1.1em Georgia, serif;
-}
-*/
 th.control {
   vertical-align: middle;
 }
@@ -743,38 +711,6 @@ section#prompt {
   margin: 1em 0;
   padding: 1em;
   border-radius: var(--button);
-}
-
-form[name=clientform] {
-  width: clamp(320px, 50%, 60em);
-  margin: 0 auto 1em;
-  border-radius: var(--button);
-  border: solid 1px;
-  background-color: var(--prompt);
-  padding: 1em;
-  text-align: left;
-}
-form[name=clientform][action="?editform"] p {
-  display: table;
-  border-spacing: 0.5em 0;
-  position: relative;
-  margin: 1em 0 0;
-}
-form[name=clientform][action="?editform"] p input[type=checkbox] {
-  margin: auto;
-  display: table-cell;
-  width: auto;
-  vertical-align: middle;
-}
-form[name=clientform][action="?editform"] p label[for=delete] {
-  display: table-cell;
-  vertical-align: middle;
-  padding: 0;
-  width: 100%;
-  cursor: pointer;
-}
-form[name=clientform][action="?editform"] p #delete:checked + label {
-  background-color: red;
 }
 
 form[name=downloads] div input {
@@ -853,5 +789,77 @@ form[name=updatefileinfo] input[type=submit] {
   padding: 0.5em;
   margin: 1em auto 0;
 }
+
+@media screen and (min-width: 500px) {
+  form.details label {
+    width: 25%;
+    display: inline-block;
+    text-align: right;
+    margin-right: 2%;
+  }
+  form.details input,
+form.details select {
+    display: inline-block;
+    margin: 0 0 1em;
+    width: 72%;
+  }
+  form.details > div {
+    width: clamp(300px, 100%, 650px);
+  }
+  form[name=clientform] input {
+    width: 75%;
+  }
+  form[name=clientform] input:last-of-type {
+    width: auto;
+    display: block;
+  }
+  form[name=clientform] label {
+    width: 20%;
+  }
+}
+@media screen and (min-width: 768px) {
+  html body {
+    text-align: center;
+  }
+}
+/*
+  form[name="usersform"],
+  form[name="updatefileinfo"],
+  .searcher {
+    text-align: left;
+  }
+
+  form[name="updatefileinfo"] > div,
+  .searcher div:last-child,
+  table th {
+    text-align: center;
+  }
+  .commit div:last-of-type {
+    margin: 0;
+  }
+  .fieldset > div {
+    margin: 0.3em 0;
+  }
+  form[name="edituserform"] {
+    margin: 0.5em 0;
+  }
+  #canvas {
+    margin: 0 auto;
+  }
+  .searcher fieldset {
+    margin: 0;
+  }
+  table {
+    margin: 0 auto;
+  }
+  form[name="loginform"] div {
+    display: inline-block;
+    margin: 0 auto;
+  }
+}
+@media screen and (min-width: 768px) and (orientation: portrait) {
+
+}
+*/
 
 /*# sourceMappingURL=main.css.map */

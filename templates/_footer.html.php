@@ -1,8 +1,9 @@
 <?php
 include '_logout.html.php';
+$klas = $pages > 1 ? 'paginate' : '';
 ?>
-
-<footer>
+</main>
+<footer class="<?= $klas; ?>">
     <?php
     if (isset($_GET['ext'])) $suffix = $ext;
     if (isset($_GET['u'])) $user_id = $byuser;

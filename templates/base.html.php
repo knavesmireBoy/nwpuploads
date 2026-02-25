@@ -1,5 +1,7 @@
 <?php
 $css =  is_dir('../css') ? '../css/main.css' : 'css/main.css';
+$fav =  is_dir('../assets') ? '../assets/favicon.ico' : 'assets/favicon.ico';
+
 ?>
 <!DOCTYPE html>
 <html class="no-js" lang="en">
@@ -9,10 +11,10 @@ $css =  is_dir('../css') ? '../css/main.css' : 'css/main.css';
 	<meta content="width=device-width, initial-scale=1" name="viewport">
     <title><?= $pagetitle; ?></title>
     <link href="<?= $css; ?>" type="text/css" rel="stylesheet" media="all" />
-	<link rel="shortcut icon" type="image/jpg" href="assets/favicon.ico">
+	<link rel="shortcut icon" type="image/jpg" href="<?= $fav; ?>">
 	<script>
 		document.cookie = 'resolution=' + Math.max(screen.width, screen.height) + '; path=/';
 	</script>
 </head>
 <body id="<?= $pageid ?? ''; ?>">
-	<main>
+<main class="<?= $mainclass ?? ''; ?>">

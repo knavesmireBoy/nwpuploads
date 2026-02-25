@@ -1,7 +1,5 @@
 <?php if (!empty($clientlist)) : ?>
-
-    <div>
-        <fieldset>
+    <fieldset>
             <legend>Assign to Client</legend><label for="employer"></label>
             <select name="employer" id="employer">
                 <option value="">Select One</option>
@@ -10,6 +8,5 @@
                 <?php endforeach; ?>
             </select>
         </fieldset>
-    </div>
 
 <?php endif;

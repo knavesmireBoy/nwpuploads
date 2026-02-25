@@ -1,7 +1,7 @@
 <?php include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
 
-
+$klas = $pages > 1 ? 'paginate' : '';
 ?>
 <h1>File Uploads</h1>
 <h2><?= date('l F j, Y'); ?></h2>
