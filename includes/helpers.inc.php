@@ -175,7 +175,6 @@ function replaceStrPos($new, $db = 'mysql')
     if ($db === 'postgres') {
         return "CONCAT(LEFT(email, substring(email FROM POSITION('@' IN email) + 1)), '$new')";
     } else {
-
         return "CONCAT(LEFT(email, INSTR(email, '@')), '$new')";
     }
 }
@@ -428,4 +427,27 @@ function interest($total, $rate, $dur, $min = 100)
         $count++;
     }
     return [$total, $count];
+}
+
+
+function reAssoc($roles, $keys, $k, $v, $ret, $i, $j)
+{
+    if (isset($roles[$i]) && isset($keys[$j])) {
+        $tgt = $keys[$j];
+        //iterate until you find KEY to title
+        if ($roles[$i]['id'] === $tgt) {
+           // $ret[] = [$roles[$i]['id'] => $roles[$i]['description']];
+            //$ret[] = ['id' => $roles[$i]['id'], 'description' => $roles[$i]['description']];
+            $ret[] = [$k => $roles[$i][$k], $v => $roles[$i][$v]];
+            $j += 1; //advance
+            $i = 0; //reset
+            return reAssoc($roles, $keys, $k, $v, $ret, $i, $j);
+        } else {
+            //increment $roles
+            return reAssoc($roles, $keys, $k, $v, $ret, $i += 1, $j);
+            //return $ret;
+        }
+    } else {
+        return $ret;
+    }
 }

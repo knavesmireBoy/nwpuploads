@@ -57,7 +57,10 @@ $rows = $st->fetchAll(PDO::FETCH_ASSOC);
 $records = empty($rows) ? 0 : $rows[0]['total'];
 if ($records > $display) {
     $pages = ceil($records / $display);
-} else $pages = 1;
+} else {
+    $pages = 1;
+}
+
 
 $files = array();
 foreach ($rows as $row) {

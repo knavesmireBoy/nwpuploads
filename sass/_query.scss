@@ -77,3 +77,29 @@
 
 }
 */
+
+
+@keyframes slide-in {
+  from {
+    translate:  150vw 0;
+   // height: 0;
+  }
+
+  to {
+    translate: 0 0;
+   // height: calc-size(auto);
+  }
+}
+
+#yesno/*, form[name=updatefileinfo], form[name=search]*/ {
+  animation-duration: 1.5s;
+  animation-name: slide-in;
+}
+
+form[name=updatefileinfo], form[name=search] {
+  background-image: radial-gradient(var(--prompt), white 88%);
+  font: var(--deleter);
+  select {
+    font: var(--deleter);
+  }
+}

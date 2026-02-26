@@ -511,6 +511,7 @@ if (isset($_POST['original'])) {
 if (isset($_GET['p']) && is_numeric($_GET['p'])) {
     $pages = $_GET['p'];
 } else { // counts all files
+    $sorter = array('f' => 'filename ASC', 'ff' => 'filename DESC', 'u' => 'user ASC', 'uu' => 'user DESC', 'uf' => 'user ASC, filename ASC', 'uuf' => 'user DESC, filename ASC',  'uff' => 'user ASC, filename DESC',  'uuff' => 'user DESC, filename DESC', 'ut' => 'user ASC, time ASC', 'utt' => 'user ASC, time DESC', 'uut' => 'user DESC, time ASC', 'uutt' => 'user DESC, time DESC', 't' => 'time ASC', 'tt' => 'time DESC');
     $pages = 1;
     include CONNECT;
     $sql = "SELECT COUNT(upload.id) as total from upload ";
@@ -538,16 +539,16 @@ if (isset($_GET['s']) and is_numeric($_GET['s'])) {
     $start = 0;
 }
 
-$sorter = array('f' => 'filename ASC', 'ff' => 'filename DESC', 'u' => 'user ASC', 'uu' => 'user DESC', 'uf' => 'user ASC, filename ASC', 'uuf' => 'user DESC, filename ASC',  'uff' => 'user ASC, filename DESC',  'uuff' => 'user DESC, filename DESC', 'ut' => 'user ASC, time ASC', 'utt' => 'user ASC, time DESC', 'uut' => 'user DESC, time ASC', 'uutt' => 'user DESC, time DESC', 't' => 'time ASC', 'tt' => 'time DESC');
 
-$sort = (isset($_GET['sort']) ? $_GET['sort'] : '1');
+//$sort = (isset($_GET['sort']) ? $_GET['sort'] : '1');
+$sort = $_GET['sort'] ?? '1';
 
-foreach ($sorter as $ix => $u) {
-    if ($ix == $sort) break;
+foreach ($sorter as $k => $v) {
+    if ($k == $sort) break;
 }
 switch ($sort) {
-    case $ix:
-        $order_by = $sorter[$ix];
+    case $k:
+        $order_by = $sorter[$k];
         break;
     default:
         $order_by = 'time DESC';
@@ -567,8 +568,7 @@ if (isset($_GET['find'])) {
 list($select, $from, $order) = selectUploaded($order_by, $start, $display);
 //!!comes AFTER $select etc..
 if (isset($_GET['action']) && $_GET['action'] === 'search') {
-
-    if (!empty($_POST)) {
+    if (!empty($_GET)) {
         include INCLUDES . 'search.inc.php';
         include_once TEMPLATE . 'base.html.php';
         include TEMPLATE . 'files.html.php';
@@ -600,7 +600,6 @@ foreach ($rows as $row) {
         'size' => $row['size']
     );
 }
-
 
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/base.html.php';
 $error =  $lib[$_SERVER["QUERY_STRING"]] ?? '';

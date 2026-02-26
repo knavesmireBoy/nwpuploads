@@ -465,18 +465,18 @@ form[name="usersform"] {
       }
     }
   }
-    fieldset {
-      select:first-of-type {
-        margin: 0 auto;
-        width: 100%;
-      }
-      &:last-child {
-        margin: 0.5em 0;
-        display: flex;
-        justify-content: center;
-      }
+  fieldset {
+    select:first-of-type {
+      margin: 0 auto;
+      width: 100%;
     }
-  
+    &:last-child {
+      margin: 0.5em 0;
+      display: flex;
+      justify-content: center;
+    }
+  }
+
   &.override {
     background-color: var(--bright);
   }

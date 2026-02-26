@@ -861,5 +861,25 @@ form.details select {
 
 }
 */
+@keyframes slide-in {
+  from {
+    translate: 150vw 0;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+#yesno {
+  animation-duration: 1.5s;
+  animation-name: slide-in;
+}
+
+form[name=updatefileinfo], form[name=search] {
+  background-image: radial-gradient(var(--prompt), white 88%);
+  font: var(--deleter);
+}
+form[name=updatefileinfo] select, form[name=search] select {
+  font: var(--deleter);
+}
 
 /*# sourceMappingURL=main.css.map */

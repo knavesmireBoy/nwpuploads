@@ -21,7 +21,7 @@ setExtent(null);
 $selected = null;
 $goto = '.';
 $pageid = 'admin_user';
-
+$roleorder = ['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'];
 $calltext = "Add New User";
 $callroute = 'add';
 
@@ -44,24 +44,24 @@ $pwd = $_GET['pwd'] ?? NULL;
 
 function presentList($role, $flag = 'admin')
 {
-    $users = [];
-    $client = [];
-    if (isApproved($role, $flag)) {
-        include CONNECT;
-        $sqlu = "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS NULL ORDER BY name";
+  $users = [];
+  $client = [];
+  if (isApproved($role, $flag)) {
+    include CONNECT;
+    $sqlu = "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS NULL ORDER BY name";
 
-        $st = doQuery($pdo, $sqlu, "Error retrieving details");
-        $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+    $st = doQuery($pdo, $sqlu, "Error retrieving details");
+    $rows = $st->fetchAll(PDO::FETCH_ASSOC);
 
-        foreach ($rows as $row) {
-            $users[$row['id']] = $row['name'];
-        }
-        /*
+    foreach ($rows as $row) {
+      $users[$row['id']] = $row['name'];
+    }
+    /*
     $sqlc = "SELECT employer.user_id, employer.name, employer.domain FROM
     (SELECT user.name, user.id as user_id, client.domain FROM user INNER JOIN client ON RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))=client.domain) AS employer";
     */
 
-      /*  //from filter list
+    /*  //from filter list
 
       "SELECT domain FROM client WHERE domain=:domain"
 
@@ -70,16 +70,16 @@ function presentList($role, $flag = 'admin')
     
     */
 
-        $sqlc = "SELECT name, domain, tel FROM client ORDER BY name";
-        $st = doQuery($pdo, $sqlc, "Database error fetching clients");
-        $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+    $sqlc = "SELECT name, domain, tel FROM client ORDER BY name";
+    $st = doQuery($pdo, $sqlc, "Database error fetching clients");
+    $rows = $st->fetchAll(PDO::FETCH_ASSOC);
 
-        foreach ($rows as $row) {
-            $client[$row['domain']] = $row['name'];
-        }
-
-        return [$users, $client];
+    foreach ($rows as $row) {
+      $client[$row['domain']] = $row['name'];
     }
+
+    return [$users, $client];
+  }
 }
 
 
@@ -104,7 +104,7 @@ function filterUsers($sql, $key, $pagetitle)
   }
     */
   if ($row) {
-   // $selected = true;
+    // $selected = true;
     //a client is logged in
     $sqlc = "SELECT employer.user_name, employer.user_id FROM (SELECT user.name AS user_name, user.id AS user_id, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer WHERE employer.domain=:domain"; //
     $st = $pdo->prepare($sqlc);
@@ -126,6 +126,7 @@ function filterUsers($sql, $key, $pagetitle)
       header("Location: ./?edit=$key");
       exit;
     }
+   // $selected = false;
   } else {
     $callroute = "delete=$key";
     header("Location: ./?edit=$key");
@@ -141,7 +142,6 @@ function defaultQuery($key, $priv)
   }
   return "SELECT id, name FROM user ";
 }
-
 
 function whoAmI($email, $priv)
 {
@@ -159,7 +159,7 @@ function updateUserDomain($old, $new, $id = 0)
     $sql = "UPDATE user SET email = $concat WHERE email LIKE '%$old'";
     //but restrict to a specific employee (eg leaving)
     if ($id) {
-      $sql .= "  AND id='$id'";
+      $sql .= "  AND id=$id";
     }
     doQuery($pdo, $sql, '');
   }
@@ -208,18 +208,24 @@ function isEmployer($o, $p = '')
   };
 }
 
-function fetchAllRoles($pdo, $selectedRoles = [])
+function fetchAllRoles($pdo, $keys = [], $selectedRoles = [])
 {
   //Build the list of all roles
-  $st = doQuery($pdo, "SELECT id, description FROM role", '<p>Error fetching list of roles.</p>');
+  $st = doQuery($pdo, "SELECT id, description FROM role", 'Error fetching list of roles.');
   $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+ 
+  if($keys !== []){
+    $rows = reAssoc($rows, $keys, 'id', 'description', [], 0, 0);
+  }
+
   foreach ($rows as $row) {
     $roles[] = array('id' => $row['id'], 'description' => $row['description'], 'selected' => in_array($row['id'], $selectedRoles));
   }
+
   return $roles;
 }
 
-function fetchSelectedRoles($pdo, $id)
+function fetchSelectedRoles($pdo, $id, $keys = [])
 {
   $st = $pdo->prepare("SELECT roleid FROM userrole WHERE userid=:id");
   $st->bindValue(":id", $id);
@@ -228,7 +234,7 @@ function fetchSelectedRoles($pdo, $id)
   foreach ($rows as $row) {
     $selectedRoles[] = $row['roleid'];
   }
-  return fetchAllRoles($pdo, $selectedRoles);
+  return fetchAllRoles($pdo, $keys, $selectedRoles);
 }
 
 function resetRoles($role, $roles, $id)
@@ -330,7 +336,7 @@ if (isset($_GET['add'])) {
     header("Location: ./?access");
     exit();
   }
-  $roles = fetchAllRoles($pdo);
+  $roles = fetchAllRoles($pdo, $roleorder);
   if ($admin) {
     $rows = doQuery($pdo, "SELECT * FROM client", "");
     foreach ($rows as $row) {
@@ -397,7 +403,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
     doPreparedQuery($st, 'Error fetching domain.');
     $row = $st->fetch(PDO::FETCH_ASSOC);
     updateUserDomain($row['dom'], $truedom, $aid);
-
     if ($contractor) { //required?
       doQuery($pdo, "UPDATE user INNER JOIN client ON $domainstr = client.domain SET client_id=$contractor WHERE $domainstr = client.domain", "Error updating client");
     }
@@ -493,7 +498,6 @@ if (isset($_GET['delete'])) {
 }
 
 if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
-
   include CONNECT;
   $action = "editform";
   $override = $_POST['override'];
@@ -526,9 +530,12 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     }
     $isEmployer = isEmployer($_POST, 'employer');
     list($clientid, $domain) = $isEmployer($pdo);
+
+ 
   } else {
     $isEmployer = isEmployer($_POST, 'id');
     list($clientid, $domain, $email) = $isEmployer($pdo);
+//    dump([$clientid, $domain, $email]);
     if (!$clientid) {
       //allow admin to = reinstate freelancer status
       if ($admin && !$employerid) {
@@ -575,6 +582,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   $st->bindValue(":cid", $clientid);
   $st->bindValue(":id", $id);
   doPreparedQuery($st, 'Error setting client id');
+  
   updateUserDomain($edom, $domain, $id);
   if ($editor) {
     if ($email !== $_POST['email'] || ($rolechange && $editor)) {
@@ -594,7 +602,6 @@ if (isset($_GET['denied']) || isset($_GET['access']) || isset($_GET['self'])) {
 
 //directly load form.html.php if only one user/client
 if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
-
 
   include CONNECT;
   $class = '';
@@ -619,6 +626,7 @@ if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
   if ($message && ($message === $warning)) {
     $message .= ' You can proceed now that the form is in override mode but you will need to log in again with your updated details.';
   }
+
   if ($clientflag) {
     $sql = "SELECT user.id, user.name, user.email FROM client LEFT JOIN user ON $domainstr = client.domain WHERE user.id=:dom";
     $st = $pdo->prepare($sql);
@@ -626,6 +634,7 @@ if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
     doPreparedQuery($st, "Error fetching user details.");
     $row = $st->fetch(PDO::FETCH_ASSOC);
   }
+
 
   $route = "Edit";
   $pagehead = 'Edit User';
@@ -648,11 +657,11 @@ if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
     foreach ($rows as $row) {
       $selectedRoles[] = $row['roleid'];
     }
-    $roles = fetchAllRoles($pdo, $selectedRoles);
+    $roles = fetchAllRoles($pdo, $roleorder, $selectedRoles);
   }
 
   if ($admin) {
-    $st = doQuery($pdo, "SELECT id, name FROM client ORDER BY name", '<p>Error retrieving clients from database!</p>');
+    $st = doQuery($pdo, "SELECT id, name FROM client ORDER BY name", 'Error retrieving clients from database!');
     $rows = $st->fetchAll(PDO::FETCH_ASSOC);
     foreach ($rows as $row) {
       $clientlist[$row['id']] = $row['name'];
@@ -665,24 +674,21 @@ if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
   }
 
   if ($adminClient) {
-    $tmp = [];
-    foreach ($roles as $role) {
-      if ($role['id'] !== 'Admin') {
-        $tmp[] = $role;
-      }
-    }
-    $roles = $tmp;
+    $roles = safeFilter($roles, function ($role) {
+      return $role['id'] !== 'Admin';
+    });
   }
   $action = "editform";
   include 'form.html.php';
   exit();
-} //edit
+} //get_edit
 
+//LANDING...
 //$sql = defaultQuery($key, $priv);
 //display users___________________________________________________________________
 $sql = "SELECT user.id, user.name FROM user LEFT JOIN (SELECT user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer ON $domainstr=employer.domain WHERE employer.domain IS NULL"; //this overwrites above query to filter out users as employees
 $sql = "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS NULL"; //USING ID NOT DOMAIN
-
+$admin = isApproved($priv, 'ADMIN');
 if (isset($_POST['user'])) { //dropdown
   if ($_POST['user'] === '') {
     header("Location: ./?selectuser");
@@ -696,15 +702,15 @@ if ($users === []) {
   include CONNECT;
   $st = doQuery($pdo, "SELECT domain FROM client LEFT JOIN user ON $domainstr = client.domain WHERE user.id=$key", '');
   $row = $st->fetch(PDO::FETCH_ASSOC);
-  if ($row['domain']) {
+  $domain = $row['domain'] ?? NULL;
+  if ($domain) {
     list($sql, $users, $selected, $return, $pagehead, $pagetitle) = filterUsers($sql, $row['domain'], $pagetitle);
   }
 }
 
-
 if ($users === []) {
   include CONNECT;
-  if (isApproved($priv, '!admin')) {
+  if (!$admin) {
     $sql .= " AND user.id=$key";
   }
   $sql .= " ORDER BY name";
@@ -717,7 +723,7 @@ if ($users === []) {
 }
 
 //prepare list
-if (isApproved($priv, 'ADMIN')) {
+if ($admin) {
   include CONNECT;
   $result = doQuery($pdo, "SELECT client.domain, client.name FROM client ORDER BY name", 'Database error fetching clients:');
   $rows = $result->fetchAll();
@@ -741,5 +747,6 @@ if ($usercount === 1) {
   exit;
 } else {
   $pagehead = isApproved($priv, 'client') ? "Manage Team" : "Manage Users";
+ //$selected = false;
   include 'users.html.php';
 }
