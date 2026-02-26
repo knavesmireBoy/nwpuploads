@@ -2,9 +2,11 @@
 include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
 
 $klas = $pages > 1 ? 'paginate' : '';
+$d = 'l F j, Y';
+//$d = 'j, n, Y';
 ?>
 <h1>File Uploads</h1>
-<h2><?= date('l F j, Y'); ?></h2>
+<h2><?= date($d); ?></h2>
 
 <?php
 if (isset($template)) {
@@ -50,7 +52,9 @@ if (count($files) > 0): ?>
                 <td title="<?= $tel; ?>">
                     <?php
                     $stamp = $f["time"];
-                    echo date("g:ia F j", strtotime($stamp)); ?></td>
+                    $d = "g:ia F j";
+                    //$d = "j-n-Y";
+                    echo date("j-n-Y", strtotime($stamp)); ?></td>
                 <td title="download">
                     <form action="." method="get" name="downloads">
                         <div><input type="hidden" name="action" value="download" />

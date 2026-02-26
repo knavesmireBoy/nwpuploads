@@ -138,6 +138,8 @@ html > body > main {
 
 input[type=search] {
   -webkit-appearance: textfield;
+  background-color: white;
+  border-radius: 20px;
 }
 
 input[type=search]::-webkit-search-decoration {
@@ -166,6 +168,13 @@ select {
   font-family: Helvetica, Geneva, Arial, SunSans-Regular, sans-serif;
   font-style: normal;
   font-size: 1rem;
+  -webkit-appearance: initial;
+  line-height: 2;
+  text-indent: 0.5rem;
+  background-color: white;
+  color: var(--main-color);
+  border: solid 1px;
+  border-radius: var(--button);
 }
 
 h1 a {
@@ -245,6 +254,9 @@ td {
 td:nth-child(even), td:last-child {
   border: solid 1px var(--bright);
   border-width: 0 1px 1px;
+}
+td:nth-child(n+2) {
+  white-space: nowrap;
 }
 
 th {
@@ -599,7 +611,7 @@ div#upload {
 }
 div#upload > table {
   font-size: calc(12px + 2 * (100vw - 751px) / 529);
-  width: clamp(320px, 80vw, 1000px);
+  width: clamp(320px, 95vw, 1000px);
   margin: 0 auto 1em;
 }
 div#upload > table form {

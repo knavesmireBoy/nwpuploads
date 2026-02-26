@@ -42,6 +42,8 @@
         $n = $n ?? 'this user';
         $dl = "delete file";
         $dlu = "delete all files for <span>$n</span>";
+
+
         if ($multi) {
             $dl = "delete this file only";
             $dlu = $editor ? "delete all your files" : $dlu;
@@ -54,7 +56,7 @@
             <?php if ($multi) { ?>
                 <input type="radio" id="ext_nwu" name="extent" value="u" /><label for="ext_nwu"><?= $dlu; ?></label>
             <?php }
-            if ($c != 'this client'): ?>
+            if (($c !== 'this client') && $multi): ?>
                 <input type="radio" id="ext_nwc" name="extent" value="c" /><label for="ext_nwc">delete all files for <span><?= $c; ?></span></label>
             <?php endif; ?>
             <input type="radio" id="cancel" name="extent" /><label for="cancel">cancel</label>
