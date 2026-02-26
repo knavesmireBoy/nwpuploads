@@ -101,7 +101,7 @@ ol, ul, dl {
   --prompt: #d9ebad;
   --bg: radial-gradient(hsl(77, 90%, 40%), white);
   --pale: #edf8d0;
-  --bright: #9c0;
+  --bright: hsl(75, 80%, 45%);
   --invert: hsl(215, 79%, 55%);
   --invert: #5f0202;
   --invert: hsl(77, 100%, 10%);
@@ -336,15 +336,18 @@ footer > * {
 footer > *:hover {
   color: white;
 }
+footer > form {
+  display: block;
+}
 footer span.current {
   background-color: var(--bright);
   color: black;
 }
 #upload footer {
-  padding: 2rem 0;
+  padding: 1rem 0;
 }
-#upload footer.paginate {
-  margin: -1rem 0 0;
+#upload footer.paginate form {
+  margin: -2em 0 1em;
 }
 
 p a {
@@ -582,7 +585,7 @@ form.choose {
   margin: 0 auto 1em;
   border-radius: var(--button);
   padding: 1em;
-  width: clamp(300px, 90vw, 800px);
+  width: clamp(300px, 10vw, 800px);
 }
 
 form[name=editclientform] {
@@ -629,7 +632,6 @@ form[name=logoutform] {
 }
 #upload form[name=logoutform] input {
   position: relative;
-  top: 4rem;
   background-color: var(--invert);
 }
 #upload form[name=logoutform] input:hover {

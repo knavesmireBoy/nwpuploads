@@ -511,7 +511,6 @@ if (isset($_POST['original'])) {
 if (isset($_GET['p']) && is_numeric($_GET['p'])) {
     $pages = $_GET['p'];
 } else { // counts all files
-    $sorter = array('f' => 'filename ASC', 'ff' => 'filename DESC', 'u' => 'user ASC', 'uu' => 'user DESC', 'uf' => 'user ASC, filename ASC', 'uuf' => 'user DESC, filename ASC',  'uff' => 'user ASC, filename DESC',  'uuff' => 'user DESC, filename DESC', 'ut' => 'user ASC, time ASC', 'utt' => 'user ASC, time DESC', 'uut' => 'user DESC, time ASC', 'uutt' => 'user DESC, time DESC', 't' => 'time ASC', 'tt' => 'time DESC');
     $pages = 1;
     include CONNECT;
     $sql = "SELECT COUNT(upload.id) as total from upload ";
@@ -531,7 +530,7 @@ if (isset($_GET['p']) && is_numeric($_GET['p'])) {
         $pages = ceil($records / $display);
     }
 } //end of IF NOT PAGES SET
-
+$sorter = array('f' => 'filename ASC', 'ff' => 'filename DESC', 'u' => 'user ASC', 'uu' => 'user DESC', 'uf' => 'user ASC, filename ASC', 'uuf' => 'user DESC, filename ASC',  'uff' => 'user ASC, filename DESC',  'uuff' => 'user DESC, filename DESC', 'ut' => 'user ASC, time ASC', 'utt' => 'user ASC, time DESC', 'uut' => 'user DESC, time ASC', 'uutt' => 'user DESC, time DESC', 't' => 'time ASC', 'tt' => 'time DESC');
 $mainclass = $pages === 1 ? '' : 'paginate';
 if (isset($_GET['s']) and is_numeric($_GET['s'])) {
     $start = $_GET['s'];

@@ -1,10 +1,11 @@
 <?php
-include '_logout.html.php';
 $klas = $pages > 1 ? 'paginate' : '';
 ?>
 </main>
 <footer class="<?= $klas; ?>">
+
     <?php
+    include '_logout.html.php';
     if (isset($_GET['ext'])) $suffix = $ext;
     if (isset($_GET['u'])) $user_id = $byuser;
     if (isset($_GET['u'])) $text = $bytext;
@@ -31,8 +32,10 @@ $klas = $pages > 1 ? 'paginate' : '';
         }
         if ($current_page <> $pages) { ?>
             <a href="?s=<?= $start + $display; ?>&p=<?= $pages; ?>&u=<?= $user_id; ?>&t=<?= $text; ?>&ext=<?= $suffix; ?><?= $sort; ?>">Next</a>
-</footer>
-</body></html>
+
+
 <?php
-        }
-    }
+ }
+}
+?></footer>
+    </body></html>
