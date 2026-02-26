@@ -16,6 +16,11 @@
     & > div {
       width: clamp(300px, 100%, 650px);
     }
+    #roles {
+      label, input {
+        width: auto;
+      }
+    }
   }
 
   form[name="clientform"] {
@@ -98,8 +103,10 @@
   animation-name: slide-in;
 }
 
-form[name=updatefileinfo], form[name=search] {
-  background-image: radial-gradient(var(--prompt), white 88%);
+form[name=updatefileinfo], form[name=search], form[name=uploadform] {
+ // background-image: radial-gradient(var(--prompt), white 88%);
+ background-color: var(--pale);
+ border: solid 1px black;
   font: var(--deleter);
   select {
     font: var(--deleter);

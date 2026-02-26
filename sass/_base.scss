@@ -11,7 +11,7 @@
   --head: #7a9f33;
   --georgia: bold 2.2em/1 Georgia, sans-serif;
   --georgiaform: bold italic 1.8em/1 Georgia, sans-serif;
-  --deleter: bold italic 1.1em/1 Georgia, sans-serif;
+  --deleter: bold .9em/1 Georgia, sans-serif;
   --label: 1.25em;
   --button: 12px;
 }
@@ -56,6 +56,7 @@ html {
     flex-direction: column;
     font-size: 1em;
     font-family: Helvetica, Geneva, Arial, SunSans-Regular, sans-serif;
+    font-family:Georgia, 'Times New Roman', Times, serif;
     padding: 0;
     margin: auto;
     text-align: center;
@@ -72,8 +73,8 @@ html {
 }
 input[type="search"] {
   -webkit-appearance: textfield;
-  background-color: white;
-  border-radius: 20px;
+ // background-color: white;
+  //border-radius: 20px;
 }
 
 input[type="search"]::-webkit-search-decoration {
@@ -84,7 +85,7 @@ input[type="search"]::-webkit-search-decoration {
 
 #admin_user,
 #admin_client {
-  background-color: var(--prompt);
+  background-color: var(--pale);
   main form {
     background-color: rgba(255, 255, 255, 0.5);
     &#yesno {
@@ -93,11 +94,11 @@ input[type="search"]::-webkit-search-decoration {
   }
 }
 #admin_client {
-  background-color: var(--pale);
+  background-color: var(--prompt);
 }
 select {
   width: 100%;
-  font-family: Helvetica, Geneva, Arial, SunSans-Regular, sans-serif;
+ // font-family: Helvetica, Geneva, Arial, SunSans-Regular, sans-serif;
   font-style: normal;
   font-size: 1rem;
   -webkit-appearance: initial;
@@ -406,6 +407,8 @@ form.details {
   padding: 1em;
   width: clamp(318px, 98vw, 768px);
   margin: 0 auto 1em;
+  font: var(--deleter);
+
   input {
     padding: 1em 0.2em;
     display: block;
@@ -486,6 +489,7 @@ form[name="usersform"] {
     select:first-of-type {
       margin: 0 auto;
       width: 100%;
+      font: var(--deleter);
     }
     &:last-child {
       margin: 0.5em 0;
@@ -510,6 +514,7 @@ form.choose {
   margin: 0 auto 1em;
   border-radius: var(--button);
   padding: 1em;
+  font: var(--deleter);
   width: clamp(300px, 10vw, 800px);
 }
 

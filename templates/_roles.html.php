@@ -1,6 +1,6 @@
 <?php
 if (!empty($roles)): ?>
-    <fieldset>
+    <fieldset id="roles">
         <legend>Roles</legend>
         <?php for ($i = 0; $i < count($roles); $i++): ?>
             <div>

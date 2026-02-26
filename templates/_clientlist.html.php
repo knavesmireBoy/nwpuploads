@@ -1,6 +1,6 @@
 <?php if (!empty($clientlist)) : ?>
     <fieldset>
-            <legend>Assign to Client</legend><label for="employer"></label>
+            <legend>Assign to Client</legend>
             <select name="employer" id="employer">
                 <option value="">Select One</option>
                 <?php foreach ($clientlist as $i => $client): ?>
