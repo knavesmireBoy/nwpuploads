@@ -11,7 +11,7 @@
   --head: #7a9f33;
   --georgia: bold 2.2em/1 Georgia, sans-serif;
   --georgiaform: bold italic 1.8em/1 Georgia, sans-serif;
-  --deleter: bold .9em/1 Georgia, sans-serif;
+  --deleter: bold 1rem/1 Georgia, sans-serif;
   --label: 1.25em;
   --button: 12px;
 }
@@ -468,6 +468,7 @@ form[name="usersform"] {
       span {
         display: table-cell;
         text-align: left;
+        width: 100%;
       }
       label {
         color: black;
