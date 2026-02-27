@@ -6,11 +6,13 @@
       text-align: right;
       margin-right: 2%;
     }
-    input,
-    select {
+    input, select {
       display: inline-block;
       margin: 0 0 1em;
       width: 72%;
+    }
+    input[type=submit] {
+      display: block;
     }
 
     & > div {
@@ -22,7 +24,7 @@
         width: auto;
       }
     }
-    input[type="radio"]{
+    input[type="radio"] {
       margin: 0;
     }
   }
@@ -37,20 +39,6 @@
     }
     label {
       width: 20%;
-    }
-  }
-}
-
-@media screen and (min-width: 667px) {
-  form.details {
-    background-color: aqua;
-    fieldset#roles div {
-      label {
-        font-size: 13px;
-      }
-      span {
-        font-size: 12px;
-      }
     }
   }
 }
@@ -124,8 +112,5 @@ form[name="uploadform"] {
   // background-image: radial-gradient(var(--prompt), white 88%);
   background-color: var(--pale);
   border: solid 1px black;
-  font: var(--deleter);
-  select {
-    font: var(--deleter);
-  }
+ // font: var(--deleter);
 }

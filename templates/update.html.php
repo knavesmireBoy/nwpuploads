@@ -7,7 +7,7 @@
 	<?php } ?>
 	<?php if (!isset($colleagues) && isset($all_users)) { ?>
 		<label for="user">User</label><select id="user" name="user">
-			<option value="">Select one</option><?php foreach ($all_users as $i => $a): ?>
+			<option value="">Select One</option><?php foreach ($all_users as $i => $a): ?>
 				<option value="<?= $i; ?>"><?= $a; ?></option><?php endforeach; ?>
 		</select>
 	<?php }

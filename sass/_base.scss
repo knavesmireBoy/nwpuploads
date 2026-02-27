@@ -56,7 +56,6 @@ html {
     flex-direction: column;
     font-size: 1em;
     font-family: Helvetica, Geneva, Arial, SunSans-Regular, sans-serif;
-    font-family: Georgia, "Times New Roman", Times, serif;
     padding: 0;
     margin: auto;
     text-align: center;
@@ -71,90 +70,30 @@ html {
     }
   }
 }
-input[type="search"] {
-  -webkit-appearance: textfield;
-  // background-color: white;
-  //border-radius: 20px;
-}
-
-input[type="search"]::-webkit-search-decoration {
-  -webkit-appearance: none;
-}
-
-#admin_user,
-#admin_client {
-  background-color: var(--pale);
-  main form {
-    background-color: rgba(255, 255, 255, 0.5);
-    &#yesno {
-      background-color: var(--invert);
-    }
-  }
-}
-#admin_client {
-  background-color: var(--prompt);
-}
-select {
-  width: 100%;
-  // font-family: Helvetica, Geneva, Arial, SunSans-Regular, sans-serif;
-  font-style: normal;
-  font-size: 1rem;
-  -webkit-appearance: initial;
-  line-height: 2;
-  text-indent: 0.5rem;
-  background-color: white;
-  color: var(--main-color);
-  border: solid 1px;
-  border-radius: var(--button);
-}
-h1 a {
-  color: white;
-}
-h1,
-h2 {
-  font: var(--georgia);
-}
 
 h1 {
   padding: 0.75em 0;
   background-color: var(--invert);
   border: solid 1px white;
   border-width: 0 0 1px;
-  color: white;
-}
-h2 {
-  font-size: 1.75em;
-  margin: 1em 0;
-}
-h3 {
-  margin: 0 0 1em;
-}
-ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-}
-fieldset {
-  border: solid 1px black;
-  margin: 0 0 1em;
-}
-fieldset,
-legend {
-  border-radius: 10px;
+  a,
+  & {
+    color: white;
+  }
 }
 
 h2 {
   color: var(--head);
   font-size: 1.5em;
+  margin: 1em 0;
   &.error {
     color: var(--invert);
   }
 }
-label {
-  font: var(--georgia);
-  padding: 0.3em 0;
-  font-size: 1em;
+h3 {
+  margin: 0 0 1em;
 }
+
 table {
   margin-bottom: 1em;
   border-collapse: collapse;
@@ -164,72 +103,145 @@ table {
   tr:nth-child(even) {
     background-color: var(--pale);
   }
-}
-td {
-  padding: 0.25em;
-  vertical-align: middle;
-  text-align: center;
-  border: solid 0 var(--bright);
-  border-width: 1px;
-  &:nth-child(even),
-  &:last-child {
-    border: solid 1px var(--bright);
-    border-width: 0 1px 1px;
+
+  td {
+    padding: 0.25em;
+    vertical-align: middle;
+    text-align: center;
+    border: solid 0 var(--bright);
+    border-width: 1px;
+    &:nth-child(even),
+    &:last-child {
+      border: solid 1px var(--bright);
+      border-width: 0 1px 1px;
+    }
+    &:nth-child(n + 2) {
+      white-space: nowrap;
+    }
   }
-  &:nth-child(n + 2) {
-    white-space: nowrap;
+  th {
+    padding: 0.75em 0;
+    font: bold 1.1em Georgia, sans-serif;
+    background-color: var(--bright);
+    border: solid 1px white;
+    border-width: 0 1px;
+    text-align: center;
+    &:first-child {
+      border-left-color: var(--bright);
+    }
+    &:last-child {
+      border-right-color: var(--bright);
+    }
   }
-}
-th {
-  font: bold 1.1em Georgia, sans-serif;
-  background-color: var(--bright);
-  border: solid 1px white;
-  border-width: 0 1px;
-  text-align: center;
-  &:first-child {
-    border-left-color: var(--bright);
-  }
-  &:last-child {
-    border-right-color: var(--bright);
-  }
-}
-a {
-  text-decoration: none;
-  color: black;
-}
-table a {
-  display: block;
-}
-th a {
-  padding: 0.6em 0;
-}
-h1 {
-  margin: 0 0 0.5em;
-  span,
   a {
-    display: block;
+    text-decoration: none;
+    color: black;
+    padding: 0.6em 0;
   }
 }
 
-ul input {
-  margin-left: 0.5em;
-}
 form {
-  margin: 0 0 1em;
+  margin: 0 auto 1em;
   padding: 0;
+  font-family: Georgia, "Times New Roman", Times, serif;
   input[type="submit"] {
     padding: 0.25em 0.5em;
     cursor: pointer;
+    font: var(--deleter);
     &:hover {
       background-color: black;
+    }
+  }
+  label {
+    font: var(--georgia);
+    padding: 0.3em 0;
+    font-size: 1em;
+  }
+  fieldset {
+    border: solid 1px black;
+    margin: 0 0 1em;
+    legend,
+    & {
+      border-radius: 10px;
+      font: var(--georgia);
     }
   }
   p {
     margin: 0 0 1em;
   }
+  select {
+    // width: 100%;
+    // font-family: Helvetica, Geneva, Arial, SunSans-Regular, sans-serif;
+    // font-style: normal;
+    //font-size: 1rem;
+    -webkit-appearance: initial;
+    line-height: 2;
+    text-indent: 0.5rem;
+    //background-color: white;
+    color: var(--main-color);
+    border: solid 1px;
+    border-radius: var(--button);
+  }
+  input[type="search"] {
+    -webkit-appearance: textfield;
+    // background-color: white;
+    //border-radius: 20px;
+  }
+
+  input[type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
+  }
 }
-main > p {
-  margin: 1em 0;
+
+form.details {
+  background-color: var(--prompt);
+  border-radius: var(--button);
+  padding: 1em;
+  width: clamp(318px, 98vw, 768px);
+  //  font: var(--deleter);
+  input {
+    padding: 1em 0.2em;
+    display: block;
+    width: 100%;
+    &[type="submit"] {
+      width: auto;
+      padding: 0.5em 1em;
+      margin: 1em auto 0;
+    }
+    &[type="file"] {
+      background-color: white;
+      border-radius: var(--button);
+    }
+    &[type="radio"] {
+      width: auto;
+      padding: 0;
+    }
+  }
+  select {
+    padding: 0.5em;
+    font-size: 1rem;
+  }
+  label {
+    display: block;
+    margin: 0.5em 0;
+  }
+}
+
+main {
+  > p {
+    margin: 1em 0;
+    a {
+      display: inline-block;
+      &:hover {
+        text-decoration: none;
+        background: black;
+        color: white;
+      }
+    }
+    &.call {
+      margin: 1em 0;
+    }
+  }
 }
 
 footer {
@@ -272,23 +284,6 @@ footer {
   }
 }
 
-footer {
-}
-
-p {
-  a {
-    display: inline-block;
-    &:hover {
-      text-decoration: none;
-      background: black;
-      color: white;
-    }
-  }
-  &.call {
-    margin: 0 0 1em;
-  }
-}
-
 p {
   a,
   .log input[type="submit"] {
@@ -300,21 +295,22 @@ p {
     background-color: white;
   }
 }
+
+input[type="submit"] {
+  border: 1px solid white;
+  color: white;
+  border-radius: 20px;
+  background-color: var(--main-color);
+  font: 1em/1.35 Georgia, serif;
+  margin: 1em 0 0;
+}
+
 /* Preview */
 
 .preview {
   margin: 0 auto 1em;
 }
-/* Button 
-  .button {
-      border: 0px;
-      background-color: #00bfff;
-      color: white;
-      padding: 5px 15px;
-      margin-left: 10px;
-      border-radius: 4px;
-  }
-  */
+
 .up {
   margin: 0;
 }
@@ -327,16 +323,6 @@ p {
   margin: 0 0 1em;
 }
 
-input[type="submit"] {
-  border: 1px solid white;
-  color: white;
-  border-radius: 20px;
-  background-color: var(--main-color);
-  font: 1em/1.35 Georgia, serif;
-  font-style: italic;
-  font-weight: bold;
-  margin: 1em 0 0;
-}
 
 .prompt {
   background-color: var(--invert);
@@ -354,16 +340,6 @@ input[type="submit"] {
     }
   }
 }
-/*
-.commit {
-  padding: 1em;
-  border: solid 1px black;
-}
-.warning {
-  background-color: black;
-}
-  */
-/*div form*/
 
 .clientgroup {
   background-color: var(--prompt);
@@ -406,45 +382,10 @@ form[name="loginform"] {
   }
 }
 
-form.details {
-  background-color: var(--prompt);
-  border-radius: var(--button);
-  padding: 1em;
-  width: clamp(318px, 98vw, 768px);
-  margin: 0 auto 1em;
-  font: var(--deleter);
-  input {
-    padding: 1em 0.2em;
-    display: block;
-    width: 100%;
-    &[type="submit"] {
-      width: auto;
-      padding: 0.5em 1em;
-      margin: 1em auto 0;
-    }
-    &[type="file"] {
-      background-color: white;
-      border-radius: var(--button);
-    }
-    &[type="radio"] {
-      width: auto;
-      padding: 0;
-    }
-  }
-  select {
-    padding: 0.5em;
-    font-size: 1rem;
-  }
-  label {
-    display: block;
-    margin: 0.5em 0;
-  }
-}
 form[name="usersform"] {
   fieldset {
     margin: 1em auto;
     text-align: left;
-    font: var(--georgiaform);
     color: var(--main-color);
     font-size: 0.75em;
     padding: 1em 0;
@@ -461,6 +402,8 @@ form[name="usersform"] {
       padding: 0.25em 1em;
       color: black;
       font-style: normal;
+      border: solid 1px;
+      //font: var(--georgiaform);
     }
     > div {
       margin: 0 0 0.4em;
@@ -478,9 +421,9 @@ form[name="usersform"] {
         text-align: left;
         width: 100%;
         display: block;
-        padding: 0 0 .5em;
+        padding: 0 0 0.5em;
         @include hide;
-        font-size: calc(7px + 5 * ((100vw - 320px) / (667 - 320)));
+        font-size: 1em;
       }
       label {
         color: black;
@@ -490,11 +433,10 @@ form[name="usersform"] {
         min-width: 7em;
         padding: 0;
         text-align: left;
-        font-size: calc(10px + 3 * ((100vw - 320px) / (667 - 320)));
       }
       input[type="radio"] {
         display: inline-block;
-        margin: 0 .3em;
+        margin: 0 0.3em;
         &:checked ~ span {
           display: block;
           @include show;
@@ -507,7 +449,6 @@ form[name="usersform"] {
     select:first-of-type {
       margin: 0 auto;
       width: 100%;
-      font: var(--deleter);
     }
     &:last-child {
       margin: 0.5em 0;
@@ -522,18 +463,19 @@ form[name="usersform"] {
 }
 
 form[name="uploadform"] {
-  text-align: center;
   width: clamp(300px, 98vw, 800px);
 }
 
 form.choose {
   border: solid 1px;
   background-color: var(--prompt);
-  margin: 0 auto 1em;
   border-radius: var(--button);
   padding: 1em;
   font: var(--deleter);
   width: clamp(300px, 10vw, 800px);
+  select {
+    width: 100%;
+  }
 }
 
 form[name="editclientform"] {
@@ -715,4 +657,17 @@ form[name="updatefileinfo"] {
       margin: 1em auto 0;
     }
   }
+}
+#admin_user,
+#admin_client {
+  background-color: var(--pale);
+  main form {
+    background-color: rgba(255, 255, 255, 0.5);
+    &#yesno {
+      background-color: var(--invert);
+    }
+  }
+}
+#admin_client {
+  background-color: var(--prompt);
 }

@@ -124,7 +124,6 @@ html > body {
   flex-direction: column;
   font-size: 1em;
   font-family: Helvetica, Geneva, Arial, SunSans-Regular, sans-serif;
-  font-family: Georgia, "Times New Roman", Times, serif;
   padding: 0;
   margin: auto;
   text-align: center;
@@ -137,98 +136,27 @@ html > body > main {
   flex: 1;
 }
 
-input[type=search] {
-  -webkit-appearance: textfield;
-}
-
-input[type=search]::-webkit-search-decoration {
-  -webkit-appearance: none;
-}
-
-#admin_user,
-#admin_client {
-  background-color: var(--pale);
-}
-#admin_user main form,
-#admin_client main form {
-  background-color: rgba(255, 255, 255, 0.5);
-}
-#admin_user main form#yesno,
-#admin_client main form#yesno {
-  background-color: var(--invert);
-}
-
-#admin_client {
-  background-color: var(--prompt);
-}
-
-select {
-  width: 100%;
-  font-style: normal;
-  font-size: 1rem;
-  -webkit-appearance: initial;
-  line-height: 2;
-  text-indent: 0.5rem;
-  background-color: white;
-  color: var(--main-color);
-  border: solid 1px;
-  border-radius: var(--button);
-}
-
-h1 a {
-  color: white;
-}
-
-h1,
-h2 {
-  font: var(--georgia);
-}
-
 h1 {
   padding: 0.75em 0;
   background-color: var(--invert);
   border: solid 1px white;
   border-width: 0 0 1px;
+}
+h1 a, h1 {
   color: white;
-}
-
-h2 {
-  font-size: 1.75em;
-  margin: 1em 0;
-}
-
-h3 {
-  margin: 0 0 1em;
-}
-
-ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-}
-
-fieldset {
-  border: solid 1px black;
-  margin: 0 0 1em;
-}
-
-fieldset,
-legend {
-  border-radius: 10px;
 }
 
 h2 {
   color: var(--head);
   font-size: 1.5em;
+  margin: 1em 0;
 }
 h2.error {
   color: var(--invert);
 }
 
-label {
-  font: var(--georgia);
-  padding: 0.3em 0;
-  font-size: 1em;
+h3 {
+  margin: 0 0 1em;
 }
 
 table {
@@ -241,77 +169,129 @@ table {
 table tr:nth-child(even) {
   background-color: var(--pale);
 }
-
-td {
+table td {
   padding: 0.25em;
   vertical-align: middle;
   text-align: center;
   border: solid 0 var(--bright);
   border-width: 1px;
 }
-td:nth-child(even), td:last-child {
+table td:nth-child(even), table td:last-child {
   border: solid 1px var(--bright);
   border-width: 0 1px 1px;
 }
-td:nth-child(n+2) {
+table td:nth-child(n+2) {
   white-space: nowrap;
 }
-
-th {
+table th {
+  padding: 0.75em 0;
   font: bold 1.1em Georgia, sans-serif;
   background-color: var(--bright);
   border: solid 1px white;
   border-width: 0 1px;
   text-align: center;
 }
-th:first-child {
+table th:first-child {
   border-left-color: var(--bright);
 }
-th:last-child {
+table th:last-child {
   border-right-color: var(--bright);
 }
-
-a {
+table a {
   text-decoration: none;
   color: black;
-}
-
-table a {
-  display: block;
-}
-
-th a {
   padding: 0.6em 0;
 }
 
-h1 {
-  margin: 0 0 0.5em;
-}
-h1 span,
-h1 a {
-  display: block;
-}
-
-ul input {
-  margin-left: 0.5em;
-}
-
 form {
-  margin: 0 0 1em;
+  margin: 0 auto 1em;
   padding: 0;
+  font-family: Georgia, "Times New Roman", Times, serif;
 }
 form input[type=submit] {
   padding: 0.25em 0.5em;
   cursor: pointer;
+  font: var(--deleter);
 }
 form input[type=submit]:hover {
   background-color: black;
 }
+form label {
+  font: var(--georgia);
+  padding: 0.3em 0;
+  font-size: 1em;
+}
+form fieldset {
+  border: solid 1px black;
+  margin: 0 0 1em;
+}
+form fieldset legend, form fieldset {
+  border-radius: 10px;
+  font: var(--georgia);
+}
 form p {
   margin: 0 0 1em;
 }
+form select {
+  -webkit-appearance: initial;
+  line-height: 2;
+  text-indent: 0.5rem;
+  color: var(--main-color);
+  border: solid 1px;
+  border-radius: var(--button);
+}
+form input[type=search] {
+  -webkit-appearance: textfield;
+}
+form input[type=search]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+form.details {
+  background-color: var(--prompt);
+  border-radius: var(--button);
+  padding: 1em;
+  width: clamp(318px, 98vw, 768px);
+}
+form.details input {
+  padding: 1em 0.2em;
+  display: block;
+  width: 100%;
+}
+form.details input[type=submit] {
+  width: auto;
+  padding: 0.5em 1em;
+  margin: 1em auto 0;
+}
+form.details input[type=file] {
+  background-color: white;
+  border-radius: var(--button);
+}
+form.details input[type=radio] {
+  width: auto;
+  padding: 0;
+}
+form.details select {
+  padding: 0.5em;
+  font-size: 1rem;
+}
+form.details label {
+  display: block;
+  margin: 0.5em 0;
+}
 
 main > p {
+  margin: 1em 0;
+}
+main > p a {
+  display: inline-block;
+}
+main > p a:hover {
+  text-decoration: none;
+  background: black;
+  color: white;
+}
+main > p.call {
   margin: 1em 0;
 }
 
@@ -355,18 +335,6 @@ footer span.current {
   margin: -2em 0 1em;
 }
 
-p a {
-  display: inline-block;
-}
-p a:hover {
-  text-decoration: none;
-  background: black;
-  color: white;
-}
-p.call {
-  margin: 0 0 1em;
-}
-
 p a,
 p .log input[type=submit] {
   font: bold 1em Georgia, serif;
@@ -377,21 +345,20 @@ p .log input[type=submit] {
   background-color: white;
 }
 
+input[type=submit] {
+  border: 1px solid white;
+  color: white;
+  border-radius: 20px;
+  background-color: var(--main-color);
+  font: 1em/1.35 Georgia, serif;
+  margin: 1em 0 0;
+}
+
 /* Preview */
 .preview {
   margin: 0 auto 1em;
 }
 
-/* Button 
-  .button {
-      border: 0px;
-      background-color: #00bfff;
-      color: white;
-      padding: 5px 15px;
-      margin-left: 10px;
-      border-radius: 4px;
-  }
-  */
 .up {
   margin: 0;
 }
@@ -404,17 +371,6 @@ p .log input[type=submit] {
 
 .log {
   margin: 0 0 1em;
-}
-
-input[type=submit] {
-  border: 1px solid white;
-  color: white;
-  border-radius: 20px;
-  background-color: var(--main-color);
-  font: 1em/1.35 Georgia, serif;
-  font-style: italic;
-  font-weight: bold;
-  margin: 1em 0 0;
 }
 
 .prompt {
@@ -434,16 +390,6 @@ input[type=submit] {
   color: white;
 }
 
-/*
-.commit {
-  padding: 1em;
-  border: solid 1px black;
-}
-.warning {
-  background-color: black;
-}
-  */
-/*div form*/
 .clientgroup {
   background-color: var(--prompt);
   background-image: radial-gradient(white, var(--prompt));
@@ -485,45 +431,9 @@ form[name=loginform] input[type=submit] {
   width: auto;
 }
 
-form.details {
-  background-color: var(--prompt);
-  border-radius: var(--button);
-  padding: 1em;
-  width: clamp(318px, 98vw, 768px);
-  margin: 0 auto 1em;
-  font: var(--deleter);
-}
-form.details input {
-  padding: 1em 0.2em;
-  display: block;
-  width: 100%;
-}
-form.details input[type=submit] {
-  width: auto;
-  padding: 0.5em 1em;
-  margin: 1em auto 0;
-}
-form.details input[type=file] {
-  background-color: white;
-  border-radius: var(--button);
-}
-form.details input[type=radio] {
-  width: auto;
-  padding: 0;
-}
-form.details select {
-  padding: 0.5em;
-  font-size: 1rem;
-}
-form.details label {
-  display: block;
-  margin: 0.5em 0;
-}
-
 form[name=usersform] fieldset {
   margin: 1em auto;
   text-align: left;
-  font: var(--georgiaform);
   color: var(--main-color);
   font-size: 0.75em;
   padding: 1em 0;
@@ -540,6 +450,7 @@ form[name=usersform] fieldset legend {
   padding: 0.25em 1em;
   color: black;
   font-style: normal;
+  border: solid 1px;
 }
 form[name=usersform] fieldset > div {
   margin: 0 0 0.4em;
@@ -560,7 +471,7 @@ form[name=usersform] fieldset > div span {
   position: absolute;
   left: -9999px;
   top: auto;
-  font-size: calc(7px + 5 * (100vw - 320px) / 347);
+  font-size: 1em;
 }
 form[name=usersform] fieldset > div label {
   color: black;
@@ -569,7 +480,6 @@ form[name=usersform] fieldset > div label {
   min-width: 7em;
   padding: 0;
   text-align: left;
-  font-size: calc(10px + 3 * (100vw - 320px) / 347);
 }
 form[name=usersform] fieldset > div input[type=radio] {
   display: inline-block;
@@ -584,7 +494,6 @@ form[name=usersform] fieldset > div input[type=radio]:checked ~ span {
 form[name=usersform] fieldset select:first-of-type {
   margin: 0 auto;
   width: 100%;
-  font: var(--deleter);
 }
 form[name=usersform] fieldset:last-child {
   margin: 0.5em 0;
@@ -596,18 +505,19 @@ form[name=usersform].override {
 }
 
 form[name=uploadform] {
-  text-align: center;
   width: clamp(300px, 98vw, 800px);
 }
 
 form.choose {
   border: solid 1px;
   background-color: var(--prompt);
-  margin: 0 auto 1em;
   border-radius: var(--button);
   padding: 1em;
   font: var(--deleter);
   width: clamp(300px, 10vw, 800px);
+}
+form.choose select {
+  width: 100%;
 }
 
 form[name=editclientform] {
@@ -815,6 +725,23 @@ form[name=updatefileinfo] input[type=submit] {
   margin: 1em auto 0;
 }
 
+#admin_user,
+#admin_client {
+  background-color: var(--pale);
+}
+#admin_user main form,
+#admin_client main form {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+#admin_user main form#yesno,
+#admin_client main form#yesno {
+  background-color: var(--invert);
+}
+
+#admin_client {
+  background-color: var(--prompt);
+}
+
 @media screen and (min-width: 499px) {
   form.details label {
     width: 25%;
@@ -822,11 +749,13 @@ form[name=updatefileinfo] input[type=submit] {
     text-align: right;
     margin-right: 2%;
   }
-  form.details input,
-form.details select {
+  form.details input, form.details select {
     display: inline-block;
     margin: 0 0 1em;
     width: 72%;
+  }
+  form.details input[type=submit] {
+    display: block;
   }
   form.details > div {
     width: clamp(300px, 100%, 650px);
@@ -847,17 +776,6 @@ form.details #roles input {
   }
   form[name=clientform] label {
     width: 20%;
-  }
-}
-@media screen and (min-width: 667px) {
-  form.details {
-    background-color: aqua;
-  }
-  form.details fieldset#roles div label {
-    font-size: 13px;
-  }
-  form.details fieldset#roles div span {
-    font-size: 12px;
   }
 }
 @media screen and (min-width: 768px) {
@@ -922,12 +840,6 @@ form[name=search],
 form[name=uploadform] {
   background-color: var(--pale);
   border: solid 1px black;
-  font: var(--deleter);
-}
-form[name=updatefileinfo] select,
-form[name=search] select,
-form[name=uploadform] select {
-  font: var(--deleter);
 }
 
 /*# sourceMappingURL=main.css.map */

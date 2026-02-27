@@ -4,7 +4,7 @@
         <?php
         if ($priv == 'Admin') : ?>
                <label for="user">User</label><select id="user" name="user">
-                                <option value="">Select one</option>
+                                <option value="">Select One</option>
                                 <?php
                                 $optgroup = 'clients';
                                 $group = $client;
