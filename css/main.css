@@ -169,6 +169,9 @@ table {
 table tr:nth-child(even) {
   background-color: var(--pale);
 }
+table tr.admin {
+  background-color: white;
+}
 table td {
   padding: 0.25em;
   vertical-align: middle;
@@ -196,6 +199,9 @@ table th:first-child {
 }
 table th:last-child {
   border-right-color: var(--bright);
+}
+table th.control {
+  vertical-align: middle;
 }
 table a {
   text-decoration: none;
@@ -368,23 +374,20 @@ input[type=submit] {
   margin: 1em 0 0;
 }
 
-/* Preview */
-.preview {
-  margin: 0 auto 1em;
+form[name=uploadform] {
+  width: clamp(300px, 98vw, 800px);
 }
 
-.up {
-  margin: 0;
+form.choose {
+  border: solid 1px;
+  background-color: var(--prompt);
+  border-radius: var(--button);
+  padding: 1em;
+  font: var(--deleter);
+  width: clamp(300px, 10vw, 800px);
 }
-
-.info {
-  font: 1.1em Georgia, serif;
-  font-style: italic;
-  margin: 1em 0 0.5em;
-}
-
-.log {
-  margin: 0 0 1em;
+form.choose select {
+  width: 100%;
 }
 
 .prompt {
@@ -441,8 +444,7 @@ form[name=loginform] input {
   width: 100%;
 }
 form[name=loginform] input[type=submit] {
-  margin: 1em 0 0;
-  width: auto;
+  margin: 1em auto 0;
 }
 
 form[name=usersform] fieldset {
@@ -518,22 +520,6 @@ form[name=usersform].override {
   background-color: var(--bright);
 }
 
-form[name=uploadform] {
-  width: clamp(300px, 98vw, 800px);
-}
-
-form.choose {
-  border: solid 1px;
-  background-color: var(--prompt);
-  border-radius: var(--button);
-  padding: 1em;
-  font: var(--deleter);
-  width: clamp(300px, 10vw, 800px);
-}
-form.choose select {
-  width: 100%;
-}
-
 form[name=editclientform] {
   border: solid 1px;
   background-color: var(--prompt);
@@ -549,10 +535,6 @@ form[name=editclientform] h1 {
 }
 form[name=editclientform] > input {
   margin: 1em 0 0;
-}
-
-form[name=search] div :not(label, input[type=submit]) {
-  flex: 4 1 1em;
 }
 
 div#upload {
@@ -585,10 +567,6 @@ form[name=logoutform] {
 }
 #upload .paginate form[name=logoutform] input {
   top: 0;
-}
-
-p.ret {
-  margin: 1em 0;
 }
 
 .edit ~ p,
@@ -646,20 +624,6 @@ form[name=deletions].span {
 }
 form[name=deletions].span input[type=submit] {
   text-align: center;
-}
-
-th.control {
-  vertical-align: middle;
-}
-
-tr.admin {
-  background-color: white;
-}
-
-section#prompt {
-  margin: 1em 0;
-  padding: 1em;
-  border-radius: var(--button);
 }
 
 form[name=downloads] div input {

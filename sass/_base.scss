@@ -103,6 +103,9 @@ table {
   tr:nth-child(even) {
     background-color: var(--pale);
   }
+  tr.admin {
+    background-color: white;
+  }
 
   td {
     padding: 0.25em;
@@ -132,6 +135,9 @@ table {
     &:last-child {
       border-right-color: var(--bright);
     }
+    &.control {
+      vertical-align: middle;
+    }
   }
   a {
     text-decoration: none;
@@ -152,8 +158,8 @@ form {
     font: var(--deleter);
     font-family: Arial, Helvetica, sans-serif;
     font-size: 1.5rem;
-    right: .3em;
-    top: .3em;
+    right: 0.3em;
+    top: 0.3em;
     color: var(--main-color);
     &:hover {
       color: var(--head);
@@ -320,24 +326,21 @@ input[type="submit"] {
   margin: 1em 0 0;
 }
 
-/* Preview */
-
-.preview {
-  margin: 0 auto 1em;
+form[name="uploadform"] {
+  width: clamp(300px, 98vw, 800px);
 }
 
-.up {
-  margin: 0;
+form.choose {
+  border: solid 1px;
+  background-color: var(--prompt);
+  border-radius: var(--button);
+  padding: 1em;
+  font: var(--deleter);
+  width: clamp(300px, 10vw, 800px);
+  select {
+    width: 100%;
+  }
 }
-.info {
-  font: 1.1em Georgia, serif;
-  font-style: italic;
-  margin: 1em 0 0.5em;
-}
-.log {
-  margin: 0 0 1em;
-}
-
 
 .prompt {
   background-color: var(--invert);
@@ -391,8 +394,7 @@ form[name="loginform"] {
   input {
     width: 100%;
     &[type="submit"] {
-      margin: 1em 0 0;
-      width: auto;
+      margin: 1em auto 0;
     }
   }
 }
@@ -409,7 +411,6 @@ form[name="usersform"] {
     &:last-of-type {
       padding: 1em;
     }
-
     legend {
       background-color: rgba(255, 255, 255, 1);
       font-size: 1rem;
@@ -475,23 +476,7 @@ form[name="usersform"] {
   &.override {
     background-color: var(--bright);
   }
-}
-
-form[name="uploadform"] {
-  width: clamp(300px, 98vw, 800px);
-}
-
-form.choose {
-  border: solid 1px;
-  background-color: var(--prompt);
-  border-radius: var(--button);
-  padding: 1em;
-  font: var(--deleter);
-  width: clamp(300px, 10vw, 800px);
-  select {
-    width: 100%;
-  }
-}
+} //usersform
 
 form[name="editclientform"] {
   border: solid 1px;
@@ -510,12 +495,8 @@ form[name="editclientform"] {
   }
 }
 
-form[name="search"] div :not(label, input[type="submit"]) {
-  flex: 4 1 1em;
-}
 div#upload {
   margin: 1em auto 0;
-
   > table {
     font-size: calc(12px + 2 * ((100vw - 751px) / (1280 - 751)));
     width: clamp(320px, 95vw, 1000px);
@@ -543,9 +524,6 @@ form[name="logoutform"] {
   #upload .paginate & input {
     top: 0;
   }
-}
-p.ret {
-  margin: 1em 0;
 }
 
 .edit ~ p,
@@ -600,20 +578,7 @@ form[name="deletions"] {
       text-align: center;
     }
   }
-}
-
-th.control {
-  vertical-align: middle;
-}
-tr.admin {
-  background-color: white;
-}
-
-section#prompt {
-  margin: 1em 0;
-  padding: 1em;
-  border-radius: var(--button);
-}
+} //deletions
 
 form[name="downloads"] div input {
   cursor: pointer;
@@ -629,11 +594,7 @@ form[name="downloads"] div input {
   label {
     cursor: pointer;
     font-size: var(--label);
-    // @include trash(30px, center 0%, red, "../assets/yesno.png");
     opacity: 0.5;
-    &:last-of-type {
-      // @include trash(30px, center 17%, red, "../assets/yesno.png");
-    }
     &:hover {
       opacity: 1;
     }
@@ -671,3 +632,4 @@ form[name="downloads"] div input {
 #admin_client {
   background-color: var(--prompt);
 }
+

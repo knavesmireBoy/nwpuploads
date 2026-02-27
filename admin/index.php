@@ -82,6 +82,19 @@ function presentList($role, $flag = 'admin')
   }
 }
 
+function checkCurrentDetails($p = 'id'){
+  include CONNECT;
+  $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
+  $st = $pdo->prepare("SELECT id, name, email, $domainstr AS dom FROM user WHERE id =:id");
+  $st->bindValue(":id", $id);
+  doPreparedQuery($st, "Error fetching user details");
+  $row = $st->fetch(PDO::FETCH_ASSOC);
+  if($p){
+    return $row[$p];
+  }
+  return $row;
+}
+
 
 function filterUsers($sql, $key, $pagetitle)
 {
@@ -507,6 +520,10 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   $revert = false;
   $email = null;
   $role = null;
+
+  //$email = checkCurrentDetails('email');
+  //$editor = $_SESSION['email'] === $email;
+
   //$domcheck = true;
   $admin = $priv === 'Admin';
   $i = strpos($_POST['email'], '@');
@@ -535,7 +552,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   } else {
     $isEmployer = isEmployer($_POST, 'id');
     list($clientid, $domain, $email) = $isEmployer($pdo);
-//    dump([$clientid, $domain, $email]);
+   dump([$clientid, $domain, $email]);
     if (!$clientid) {
       //allow admin to = reinstate freelancer status
       if ($admin && !$employerid) {
@@ -560,9 +577,12 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   $st->bindValue(":id", $id);
   doPreparedQuery($st, '<p>Error setting user details.</p>');
   //check EXISTING email not $_POST
-  $editor = $_SESSION['email'] === $email;
+  
+  $pwd = isset($_POST['password']) && $_POST['password'] != '';
+  $eyup = $email !== $_POST['email'];
 
-  if (isset($_POST['password']) && $_POST['password'] != '') {
+
+  if (($eyup && $editor) || $pwd) {
     if ($override) {
       $res = updatePassword($pdo, $_POST['password'], $id);
     } else {
@@ -647,7 +667,7 @@ if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
   $name = $row['name'];
   $email = $row['email'];
   $override = $pwd ? $pwd : NULL;
-  $class = $override ? 'override' : '';
+  $class = $override ? 'details override' : 'details';
 
   if (preg_match('/admin/i', $priv)) {
     $st = $pdo->prepare("SELECT roleid FROM userrole WHERE userid=:id");
