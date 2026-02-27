@@ -320,6 +320,7 @@ footer {
   padding: 1.2rem 0;
   border: solid 1px white;
   border-width: 1px 0 0;
+  margin: 1em 0 0;
 }
 footer > * {
   color: white;
@@ -331,11 +332,17 @@ footer > * {
   padding: 0.5rem 0.75rem;
   border-radius: var(--button);
 }
-footer > *:hover {
-  color: white;
+footer a:hover {
+  color: black;
+  background-color: var(--pale);
 }
 footer > form {
   display: block;
+  margin: 0;
+  border-radius: 19px;
+}
+footer > form input[type=submit] {
+  margin: 0;
 }
 footer span.current {
   background-color: var(--bright);
@@ -500,6 +507,10 @@ form.details input[type=file] {
   background-color: white;
   border-radius: var(--button);
 }
+form.details input[type=radio] {
+  width: auto;
+  padding: 0;
+}
 form.details select {
   padding: 0.5em;
   font-size: 1rem;
@@ -532,34 +543,43 @@ form[name=usersform] fieldset legend {
 }
 form[name=usersform] fieldset > div {
   margin: 0 0 0.4em;
-  display: table;
   border-collapse: separate;
   border-spacing: 1em 0;
   position: relative;
-  line-height: 1.2;
   border-bottom: dotted 1px;
+  position: relative;
 }
 form[name=usersform] fieldset > div * {
   vertical-align: middle;
 }
 form[name=usersform] fieldset > div span {
-  display: table-cell;
   text-align: left;
   width: 100%;
+  display: block;
+  padding: 0 0 0.5em;
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  font-size: calc(7px + 5 * (100vw - 320px) / 347);
 }
 form[name=usersform] fieldset > div label {
   color: black;
   font-style: normal;
   white-space: nowrap;
-  display: table-cell;
-  min-width: 8em;
+  min-width: 7em;
   padding: 0;
   text-align: left;
+  font-size: calc(10px + 3 * (100vw - 320px) / 347);
 }
 form[name=usersform] fieldset > div input[type=radio] {
-  display: table-cell;
-  height: 100%;
-  width: 100%;
+  display: inline-block;
+  margin: 0 0.3em;
+}
+form[name=usersform] fieldset > div input[type=radio]:checked ~ span {
+  display: block;
+  position: relative;
+  left: 0;
+  text-indent: 2em;
 }
 form[name=usersform] fieldset select:first-of-type {
   margin: 0 auto;
@@ -712,17 +732,6 @@ tr.admin {
   background-color: white;
 }
 
-footer {
-  margin: 1em 0 0;
-}
-footer form[name=logoutform] {
-  margin: 0;
-  border-radius: 19px;
-}
-footer form[name=logoutform] input[type=submit] {
-  margin: 0;
-}
-
 section#prompt {
   margin: 1em 0;
   padding: 1em;
@@ -806,7 +815,7 @@ form[name=updatefileinfo] input[type=submit] {
   margin: 1em auto 0;
 }
 
-@media screen and (min-width: 500px) {
+@media screen and (min-width: 499px) {
   form.details label {
     width: 25%;
     display: inline-block;
@@ -822,8 +831,12 @@ form.details select {
   form.details > div {
     width: clamp(300px, 100%, 650px);
   }
-  form.details #roles label, form.details #roles input {
+  form.details #roles label,
+form.details #roles input {
     width: auto;
+  }
+  form.details input[type=radio] {
+    margin: 0;
   }
   form[name=clientform] input {
     width: 75%;
@@ -834,6 +847,17 @@ form.details select {
   }
   form[name=clientform] label {
     width: 20%;
+  }
+}
+@media screen and (min-width: 667px) {
+  form.details {
+    background-color: aqua;
+  }
+  form.details fieldset#roles div label {
+    font-size: 13px;
+  }
+  form.details fieldset#roles div span {
+    font-size: 12px;
   }
 }
 @media screen and (min-width: 768px) {
@@ -893,12 +917,16 @@ form.details select {
   animation-name: slide-in;
 }
 
-form[name=updatefileinfo], form[name=search], form[name=uploadform] {
+form[name=updatefileinfo],
+form[name=search],
+form[name=uploadform] {
   background-color: var(--pale);
   border: solid 1px black;
   font: var(--deleter);
 }
-form[name=updatefileinfo] select, form[name=search] select, form[name=uploadform] select {
+form[name=updatefileinfo] select,
+form[name=search] select,
+form[name=uploadform] select {
   font: var(--deleter);
 }
 

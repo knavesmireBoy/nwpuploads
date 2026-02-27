@@ -29,9 +29,7 @@
     <?php endif;  ?>
 
     <?php if (isset($del)):
-        /*
-    We need to determine the logic of what messages to display
-    */
+        //We need to determine the logic of what messages to display
         $n = $ownername ?? null;
         $c = $client[$domain] ?? null;
         $k = 'prompt';
@@ -42,8 +40,6 @@
         $n = $n ?? 'this user';
         $dl = "delete file";
         $dlu = "delete all files for <span>$n</span>";
-
-
         if ($multi) {
             $dl = "delete this file only";
             $dlu = $editor ? "delete all your files" : $dlu;

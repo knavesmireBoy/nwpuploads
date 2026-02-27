@@ -25,7 +25,7 @@ if (isset($template)) {
 
 if (count($files) > 0): ?>
     </form>
-    <h5>The following files are stored in the database:</h5>
+    <h4>The following files are stored in the database:</h4>
     <?php
     include '_tablehead.html.php'; ?>
     <tbody>

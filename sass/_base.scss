@@ -56,7 +56,7 @@ html {
     flex-direction: column;
     font-size: 1em;
     font-family: Helvetica, Geneva, Arial, SunSans-Regular, sans-serif;
-    font-family:Georgia, 'Times New Roman', Times, serif;
+    font-family: Georgia, "Times New Roman", Times, serif;
     padding: 0;
     margin: auto;
     text-align: center;
@@ -73,15 +73,13 @@ html {
 }
 input[type="search"] {
   -webkit-appearance: textfield;
- // background-color: white;
+  // background-color: white;
   //border-radius: 20px;
 }
 
 input[type="search"]::-webkit-search-decoration {
   -webkit-appearance: none;
 }
-
-
 
 #admin_user,
 #admin_client {
@@ -98,12 +96,12 @@ input[type="search"]::-webkit-search-decoration {
 }
 select {
   width: 100%;
- // font-family: Helvetica, Geneva, Arial, SunSans-Regular, sans-serif;
+  // font-family: Helvetica, Geneva, Arial, SunSans-Regular, sans-serif;
   font-style: normal;
   font-size: 1rem;
   -webkit-appearance: initial;
   line-height: 2;
-  text-indent: .5rem;
+  text-indent: 0.5rem;
   background-color: white;
   color: var(--main-color);
   border: solid 1px;
@@ -178,7 +176,7 @@ td {
     border: solid 1px var(--bright);
     border-width: 0 1px 1px;
   }
-  &:nth-child(n+2){
+  &:nth-child(n + 2) {
     white-space: nowrap;
   }
 }
@@ -239,6 +237,7 @@ footer {
   padding: 1.2rem 0;
   border: solid 1px white;
   border-width: 1px 0 0;
+  margin: 1em 0 0;
   > * {
     color: white;
     border: solid 1px white;
@@ -247,27 +246,33 @@ footer {
     display: inline-block;
     margin-right: 0.5em;
     padding: 0.5rem 0.75rem;
-    //background-color: white;
     border-radius: var(--button);
-    &:hover {
-      color: white;
-      // background-color: var(--bright);
-    }
+  }
+  a:hover {
+    color: black;
+    background-color: var(--pale);
   }
   > form {
     display: block;
+    margin: 0;
+    border-radius: 19px;
+    input[type="submit"] {
+      margin: 0;
+    }
   }
   span.current {
     background-color: var(--bright);
     color: black;
   }
-
   #upload & {
     padding: 1rem 0;
     &.paginate form {
       margin: -2em 0 1em;
     }
   }
+}
+
+footer {
 }
 
 p {
@@ -408,7 +413,6 @@ form.details {
   width: clamp(318px, 98vw, 768px);
   margin: 0 auto 1em;
   font: var(--deleter);
-
   input {
     padding: 1em 0.2em;
     display: block;
@@ -421,6 +425,10 @@ form.details {
     &[type="file"] {
       background-color: white;
       border-radius: var(--button);
+    }
+    &[type="radio"] {
+      width: auto;
+      padding: 0;
     }
   }
   select {
@@ -456,33 +464,42 @@ form[name="usersform"] {
     }
     > div {
       margin: 0 0 0.4em;
-      display: table;
+      //display: table;
       border-collapse: separate;
       border-spacing: 1em 0;
       position: relative;
-      line-height: 1.2;
       border-bottom: dotted 1px;
+      position: relative;
       * {
         vertical-align: middle;
       }
       span {
-        display: table-cell;
+        //display: table-cell;
         text-align: left;
         width: 100%;
+        display: block;
+        padding: 0 0 .5em;
+        @include hide;
+        font-size: calc(7px + 5 * ((100vw - 320px) / (667 - 320)));
       }
       label {
         color: black;
         font-style: normal;
         white-space: nowrap;
-        display: table-cell;
-        min-width: 8em;
+        // display: table-cell;
+        min-width: 7em;
         padding: 0;
         text-align: left;
+        font-size: calc(10px + 3 * ((100vw - 320px) / (667 - 320)));
       }
       input[type="radio"] {
-        display: table-cell;
-        height: 100%;
-        width: 100%;
+        display: inline-block;
+        margin: 0 .3em;
+        &:checked ~ span {
+          display: block;
+          @include show;
+          text-indent: 2em;
+        }
       }
     }
   }
@@ -634,16 +651,7 @@ th.control {
 tr.admin {
   background-color: white;
 }
-footer {
-  margin: 1em 0 0;
-  form[name="logoutform"] {
-    margin: 0;
-    border-radius: 19px;
-    input[type="submit"] {
-      margin: 0;
-    }
-  }
-}
+
 section#prompt {
   margin: 1em 0;
   padding: 1em;

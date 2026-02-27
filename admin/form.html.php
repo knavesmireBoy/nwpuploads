@@ -13,8 +13,8 @@ $domain = false;
 } ?>
 <form action="?<?= $action; ?>" method="post" name="usersform" class="<?= empty($class) ? 'details' : $class; ?>">
 	<div>
-		<label for="name">Name</label><input id="name" type="text" name="name" value="<?= $name ?? ''; ?>" required />
-		<label for="email">Email</label><input type="email" id="email" name="email" value="<?= $email ?? ''; ?>" required />
+		<label for="name">Name</label><input id="name" type="text" name="name" value="<?= $name ?? ''; ?>" required autocomplete="off"/>
+		<label for="email">Email</label><input type="email" id="email" name="email" value="<?= $email ?? ''; ?>" required autocomplete="off"/>
 		<label for="password">Password</label><input id="password" type="password" name="password" /><input type="hidden" name="employer"
 			value="<?= $job ?? ''; ?>" />
 	</div>

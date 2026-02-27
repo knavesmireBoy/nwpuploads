@@ -1,4 +1,4 @@
-@media screen and (min-width: 500px) {
+@media screen and (min-width: 499px) {
   form.details {
     label {
       width: 25%;
@@ -17,9 +17,13 @@
       width: clamp(300px, 100%, 650px);
     }
     #roles {
-      label, input {
+      label,
+      input {
         width: auto;
       }
+    }
+    input[type="radio"]{
+      margin: 0;
     }
   }
 
@@ -37,13 +41,25 @@
   }
 }
 
+@media screen and (min-width: 667px) {
+  form.details {
+    background-color: aqua;
+    fieldset#roles div {
+      label {
+        font-size: 13px;
+      }
+      span {
+        font-size: 12px;
+      }
+    }
+  }
+}
+
 @media screen and (min-width: 768px) {
   html body {
     text-align: center;
     // font-size: calc(16px - 2 * ((100vw - 751px) / (1280 - 751)));
   }
-
-
 }
 /*
   form[name="usersform"],
@@ -85,16 +101,15 @@
 }
 */
 
-
 @keyframes slide-in {
   from {
-    translate:  150vw 0;
-   // height: 0;
+    translate: 150vw 0;
+    // height: 0;
   }
 
   to {
     translate: 0 0;
-   // height: calc-size(auto);
+    // height: calc-size(auto);
   }
 }
 
@@ -103,10 +118,12 @@
   animation-name: slide-in;
 }
 
-form[name=updatefileinfo], form[name=search], form[name=uploadform] {
- // background-image: radial-gradient(var(--prompt), white 88%);
- background-color: var(--pale);
- border: solid 1px black;
+form[name="updatefileinfo"],
+form[name="search"],
+form[name="uploadform"] {
+  // background-image: radial-gradient(var(--prompt), white 88%);
+  background-color: var(--pale);
+  border: solid 1px black;
   font: var(--deleter);
   select {
     font: var(--deleter);
