@@ -91,7 +91,7 @@
 
 @keyframes slide-in {
   from {
-    translate: 150vw 0;
+    translate: 0 -50vw;
     // height: 0;
   }
 
@@ -102,7 +102,7 @@
 }
 
 #yesno/*, form[name=updatefileinfo], form[name=search]*/ {
-  animation-duration: 1.5s;
+  animation-duration: 1s;
   animation-name: slide-in;
 }
 

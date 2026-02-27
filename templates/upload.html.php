@@ -1,4 +1,5 @@
 <form action="." method="post" name="uploadform" enctype="multipart/form-data" class="details">
+        <a href="." class="cancel">X</a>
         <label for="uploadfiles">Upload File</label><input id="uploadfiles" type="file" name="upload" <?= $disabled; ?> />
         <label for="desc">Description</label><input id="desc" type="text" name="desc" />
         <?php
@@ -18,4 +19,3 @@
         <input type="hidden" name="action" value="upload" />
         <input type="submit" value="Upload" />
 </form>
-<p><a href=".">Cancel</a></p>

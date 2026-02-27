@@ -141,9 +141,24 @@ table {
 }
 
 form {
+  position: relative;
   margin: 0 auto 1em;
   padding: 0;
   font-family: Georgia, "Times New Roman", Times, serif;
+
+  > a.cancel {
+    display: block;
+    position: absolute;
+    font: var(--deleter);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1.5rem;
+    right: .3em;
+    top: .3em;
+    color: var(--main-color);
+    &:hover {
+      color: var(--head);
+    }
+  }
   input[type="submit"] {
     padding: 0.25em 0.5em;
     cursor: pointer;
@@ -196,7 +211,7 @@ form {
 form.details {
   background-color: var(--prompt);
   border-radius: var(--button);
-  padding: 1em;
+  padding: 3em 1em 1em;
   width: clamp(318px, 98vw, 768px);
   //  font: var(--deleter);
   input {
@@ -643,21 +658,6 @@ form[name="downloads"] div input {
   }
 }
 
-form[name="updatefileinfo"] {
-  > * {
-    display: block;
-    text-align: center;
-    width: 100%;
-  }
-  input {
-    padding: 0.5em 0;
-    &[type="submit"] {
-      width: auto;
-      padding: 0.5em;
-      margin: 1em auto 0;
-    }
-  }
-}
 #admin_user,
 #admin_client {
   background-color: var(--pale);
