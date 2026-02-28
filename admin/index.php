@@ -41,6 +41,7 @@ $isContractor = function ($pdo, $email, $clientid = NULL) use ($is_client_sql) {
 
 $clientflag = $_GET['clientflag'] ?? NULL;
 $pwd = $_GET['pwd'] ?? NULL;
+$agency = $_GET['agency'] ?? NULL;
 
 function presentList($role, $flag = 'admin')
 {
@@ -82,17 +83,33 @@ function presentList($role, $flag = 'admin')
   }
 }
 
-function checkCurrentDetails($p = 'id'){
+
+
+function checkCurrentDetails($id, $p = 'id')
+{
   include CONNECT;
   $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
   $st = $pdo->prepare("SELECT id, name, email, $domainstr AS dom FROM user WHERE id =:id");
   $st->bindValue(":id", $id);
   doPreparedQuery($st, "Error fetching user details");
   $row = $st->fetch(PDO::FETCH_ASSOC);
-  if($p){
+  if ($p) {
     return $row[$p];
   }
   return $row;
+}
+
+function canEdit($id, $postemail, $priv)
+{
+  $logemail = strtolower($_SESSION['email']);
+  $dbemail = checkCurrentDetails($id, 'email');
+
+  if ($postemail) {
+    $postemail = strtolower($postemail);
+    $posted = $postemail === $dbemail;
+  }
+
+  return [$logemail === $dbemail, $posted ?? NULL, preg_match("/admin/i", $priv)];
 }
 
 
@@ -139,7 +156,7 @@ function filterUsers($sql, $key, $pagetitle)
       header("Location: ./?edit=$key");
       exit;
     }
-   // $selected = false;
+    // $selected = false;
   } else {
     $callroute = "delete=$key";
     header("Location: ./?edit=$key");
@@ -226,8 +243,8 @@ function fetchAllRoles($pdo, $keys = [], $selectedRoles = [])
   //Build the list of all roles
   $st = doQuery($pdo, "SELECT id, description FROM role", 'Error fetching list of roles.');
   $rows = $st->fetchAll(PDO::FETCH_ASSOC);
- 
-  if($keys !== []){
+
+  if ($keys !== []) {
     $rows = reAssoc($rows, $keys, 'id', 'description', [], 0, 0);
   }
 
@@ -495,7 +512,7 @@ if (isset($_POST['confirm'])) {
   }
   header("Location: $location");
   exit();
-}
+} //confirm
 
 
 if (isset($_GET['delete'])) {
@@ -521,8 +538,11 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   $email = null;
   $role = null;
 
-  //$email = checkCurrentDetails('email');
-  //$editor = $_SESSION['email'] === $email;
+
+  if (!$agency || !$editor) {
+    header("Location: ./?agency=$id");
+    exit();
+  }
 
   //$domcheck = true;
   $admin = $priv === 'Admin';
@@ -547,12 +567,9 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     }
     $isEmployer = isEmployer($_POST, 'employer');
     list($clientid, $domain) = $isEmployer($pdo);
-
- 
   } else {
     $isEmployer = isEmployer($_POST, 'id');
     list($clientid, $domain, $email) = $isEmployer($pdo);
-   dump([$clientid, $domain, $email]);
     if (!$clientid) {
       //allow admin to = reinstate freelancer status
       if ($admin && !$employerid) {
@@ -577,12 +594,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   $st->bindValue(":id", $id);
   doPreparedQuery($st, '<p>Error setting user details.</p>');
   //check EXISTING email not $_POST
-  
-  $pwd = isset($_POST['password']) && $_POST['password'] != '';
-  $eyup = $email !== $_POST['email'];
 
-
-  if (($eyup && $editor) || $pwd) {
+  if (isset($_POST['password']) && $_POST['password'] != '') {
     if ($override) {
       $res = updatePassword($pdo, $_POST['password'], $id);
     } else {
@@ -602,7 +615,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   $st->bindValue(":cid", $clientid);
   $st->bindValue(":id", $id);
   doPreparedQuery($st, 'Error setting client id');
-  
+
   updateUserDomain($edom, $domain, $id);
   if ($editor) {
     if ($email !== $_POST['email'] || ($rolechange && $editor)) {
@@ -612,8 +625,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   }
   header('Location: .');
   exit();
-}
-///END OF editform
+} ///END OF editform
 
 
 if (isset($_GET['denied']) || isset($_GET['access']) || isset($_GET['self'])) {
@@ -621,8 +633,7 @@ if (isset($_GET['denied']) || isset($_GET['access']) || isset($_GET['self'])) {
 }
 
 //directly load form.html.php if only one user/client
-if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
-
+if ((isset($_GET['edit'])) || $agency || $pwd || $clientflag) {
   include CONNECT;
   $class = '';
   $admin = ($priv === 'Admin');
@@ -633,18 +644,32 @@ if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
   $id = !empty($id) ? $id : $_POST['id'] ?? '';
   $calltext = "Delete User";
   $callroute = "delete=$id";
+  $warning = 'You do not have sufficient privileges to edit this users details.';
+  list($editor, $echange, $_agency) = canEdit($id, $_POST['email'] ?? '', $priv);
+
+  //DON'T FORGET WE CAN ARRIVE HERE DIRECT FROM A LINK AND NOT FROM A REDIRECT FROM EDITING
+  if (!$agency) {
+    if ($editor || $_agency) {
+      $warning = '';
+    }
+    else {
+      $message = $warning;
+    }
+  }
 
   $st = $pdo->prepare("SELECT id, name, email, $domainstr AS dom FROM user WHERE id =:id");
   $st->bindValue(":id", $id);
   doPreparedQuery($st, "Error fetching user details");
   $row = $st->fetch(PDO::FETCH_ASSOC);
   $editor = $_SESSION['email'] === $row['email'];
-  $warning = 'Polite Notice: changing an email or password will automatically log you out.';
-  $message = ($pwd && $editor) ? $warning : '';
-  $message = $message ? $message : ($clientflag ? 'You do not have sufficient privileges to change the domain name. Please contact the database administrator.' : '');
 
-  if ($message && ($message === $warning)) {
-    $message .= ' You can proceed now that the form is in override mode but you will need to log in again with your updated details.';
+  if (!$message) { //either editor or admin
+    $warning = 'Polite Notice: changing an email or password will automatically log you out.';
+    $message = ($pwd && $editor) ? $warning : ''; //alert if yourself
+    $message = $message ? $message : ($clientflag ? 'You do not have sufficient privileges to change the domain name. Please contact the database administrator.' : '');
+    if ($message && ($message === $warning)) {
+      $message .= ' You can proceed now that the form is in override mode but you will need to log in again with your updated details.';
+    }
   }
 
   if ($clientflag) {
@@ -654,7 +679,6 @@ if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
     doPreparedQuery($st, "Error fetching user details.");
     $row = $st->fetch(PDO::FETCH_ASSOC);
   }
-
 
   $route = "Edit";
   $pagehead = 'Edit User';
@@ -669,6 +693,7 @@ if ((isset($_GET['edit'])) ||  $pwd || $clientflag) {
   $override = $pwd ? $pwd : NULL;
   $class = $override ? 'details override' : 'details';
 
+  //prep roles...
   if (preg_match('/admin/i', $priv)) {
     $st = $pdo->prepare("SELECT roleid FROM userrole WHERE userid=:id");
     $st->bindValue(":id", $id);
@@ -767,6 +792,6 @@ if ($usercount === 1) {
   exit;
 } else {
   $pagehead = isApproved($priv, 'client') ? "Manage Team" : "Manage Users";
- //$selected = false;
+  //$selected = false;
   include 'users.html.php';
 }
