@@ -42,6 +42,7 @@ $isContractor = function ($pdo, $email, $clientid = NULL) use ($is_client_sql) {
 $clientflag = $_GET['clientflag'] ?? NULL;
 $pwd = $_GET['pwd'] ?? NULL;
 $agency = $_GET['agency'] ?? NULL;
+$echange = $_GET['echange'] ?? NULL;
 
 function presentList($role, $flag = 'admin')
 {
@@ -102,14 +103,14 @@ function checkCurrentDetails($id, $p = 'id')
 function canEdit($id, $postemail, $priv)
 {
   $logemail = strtolower($_SESSION['email']);
-  $dbemail = checkCurrentDetails($id, 'email');
-
+  $dbemail = strtolower(checkCurrentDetails($id, 'email'));
   if ($postemail) {
     $postemail = strtolower($postemail);
-    $posted = $postemail === $dbemail;
+  } else {
+    $postemail = $logemail;
   }
 
-  return [$logemail === $dbemail, $posted ?? NULL, preg_match("/admin/i", $priv)];
+  return [$logemail === $dbemail, $postemail !== $logemail, preg_match("/admin/i", $priv)];
 }
 
 
@@ -537,14 +538,14 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   $revert = false;
   $email = null;
   $role = null;
+  list($editor, $echange, $agency) = canEdit($id, $_POST['email'] ?? '', $priv);
 
-
-  if (!$agency || !$editor) {
-    header("Location: ./?agency=$id");
+  if($editor && $echange && !$override){
+    $relocation = "Location: ./?pwd=$id";
+    header($relocation);
     exit();
   }
 
-  //$domcheck = true;
   $admin = $priv === 'Admin';
   $i = strpos($_POST['email'], '@');
   $edom = substr($_POST['email'], $i + 1);
@@ -581,46 +582,48 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
       }
     }
   }
-  $sql = "UPDATE user SET name=:name, email=:email";
-  $sql .= $assoc ? ", client_id=:cid" : ' ';
-  $sql .= " WHERE id=:id";
-  $st = $pdo->prepare($sql);
 
-  if ($assoc) {
-    $st->bindValue(":cid", $clientid);
-  }
-  $st->bindValue(":name", $_POST['name']);
-  $st->bindValue(":email", $revert ? $email : $_POST['email']);
-  $st->bindValue(":id", $id);
-  doPreparedQuery($st, '<p>Error setting user details.</p>');
-  //check EXISTING email not $_POST
+  if ($editor || $agency) {
+    $sql = "UPDATE user SET name=:name, email=:email";
+    $sql .= $assoc ? ", client_id=:cid" : ' ';
+    $sql .= " WHERE id=:id";
+    $st = $pdo->prepare($sql);
 
-  if (isset($_POST['password']) && $_POST['password'] != '') {
-    if ($override) {
-      $res = updatePassword($pdo, $_POST['password'], $id);
-    } else {
-      header("Location: ./?pwd=$id");
-      exit();
+    if ($assoc) {
+      $st->bindValue(":cid", $clientid);
     }
-  }
+    $st->bindValue(":name", $_POST['name']);
+    $st->bindValue(":email", $revert ? $email : $_POST['email']);
+    $st->bindValue(":id", $id);
+    doPreparedQuery($st, '<p>Error setting user details.</p>');
+    //check EXISTING email not $_POST
 
-  $role = getCurrentRole($id);
-  deleteRole($id, $priv);
-  resetRoles($priv, $roles, $id);
-  $rolechange = verifyRole($role, getCurrentRole($id));
+    if (isset($_POST['password']) && $_POST['password'] != '') {
+      if ($override) {
+        $res = updatePassword($pdo, $_POST['password'], $id);
+      } else {
+        header("Location: ./?pwd=$id");
+        exit();
+      }
+    }
 
-  //$clientid is allowed to be NULL (not any other empty) if a user wants to disassociate from a client
-  $sql = "UPDATE user SET client_id=:cid WHERE id =:id";
-  $st = $pdo->prepare($sql);
-  $st->bindValue(":cid", $clientid);
-  $st->bindValue(":id", $id);
-  doPreparedQuery($st, 'Error setting client id');
+    $role = getCurrentRole($id);
+    deleteRole($id, $priv);
+    resetRoles($priv, $roles, $id);
+    $rolechange = verifyRole($role, getCurrentRole($id));
+    //$clientid is allowed to be NULL (not any other empty) if a user wants to disassociate from a client
+    $sql = "UPDATE user SET client_id=:cid WHERE id =:id";
+    $st = $pdo->prepare($sql);
+    $st->bindValue(":cid", $clientid);
+    $st->bindValue(":id", $id);
+    doPreparedQuery($st, 'Error setting client id');
 
-  updateUserDomain($edom, $domain, $id);
-  if ($editor) {
-    if ($email !== $_POST['email'] || ($rolechange && $editor)) {
-      header("Location: ../?action=logout");
-      exit();
+    updateUserDomain($edom, $domain, $id);
+    if ($editor) {
+      if ($echange || ($rolechange && $editor)) {
+        header("Location: ../?action=logout");
+        exit();
+      }
     }
   }
   header('Location: .');
@@ -642,17 +645,16 @@ if ((isset($_GET['edit'])) || $agency || $pwd || $clientflag) {
 
   $id = isset($_GET['edit']) ? $_GET['edit'] : ($pwd ? $pwd : NULL);
   $id = !empty($id) ? $id : $_POST['id'] ?? '';
+
   $calltext = "Delete User";
   $callroute = "delete=$id";
   $warning = 'You do not have sufficient privileges to edit this users details.';
   list($editor, $echange, $_agency) = canEdit($id, $_POST['email'] ?? '', $priv);
-
   //DON'T FORGET WE CAN ARRIVE HERE DIRECT FROM A LINK AND NOT FROM A REDIRECT FROM EDITING
   if (!$agency) {
     if ($editor || $_agency) {
       $warning = '';
-    }
-    else {
+    } else {
       $message = $warning;
     }
   }
