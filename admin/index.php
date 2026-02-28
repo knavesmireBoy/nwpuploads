@@ -86,6 +86,7 @@ function checkCurrentDetails($id, $p = 'id')
   $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
   $st = $pdo->prepare("SELECT id, name, email, $domainstr AS dom FROM user WHERE id =:id");
   $st->bindValue(":id", $id);
+
   doPreparedQuery($st, "Error fetching user details");
   $row = $st->fetch(PDO::FETCH_ASSOC);
   if ($p) {
@@ -446,6 +447,7 @@ if (isset($_POST['confirm'])) {
     $id = $_POST['id'];
     $role = null;
     $roles = [];
+
     $sql = "SELECT email, domain FROM user INNER JOIN client ON user.client_id = client.id WHERE user.id=:id";
     $st = $pdo->prepare($sql);
     $st->bindValue(':id',  $id);
@@ -455,13 +457,11 @@ if (isset($_POST['confirm'])) {
     $dom = $row['domain'];
     $email = $row['email'];
 
-    list($editor) = canEdit($id, $email, $priv);
+    list($editor, $echange) = canEdit($id, $email, $priv);
 
     if (!$dom) {
       if (!$role) { //then must be a freelancer/admin
-        $st = doQuery($pdo, "SELECT email from user where id=$id", "fail");
-        $email = $st->fetch(PDO::FETCH_ASSOC)['email'];
-        if ($admin && ($email === $_SESSION['email'])) {
+        if ($admin && $editor) {
           header("Location: ./?self");
           exit();
         } else {
@@ -499,7 +499,6 @@ if (isset($_POST['confirm'])) {
       });
     }
     $danger = $danger || count($roles) < 2;
-
     $denied = ($admin || $editor) ? false : ($role === 'Client');
     if (!$denied && !$danger) {
       deleteAlready($id);
@@ -515,7 +514,7 @@ if (isset($_POST['confirm'])) {
 if (isset($_GET['delete'])) {
   $id = $_GET['delete'];
   $title = "Prompt";
-  $prompt = "Are you sure you want to delete this user??";
+  $prompt = "Are you sure you want to delete this user?";
   $call = "confirm";
   $pos = "Yes";
   $neg = "No";
