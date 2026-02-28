@@ -1,3 +1,4 @@
+
 <p><?= $prompt; ?></p>
 <input id="yes" type="radio" name="<?= $call; ?>" value="<?= $pos; ?>" />
 <label for="yes">Yes</label>

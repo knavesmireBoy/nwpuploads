@@ -3,18 +3,22 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
 
 function query()
 {
-  $lib = ['nousers' => "<h4>Unable to find any users</h4>", "addnotice" => "Please fill required fields", "selectuser" => "Please select a user for editing", "clientflag" => "Cannot assign this user to a new client", "lastuser" => "To remove this last user, please delete the client instead",  "denied" => "You do not have the required privileges to delete, please contact your administrator", "access" => "You do not have the privileges to add a user", "deniedbyadmin" => "Cannot delete this user until a new client admin role is assigned to this client", "self" => "Only a peer can perform this deletion", "freelancer" => "Cannot assign this domain"];
+  $lib = ['nousers' => "<h4>Unable to find any users</h4>", "addnotice" => "Please fill required fields", "selectuser" => "Please select a user for editing", "clientflag" => "Cannot assign this user to a new client", "lastuser" => "To remove this last user, please delete the client instead",  "denied" => "You do not have the required privileges to delete, please contact your administrator", "access" => "You do not have the privileges to add a user", "deniedbyadmin" => "Cannot delete this user until a new client admin role is assigned to this client", "self" => "Only a peer can perform this deletion", "freelancer" => "Cannot assign this domain", 'addno' => 'You do not have the required privilges to add a user'];
   $query = explode('=', $_SERVER["QUERY_STRING"]);
   $q = $query[1] ?? $query[0];
   return $lib[$q] ?? '';
 }
 
+
+$qq = explode('=', $_SERVER["QUERY_STRING"])[0] ?? '';
+$q = $lib[$qq] ?? '';
+
 $super = "andrewsykes@btinternet.com";
 $users = [];
-$id = '';
+$id = $_GET['edit'] ?? '';
 $error = query();
 $pagehead = "Edit details";
-$message = '';
+$message = $lib[$q] ?? '';
 $denied = false;
 $usercount = 0;
 setExtent(null);
@@ -24,7 +28,6 @@ $pageid = 'admin_user';
 $roleorder = ['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'];
 $calltext = "Add New User";
 $callroute = 'add';
-
 
 $formvars = ['pagetitle', 'message', 'name', 'email', 'job', 'roles', 'id', 'route', 'override', 'button', 'priv'];
 $uservars = ['manage', 'priv', 'client', 'users'];
@@ -62,18 +65,11 @@ function presentList($role, $flag = 'admin')
     $sqlc = "SELECT employer.user_id, employer.name, employer.domain FROM
     (SELECT user.name, user.id as user_id, client.domain FROM user INNER JOIN client ON RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))=client.domain) AS employer";
     */
-
     /*  //from filter list
-
-      "SELECT domain FROM client WHERE domain=:domain"
-
+    "SELECT domain FROM client WHERE domain=:domain"
     $sqlc = "SELECT employer.user_name, employer.user_id FROM (SELECT user.name AS user_name, user.id AS user_id, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer WHERE employer.domain=:domain"; //
-
-    
     */
-
-    $sqlc = "SELECT name, domain, tel FROM client ORDER BY name";
-    $st = doQuery($pdo, $sqlc, "Database error fetching clients");
+    $st = doQuery($pdo, "SELECT name, domain, tel FROM client ORDER BY name", "Database error fetching clients");
     $rows = $st->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($rows as $row) {
@@ -83,8 +79,6 @@ function presentList($role, $flag = 'admin')
     return [$users, $client];
   }
 }
-
-
 
 function checkCurrentDetails($id, $p = 'id')
 {
@@ -112,7 +106,6 @@ function canEdit($id, $postemail, $priv)
 
   return [$logemail === $dbemail, $postemail !== $logemail, preg_match("/admin/i", $priv)];
 }
-
 
 function filterUsers($sql, $key, $pagetitle)
 {
@@ -342,7 +335,6 @@ if (!userIsLoggedIn()) {
 $roleplay = userHasWhatRole();
 $pagehead_role = $roleplay && !userHasWhatRole(true);
 
-
 if (!$roleplay || $pagehead_role) {
   $e = 'Only Account Administrators may access this page!';
   $pagetitle = "Access Denied";
@@ -352,6 +344,7 @@ if (!$roleplay || $pagehead_role) {
 }
 list($key, $priv) = $roleplay;
 $pagetitle = preg_match("/client/i", $priv) ? "Admin" : "Admin | Edit Users";
+list($editor, $echange, $_agency) = canEdit($id, '', $priv);
 
 //exits
 if (isset($_GET['add'])) {
@@ -361,10 +354,10 @@ if (isset($_GET['add'])) {
   $button = 'Add User';
   $override = '';
   $admin = ($priv === 'Admin');
-  $clientadmin = preg_match("/admin/i", $priv) || preg_match("/client/i", $priv);
+  $clientadmin = preg_match("/admin/i", $priv) && preg_match("/client/i", $priv);
 
   if (!$clientadmin) {
-    header("Location: ./?access");
+    header("Location: ./?addno");
     exit();
   }
   $roles = fetchAllRoles($pdo, $roleorder);
@@ -423,6 +416,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
     $res = updatePassword($pdo, $_POST['password'], $aid);
   }
   $roles = isset($_POST['roles']) ? $_POST['roles'] : [];
+
   if ($clientid || $contractor) {
     $st = doQuery($pdo, "SELECT domain FROM client WHERE id=$clientid", "Error retrieving clients from database!");
     $row = $st->fetch(PDO::FETCH_ASSOC);
@@ -460,6 +454,8 @@ if (isset($_POST['confirm'])) {
     //https: //stackoverflow.com/questions/20009076/php-undefined-index-notice-not-raised-when-indexing-null-variable
     $dom = $row['domain'];
     $email = $row['email'];
+
+    list($editor) = canEdit($id, $email, $priv);
 
     if (!$dom) {
       if (!$role) { //then must be a freelancer/admin
@@ -504,7 +500,7 @@ if (isset($_POST['confirm'])) {
     }
     $danger = $danger || count($roles) < 2;
 
-    $denied = $admin ? false : ($role === 'Client');
+    $denied = ($admin || $editor) ? false : ($role === 'Client');
     if (!$denied && !$danger) {
       deleteAlready($id);
     } else {
@@ -519,7 +515,7 @@ if (isset($_POST['confirm'])) {
 if (isset($_GET['delete'])) {
   $id = $_GET['delete'];
   $title = "Prompt";
-  $prompt = "Are you sure you want to delete this user? ";
+  $prompt = "Are you sure you want to delete this user??";
   $call = "confirm";
   $pos = "Yes";
   $neg = "No";
@@ -538,8 +534,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   $revert = false;
   $email = null;
   $role = null;
-  list($editor, $echange, $agency) = canEdit($id, $_POST['email'] ?? '', $priv);
-
+  list($editor, $echange, $_agency) = canEdit($id, $_POST['email'] ?? '', $priv);
   if($editor && $echange && !$override){
     $relocation = "Location: ./?pwd=$id";
     header($relocation);
@@ -551,7 +546,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   $edom = substr($_POST['email'], $i + 1);
   $isEmployer = isEmployer($edom);
   list($clientid, $domain) = $isEmployer($pdo);
-
   $freelancer = isFreelancer($pdo, $id);
   //$employerid only available from ADMIN; default to zero NOT NULL so it survives equality test with $clientid see $notice
   $employerid = empty($_POST['employer']) ? 0 : intval($_POST['employer']);
@@ -730,6 +724,7 @@ if ((isset($_GET['edit'])) || $agency || $pwd || $clientflag) {
   exit();
 } //get_edit
 
+
 //LANDING...
 //$sql = defaultQuery($key, $priv);
 //display users___________________________________________________________________
@@ -795,5 +790,6 @@ if ($usercount === 1) {
 } else {
   $pagehead = isApproved($priv, 'client') ? "Manage Team" : "Manage Users";
   //$selected = false;
+
   include 'users.html.php';
 }

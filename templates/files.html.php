@@ -16,7 +16,6 @@ echo $error; ?>
 
 <p><a href="./?upload">Upload A File</a></p>
 
-
 <?php
 if (isset($template)) {
     ob_end_clean();

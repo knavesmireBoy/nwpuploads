@@ -1,6 +1,7 @@
 <section id=prompt>
     <?php include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php';
 
+
     if (isset($clientlist)): ?>
         <form action="." method="post" name="clientform" class="prompt">
             <div><label for="employer">If existing client:</label>
@@ -15,6 +16,7 @@
             </div>
         </form>
     <?php elseif (!isset($clientlist) && !isset($del)):
+
     ?>
         <form action="<?= $action; ?>" method="post" name="choice" class="prompt" id="yesno">
             <input type="hidden" name="ownerid" value="<?= $ownerid; ?>" />

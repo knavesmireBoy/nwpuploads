@@ -1,18 +1,22 @@
 <?php
 include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
-include TEMPLATE . 'base.html.php'; 
+include_once TEMPLATE . 'base.html.php';
 $optgroup = $priv === 'Admin' ? 'clients' : '';
+
 ?>
 	<h1><?= $pagehead; ?></h1>
-	<h3 class='error'><?= $error; ?></h3>
+	<p class='error'><?= $error; ?></p>
 	<?php
-	if (preg_match("/admin/i", $priv)) {
+
+	if (preg_match("/admin/i", $priv) || isset($editor)) {
 		ob_start();
+		$obstart = true;
 		include TEMPLATE . '_call.html.php';
 	}
 	?>
 	<?php
+
 	if (empty($selected)): 
 	?>
 		<form action="" method="post" name="userform" class="choose">
@@ -41,7 +45,7 @@ $optgroup = $priv === 'Admin' ? 'clients' : '';
 		</div>
 		<?php
 	endif;
-	if (isset($prompt)) {
+	if (isset($prompt) && isset($obstart)) {
 		ob_end_clean();
 		include TEMPLATE . 'prompt.html.php';
 	}
