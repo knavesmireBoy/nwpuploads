@@ -80,32 +80,32 @@ function presentList($role, $flag = 'admin')
   }
 }
 
-function checkCurrentDetails($id, $p = 'id')
+function checkCurrentDetails($id, $p = '')
 {
   include CONNECT;
   $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
   $st = $pdo->prepare("SELECT id, name, email, $domainstr AS dom FROM user WHERE id =:id");
   $st->bindValue(":id", $id);
-
   doPreparedQuery($st, "Error fetching user details");
   $row = $st->fetch(PDO::FETCH_ASSOC);
-  if ($p) {
-    return $row[$p];
-  }
-  return $row;
+  return  $p ? $row[$p] : $row;
 }
 
 function canEdit($id, $postemail, $priv)
 {
   $logemail = strtolower($_SESSION['email']);
-  $dbemail = strtolower(checkCurrentDetails($id, 'email'));
+  $row = checkCurrentDetails($id);
+  $dbemail = NULL;
+  if ($row) {
+    $dbemail = strtolower($row['email']);
+  }
   if ($postemail) {
     $postemail = strtolower($postemail);
   } else {
     $postemail = $logemail;
   }
 
-  return [$logemail === $dbemail, $postemail !== $logemail, preg_match("/admin/i", $priv)];
+  return [$logemail === $dbemail, $postemail !== $logemail, $row['dom'] ?? '', preg_match("/admin/i", $priv)];
 }
 
 function filterUsers($sql, $key, $pagetitle)
@@ -345,7 +345,7 @@ if (!$roleplay || $pagehead_role) {
 }
 list($key, $priv) = $roleplay;
 $pagetitle = preg_match("/client/i", $priv) ? "Admin" : "Admin | Edit Users";
-list($editor, $echange, $_agency) = canEdit($id, '', $priv);
+list($editor, $echange, $domain, $_agency) = canEdit($id, '', $priv);
 
 //exits
 if (isset($_GET['add'])) {
@@ -447,7 +447,7 @@ if (isset($_POST['confirm'])) {
     $id = $_POST['id'];
     $role = null;
     $roles = [];
-
+    /*
     $sql = "SELECT email, domain FROM user INNER JOIN client ON user.client_id = client.id WHERE user.id=:id";
     $st = $pdo->prepare($sql);
     $st->bindValue(':id',  $id);
@@ -456,28 +456,27 @@ if (isset($_POST['confirm'])) {
     //https: //stackoverflow.com/questions/20009076/php-undefined-index-notice-not-raised-when-indexing-null-variable
     $dom = $row['domain'];
     $email = $row['email'];
+*/
+    list($editor, $echange, $domain, $agency) = canEdit($id, '', $priv);
 
-    list($editor, $echange) = canEdit($id, $email, $priv);
-
-    if (!$dom) {
-      if (!$role) { //then must be a freelancer/admin
-        if ($admin && $editor) {
-          header("Location: ./?self");
-          exit();
-        } else {
-          deleteAlready($id);
-          header("Location: .");
-          exit();
-        }
+    if (!$domain) {
+      if ($admin && $editor) {
+        header("Location: ./?self");
+        exit();
+      } else if($agency || $editor) {
+        deleteAlready($id);
+        header("Location: .");
+        exit();
       }
     }
 
-    $sql = "SELECT user.id FROM user INNER JOIN client ON user.client_id = client.id WHERE client.domain='$dom'";
+    $sql = "SELECT user.id FROM user INNER JOIN client ON user.client_id = client.id WHERE client.domain='$domain'";
     $st = doQuery($pdo, $sql, 'Error fetching client.');
     $rows = $st->fetchAll(PDO::FETCH_ASSOC);
 
     $rolesql = "SELECT role.id AS role, userrole.userid AS id FROM role LEFT JOIN userrole ON role.id = userrole.roleid WHERE userrole.userid=:id";
     $st = $pdo->prepare($rolesql);
+
     if (!empty($rows)) {
       foreach ($rows as $r) {
         $st->bindValue(':id',  $r['id']);
@@ -533,8 +532,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   $revert = false;
   $email = null;
   $role = null;
-  list($editor, $echange, $_agency) = canEdit($id, $_POST['email'] ?? '', $priv);
-  if($editor && $echange && !$override){
+  list($editor, $echange, $domain, $_agency) = canEdit($id, $_POST['email'] ?? '', $priv);
+  if ($editor && $echange && !$override) {
     $relocation = "Location: ./?pwd=$id";
     header($relocation);
     exit();
@@ -642,7 +641,7 @@ if ((isset($_GET['edit'])) || $agency || $pwd || $clientflag) {
   $calltext = "Delete User";
   $callroute = "delete=$id";
   $warning = 'You do not have sufficient privileges to edit this users details.';
-  list($editor, $echange, $_agency) = canEdit($id, $_POST['email'] ?? '', $priv);
+  list($editor, $echange, $domain, $_agency) = canEdit($id, $_POST['email'] ?? '', $priv);
   //DON'T FORGET WE CAN ARRIVE HERE DIRECT FROM A LINK AND NOT FROM A REDIRECT FROM EDITING
   if (!$agency) {
     if ($editor || $_agency) {
