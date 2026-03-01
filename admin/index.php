@@ -6,19 +6,16 @@ function query()
   $lib = ['nousers' => "<h4>Unable to find any users</h4>", "addnotice" => "Please fill required fields", "selectuser" => "Please select a user for editing", "clientflag" => "Cannot assign this user to a new client", "lastuser" => "To remove this last user, please delete the client instead",  "denied" => "You do not have the required privileges to delete, please contact your administrator", "access" => "You do not have the privileges to add a user", "deniedbyadmin" => "Cannot delete this user until a new client admin role is assigned to this client", "self" => "Only a peer can perform this deletion", "freelancer" => "Cannot assign this domain", 'addno' => 'You do not have the required privilges to add a user'];
   $query = explode('=', $_SERVER["QUERY_STRING"]);
   $q = $query[1] ?? $query[0];
-  return $lib[$q] ?? '';
+  return $lib[$q] ?? null;
 }
 
-
-$qq = explode('=', $_SERVER["QUERY_STRING"])[0] ?? '';
-$q = $lib[$qq] ?? '';
 
 $super = "andrewsykes@btinternet.com";
 $users = [];
 $id = $_GET['edit'] ?? '';
 $error = query();
 $pagehead = "Edit details";
-$message = $lib[$q] ?? '';
+$message = $error ?? '';
 $denied = false;
 $usercount = 0;
 setExtent(null);
@@ -80,14 +77,42 @@ function presentList($role, $flag = 'admin')
   }
 }
 
+function isFreelancer($pdo, $id)
+{
+  $sql = "SELECT id FROM user WHERE client_id IS NULL AND id=:id";
+  $st = $pdo->prepare($sql);
+  $st->bindValue(':id',  $id);
+  doPreparedQuery($st, 'Error fetching client.');
+  $row = $st->fetch(PDO::FETCH_ASSOC);
+  return $row['id'];
+}
+
+function hasDomain($key){
+  include CONNECT;
+  $st = $pdo->prepare("SELECT domain FROM client WHERE domain=:domain");
+  $st->bindValue(":domain", $key);
+  doPreparedQuery($st, "Unable to identify domain");
+  return $st->fetch(PDO::FETCH_ASSOC);
+}
+
 function checkCurrentDetails($id, $p = '')
 {
   include CONNECT;
   $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
-  $st = $pdo->prepare("SELECT id, name, email, $domainstr AS dom FROM user WHERE id =:id");
+
+  $sql = "SELECT id, name, email, $domainstr AS dom FROM user WHERE id =:id";
+
+  $st = $pdo->prepare("SELECT domain FROM client WHERE domain=:domain");
+  $st->bindValue(":domain", $key);
+  doPreparedQuery($st, "Unable to identify domain");
+  $row = $st->fetch(PDO::FETCH_ASSOC);
+
+  $st = $pdo->prepare($sql);
   $st->bindValue(":id", $id);
+
   doPreparedQuery($st, "Error fetching user details");
   $row = $st->fetch(PDO::FETCH_ASSOC);
+  dump($row);
   return  $p ? $row[$p] : $row;
 }
 
@@ -105,7 +130,7 @@ function canEdit($id, $postemail, $priv)
     $postemail = $logemail;
   }
 
-  return [$logemail === $dbemail, $postemail !== $logemail, $row['dom'] ?? '', preg_match("/admin/i", $priv)];
+  return [$logemail === $dbemail, $postemail !== $logemail, $row['dom'] ?? '', isApproved($priv, 'admin')];
 }
 
 function filterUsers($sql, $key, $pagetitle)
@@ -190,15 +215,6 @@ function updateUserDomain($old, $new, $id = 0)
   }
 }
 
-function isFreelancer($pdo, $id)
-{
-  $sql = "SELECT id FROM user WHERE client_id IS NULL AND id=:id";
-  $st = $pdo->prepare($sql);
-  $st->bindValue(':id',  $id);
-  doPreparedQuery($st, 'Error fetching client.');
-  $row = $st->fetch(PDO::FETCH_ASSOC);
-  return $row['id'];
-}
 //object and prop or; no prop object MUST be a domain
 function isEmployer($o, $p = '')
 {
@@ -344,9 +360,8 @@ if (!$roleplay || $pagehead_role) {
   exit();
 }
 list($key, $priv) = $roleplay;
-$pagetitle = preg_match("/client/i", $priv) ? "Admin" : "Admin | Edit Users";
 list($editor, $echange, $domain, $_agency) = canEdit($id, '', $priv);
-
+$pagetitle = preg_match("/client/i", $priv) ? "Admin" : "Admin | Edit Users";
 //exits
 if (isset($_GET['add'])) {
   include CONNECT;
@@ -354,10 +369,9 @@ if (isset($_GET['add'])) {
   $action = 'addform';
   $button = 'Add User';
   $override = '';
-  $admin = ($priv === 'Admin');
-  $clientadmin = preg_match("/admin/i", $priv) && preg_match("/client/i", $priv);
+  $crud = isApproved($priv, 'admin');
 
-  if (!$clientadmin) {
+  if (!$crud) {
     header("Location: ./?addno");
     exit();
   }
@@ -379,7 +393,6 @@ if (isset($_GET['add'])) {
       return $role['id'] !== 'Admin';
     });
   }
-  //$pagetitle = "Admin | Users";
   $pagehead = "New User";
   include 'form.html.php';
   exit();
@@ -441,35 +454,33 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
 //exits
 if (isset($_POST['confirm'])) {
   $location = " .";
+
   if ($_POST['confirm'] == 'Yes') {
     include CONNECT;
     $admin = ($priv == 'Admin');
     $id = $_POST['id'];
     $role = null;
     $roles = [];
-    /*
-    $sql = "SELECT email, domain FROM user INNER JOIN client ON user.client_id = client.id WHERE user.id=:id";
-    $st = $pdo->prepare($sql);
-    $st->bindValue(':id',  $id);
-    doPreparedQuery($st, 'Error fetching client.');
-    $row = $st->fetch(PDO::FETCH_ASSOC);
-    //https: //stackoverflow.com/questions/20009076/php-undefined-index-notice-not-raised-when-indexing-null-variable
-    $dom = $row['domain'];
-    $email = $row['email'];
-*/
-    list($editor, $echange, $domain, $agency) = canEdit($id, '', $priv);
 
+
+    list($editor, $echange, $domain, $agency) = canEdit($id, '', $priv);
+    $crud = ($agency || $editor);
+
+    //editor or freelance
     if (!$domain) {
+
       if ($admin && $editor) {
-        header("Location: ./?self");
+        header("Location: ./?self"); //delegate deleting an admin to a peer
         exit();
-      } else if($agency || $editor) {
+      } else if ($crud) {
+
+        dump(44, $crud);
+
         deleteAlready($id);
         header("Location: .");
         exit();
       }
     }
-
     $sql = "SELECT user.id FROM user INNER JOIN client ON user.client_id = client.id WHERE client.domain='$domain'";
     $st = doQuery($pdo, $sql, 'Error fetching client.');
     $rows = $st->fetchAll(PDO::FETCH_ASSOC);
@@ -490,7 +501,6 @@ if (isset($_POST['confirm'])) {
       exit();
     }
     $role = isset($roles[$id]) ? $roles[$id] : NULL;
-
     $danger = preg_match("/admin/i", $role);
     if ($danger) {
       $roles = safeFilter($roles, function ($role) {
@@ -498,7 +508,8 @@ if (isset($_POST['confirm'])) {
       });
     }
     $danger = $danger || count($roles) < 2;
-    $denied = ($admin || $editor) ? false : ($role === 'Client');
+    $denied = $crud ? false : ($role === 'Client');
+
     if (!$denied && !$danger) {
       deleteAlready($id);
     } else {
@@ -520,6 +531,11 @@ if (isset($_GET['delete'])) {
   $action = '';
   $formname = 'deleteuserform';
   $template = 'confirm.html.php';
+  $crud = $editor || $_agency;
+  if (!$crud) {
+    header("Location: ./?denied");
+    exit();
+  }
 }
 
 if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
@@ -622,10 +638,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   exit();
 } ///END OF editform
 
-
-if (isset($_GET['denied']) || isset($_GET['access']) || isset($_GET['self'])) {
-  $error =  $lib[$_SERVER["QUERY_STRING"]] ?? '';
-}
 
 //directly load form.html.php if only one user/client
 if ((isset($_GET['edit'])) || $agency || $pwd || $clientflag) {
@@ -780,7 +792,7 @@ $message = $message ? $message : $error;
 $usercount = isApproved($priv, 'ADMIN') ? 2 : count($users);
 //setExtent is largely used for displaying conditional content, appropriate buttons etc..
 setExtent($usercount);
-if ($usercount === 1) {
+if ($usercount === 1 && empty($prompt)) {
   $calltext = "Delete User";
   $callroute = "delete=$key";
   header("Location: ./?edit=$key"); //GO DIRECT TO EDIT FORM
@@ -788,6 +800,5 @@ if ($usercount === 1) {
 } else {
   $pagehead = isApproved($priv, 'client') ? "Manage Team" : "Manage Users";
   //$selected = false;
-
   include 'users.html.php';
 }

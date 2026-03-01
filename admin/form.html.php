@@ -11,7 +11,7 @@ $domain = false;
 
 <?php 
 
-if ((preg_match("/admin/i", $priv) || $editor) && !empty($id)) {
+if ((isApproved($priv, 'admin') || $editor) && !empty($id)) {
 	include TEMPLATE . '_call.html.php';
 }
 ?>
@@ -27,7 +27,7 @@ if ((preg_match("/admin/i", $priv) || $editor) && !empty($id)) {
 	<?php include  TEMPLATE . '_clientlist.html.php'; ?>
 	<input type="hidden" name="id" value="<?= $id ?? ''; ?>" />
 	<input type="hidden" name="action" value="<?= $route; ?>" />
-	<input type="hidden" name="override" value="<?= $override; ?>" />
+	<input type="hidden" name="override" value="<?= $override ?? ''; ?>" />
 	<input type="submit" value="<?= $button; ?>" />
 
 </form>

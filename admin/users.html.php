@@ -9,7 +9,7 @@ $optgroup = $priv === 'Admin' ? 'clients' : '';
 	<p class='error'><?= $error; ?></p>
 	<?php
 
-	if (preg_match("/admin/i", $priv) || isset($editor)) {
+	if (isApproved($priv, 'admin') || isset($editor)) {
 		ob_start();
 		$obstart = true;
 		include TEMPLATE . '_call.html.php';

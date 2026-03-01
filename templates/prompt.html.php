@@ -16,14 +16,14 @@
             </div>
         </form>
     <?php elseif (!isset($clientlist) && !isset($del)):
-
+    //confirm used by several controllers
     ?>
         <form action="<?= $action; ?>" method="post" name="choice" class="prompt" id="yesno">
-            <input type="hidden" name="ownerid" value="<?= $ownerid; ?>" />
-            <input type="hidden" name="ownername" value="<?= $ownername; ?>" />
-            <input type="hidden" name="multi" value="<?= !!$multi; ?>" />
+            <input type="hidden" name="ownerid" value="<?= $ownerid ?? $id; ?>" />
+            <input type="hidden" name="ownername" value="<?= $ownername ?? ''; ?>" />
+            <input type="hidden" name="multi" value="<?= $multi ?? false; ?>" />
             <input type="hidden" name="domain" value="<?= $domain ?? ''; ?>" />
-            <input type="hidden" name="editor" value="<?= !!$editor; ?>" />
+            <input type="hidden" name="editor" value="<?= $editor ?? false; ?>" />
             <?php
             include '_confirm.html.php';
             ?>
