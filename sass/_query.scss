@@ -92,14 +92,23 @@
 @keyframes slide-in {
   from {
     translate: 0 -50vw;
-    // height: 0;
   }
 
   to {
     translate: 0 0;
-    // height: calc-size(auto);
   }
 }
+
+@keyframes grow {
+  from {
+    scale: 0;
+  }
+
+  to {
+    scale: 100%;
+  }
+}
+
 
 #yesno/*, form[name=updatefileinfo], form[name=search]*/ {
   animation-duration: 1s;
@@ -109,8 +118,8 @@
 form[name="updatefileinfo"],
 form[name="search"],
 form[name="uploadform"] {
-  // background-image: radial-gradient(var(--prompt), white 88%);
   background-color: var(--pale);
   border: solid 1px black;
- // font: var(--deleter);
+  animation-duration: 1.5s;
+  animation-name: grow;
 }

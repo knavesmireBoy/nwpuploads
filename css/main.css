@@ -97,15 +97,19 @@ ol, ul, dl {
 
 :root {
   --main-color: #496600;
-  --main-color-alt: hsl(77, 100%, 10%);
-  --prompt: #d9ebad;
+  --main-color: hsl(160, 100%, 12%);
+  --main-color-alt: hsl(160, 100%, 22%);
+  --prompt: hsl(95, 60%, 80%);
+  --prompt: hsl(80, 80%, 75%);
   --bg: radial-gradient(hsl(77, 90%, 40%), white);
-  --pale: #edf8d0;
-  --bright: hsl(75, 80%, 45%);
+  --pale: hsl(80, 70%, 85%);
+  --bright: hsl(80, 80%, 60%);
   --invert: hsl(215, 79%, 55%);
   --invert: #5f0202;
   --invert: hsl(77, 100%, 10%);
-  --head: #7a9f33;
+  --invert: rgb(0, 46, 27);
+  --head: hsl(95, 40%, 50%);
+  --head: hsl(80, 55%, 40%);
   --georgia: bold 2.2em/1 Georgia, sans-serif;
   --georgiaform: bold italic 1.8em/1 Georgia, sans-serif;
   --deleter: bold 1rem/1 Georgia, sans-serif;
@@ -318,7 +322,7 @@ main > p a:hover {
   color: white;
 }
 main > p.call {
-  margin: 1em 0;
+  margin: 1em auto;
 }
 
 footer {
@@ -415,7 +419,6 @@ form.choose select {
 
 .clientgroup {
   background-color: var(--prompt);
-  background-image: radial-gradient(white, var(--prompt));
   padding: 1em;
   border: solid 1px;
   border-radius: var(--button);
@@ -800,6 +803,14 @@ form.details #roles input {
     translate: 0 0;
   }
 }
+@keyframes grow {
+  from {
+    scale: 0;
+  }
+  to {
+    scale: 100%;
+  }
+}
 #yesno {
   animation-duration: 1s;
   animation-name: slide-in;
@@ -810,6 +821,8 @@ form[name=search],
 form[name=uploadform] {
   background-color: var(--pale);
   border: solid 1px black;
+  animation-duration: 1.5s;
+  animation-name: grow;
 }
 
 /*# sourceMappingURL=main.css.map */

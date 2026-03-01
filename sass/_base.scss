@@ -1,14 +1,18 @@
 :root {
   --main-color: #496600;
-  --main-color-alt: hsl(77, 100%, 10%);
-  --prompt: #d9ebad;
+  --main-color: hsl(160, 100%, 12%);
+  --main-color-alt: hsl(160, 100%, 22%);
+  --prompt: hsl(95, 60%, 80%);
+  --prompt: hsl(80, 80%, 75%);
   --bg: radial-gradient(hsl(77, 90%, 40%), white);
-  --pale: #edf8d0;
-  --bright: hsl(75, 80%, 45%);
+  --pale: hsl(80, 70%, 85%);
+  --bright: hsl(80, 80%, 60%);
   --invert: hsl(215, 79%, 55%);
   --invert: #5f0202;
   --invert: hsl(77, 100%, 10%);
-  --head: #7a9f33;
+  --invert: rgb(0, 46, 27);
+  --head:  hsl(95, 40%, 50%);
+  --head:  hsl(80, 55%, 40%);
   --georgia: bold 2.2em/1 Georgia, sans-serif;
   --georgiaform: bold italic 1.8em/1 Georgia, sans-serif;
   --deleter: bold 1rem/1 Georgia, sans-serif;
@@ -268,7 +272,7 @@ main {
       }
     }
     &.call {
-      margin: 1em 0;
+      margin: 1em auto;
     }
   }
 }
@@ -369,7 +373,6 @@ form.choose {
 
 .clientgroup {
   background-color: var(--prompt);
-  background-image: radial-gradient(white, var(--prompt));
   padding: 1em;
   border: solid 1px;
   border-radius: var(--button);
@@ -380,7 +383,7 @@ form.choose {
   font: bold italic 1.2em/1.8 Georgia, serif;
   a {
     display: block;
-    color: var(--main-color);
+    color:  var(--main-color);
     &:nth-child(even) {
       color: var(--main-color-alt);
     }
