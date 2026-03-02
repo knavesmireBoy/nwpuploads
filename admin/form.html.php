@@ -7,10 +7,10 @@ $domain = false;
 
 ?>
 <h1><?= $pagehead; ?></h1>
-<p><?= $message; ?></p>
-
-<?php 
-
+<?php if (!empty($message)) { ?>
+	<p><?= $message; ?></p>
+<?php
+}
 if ((isApproved($priv, 'admin') || $editor) && !empty($id)) {
 	include TEMPLATE . '_call.html.php';
 }

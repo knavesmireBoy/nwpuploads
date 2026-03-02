@@ -332,7 +332,7 @@ p {
 }
 
 input[type="submit"] {
-  border: 1px solid white;
+  border: 1px solid rgb(255, 255, 200);
   color: white;
   border-radius: 20px;
   background-color: var(--main-color);
@@ -645,7 +645,7 @@ form[name="downloads"] div input {
     }
   }
 }
-#admin_client {
+#admin_user, #admin_client {
   background-color: var(--prompt);
   //have a decent margin if no optional button is present
   h1 + form {
