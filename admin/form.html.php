@@ -15,7 +15,6 @@ if ((isApproved($priv, 'admin') || $editor) && !empty($id)) {
 	include TEMPLATE . '_call.html.php';
 }
 ?>
-
 <form action="?<?= $action; ?>" method="post" name="usersform" class="<?= empty($class) ? 'details' : $class; ?>">
 	<div>
 		<label for="name">Name</label><input id="name" type="text" name="name" value="<?= $name ?? ''; ?>" required autocomplete="off" />
@@ -29,7 +28,6 @@ if ((isApproved($priv, 'admin') || $editor) && !empty($id)) {
 	<input type="hidden" name="action" value="<?= $route; ?>" />
 	<input type="hidden" name="override" value="<?= $override ?? ''; ?>" />
 	<input type="submit" value="<?= $button; ?>" />
-
 </form>
 <?php
 include "_footer.html.php";

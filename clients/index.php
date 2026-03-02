@@ -127,7 +127,6 @@ if (isset($_POST['associate'])) {
   }
 }
 if (isset($_POST['action']) && $_POST['action'] === 'Added') {
-  //if (isset($_GET['addform'])) {
   include CONNECT;
   $dom = $_POST['domain'];
   $sql = "INSERT INTO client (name, domain, tel) VALUES (:nom, :dom, :tel)";
