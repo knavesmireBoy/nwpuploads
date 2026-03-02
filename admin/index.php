@@ -3,7 +3,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
 
 function query()
 {
-  $lib = ['nousers' => "<h4>Unable to find any users</h4>", "addnotice" => "Please fill required fields", "selectuser" => "Please select a user for editing", "clientflag" => "Cannot assign this user to a new client", "lastuser" => "To remove this last user, please delete the client instead",  "denied" => "You do not have the required privileges to delete, please contact your administrator", "access" => "You do not have the privileges to add a user", "deniedbyadmin" => "Cannot delete this user until a new client admin role is assigned to this client", "self" => "Only a peer can perform this deletion", "freelancer" => "Cannot assign this domain", 'addno' => 'You do not have the required privilges to add a user'];
+  $lib = ['nousers' => "<h4>Unable to find any users</h4>", "addnotice" => "Please fill required fields", "selectuser" => "Please select a user for editing", "clientflag" => "Cannot assign this user to a new client", "lastuser" => "To remove this last user, please delete the client instead",  "lastclient" => "You do not have the privileges to remove your details from the database, please contact the database administrator", "denied" => "You do not have the required privileges to delete, please contact your administrator", "access" => "You do not have the privileges to add a user", "deniedbyadmin" => "Cannot delete this user until a new client admin role is assigned to this client", "self" => "Only a peer can perform this deletion", "freelancer" => "Cannot assign this domain", 'addno' => 'You do not have the required privilges to add a user'];
   $query = explode('=', $_SERVER["QUERY_STRING"]);
   $q = $query[1] ?? $query[0];
   return $lib[$q] ?? NULL;
@@ -133,7 +133,7 @@ function canEdit($id, $postemail, $priv)
   return [$logemail === $dbemail, $postemail !== $logemail, $row['dom'] ?? '', isApproved($priv, 'admin')];
 }
 
-function filterUsers($sql, $key, $pagetitle)
+function filterUsers($sql, $key, $pagetitle, $error = '')
 {
   //$key expected to be freelance id or domain
   $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
@@ -171,7 +171,11 @@ function filterUsers($sql, $key, $pagetitle)
     if ($usercount === 1) {
       $key = $row['user_id'];
       $usercount = 1;
-      header("Location: ./?edit=$key");
+      $location = "./?edit=$key";
+      if (!empty($error)) {
+        $location .= "&error=$error";
+      }
+      header("Location: $location");
       exit;
     }
   } else {
@@ -493,7 +497,8 @@ if (isset($_POST['confirm'])) {
     }
 
     if (count($rows) === 1) {
-      header("Location: ./?lastuser");
+      $location = $editor ? "Location: ./?lastclient" : "Location: ./?lastuser";
+      header($location);
       exit();
     }
     $role = isset($roles[$id]) ? $roles[$id] : NULL;
@@ -530,7 +535,6 @@ if (isset($_GET['delete'])) {
   $crud = $editor || $_agency;
   if (!$crud) {
     header("Location: ./?denied");
-   
   }
 }
 
@@ -646,11 +650,17 @@ if ((isset($_GET['edit'])) || $agency || $pwd || $clientflag) {
   $message = $_GET['error'] ?? '';
   $id = isset($_GET['edit']) ? $_GET['edit'] : ($pwd ? $pwd : NULL);
   $id = !empty($id) ? $id : $_POST['id'] ?? '';
+
   $calltext = "Delete User";
   $callroute = "delete=$id";
+
   $warning = 'You do not have sufficient privileges to edit this users details.';
   list($editor, $echange, $domain, $_agency) = canEdit($id, $_POST['email'] ?? '', $priv);
   //DON'T FORGET WE CAN ARRIVE HERE DIRECT FROM A LINK AND NOT FROM A REDIRECT FROM EDITING
+  if (isset($_GET['error'])) {
+    unset($calltext);
+    unset($callroute);
+  }
   if (!$agency) {
     if ($editor || $_agency) {
       $warning = '';
@@ -753,12 +763,10 @@ if ($users === []) {
   $st = doQuery($pdo, "SELECT domain FROM client LEFT JOIN user ON $domainstr = client.domain WHERE user.id=$key", '');
   $row = $st->fetch(PDO::FETCH_ASSOC);
   $domain = $row['domain'] ?? NULL;
-  $error = query();
+  //$error = query();
 
-if ($domain && !isset($prompt)) {
-    dump($prompt);
-  //if ($domain && empty($_GET)) {
-    list($sql, $users, $selected, $return, $pagehead, $pagetitle) = filterUsers($sql, $row['domain'], $pagetitle);
+  if ($domain && !isset($prompt)) {
+    list($sql, $users, $selected, $return, $pagehead, $pagetitle) = filterUsers($sql, $row['domain'], $pagetitle, $error);
   }
 }
 
@@ -768,13 +776,13 @@ if ($users === []) {
     $sql .= " AND user.id=$key";
   }
   $sql .= " ORDER BY name";
-
   $st = doQuery($pdo, $sql, '');
   $rows = $st->fetchAll(PDO::FETCH_ASSOC);
   foreach ($rows as $row) {
     $users[$row['id']] = $row['name'];
   }
 }
+
 //prepare list
 if ($admin) {
   include CONNECT;
@@ -790,22 +798,22 @@ if ($admin) {
 //reAssignClient($pdo);
 
 $message = $message ? $message : $error;
-$usercount = isApproved($priv, 'ADMIN') ? 2 : count($users);
+$usercount = isApproved($priv, 'ADMIN') ? 2 : count($users); //2 ie more than 1
 //setExtent is largely used for displaying conditional content, appropriate buttons etc..
 setExtent($usercount);
-
-
-if ($usercount === 1) {
+if ($usercount === 1 && !isset($prompt)) {
   $calltext = "Delete User";
   $callroute = "delete=$key";
   $location = "./?edit=$key";
-
-  if(!empty($error)){
+  if (!empty($error)) {
+    unset($callroute);
+    unset($calltext);
     $location .= "&error=$error";
   }
   header("Location: $location"); //GO DIRECT TO EDIT FORM
   exit();
 } else {
+  //clients of one in number can only end up here if a prompt is set and usercount is zero
   $pagehead = isApproved($priv, 'client') ? "Manage Team" : "Manage Users";
   include 'users.html.php';
 }
