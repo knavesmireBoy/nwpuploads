@@ -22,12 +22,11 @@ function databaseContainsUser($email, $password)
 function userIsLoggedIn()
 {
     if (isset($_POST['action']) && $_POST['action'] == 'login') {
-        if (!isset($_POST['email']) || $_POST['email'] == '' || !isset($_POST['password']) || $_POST['password'] == '') {
+        if (empty($_POST['email']) || empty($_POST['password'])) {
             $GLOBALS['loginerror'] = 'Please fill in both fields';
             return FALSE;
         }
         $password = md5($_POST['password'] . 'uploads');
-
         if (databaseContainsUser($_POST['email'], $password)) {
             session_start();
             $_SESSION['loggedIn'] = TRUE;
@@ -45,13 +44,15 @@ function userIsLoggedIn()
     } //end of log in attempt
 
     if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'logout') {
+        $location = "Location: .";
         session_start();
         unset($_SESSION['loggedIn']);
         unset($_SESSION['email']);
         unset($_SESSION['password']);
         //header("Location: " . $_POST['goto']);
         $e = $_GET['error'] ?? '';
-        header("Location: ./?loginerror=$e");
+        $location .= $e ? "/?loginerror=$e" : '';
+        header($location);
         exit();
     } //end of logout
     session_start();
@@ -60,7 +61,7 @@ function userIsLoggedIn()
     }
 } // end of user check
 
-function userHasWhatRole($flag = false)
+function obtainUserRole($flag = false)
 {
     include 'db.inc.php';
     $sql = "SELECT user.id, userrole.roleid FROM userrole INNER JOIN user ON user.id=userrole.userid where user.email=:email";
@@ -80,7 +81,7 @@ function userHasWhatRole($flag = false)
 
 function clientCheck($flag = false)
 {
-    list($key, $priv) = userHasWhatRole();
+    list($key, $priv) = obtainUserRole();
     $c = preg_match("/client/i", $priv);
     $ca = $c && preg_match("/admin/i", $priv);
     return $flag ? !($ca || !$c) : ($ca || !$c);

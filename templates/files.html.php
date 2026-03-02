@@ -3,6 +3,34 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
 
 $klas = $pages > 1 ? 'paginate' : '';
 $d = 'l F j, Y';
+$qlib = [
+    'find',
+    'user',
+    'text',
+    'suffix',
+    'action',
+    'flag',
+    's',
+    'u',
+    'p',
+    't',
+    'sort',
+    'ext'
+];
+$query = $_SERVER['QUERY_STRING'];
+
+parse_str($query, $output);
+$result = array_keys($output);
+$qpass = true;
+$i = 0;
+while(isset($result[$i])){
+    $qpass = $qpass && in_array($result[$i], $qlib);
+    $i++;
+}
+if(!$qpass){
+    header("Location: .");
+    exit();
+}
 //$d = 'j, n, Y';
 ?>
 <h1>File Uploads</h1>
@@ -78,15 +106,14 @@ if (count($files) > 0): ?>
     </table>
     </div>
 <?php else :
-    $greeting = ($_SERVER['QUERY_STRING']) ? 'There were no files that matched your criteria' : 'There are currently no files in the database' ?>
-    <h2><a href="<?php $_SERVER['PHP_SELF'] ?>" title="Click to return"><?= $greeting; ?>
+    $greeting = ($query) ? 'There were no files that matched your criteria' : 'There are currently no files in the database' ?>
+    <h2><a href="." title="Click to return"><?= $greeting; ?>
         </a></h2>
 <?php
 endif;
 $wither = seek();
 $lnk = ($wither !== '.' ? 'Search files' : 'Clear search results');
-
-if (!isset($_GET['find']) /* && !isset($greeting)*/) { ?>
+if (!isset($_GET['find']) && count($files) > 0) { ?>
     <p><a href="<?= $wither; ?>"><?= $lnk; ?></a></p>
 <?php
 } ?>

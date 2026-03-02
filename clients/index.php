@@ -27,7 +27,7 @@ $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
 $pagetitle = "Manage Clients";
 $selected = null;
 
-list($key, $priv) = userHasWhatRole(true);
+list($key, $priv) = obtainUserRole(true);
 
 if ($priv !== 'Admin') {
   $e = 'Only Account Administrators may access this page!!';

@@ -3,7 +3,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
 
 function query()
 {
-  $lib = ['nousers' => "<h4>Unable to find any users</h4>", "addnotice" => "Please fill required fields", "selectuser" => "Please select a user for editing", "clientflag" => "Cannot assign this user to a new client", "lastuser" => "To remove this last user, please delete the client instead",  "lastclient" => "You do not have the privileges to remove your details from the database, please contact the database administrator", "denied" => "You do not have the required privileges to delete, please contact your administrator", "access" => "You do not have the privileges to add a user", "deniedbyadmin" => "Cannot delete this user until a new client admin role is assigned to this client", "self" => "Only a peer can perform this deletion", "freelancer" => "Cannot assign this domain", 'addno' => 'You do not have the required privilges to add a user'];
+  $lib = ['nousers' => "<h4>Unable to find any users</h4>", "addnotice" => "Please fill required fields", "selectuser" => "Please select a user for editing", "clientflag" => "Cannot assign this user to a new client", "lastuser" => "To remove this last user, please delete the client instead", "denied" => "You do not have the privileges to delete this user", "deniedbyclient" => "There must be at least one administrator role, please assign another user before removing your credentials from the database", "access" => "You do not have the privileges to add a user", "deniedbyadmin" => "Cannot delete this user until a new client admin role is assigned to this client", "self" => "Only a peer can perform this deletion", "freelancer" => "Cannot assign this domain", 'addno' => 'You do not have the required privilges to add a user'];
   $query = explode('=', $_SERVER["QUERY_STRING"]);
   $q = $query[1] ?? $query[0];
   return $lib[$q] ?? NULL;
@@ -350,8 +350,8 @@ if (!userIsLoggedIn()) {
   exit();
 }
 
-$roleplay = userHasWhatRole();
-$pagehead_role = $roleplay && !userHasWhatRole(true);
+$roleplay = obtainUserRole();
+$pagehead_role = $roleplay && !obtainUserRole(true);
 
 if (!$roleplay || $pagehead_role) {
   $e = 'Only Account Administrators may access this page!';
@@ -402,7 +402,8 @@ if (isset($_GET['add'])) {
 
 if (isset($_POST['action']) && $_POST['action'] === 'Add') {
   include CONNECT;
-  $clientid = $_POST['employer'] ?? NULL;
+  //client_id: the only empty value MUST BE NULL, not empty string or zero
+  $clientid = empty($_POST['employer']) ? NULL : $_POST['employer'];
   $clientadmin = preg_match("/admin/i", $priv) && preg_match("/client/i", $priv);
   $essentials = [$_POST['name'], $_POST['email'], $_POST['password']];
   $essentials = array_filter($essentials, function ($item) {
@@ -421,10 +422,11 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
   if we have a clientid provided by $_POST['employer'] we must check that the supplied email DOMAIN matches
   Potentially there may be a case for having a contractor role but it would have to be deleted if the client was removed from the database and without a clientid this would not happen through the referential integrity enforced by the database. But an additional check could be made at this point, in the meantime the "contractor" would be free to leave the role
   */
+ 
   $st->bindValue(':nom', $_POST['name']);
   $st->bindValue(':e', $_POST['email']);
   $st->bindValue(':pwd', $_POST['password']);
-  $st->bindValue(':clientid', intval($clientid));
+  $st->bindValue(':clientid', $clientid);
   $res = doPreparedQuery($st, 'Error adding user');
   $aid = lastInsert($pdo);
   $contractor = $isContractor($pdo,  $_POST['email'], $clientid);
@@ -456,16 +458,14 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
 //exits
 if (isset($_POST['confirm'])) {
   $location = " .";
-
-  //dump($usercount);
-
   if ($_POST['confirm'] == 'Yes') {
     include CONNECT;
-    $admin = ($priv == 'Admin');
     $id = $_POST['id'];
     $role = null;
     $roles = [];
-
+    $admin = isApproved($priv, 'ADMIN');
+    $clientadmin = isApproved($priv, 'admin');
+    dump($_GET);
     list($editor, $echange, $domain, $agency) = canEdit($id, '', $priv);
     $crud = ($agency || $editor);
 
@@ -476,13 +476,19 @@ if (isset($_POST['confirm'])) {
         exit();
       } else if ($crud) {
         deleteAlready($id);
-        header("Location: .");
+        header("Location: ./?logout");
         exit();
       }
     }
     $sql = "SELECT user.id FROM user INNER JOIN client ON user.client_id = client.id WHERE client.domain='$domain'";
     $st = doQuery($pdo, $sql, 'Error fetching client.');
     $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+    
+    if (count($rows) === 1) {
+      $location = $editor ? "Location: ./?deniedbyclient" : "Location: ./?lastuser";
+      header($location);
+      exit();
+    }
 
     $rolesql = "SELECT role.id AS role, userrole.userid AS id FROM role LEFT JOIN userrole ON role.id = userrole.roleid WHERE userrole.userid=:id";
     $st = $pdo->prepare($rolesql);
@@ -490,31 +496,29 @@ if (isset($_POST['confirm'])) {
     if (!empty($rows)) {
       foreach ($rows as $r) {
         $st->bindValue(':id',  $r['id']);
-        doPreparedQuery($st, 'Error fetching client.');
+        doPreparedQuery($st, 'Error fetching roles.');
         $ro = $st->fetch(PDO::FETCH_ASSOC);
         $roles[$ro['id']] = $ro['role'];
       }
     }
 
-    if (count($rows) === 1) {
-      $location = $editor ? "Location: ./?lastclient" : "Location: ./?lastuser";
-      header($location);
-      exit();
-    }
-    $role = isset($roles[$id]) ? $roles[$id] : NULL;
-    $danger = preg_match("/admin/i", $role);
-    if ($danger) {
+    /*
+    only Admin or Client Admin roles SHOULD get to this point
+    but not if 
+    but a "Employer" could have more than one "Client Admin" roles
+    if removing one 
+    */
       $roles = safeFilter($roles, function ($role) {
         return preg_match("/admin/i", $role);
       });
-    }
-    $danger = $danger || count($roles) < 2;
-    $denied = $crud ? false : ($role === 'Client');
+  
+    $danger = count($roles) < 2;
 
-    if (!$denied && !$danger) {
+    if (!$danger) {
       deleteAlready($id);
     } else {
-      $location .= "/?denied";
+      $deny = $admin ? '/?deniedbyadmin' : '/?deniedbyclient';
+      $location .= $deny;
     }
   }
   header("Location: $location");
@@ -748,7 +752,6 @@ $sql = "SELECT user.id, user.name FROM user LEFT JOIN (SELECT user.name, client.
 $sql = "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS NULL"; //USING ID NOT DOMAIN
 $admin = isApproved($priv, 'ADMIN');
 
-
 if (isset($_POST['user'])) { //dropdown
   if ($_POST['user'] === '') {
     header("Location: ./?selectuser");
@@ -763,13 +766,12 @@ if ($users === []) {
   $st = doQuery($pdo, "SELECT domain FROM client LEFT JOIN user ON $domainstr = client.domain WHERE user.id=$key", '');
   $row = $st->fetch(PDO::FETCH_ASSOC);
   $domain = $row['domain'] ?? NULL;
-  //$error = query();
-
   if ($domain && !isset($prompt)) {
     list($sql, $users, $selected, $return, $pagehead, $pagetitle) = filterUsers($sql, $row['domain'], $pagetitle, $error);
   }
 }
 
+//if $prompt is set and we have a one member client this will yield an empty set
 if ($users === []) {
   include CONNECT;
   if (!$admin) {
@@ -810,10 +812,10 @@ if ($usercount === 1 && !isset($prompt)) {
     unset($calltext);
     $location .= "&error=$error";
   }
-  header("Location: $location"); //GO DIRECT TO EDIT FORM
+  header("Location: $location"); //GO DIRECT TO EDIT FORM, unless...
   exit();
-} else {
-  //clients of one in number can only end up here if a prompt is set and usercount is zero
+} else {//usercount is zero or more than one
+  //...clients of one in number can only end up here if a prompt is set and usercount is zero
   $pagehead = isApproved($priv, 'client') ? "Manage Team" : "Manage Users";
   include 'users.html.php';
 }

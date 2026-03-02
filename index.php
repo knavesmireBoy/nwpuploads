@@ -3,6 +3,19 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
 
+$qlib = [
+    'user',
+    'text',
+    'suffix',
+    'action',
+    'flag',
+    's',
+    'u',
+    'p',
+    't',
+    'sort'
+];
+
 function fromPayload($str, ...$args)
 {
     return implode(' ', array_merge([$str], $args));
@@ -182,7 +195,7 @@ if (!userIsLoggedIn()) {
     exit();
 }
 //public page
-if ($roleplay = userHasWhatRole()) {
+if ($roleplay = obtainUserRole()) {
     list($key, $priv) = $roleplay;
     //!!?!! V. USEFUL VARIABLE IN GLOBAL SPACE
     $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
