@@ -1,21 +1,15 @@
 :root {
-  --main-color: #496600;
-  --main-color: hsl(160, 100%, 12%);
-  --main-color-alt: hsl(160, 100%, 22%);
-  --prompt: hsl(95, 60%, 80%);
+  --main-color: hsl(155, 100%, 18%);
   --prompt: hsl(80, 80%, 75%);
   --bg: radial-gradient(hsl(77, 90%, 40%), white);
   --pale: hsl(80, 70%, 85%);
   --bright: hsl(80, 80%, 60%);
-  --invert: hsl(215, 79%, 55%);
-  --invert: #5f0202;
-  --invert: hsl(77, 100%, 10%);
-  --invert: rgb(0, 46, 27);
-  --head:  hsl(95, 40%, 50%);
-  --head:  hsl(80, 55%, 40%);
+  --bg: hsl(155, 100%, 9%);
+  --contrast: hsl(300, 100%, 20%);
+  --head: hsl(80, 70%, 30%);
   --georgia: bold 2.2em/1 Georgia, sans-serif;
   --georgiaform: bold italic 1.8em/1 Georgia, sans-serif;
-  --deleter: bold 1rem/1 Georgia, sans-serif;
+  --default: bold 1em/1 Georgia, sans-serif;
   --label: 1.25em;
   --button: 12px;
 }
@@ -61,7 +55,6 @@ html {
     font-size: 1em;
     font-family: Helvetica, Geneva, Arial, SunSans-Regular, sans-serif;
     font-family: Georgia, "Times New Roman", Times, serif;
-
     padding: 0;
     margin: auto;
     text-align: center;
@@ -79,7 +72,7 @@ html {
 
 h1 {
   padding: 0.75em 0;
-  background-color: var(--invert);
+  background-color: var(--bg);
   border: solid 1px white;
   border-width: 0 0 1px;
   a,
@@ -89,9 +82,8 @@ h1 {
   + p {
     width: clamp(300px, 50vw, 1000px);
     margin: 0 auto;
-    font: var(--deleter);
-    color: purple;
-
+    font: var(--default);
+    color: var(--contrast);
   }
 }
 
@@ -100,7 +92,7 @@ h2 {
   font-size: 1.5em;
   margin: 1em 0;
   &.error {
-    color: var(--invert);
+    color: var(--bg);
   }
 }
 h3 {
@@ -167,7 +159,7 @@ form {
   > a.cancel {
     display: block;
     position: absolute;
-    font: var(--deleter);
+    font: var(--default);
     font-family: Arial, Helvetica, sans-serif;
     font-size: 1.5rem;
     right: 0.3em;
@@ -180,7 +172,8 @@ form {
   input[type="submit"] {
     padding: 0.25em 0.5em;
     cursor: pointer;
-    font: var(--deleter);
+    font: var(--default);
+    background-color: var(--contrast);
     &:hover {
       background-color: black;
     }
@@ -231,7 +224,7 @@ form.details {
   border-radius: var(--button);
   padding: 3em 1em 1em;
   width: clamp(318px, 98vw, 768px);
-  //  font: var(--deleter);
+  //  font: var(--default);
   input {
     padding: 1em 0.2em;
     display: block;
@@ -261,6 +254,12 @@ form.details {
 }
 
 main {
+  a {
+    color: var(--bg);
+  }
+  h2 a {
+    color: var(--contrast);
+  }
   > p {
     margin: 1em auto;
     a {
@@ -278,7 +277,7 @@ main {
 }
 
 footer {
-  background-color: var(--invert);
+  background-color: var(--bg);
   padding: 1.2rem 0;
   border: solid 1px white;
   border-width: 1px 0 0;
@@ -315,7 +314,10 @@ footer {
       margin: -2em 0 1em;
     }
   }
-}
+  input[type="submit"] {
+    background-color: var(--main-color);
+  }
+} ///footer
 
 p {
   a,
@@ -347,7 +349,7 @@ form.choose {
   background-color: var(--prompt);
   border-radius: var(--button);
   padding: 1em;
-  font: var(--deleter);
+  font: var(--default);
   width: clamp(300px, 10vw, 800px);
   select {
     width: 100%;
@@ -355,7 +357,7 @@ form.choose {
 }
 
 .prompt {
-  background-color: var(--invert);
+  background-color: var(--bg);
   display: inline-block;
   padding: 1em;
   border-radius: var(--button);
@@ -372,7 +374,7 @@ form.choose {
 }
 
 .clientgroup {
-  background-color: var(--prompt);
+  background-color: rgba(255, 255, 255, 0.5);
   padding: 1em;
   border: solid 1px;
   border-radius: var(--button);
@@ -380,15 +382,16 @@ form.choose {
   font-weight: bold;
   margin: 0 auto 1em;
   width: clamp(300px, 30vw, 600px);
-  font: bold italic 1.2em/1.8 Georgia, serif;
+  font: bold 1.2em/1.8 Georgia, serif;
+  text-align: left;
   a {
     display: block;
-    color:  var(--main-color);
+    color: var(--bg);
     &:nth-child(even) {
-      color: var(--main-color-alt);
+      color: var(--main-color);
     }
     &:hover {
-      color: var(--invert);
+      color: var(--contrast);
     }
   }
 }
@@ -415,7 +418,7 @@ form[name="usersform"] {
     margin: 1em auto;
     text-align: left;
     color: var(--main-color);
-    font-size: 0.75em;
+    font-size: 0.88em;
     padding: 1em 0;
     width: clamp(320px, 100%, 580px);
     background-color: rgba(255, 255, 255, 0.5);
@@ -450,7 +453,7 @@ form[name="usersform"] {
         display: block;
         padding: 0 0 0.5em;
         @include hide;
-        font-size: 1em;
+        font-size: 0.9em;
       }
       label {
         color: black;
@@ -527,7 +530,7 @@ form[name="logoutform"] {
   margin: 0;
   #upload & input {
     position: relative;
-    background-color: var(--invert);
+    background-color: var(--bg);
     &:hover {
       background-color: black;
     }
@@ -595,13 +598,13 @@ form[name="downloads"] div input {
   cursor: pointer;
   @include trash(30px, center 33%);
   &:hover {
-    background-color: var(--invert);
+    background-color: var(--bg);
   }
 }
 
 #yesno {
   margin: 0 0 1em;
-  font: var(--deleter);
+  font: var(--default);
   label {
     cursor: pointer;
     font-size: var(--label);
@@ -633,14 +636,19 @@ form[name="downloads"] div input {
 #admin_user,
 #admin_client {
   background-color: var(--pale);
-  main form {
-    background-color: rgba(255, 255, 255, 0.5);
-    &#yesno {
-      background-color: var(--invert);
+  main {
+    > form {
+      background-color: rgba(255, 255, 255, 0.5);
+      &#yesno {
+        background-color: var(--bg);
+      }
     }
   }
 }
 #admin_client {
   background-color: var(--prompt);
+  //have a decent margin if no optional button is present
+  h1 + form {
+    margin: 3em auto 0;
+  }
 }
-

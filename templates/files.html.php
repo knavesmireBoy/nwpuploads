@@ -15,7 +15,9 @@ $qlib = [
     'p',
     't',
     'sort',
-    'ext'
+    'ext',
+    'loginerror',
+    'upload'
 ];
 $query = $_SERVER['QUERY_STRING'];
 
@@ -23,14 +25,17 @@ parse_str($query, $output);
 $result = array_keys($output);
 $qpass = true;
 $i = 0;
-while(isset($result[$i])){
+$failedsearch = 'There were no files that matched your criteria';
+while (isset($result[$i])) {
     $qpass = $qpass && in_array($result[$i], $qlib);
     $i++;
 }
-if(!$qpass){
+
+if (!$qpass) {
     header("Location: .");
     exit();
 }
+$query = preg_match("/error/", $query) ? decode($query) : ($query ? $failedsearch : '');
 //$d = 'j, n, Y';
 ?>
 <h1>File Uploads</h1>
@@ -106,7 +111,7 @@ if (count($files) > 0): ?>
     </table>
     </div>
 <?php else :
-    $greeting = ($query) ? 'There were no files that matched your criteria' : 'There are currently no files in the database' ?>
+    $greeting = $query ? $query : 'There are currently no files in the database' ?>
     <h2><a href="." title="Click to return"><?= $greeting; ?>
         </a></h2>
 <?php

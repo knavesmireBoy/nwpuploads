@@ -1,12 +1,14 @@
 <?php
 include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
-include TEMPLATE . 'base.html.php';
+include_once TEMPLATE . 'base.html.php';
 ?>
 
 <h1>Manage Clients</h1>
 <?php
-ob_start();
+if (isset($template)) {
+	ob_start();
+}
 include TEMPLATE . '_call.html.php';
 ?>
 <?php

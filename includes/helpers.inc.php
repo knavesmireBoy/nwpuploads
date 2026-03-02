@@ -6,6 +6,12 @@ function dump($arg)
     exit;
 }
 
+function decode($qs)
+{
+    $res = explode('=', $qs);
+    return isset($res[1]) ? urldecode($res[1]) : '';
+}
+
 function safeFilter($array, $cb)
 {
     return array_values(array_filter($array, $cb));
@@ -408,20 +414,20 @@ function paymentZero($total, $rate, $min = 100)
 
 function interest($total, $rate, $dur, $min = 100)
 {
-   $count = 0;
+    $count = 0;
 
-   $x = ($total * $rate);
-   $y = $total * .01;
-   $pay = $x + $y;
+    $x = ($total * $rate);
+    $y = $total * .01;
+    $pay = $x + $y;
 
-   
 
-   $pay = max($pay, $min);
+
+    $pay = max($pay, $min);
     while ($count < $dur) {
         //monthly payment
         $total -= $pay;
         //interest
-       // $total *= $rate;
+        // $total *= $rate;
         //fixed charges (before or after rate applied?)
         //duration
         $count++;
@@ -436,7 +442,7 @@ function reAssoc($roles, $keys, $k, $v, $ret, $i, $j)
         $tgt = $keys[$j];
         //iterate until you find KEY to title
         if ($roles[$i]['id'] === $tgt) {
-           // $ret[] = [$roles[$i]['id'] => $roles[$i]['description']];
+            // $ret[] = [$roles[$i]['id'] => $roles[$i]['description']];
             //$ret[] = ['id' => $roles[$i]['id'], 'description' => $roles[$i]['description']];
             $ret[] = [$k => $roles[$i][$k], $v => $roles[$i][$v]];
             $j += 1; //advance

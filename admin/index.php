@@ -465,7 +465,6 @@ if (isset($_POST['confirm'])) {
     $roles = [];
     $admin = isApproved($priv, 'ADMIN');
     $clientadmin = isApproved($priv, 'admin');
-    dump($_GET);
     list($editor, $echange, $domain, $agency) = canEdit($id, '', $priv);
     $crud = ($agency || $editor);
 

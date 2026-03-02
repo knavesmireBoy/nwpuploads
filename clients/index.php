@@ -2,7 +2,6 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
 
-
 if (!userIsLoggedIn()) {
   $pagetitle = "Log In";
   include TEMPLATE . 'login.html.php';
@@ -29,11 +28,13 @@ $selected = null;
 
 list($key, $priv) = obtainUserRole(true);
 
+
 if ($priv !== 'Admin') {
-  $e = 'Only Account Administrators may access this page!!';
+  $e = 'Only Account Administrators may access this page!';
   header("Location: ../?loginerror=$e");
   exit();
 }
+
 
 if (isset($_GET['delete'])) {
   $id = $_GET['delete'];
@@ -52,15 +53,14 @@ if (isset($_POST['confirm'])) {
     include CONNECT;
     $st = $pdo->prepare("DELETE FROM client WHERE id =:id");
     $st->bindValue(":id", $_POST['id']);
-    $res = doPreparedQuery($st, 'Error deleting client.');
+    doPreparedQuery($st, 'Error deleting client.');
   }
-  header('Location: . ');
+  header('Location: .');
   exit();
 }
+
 ////////////END OF DELETE....START OF EDIT
-
 if (isset($_POST['action']) && $_POST['action'] == 'Edited' || isset($_GET['dom'])) {
-
   include CONNECT;
   $dom = getDomain($pdo, $_POST['id']);
   $st = $pdo->prepare("UPDATE client SET name=:nom, domain=:dom, tel=:tel WHERE id=:id");
@@ -201,4 +201,5 @@ foreach ($rows as $row) {
     'domain' => $row['domain']
   );
 }
+
 include 'clients.html.php';
