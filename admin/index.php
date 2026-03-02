@@ -6,7 +6,7 @@ function query()
   $lib = ['nousers' => "<h4>Unable to find any users</h4>", "addnotice" => "Please fill required fields", "selectuser" => "Please select a user for editing", "clientflag" => "Cannot assign this user to a new client", "lastuser" => "To remove this last user, please delete the client instead",  "denied" => "You do not have the required privileges to delete, please contact your administrator", "access" => "You do not have the privileges to add a user", "deniedbyadmin" => "Cannot delete this user until a new client admin role is assigned to this client", "self" => "Only a peer can perform this deletion", "freelancer" => "Cannot assign this domain", 'addno' => 'You do not have the required privilges to add a user'];
   $query = explode('=', $_SERVER["QUERY_STRING"]);
   $q = $query[1] ?? $query[0];
-  return $lib[$q] ?? null;
+  return $lib[$q] ?? NULL;
 }
 
 
@@ -43,6 +43,7 @@ $clientflag = $_GET['clientflag'] ?? NULL;
 $pwd = $_GET['pwd'] ?? NULL;
 $agency = $_GET['agency'] ?? NULL;
 $echange = $_GET['echange'] ?? NULL;
+$lastuser = $_GET['lastuser'] ?? NULL;
 
 function presentList($role, $flag = 'admin')
 {
@@ -79,7 +80,7 @@ function presentList($role, $flag = 'admin')
 
 function isFreelancer($pdo, $id)
 {
-  $sql = "SELECT id FROM user WHERE client_id IS NULL AND id=:id";
+  $sql = "SELECT id, email FROM user WHERE client_id IS NULL AND id=:id";
   $st = $pdo->prepare($sql);
   $st->bindValue(':id',  $id);
   doPreparedQuery($st, 'Error fetching client.');
@@ -87,7 +88,8 @@ function isFreelancer($pdo, $id)
   return $row['id'];
 }
 
-function hasDomain($key){
+function hasDomain($key)
+{
   include CONNECT;
   $st = $pdo->prepare("SELECT domain FROM client WHERE domain=:domain");
   $st->bindValue(":domain", $key);
@@ -95,34 +97,32 @@ function hasDomain($key){
   return $st->fetch(PDO::FETCH_ASSOC);
 }
 
+
+
 function checkCurrentDetails($id, $p = '')
 {
   include CONNECT;
-  $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
-
-  $sql = "SELECT id, name, email, $domainstr AS dom FROM user WHERE id =:id";
-
-  $st = $pdo->prepare("SELECT domain FROM client WHERE domain=:domain");
-  $st->bindValue(":domain", $key);
-  doPreparedQuery($st, "Unable to identify domain");
-  $row = $st->fetch(PDO::FETCH_ASSOC);
-
-  $st = $pdo->prepare($sql);
-  $st->bindValue(":id", $id);
-
-  doPreparedQuery($st, "Error fetching user details");
-  $row = $st->fetch(PDO::FETCH_ASSOC);
-  dump($row);
+  $row = isFreelancer($pdo, $id);
+  if (!$row) {
+    $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
+    $st = $pdo->prepare("SELECT id, name, email, $domainstr AS dom FROM user WHERE id =:id");
+    $st->bindValue(":id", $id);
+    doPreparedQuery($st, "Error fetching user details");
+    $row = $st->fetch(PDO::FETCH_ASSOC);
+  }
   return  $p ? $row[$p] : $row;
 }
 
 function canEdit($id, $postemail, $priv)
 {
   $logemail = strtolower($_SESSION['email']);
+
   $row = checkCurrentDetails($id);
+  $email = $row['email'] ?? '';
+
   $dbemail = NULL;
   if ($row) {
-    $dbemail = strtolower($row['email']);
+    $dbemail = strtolower($email);
   }
   if ($postemail) {
     $postemail = strtolower($postemail);
@@ -142,7 +142,6 @@ function filterUsers($sql, $key, $pagetitle)
   $users = [];
   $calltext = "Delete User";
   $selected = true;
-
   include CONNECT;
   $st = $pdo->prepare("SELECT domain FROM client WHERE domain=:domain");
   $st->bindValue(":domain", $key);
@@ -161,7 +160,6 @@ function filterUsers($sql, $key, $pagetitle)
     $st->bindValue(":domain", $row['domain']);
     doPreparedQuery($st, "Database error fetching users.");
     $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-
     if (empty($rows)) {
       header("Location: ./?nousers");
     }
@@ -176,7 +174,6 @@ function filterUsers($sql, $key, $pagetitle)
       header("Location: ./?edit=$key");
       exit;
     }
-    // $selected = false;
   } else {
     $callroute = "delete=$key";
     header("Location: ./?edit=$key");
@@ -370,7 +367,8 @@ if (isset($_GET['add'])) {
   $button = 'Add User';
   $override = '';
   $crud = isApproved($priv, 'admin');
-
+  $admin = isApproved($priv, 'ADMIN');
+  $clientadmin = isApproved($priv, 'Client Admin');
   if (!$crud) {
     header("Location: ./?addno");
     exit();
@@ -455,6 +453,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
 if (isset($_POST['confirm'])) {
   $location = " .";
 
+  //dump($usercount);
+
   if ($_POST['confirm'] == 'Yes') {
     include CONNECT;
     $admin = ($priv == 'Admin');
@@ -462,20 +462,15 @@ if (isset($_POST['confirm'])) {
     $role = null;
     $roles = [];
 
-
     list($editor, $echange, $domain, $agency) = canEdit($id, '', $priv);
     $crud = ($agency || $editor);
 
     //editor or freelance
     if (!$domain) {
-
       if ($admin && $editor) {
         header("Location: ./?self"); //delegate deleting an admin to a peer
         exit();
       } else if ($crud) {
-
-        dump(44, $crud);
-
         deleteAlready($id);
         header("Location: .");
         exit();
@@ -496,6 +491,7 @@ if (isset($_POST['confirm'])) {
         $roles[$ro['id']] = $ro['role'];
       }
     }
+
     if (count($rows) === 1) {
       header("Location: ./?lastuser");
       exit();
@@ -534,7 +530,7 @@ if (isset($_GET['delete'])) {
   $crud = $editor || $_agency;
   if (!$crud) {
     header("Location: ./?denied");
-    exit();
+   
   }
 }
 
@@ -641,15 +637,15 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
 
 //directly load form.html.php if only one user/client
 if ((isset($_GET['edit'])) || $agency || $pwd || $clientflag) {
+
   include CONNECT;
   $class = '';
   $admin = ($priv === 'Admin');
   $clientadmin = preg_match("/admin/i", $priv) || preg_match("/client/i", $priv);
   $adminClient = preg_match('/admin/i', $priv) && preg_match('/client/i', $priv);
-
+  $message = $_GET['error'] ?? '';
   $id = isset($_GET['edit']) ? $_GET['edit'] : ($pwd ? $pwd : NULL);
   $id = !empty($id) ? $id : $_POST['id'] ?? '';
-
   $calltext = "Delete User";
   $callroute = "delete=$id";
   $warning = 'You do not have sufficient privileges to edit this users details.';
@@ -741,6 +737,8 @@ if ((isset($_GET['edit'])) || $agency || $pwd || $clientflag) {
 $sql = "SELECT user.id, user.name FROM user LEFT JOIN (SELECT user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer ON $domainstr=employer.domain WHERE employer.domain IS NULL"; //this overwrites above query to filter out users as employees
 $sql = "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS NULL"; //USING ID NOT DOMAIN
 $admin = isApproved($priv, 'ADMIN');
+
+
 if (isset($_POST['user'])) { //dropdown
   if ($_POST['user'] === '') {
     header("Location: ./?selectuser");
@@ -755,7 +753,11 @@ if ($users === []) {
   $st = doQuery($pdo, "SELECT domain FROM client LEFT JOIN user ON $domainstr = client.domain WHERE user.id=$key", '');
   $row = $st->fetch(PDO::FETCH_ASSOC);
   $domain = $row['domain'] ?? NULL;
-  if ($domain) {
+  $error = query();
+
+if ($domain && !isset($prompt)) {
+    dump($prompt);
+  //if ($domain && empty($_GET)) {
     list($sql, $users, $selected, $return, $pagehead, $pagetitle) = filterUsers($sql, $row['domain'], $pagetitle);
   }
 }
@@ -773,7 +775,6 @@ if ($users === []) {
     $users[$row['id']] = $row['name'];
   }
 }
-
 //prepare list
 if ($admin) {
   include CONNECT;
@@ -792,13 +793,19 @@ $message = $message ? $message : $error;
 $usercount = isApproved($priv, 'ADMIN') ? 2 : count($users);
 //setExtent is largely used for displaying conditional content, appropriate buttons etc..
 setExtent($usercount);
-if ($usercount === 1 && empty($prompt)) {
+
+
+if ($usercount === 1) {
   $calltext = "Delete User";
   $callroute = "delete=$key";
-  header("Location: ./?edit=$key"); //GO DIRECT TO EDIT FORM
-  exit;
+  $location = "./?edit=$key";
+
+  if(!empty($error)){
+    $location .= "&error=$error";
+  }
+  header("Location: $location"); //GO DIRECT TO EDIT FORM
+  exit();
 } else {
   $pagehead = isApproved($priv, 'client') ? "Manage Team" : "Manage Users";
-  //$selected = false;
   include 'users.html.php';
 }
