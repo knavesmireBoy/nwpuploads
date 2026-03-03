@@ -12,6 +12,49 @@ function decode($qs)
     return isset($res[1]) ? urldecode($res[1]) : '';
 }
 
+function parseEmail($email)
+{
+    $i = strpos($email, '@');
+    $edom = substr($email, $i + 1);
+    $i = strpos($edom, '.');
+    $top = substr($edom, $i + 1);
+    $second = substr($edom, 0, strlen($edom) - strlen($top) - 1);
+    return [$second, $top];
+}
+
+function unsetCookie($str)
+{
+    unset($_COOKIE[$str]);
+    setcookie($str, '', -1, '/');
+}
+
+function doSetCookie($flag)
+{
+    return function ($k, $v = '', $time = -1) use ($flag) {
+
+        //need if undefined here
+        if (!is_string($v)) {
+            if (!is_int($v)) {
+                $v = $k;
+            }
+        }
+
+        if (!is_int($v)) {
+            if (!is_string($v)) {
+                $v = $k;
+            }
+        }
+
+        if (!isset($_COOKIE[$k]) && $flag) {
+            setcookie($k, $v, $time, '/');
+            $_COOKIE[$k] = $v;
+        } elseif (isset($_COOKIE[$k]) && !$flag) {
+            unset($_COOKIE[$k]);
+            setcookie($k, '', -1, '/');
+        }
+    };
+}
+
 function safeFilter($array, $cb)
 {
     return array_values(array_filter($array, $cb));

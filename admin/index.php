@@ -112,10 +112,11 @@ function canEdit($id, $postemail, $priv)
   } else {
     $postemail = $logemail;
   }
+
   return [$logemail === $dbemail, $postemail !== $logemail, $row['domain'] ?? '', isApproved($priv, 'admin')];
 }
 //$key expected to be freelance id (int) or domain (str)
-function filterUsers($sql, $key, $pagetitle, $error = '')
+function filterUsers($key, $pagetitle, $error = '')
 {
   $users = [];
   $selected = true;
@@ -148,7 +149,7 @@ function filterUsers($sql, $key, $pagetitle, $error = '')
     exit;
   }
   //load users
-  return [$sql, $users, $selected, $pagehead, $pagetitle];
+  return [$users, $selected, $pagehead, $pagetitle];
 }
 function defaultQuery($key, $priv)
 {
@@ -183,12 +184,26 @@ function updateUserDomain($old, $new, $id = 0)
 //object and prop or; no prop object MUST be a domain
 function isEmployer($o, $p = '')
 {
+
+  //https://stackoverflow.com/questions/2628138/how-to-select-domain-name-from-email-address
+
+  
+ $dom = "SUBSTR(domain, INSTR(domain, '@') + 1, LENGTH(domain) - (INSTR(domain, '@') + 1) - LENGTH(SUBSTRING_INDEX(domain,'.',-1))))";
+  
+  $dommo = "SUBSTRING_INDEX(SUBSTR(user.email, INSTR(user.email, '@') + 1),'.',1))";
+
+  $dommo = "SUBSTRING_INDEX(domain, '.',1))";
   $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
   $sql = "SELECT client.id AS employer, domain, email FROM client LEFT JOIN user ON $domainstr = client.domain";
+  $sql2 = "SELECT SUBSTRING_INDEX(domain, '.',1) from client";
 
+  $andsubdom = "SELECT client.id AS employer, domain, email, SUBSTRING_INDEX(domain, '.',1) AS subdom FROM client LEFT JOIN user ON RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email)) = client.domain";
   $id = null;
   if (!$p) {
     $sql = "SELECT client.id AS employer, domain, name FROM client WHERE client.domain = '$o'";
+
+
+    $sql = "SELECT client.id AS employer, domain, name FROM client WHERE client.domain LIKE '$o%'";
   }
   if ($p === 'email') {
     $sql .= "  WHERE user.email=:id";
@@ -515,34 +530,51 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   $revert = false;
   $email = null;
   $role = null;
-  list($editor, $echange, $domain, $_agency) = canEdit($id, $_POST['email'] ?? '', $priv);
+  $setcookie = doSetCookie(true);
+  $setcookie('email', $_POST['email']);
+  $setcookie('username', $_POST['name']);
+  $admin = isApproved($priv, 'ADMIN');
+  list($editor, $echange, $domain, $agency) = canEdit($id, $_POST['email'], $priv);
+
   if ($editor && $echange && !$override) {
     $relocation = "Location: ./?pwd=$id";
     header($relocation);
     exit();
   }
 
-  $admin = $priv === 'Admin';
-  $i = strpos($_POST['email'], '@');
-  $edom = substr($_POST['email'], $i + 1);
-  $isEmployer = isEmployer($edom);
+
+  list($dom, $co) = parseEmail($_POST['email']);
+  list($edom, $com) = parseEmail($_SESSION['email']);
+  $edom = "$dom.$co";
+  $same = $dom === $edom;
+
+  $aux = is_numeric(strpos($edom, $dom));
+  $isEmployer = isEmployer($dom);
   list($clientid, $domain) = $isEmployer($pdo);
-  $freelancer = isFreelancer($pdo, $id);
+
+  dump($clientid);
+ 
+  //$freelancer = isFreelancer($pdo, $id);
   //$employerid only available from ADMIN; default to zero NOT NULL so it survives equality test with $clientid see $notice
   $employerid = empty($_POST['employer']) ? 0 : intval($_POST['employer']);
   $relocation = "Location: ./?clientflag=$id";
   //should user BE a freelancer
 
-  if ($freelancer) {
-    if (isset($clientid)) { //attempt by freelancer to join client; no priv
+  if (!$domain) {
+    if($same){
+      $assoc = true;
+    }
+    else if($clientid) { //attempt by freelancer to join client; no priv
       $assoc = $admin ? true : false;
       header($relocation);
       exit();
     } else {
-      $assoc = true;
+      
     }
+    //if drop down by admin; allow admin to assign to client
     $isEmployer = isEmployer($_POST, 'employer');
     list($clientid, $domain) = $isEmployer($pdo);
+
   } else {
     $isEmployer = isEmployer($_POST, 'id');
     list($clientid, $domain, $email) = $isEmployer($pdo);
@@ -557,20 +589,18 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
       }
     }
   }
-
   if ($editor || $agency) {
     $sql = "UPDATE user SET name=:name, email=:email";
     $sql .= $assoc ? ", client_id=:cid" : ' ';
     $sql .= " WHERE id=:id";
     $st = $pdo->prepare($sql);
-
     if ($assoc) {
       $st->bindValue(":cid", $clientid);
     }
     $st->bindValue(":name", $_POST['name']);
     $st->bindValue(":email", $revert ? $email : $_POST['email']);
     $st->bindValue(":id", $id);
-    doPreparedQuery($st, '<p>Error setting user details.</p>');
+    doPreparedQuery($st, 'Error setting user details');
     //check EXISTING email not $_POST
 
     if (isset($_POST['password']) && $_POST['password'] != '') {
@@ -581,7 +611,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
         exit();
       }
     }
-
     $role = getCurrentRole($id);
     deleteRole($id, $priv);
     resetRoles($priv, $roles, $id);
@@ -641,16 +670,19 @@ if ((isset($_GET['edit'])) || $agency || $pwd || $clientflag) {
   doPreparedQuery($st, "Error fetching user details");
   $row = $st->fetch(PDO::FETCH_ASSOC);
   $editor = $_SESSION['email'] === $row['email'];
+  //$message = $override ? '' : "If changing an email address please copy before submitting";
 
   if (!$message) { //either editor or admin
     $warning = 'Polite Notice: changing an email or password will automatically log you out.';
     $message = ($pwd && $editor) ? $warning : ''; //alert if yourself
+
+
     $message = $message ? $message : ($clientflag ? 'You do not have sufficient privileges to change the domain name. Please contact the database administrator.' : '');
+
     if ($message && ($message === $warning)) {
       $message .= ' You can proceed now that the form is in override mode but you will need to log in again with your updated details.';
     }
   }
-
   if ($clientflag) {
     $sql = "SELECT user.id, user.name, user.email FROM client LEFT JOIN user ON $domainstr = client.domain WHERE user.id=:dom";
     $st = $pdo->prepare($sql);
@@ -665,10 +697,11 @@ if ((isset($_GET['edit'])) || $agency || $pwd || $clientflag) {
   $button = 'Update User';
   $roles = [];
   $clientlist = [];
+  $selectedRoles = [];
 
   $id = $row['id'];
-  $name = $row['name'];
-  $email = $row['email'];
+  $name = isset($_COOKIE['username']) ? $_COOKIE['username'] : $row['name'];
+  $email = isset($_COOKIE['email']) ? $_COOKIE['email'] : $row['email'];
   $override = $pwd ? $pwd : NULL;
   $class = $override ? 'details override' : 'details';
 
@@ -720,7 +753,7 @@ if (isset($_POST['user'])) { //dropdown
     header("Location: ./?selectuser");
     exit();
   }
-  list($sql, $users, $selected, $pagehead, $pagetitle) = filterUsers($sql, $_POST['user'], $pagetitle);
+  list($users, $selected, $pagehead, $pagetitle) = filterUsers($_POST['user'], $pagetitle);
 }
 
 //on landing try client; a single client will redirect to form.html.php, a multi team client will prepare variables for users.html.php
@@ -730,7 +763,7 @@ if ($users === []) {
   $row = $st->fetch(PDO::FETCH_ASSOC);
   $domain = $row['domain'] ?? NULL;
   if ($domain && !isset($prompt)) {
-    list($sql, $users, $selected, $pagehead, $pagetitle) = filterUsers($sql, $row['domain'], $pagetitle, $error);
+    list($users, $selected, $pagehead, $pagetitle) = filterUsers($row['domain'], $pagetitle, $error);
   }
 }
 
