@@ -368,7 +368,7 @@ if (isset($_GET['add'])) {
     $st->bindValue(":email", $_SESSION['email']);
     doPreparedQuery($st, "Error fetching client details");
     $row = $st->fetch(PDO::FETCH_ASSOC);
-    $job = empty($row) ? NULL : $row['employer'];
+    $employer = empty($row) ? NULL : $row['employer'];
     $email = $row['domain'];
 
     $roles = safeFilter($roles, function ($role) {
@@ -396,7 +396,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
     exit();
   }
   list($editor, $echange, $domain, $agency) = canEdit($id, $_POST['email'], $priv);
- 
+
 
   $sql = "INSERT INTO user (name, email, password, client_id) VALUES(:nom, :e,:pwd, :clientid)";
   $st = $pdo->prepare($sql);
@@ -408,8 +408,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
   */
 
   list($edited, $dom, $com) = queryEmail($editor, $_POST);
-  dump($employerid);
-
   $checkDomain = isEmployer($dom);
   list($clientid) = $checkDomain();
   $employerid = $employerid ?? $clientid;
@@ -498,10 +496,8 @@ if (isset($_POST['confirm'])) {
         $roles[$ro['id']] = $ro['role'];
       }
     }
-
     /*
     only Admin or Client Admin roles SHOULD get to this point
-    but not if 
     but a "Employer" could have more than one "Client Admin" roles
     if removing one 
     */
@@ -509,8 +505,7 @@ if (isset($_POST['confirm'])) {
       return preg_match("/admin/i", $role);
     });
 
-    $danger = count($roles) < 2;
-
+    $danger = count($roles) < 2 && $editor;
     if (!$danger) {
       deleteAlready($id);
     } else {
@@ -549,12 +544,12 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   $revert = false;
   $email = null;
   $role = null;
+  $rolechange = null;
   $edited = false;
 
   $setcookie = doSetCookie(true);
   $setcookie('email', $_POST['email']);
   $setcookie('username', $_POST['name']);
-
 
   $admin = isApproved($priv, 'ADMIN');
   $employerid = empty($_POST['employer']) ? 0 : intval($_POST['employer']);
@@ -599,10 +594,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
       }
     }
   }
-
   //dump([$edom, $domain, $clientid, $employerid]);
-
-
   if ($editor || $agency) {
     include CONNECT;
     $sql = "UPDATE user SET name=:name, email=:email";
@@ -626,19 +618,20 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
         exit();
       }
     }
-    $role = getCurrentRole($id);
-    deleteRole($id, $priv);
-    resetRoles($priv, $roles, $id);
-    $rolechange = verifyRole($role, getCurrentRole($id));
-    //$clientid is allowed to be NULL (not any other empty) if a user wants to disassociate from a client
-
     $sql = "UPDATE user SET client_id=:cid WHERE id =:id";
     $st = $pdo->prepare($sql);
     $st->bindValue(":cid", $clientid);
     $st->bindValue(":id", $id);
     doPreparedQuery($st, 'Error updating client id');
-
     updateUserDomain($edom, $domain, $id);
+
+    if ($agency) {
+      $role = getCurrentRole($id);
+      deleteRole($id, $priv);
+      resetRoles($priv, $roles, $id);
+      $rolechange = verifyRole($role, getCurrentRole($id));
+      //$clientid is allowed to be NULL (not any other empty) if a user wants to disassociate from a client
+    }
     if ($editor) {
       if ($echange || ($rolechange && $editor)) {
         header("Location: ../?action=logout");
@@ -747,7 +740,7 @@ if ((isset($_GET['edit'])) || $agency || $pwd || $clientflag) {
     $st->bindValue(":id", $id);
     doPreparedQuery($st, "Error retrieving client id from user!");
     $row = $st->fetch(PDO::FETCH_ASSOC);
-    $job = $row['client_id']; //selects client in drop down menu
+    $employer = $row['client_id']; //selects client in drop down menu
   }
 
   if ($adminClient) {
