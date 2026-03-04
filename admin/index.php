@@ -369,6 +369,8 @@ if (isset($_GET['add'])) {
     doPreparedQuery($st, "Error fetching client details");
     $row = $st->fetch(PDO::FETCH_ASSOC);
     $job = empty($row) ? NULL : $row['employer'];
+    $email = $row['domain'];
+
     $roles = safeFilter($roles, function ($role) {
       return $role['id'] !== 'Admin';
     });
@@ -380,6 +382,7 @@ if (isset($_GET['add'])) {
 
 if (isset($_POST['action']) && $_POST['action'] === 'Add') {
   include CONNECT;
+
   //client_id: the only empty value MUST BE NULL, not empty string or zero
   $employerid = empty($_POST['employer']) ? NULL : $_POST['employer'];
   $clientadmin = preg_match("/admin/i", $priv) && preg_match("/client/i", $priv);
@@ -393,7 +396,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
     exit();
   }
   list($editor, $echange, $domain, $agency) = canEdit($id, $_POST['email'], $priv);
-  $mismatch = false;
+ 
+
   $sql = "INSERT INTO user (name, email, password, client_id) VALUES(:nom, :e,:pwd, :clientid)";
   $st = $pdo->prepare($sql);
   /*
@@ -404,16 +408,11 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
   */
 
   list($edited, $dom, $com) = queryEmail($editor, $_POST);
+  dump($employerid);
 
   $checkDomain = isEmployer($dom);
   list($clientid) = $checkDomain();
-
-  if($clientid && $employerid){
-    $mismatch = $clientid !== $employerid;
-  }
- if($mismatch){
-  $employerid = $clientid;
- }
+  $employerid = $employerid ?? $clientid;
 
   $edom = "$dom.$com";
   $st->bindValue(':nom', $_POST['name']);
