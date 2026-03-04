@@ -44,6 +44,20 @@ $agency = $_GET['agency'] ?? NULL;
 $echange = $_GET['echange'] ?? NULL;
 $lastuser = $_GET['lastuser'] ?? NULL;
 
+function queryEmail($editor, $obj)
+{
+  $hasEmployer = isEmployer($obj, 'id');
+  list($dom, $com) = parseEmail($obj['email'] ?? '');
+  if ($editor) {
+    list($edom) = parseEmail($_SESSION['email']);
+    $edited = $dom !== $edom;
+  } else {
+    list($_, $domain) = $hasEmployer();
+    $edited = $dom !== $domain;
+  }
+  return [$edited, $dom, $com];
+}
+
 function presentList($role, $flag = 'admin')
 {
   $users = [];
@@ -100,20 +114,15 @@ function checkCurrentDetails($id, $p = '')
 
 function canEdit($id, $postemail, $priv)
 {
-  $logemail = strtolower($_SESSION['email']);
+  $logemail = strtolower($_SESSION['email']); //may be admin/user, client admin/user or user/user
   $row = checkCurrentDetails($id);
   $email = $row['email'] ?? '';
   $dbemail = NULL;
   if ($row) {
     $dbemail = strtolower($email);
   }
-  if ($postemail) {
-    $postemail = strtolower($postemail);
-  } else {
-    $postemail = $logemail;
-  }
-
-  return [$logemail === $dbemail, $postemail !== $logemail, $row['domain'] ?? '', isApproved($priv, 'admin')];
+  $postemail = $postemail ? strtolower($postemail) : $logemail;;
+  return [$logemail === $dbemail, $dbemail !== $postemail, $row['domain'] ?? '', isApproved($priv, 'admin')];
 }
 //$key expected to be freelance id (int) or domain (str)
 function filterUsers($key, $pagetitle, $error = '')
@@ -166,6 +175,7 @@ function whoAmI($email, $priv)
   return [$editor, $admin];
 }
 
+//domain would change if updating client, but not the users email
 function updateUserDomain($old, $new, $id = 0)
 {
   if ($old && $new) {
@@ -184,25 +194,14 @@ function updateUserDomain($old, $new, $id = 0)
 //object and prop or; no prop object MUST be a domain
 function isEmployer($o, $p = '')
 {
-
-  //https://stackoverflow.com/questions/2628138/how-to-select-domain-name-from-email-address
-
-  
- $dom = "SUBSTR(domain, INSTR(domain, '@') + 1, LENGTH(domain) - (INSTR(domain, '@') + 1) - LENGTH(SUBSTRING_INDEX(domain,'.',-1))))";
-  
-  $dommo = "SUBSTRING_INDEX(SUBSTR(user.email, INSTR(user.email, '@') + 1),'.',1))";
-
-  $dommo = "SUBSTRING_INDEX(domain, '.',1))";
   $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
   $sql = "SELECT client.id AS employer, domain, email FROM client LEFT JOIN user ON $domainstr = client.domain";
-  $sql2 = "SELECT SUBSTRING_INDEX(domain, '.',1) from client";
 
-  $andsubdom = "SELECT client.id AS employer, domain, email, SUBSTRING_INDEX(domain, '.',1) AS subdom FROM client LEFT JOIN user ON RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email)) = client.domain";
+  /*
+  "SELECT client.id AS employer, domain, email FROM client LEFT JOIN user ON $domainstr = client.domain WHERE user.email=:email"*/
   $id = null;
+  //https://stackoverflow.com/questions/2628138/how-to-select-domain-name-from-email-address
   if (!$p) {
-    $sql = "SELECT client.id AS employer, domain, name FROM client WHERE client.domain = '$o'";
-
-
     $sql = "SELECT client.id AS employer, domain, name FROM client WHERE client.domain LIKE '$o%'";
   }
   if ($p === 'email') {
@@ -213,13 +212,13 @@ function isEmployer($o, $p = '')
     $sql .= "  WHERE user.id=:id";
     $id = $o[$p];
   }
-
   if ($p === 'employer') {
     $id = $o[$p];
     $sql = "SELECT client.id, domain FROM client WHERE client.id =:id";
   }
 
-  return function ($pdo) use ($id, $sql) {
+  return function () use ($id, $sql) {
+    include CONNECT;
     $st = $pdo->prepare($sql);
     if (isset($id)) {
       $st->bindValue(':id',  $id);
@@ -382,7 +381,7 @@ if (isset($_GET['add'])) {
 if (isset($_POST['action']) && $_POST['action'] === 'Add') {
   include CONNECT;
   //client_id: the only empty value MUST BE NULL, not empty string or zero
-  $clientid = empty($_POST['employer']) ? NULL : $_POST['employer'];
+  $employerid = empty($_POST['employer']) ? NULL : $_POST['employer'];
   $clientadmin = preg_match("/admin/i", $priv) && preg_match("/client/i", $priv);
   $essentials = [$_POST['name'], $_POST['email'], $_POST['password']];
   $essentials = array_filter($essentials, function ($item) {
@@ -393,41 +392,62 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
     header("Location: ./?addnotice");
     exit();
   }
+  list($editor, $echange, $domain, $agency) = canEdit($id, $_POST['email'], $priv);
+  $mismatch = false;
   $sql = "INSERT INTO user (name, email, password, client_id) VALUES(:nom, :e,:pwd, :clientid)";
   $st = $pdo->prepare($sql);
   /*
   applies to admin users only as $_POST['employer'] is set by default by client
   if the email field corresponds to an existing client AND there is no selection in the assign to client drop down $_POST['employer'] then we can correct with the isContractor function
-  if we have a clientid provided by $_POST['employer'] we must check that the supplied email DOMAIN matches
+  if we have a client id provided by $_POST['employer'] we must check that the supplied email DOMAIN matches
   Potentially there may be a case for having a contractor role but it would have to be deleted if the client was removed from the database and without a clientid this would not happen through the referential integrity enforced by the database. But an additional check could be made at this point, in the meantime the "contractor" would be free to leave the role
   */
 
+  list($edited, $dom, $com) = queryEmail($editor, $_POST);
+
+  $checkDomain = isEmployer($dom);
+  list($clientid) = $checkDomain();
+
+  if($clientid && $employerid){
+    $mismatch = $clientid !== $employerid;
+  }
+ if($mismatch){
+  $employerid = $clientid;
+ }
+
+  $edom = "$dom.$com";
   $st->bindValue(':nom', $_POST['name']);
   $st->bindValue(':e', $_POST['email']);
   $st->bindValue(':pwd', $_POST['password']);
-  $st->bindValue(':clientid', $clientid);
+  $st->bindValue(':clientid', $employerid);
   $res = doPreparedQuery($st, 'Error adding user');
   $aid = lastInsert($pdo);
-  $contractor = $isContractor($pdo,  $_POST['email'], $clientid);
+
+  $contractorId = $isContractor($pdo,  $_POST['email'], $employerid);
+
   if (isset($_POST['password']) && $_POST['password'] != '') {
     $res = updatePassword($pdo, $_POST['password'], $aid);
   }
   $roles = isset($_POST['roles']) ? $_POST['roles'] : [];
 
-  if ($clientid || $contractor) {
-    $st = doQuery($pdo, "SELECT domain FROM client WHERE id=$clientid", "Error retrieving clients from database!");
+  if ($employerid || $contractorId) {
+    $id = $employerid ?? $contractorId;
+    $st = doQuery($pdo, "SELECT domain FROM client WHERE id=$id", "Error retrieving clients from database, oops");
     $row = $st->fetch(PDO::FETCH_ASSOC);
     $truedom = $row['domain'];
+
     $sql = "SELECT $domainstr AS dom FROM user WHERE client_id=:cid AND id=:aid";
     $st = $pdo->prepare($sql);
     $st->bindValue(':aid', $aid);
-    $st->bindValue(':cid', intval($clientid));
+    $st->bindValue(':cid', intval($employerid));
     doPreparedQuery($st, 'Error fetching domain.');
     $row = $st->fetch(PDO::FETCH_ASSOC);
     updateUserDomain($row['dom'], $truedom, $aid);
-    if ($contractor) { //required?
-      doQuery($pdo, "UPDATE user INNER JOIN client ON $domainstr = client.domain SET client_id=$contractor WHERE $domainstr = client.domain", "Error updating client");
+    /*
+    if ($contractorId) { //required?
+      doQuery($pdo, "UPDATE user INNER JOIN client ON $domainstr = client.domain SET client_id=$contractorId WHERE $domainstr = client.domain", "Error updating client");
     }
+      */
   }
   resetRoles($priv, $roles, $aid);
   header('Location: .');
@@ -530,58 +550,49 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   $revert = false;
   $email = null;
   $role = null;
+  $edited = false;
+
   $setcookie = doSetCookie(true);
   $setcookie('email', $_POST['email']);
   $setcookie('username', $_POST['name']);
+
+
   $admin = isApproved($priv, 'ADMIN');
+  $employerid = empty($_POST['employer']) ? 0 : intval($_POST['employer']);
+  $relocate = "Location: ./?clientflag=$id";
+  $canAssign = isEmployer($_POST, 'employer');
+  $hasEmployer = isEmployer($_POST, 'id');
+
   list($editor, $echange, $domain, $agency) = canEdit($id, $_POST['email'], $priv);
 
   if ($editor && $echange && !$override) {
-    $relocation = "Location: ./?pwd=$id";
-    header($relocation);
+    $relocate = "Location: ./?pwd=$id";
+    header($relocate);
     exit();
   }
-
-
-  list($dom, $co) = parseEmail($_POST['email']);
-  list($edom, $com) = parseEmail($_SESSION['email']);
-  $edom = "$dom.$co";
-  $same = $dom === $edom;
-
-  $aux = is_numeric(strpos($edom, $dom));
-  $isEmployer = isEmployer($dom);
-  list($clientid, $domain) = $isEmployer($pdo);
-
-  dump($clientid);
- 
-  //$freelancer = isFreelancer($pdo, $id);
-  //$employerid only available from ADMIN; default to zero NOT NULL so it survives equality test with $clientid see $notice
-  $employerid = empty($_POST['employer']) ? 0 : intval($_POST['employer']);
-  $relocation = "Location: ./?clientflag=$id";
-  //should user BE a freelancer
+  list($edited, $dom, $com) = queryEmail($editor, $_POST);
+  $checkDomain = isEmployer($dom);
+  $edom = "$dom.$com";
 
   if (!$domain) {
-    if($same){
+    if (!$edited) {
       $assoc = true;
-    }
-    else if($clientid) { //attempt by freelancer to join client; no priv
-      $assoc = $admin ? true : false;
-      header($relocation);
-      exit();
     } else {
-      
+      list($clientid) = $checkDomain();
+      //attempt by freelancer to join client; no priv
+      if ($clientid && !$admin) {
+        header($relocate);
+        exit();
+      }
     }
-    //if drop down by admin; allow admin to assign to client
-    $isEmployer = isEmployer($_POST, 'employer');
-    list($clientid, $domain) = $isEmployer($pdo);
-
+    list($assoc) = $canAssign();
   } else {
-    $isEmployer = isEmployer($_POST, 'id');
-    list($clientid, $domain, $email) = $isEmployer($pdo);
+    $isEmployer = isEmployer($_POST, 'email');
+    list($clientid, $_domain, $email) = $isEmployer();
     if (!$clientid) {
       //allow admin to = reinstate freelancer status
       if ($admin && !$employerid) {
-        $domain = $edom;
+        $edom .= ".$co";
       } else {
         $relocation = "Location: ./?clientflag=$id";
         header($relocation);
@@ -589,13 +600,18 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
       }
     }
   }
+
+  //dump([$edom, $domain, $clientid, $employerid]);
+
+
   if ($editor || $agency) {
+    include CONNECT;
     $sql = "UPDATE user SET name=:name, email=:email";
     $sql .= $assoc ? ", client_id=:cid" : ' ';
     $sql .= " WHERE id=:id";
     $st = $pdo->prepare($sql);
     if ($assoc) {
-      $st->bindValue(":cid", $clientid);
+      $st->bindValue(":cid", $employerid ? $employerid : $clientid);
     }
     $st->bindValue(":name", $_POST['name']);
     $st->bindValue(":email", $revert ? $email : $_POST['email']);
@@ -616,11 +632,12 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     resetRoles($priv, $roles, $id);
     $rolechange = verifyRole($role, getCurrentRole($id));
     //$clientid is allowed to be NULL (not any other empty) if a user wants to disassociate from a client
+
     $sql = "UPDATE user SET client_id=:cid WHERE id =:id";
     $st = $pdo->prepare($sql);
     $st->bindValue(":cid", $clientid);
     $st->bindValue(":id", $id);
-    doPreparedQuery($st, 'Error setting client id');
+    doPreparedQuery($st, 'Error updating client id');
 
     updateUserDomain($edom, $domain, $id);
     if ($editor) {
@@ -702,6 +719,10 @@ if ((isset($_GET['edit'])) || $agency || $pwd || $clientflag) {
   $id = $row['id'];
   $name = isset($_COOKIE['username']) ? $_COOKIE['username'] : $row['name'];
   $email = isset($_COOKIE['email']) ? $_COOKIE['email'] : $row['email'];
+
+  $name = $row['name'];
+  $email = $row['email'];
+
   $override = $pwd ? $pwd : NULL;
   $class = $override ? 'details override' : 'details';
 
@@ -725,7 +746,7 @@ if ((isset($_GET['edit'])) || $agency || $pwd || $clientflag) {
     }
     $st = $pdo->prepare("SELECT client_id FROM user WHERE id=:id");
     $st->bindValue(":id", $id);
-    doPreparedQuery($st, "<p>Error retrieving client id from user!</p>");
+    doPreparedQuery($st, "Error retrieving client id from user!");
     $row = $st->fetch(PDO::FETCH_ASSOC);
     $job = $row['client_id']; //selects client in drop down menu
   }
