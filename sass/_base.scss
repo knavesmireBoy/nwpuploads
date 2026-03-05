@@ -487,8 +487,8 @@ form[name="usersform"] {
     }
   }
 
-  &.override {
-    background-color: var(--bright);
+  #admin_user &.override {
+    background-color: rgba(0, 0, 0, 0.1);
   }
 } //usersform
 

@@ -16,6 +16,11 @@ if ((isApproved($priv, 'admin') || $editor) && !empty($id)) {
 }
 ?>
 <form action="?<?= $action; ?>" method="post" name="usersform" class="<?= empty($class) ? 'details' : $class; ?>">
+	<?php
+	if (preg_match("/override/", $class)) { ?>
+		<a href="." class="cancel">X</a>
+	<?php }
+	?>
 	<div>
 		<label for="name">Name</label><input id="name" type="text" name="name" value="<?= $name ?? ''; ?>" required autocomplete="off" />
 		<label for="email">Email</label><input type="email" id="email" name="email" value="<?= $email ?? ''; ?>" required autocomplete="off" />

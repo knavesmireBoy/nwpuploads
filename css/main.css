@@ -530,8 +530,8 @@ form[name=usersform] fieldset:last-child {
   display: flex;
   justify-content: center;
 }
-form[name=usersform].override {
-  background-color: var(--bright);
+#admin_user form[name=usersform].override {
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 form[name=editclientform] {
