@@ -576,7 +576,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     $call = "change";
     $pos = "Yes";
     $neg = "No";
-    //$action = '';
+    $action = './?editform';
     $formname = 'changedetailsform';
     $template = 'confirm.html.php';
     $crud = $editor || $_agency;
@@ -666,11 +666,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
 
     if ($name && $name !== $_POST['name']) {
       $location .= "/?namechange=$id";
-      //header("Location: https://www.bbc.co.uk/?namechange=$id");
-      header("Location: ./?namechange=$id");
-      exit();
     }
-    header("Location: .");
+    header($location);
     exit();
   } //if !prompt
 } ///END OF editform
@@ -817,7 +814,6 @@ if ($users === []) {
 
 //if $prompt is set and we have a one member client this will yield an empty set
 if ($users === []) {
-
   include CONNECT;
   if (!$admin) {
     $sql .= " AND user.id=$key";

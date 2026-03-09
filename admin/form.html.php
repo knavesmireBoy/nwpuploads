@@ -4,7 +4,6 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
 include TEMPLATE . 'base.html.php';
 $selected = true;
 $domain = false;
-
 ?>
 <h1><?= $pagehead; ?></h1>
 <?php if (!empty($message)) { ?>
