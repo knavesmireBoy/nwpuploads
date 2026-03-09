@@ -39,9 +39,8 @@ $isContractor = function ($pdo, $email, $clientid = NULL) use ($is_client_sql) {
   return (isset($row['employer']) && is_null($clientid)) ? $row['employer'] : $clientid;
 };
 
-$clientflag = $_GET['clientflag'] ?? NULL;
-$pwd = $_GET['pwd'] ?? NULL;
-$agency = $_GET['agency'] ?? NULL;
+//$agency = $_GET['agency'] ?? NULL; differentiate between local variables and global ones
+$agency = NULL;
 $echange = $_GET['echange'] ?? NULL;
 $lastuser = $_GET['lastuser'] ?? NULL;
 
@@ -177,12 +176,6 @@ function defaultQuery($key, $priv)
   return "SELECT id, name FROM user ";
 }
 
-function whoAmI($email, $priv)
-{
-  $editor = $_SESSION['email'] === $email;
-  $admin = isApproved($priv, 'admin');
-  return [$editor, $admin];
-}
 
 //domain would change if updating client, but not the users email
 function updateUserDomain($old, $new, $id = 0)
@@ -326,9 +319,6 @@ function updatePassword($pdo, $password, $id)
   return doPreparedQuery($st, 'Error setting user password.');
 }
 
-if (isset($_GET['domain'])) {
-  updateUserDomain($_GET['domain'], $_GET['updated']);
-}
 if (!userIsLoggedIn()) {
   $pagetitle = "Log In";
   include TEMPLATE . 'login.html.php';
@@ -348,7 +338,11 @@ if (!$roleplay || $pagehead_role) {
 list($key, $priv) = $roleplay;
 list($editor, $echange, $domain, $_agency) = canEdit($id, '', $priv);
 $pagetitle = preg_match("/client/i", $priv) ? "Admin" : "Admin | Edit Users";
-//exits
+
+//end of initial globals
+if (isset($_GET['domain'])) {
+  updateUserDomain($_GET['domain'], $_GET['updated']);
+}
 if (isset($_GET['add'])) {
   include CONNECT;
   $route = "Add";
@@ -677,7 +671,12 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
 
 //dump([isset($_GET['edit']),  $pwd, $clientflag]);
 //directly load form.html.php if only one user/client
-if ((isset($_GET['edit'])) || $pwd || $clientflag) {
+//(isset($_GET['edit'])) || isset($_GET['agency']) || $pwd || $clientflag
+
+if (checkIsset($_GET, ['edit', 'agency', 'pwd', 'clientflag'])) {
+
+  $clientflag = $_GET['clientflag'] ?? NULL;
+  $pwd = $_GET['pwd'] ?? NULL;
   include CONNECT;
   $class = '';
   $admin = ($priv === 'Admin');
@@ -741,11 +740,10 @@ if ((isset($_GET['edit'])) || $pwd || $clientflag) {
   $name = isset($_COOKIE['username']) ? $_COOKIE['username'] : $row['name'];
   $email = isset($_COOKIE['email']) ? $_COOKIE['email'] : $row['email'];
 
-  //$name = $row['name'];
-  //$email = $row['email'];
   $override = $pwd ? $pwd : NULL;
   $override = $override ?? $_COOKIE['username'] ?? NULL;
   $class = $override ? 'details override' : 'details';
+  $legend = "You may now proceed with your edits and submit the form.";
 
   //prep roles...
   if (preg_match('/admin/i', $priv)) {

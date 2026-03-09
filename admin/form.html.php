@@ -19,6 +19,7 @@ if ((isApproved($priv, 'admin') || $editor) && !empty($id)) {
 	<?php
 	if (isset($class) && preg_match("/override/", $class)) { ?>
 		<a href="./?cancel" class="cancel">X</a>
+		<p><?= $legend ?? ''; ?></p>
 	<?php }
 	?>
 	<div>

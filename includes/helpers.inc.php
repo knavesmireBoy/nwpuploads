@@ -6,6 +6,19 @@ function dump($arg)
     exit;
 }
 
+function checkIsset($o, $props, $flag = false)
+{
+    if ($flag) {
+        return array_filter($props, function ($p) {
+            return isset($o[$p]);
+        });
+    } else {
+        return array_reduce($props, function ($agg, $curr) use ($o) {
+            return $agg || isset($o[$curr]);
+        }, null);
+    }
+}
+
 function decode($qs)
 {
     $res = explode('=', $qs);
