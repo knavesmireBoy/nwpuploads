@@ -19,8 +19,10 @@ if ((isApproved($priv, 'admin') || $editor) && !empty($id)) {
 	<?php
 	if (isset($class) && preg_match("/override/", $class)) { ?>
 		<a href="./?cancel" class="cancel">X</a>
-		<p><?= $legend ?? ''; ?></p>
 	<?php }
+	if ($legend != '') { ?>
+		<p><?= $legend ?? ''; ?></p>
+	<?php	}
 	?>
 	<div>
 		<label for="name">Name</label><input id="name" type="text" name="name" value="<?= $name ?? ''; ?>" required autocomplete="off" />

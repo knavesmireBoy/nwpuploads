@@ -1,6 +1,7 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
 
+
 function query()
 {
   $lib = ['nousers' => "<Unable to find any users", "addnotice" => "Please fill required fields", "selectuser" => "Please select a user for editing", "clientflag" => "Cannot assign this user to a new client", "lastuser" => "To remove this last user, please delete the client instead", "denied" => "You do not have the privileges to delete this user", "deniedbyclient" => "There must be at least one administrator role, please assign another user before removing your credentials from the database", "access" => "You do not have the privileges to add a user", "deniedbyadmin" => "Cannot delete this user until a new client admin role is assigned to this client", "self" => "Only a peer can perform this deletion", "freelancer" => "Cannot assign this domain", 'addno' => 'You do not have the required privilges to add a user'];
@@ -8,42 +9,6 @@ function query()
   $q = $query[1] ?? $query[0];
   return $lib[$q] ?? NULL;
 }
-
-$super = "andrewsykes@btinternet.com";
-$prompt = NULL;
-$users = [];
-$id = $_GET['edit'] ?? '';
-$error = query();
-$pagehead = "Edit details";
-$message = $error ?? '';
-$denied = false;
-$usercount = 0;
-setExtent(null);
-$selected = null;
-$goto = '.';
-$pageid = 'admin_user';
-$roleorder = ['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'];
-$calltext = "Add New User";
-$callroute = 'add';
-
-$formvars = ['pagetitle', 'message', 'name', 'email', 'job', 'roles', 'id', 'route', 'override', 'button', 'priv'];
-$uservars = ['manage', 'priv', 'client', 'users'];
-$domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
-$is_client_sql = "SELECT client.id AS employer, domain, email FROM client LEFT JOIN user ON $domainstr = client.domain WHERE user.email=:email";
-
-$isContractor = function ($pdo, $email, $clientid = NULL) use ($is_client_sql) {
-  $st = $pdo->prepare($is_client_sql);
-  $st->bindValue(':email', $email);
-  doPreparedQuery($st, 'Error querying client credentials');
-  $row = $st->fetch(PDO::FETCH_ASSOC);
-  return (isset($row['employer']) && is_null($clientid)) ? $row['employer'] : $clientid;
-};
-
-//$agency = $_GET['agency'] ?? NULL; differentiate between local variables and global ones
-$agency = NULL;
-$echange = $_GET['echange'] ?? NULL;
-$lastuser = $_GET['lastuser'] ?? NULL;
-
 
 function unsetDetails()
 {
@@ -130,7 +95,7 @@ function canEdit($id, $postemail, $priv)
     $dbemail = strtolower($email);
   }
   $postemail = $postemail ? strtolower($postemail) : $logemail;;
-  return [$logemail === $dbemail, $dbemail !== $postemail, $row['domain'] ?? '', isApproved($priv, 'admin')];
+  return [$logemail === $dbemail, $dbemail !== $postemail, $row['domain'] ?? '', isApproved($priv, 'admin'), $row['name'] ?? ''];
 }
 //$key expected to be freelance id (int) or domain (str)
 function filterUsers($key, $pagetitle, $error = '')
@@ -325,6 +290,41 @@ if (!userIsLoggedIn()) {
   exit();
 }
 
+$super = "andrewsykes@btinternet.com";
+$prompt = NULL;
+$users = [];
+$id = $_GET['edit'] ?? '';
+$error = query();
+$pagehead = "Edit details";
+$message = $error ?? '';
+$denied = false;
+$usercount = 0;
+setExtent(0);
+$selected = null;
+$goto = '.';
+$pageid = 'admin_user';
+$roleorder = ['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'];
+$calltext = "Add New User";
+$callroute = 'add';
+
+$formvars = ['pagetitle', 'message', 'name', 'email', 'job', 'roles', 'id', 'route', 'override', 'button', 'priv'];
+$uservars = ['manage', 'priv', 'client', 'users'];
+$domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
+$is_client_sql = "SELECT client.id AS employer, domain, email FROM client LEFT JOIN user ON $domainstr = client.domain WHERE user.email=:email";
+
+$isContractor = function ($pdo, $email, $clientid = NULL) use ($is_client_sql) {
+  $st = $pdo->prepare($is_client_sql);
+  $st->bindValue(':email', $email);
+  doPreparedQuery($st, 'Error querying client credentials');
+  $row = $st->fetch(PDO::FETCH_ASSOC);
+  return (isset($row['employer']) && is_null($clientid)) ? $row['employer'] : $clientid;
+};
+
+//$agency = $_GET['agency'] ?? NULL; differentiate between local variables and global ones
+$agency = NULL;
+$echange = $_GET['echange'] ?? NULL;
+$lastuser = $_GET['lastuser'] ?? NULL;
+
 $roleplay = obtainUserRole();
 $pagehead_role = $roleplay && !obtainUserRole(true);
 
@@ -338,6 +338,7 @@ if (!$roleplay || $pagehead_role) {
 list($key, $priv) = $roleplay;
 list($editor, $echange, $domain, $_agency) = canEdit($id, '', $priv);
 $pagetitle = preg_match("/client/i", $priv) ? "Admin" : "Admin | Edit Users";
+
 
 //end of initial globals
 if (isset($_GET['domain'])) {
@@ -516,7 +517,6 @@ if (isset($_POST['confirm'])) {
   exit();
 } //confirm
 
-
 if (isset($_GET['delete'])) {
   $id = $_GET['delete'];
   $title = "Prompt";
@@ -524,7 +524,7 @@ if (isset($_GET['delete'])) {
   $call = "confirm";
   $pos = "Yes";
   $neg = "No";
-  $action = '';
+  //$action = '';
   $formname = 'deleteuserform';
   $template = 'confirm.html.php';
   $crud = $editor || $_agency;
@@ -542,7 +542,6 @@ if (isset($_POST['change']) || isset($_GET['cancel'])) {
     unsetDetails();
   }
 }
-
 
 if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   include CONNECT;
@@ -563,21 +562,21 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
 
   $admin = isApproved($priv, 'ADMIN');
   $employerid = empty($_POST['employer']) ? 0 : intval($_POST['employer']);
+  $location = 'Location: .';
   $relocate = "Location: ./?clientflag=$id";
   $canAssign = isEmployer($_POST, 'employer');
   $hasEmployer = isEmployer($_POST, 'id');
 
-  list($editor, $echange, $domain, $agency) = canEdit($id, $_POST['email'], $priv);
+  list($editor, $echange, $domain, $agency, $name) = canEdit($id, $_POST['email'], $priv);
   list($domchange, $dom, $com) = queryEmail($editor, $_POST);
 
-  //dump([$domchange, $editor, $echange, !$override]);
   if ($editor && $echange && !$override) {
     $title = "Prompt";
     $prompt = "Changing your email will log you out of the current session. Proceed?";
     $call = "change";
     $pos = "Yes";
     $neg = "No";
-    $action = '';
+    //$action = '';
     $formname = 'changedetailsform';
     $template = 'confirm.html.php';
     $crud = $editor || $_agency;
@@ -619,7 +618,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
         }
       }
     }
-    //dump([$edom, $domain, $clientid, $employerid]);
     if ($editor || $agency) {
       include CONNECT;
       $sql = "UPDATE user SET name=:name, email=:email";
@@ -633,8 +631,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
       $st->bindValue(":email", $revert ? $email : $_POST['email']);
       $st->bindValue(":id", $id);
       doPreparedQuery($st, 'Error setting user details');
-      //check EXISTING email not $_POST
 
+      //check EXISTING email not $_POST
       if (isset($_POST['password']) && $_POST['password'] != '') {
         if ($override) {
           $res = updatePassword($pdo, $_POST['password'], $id);
@@ -643,6 +641,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
           exit();
         }
       }
+
       $sql = "UPDATE user SET client_id=:cid WHERE id =:id";
       $st = $pdo->prepare($sql);
       $st->bindValue(":cid", $clientid);
@@ -664,19 +663,30 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
         }
       }
     }
-    header('Location: .');
+
+    if ($name && $name !== $_POST['name']) {
+      $location .= "/?namechange=$id";
+      //header("Location: https://www.bbc.co.uk/?namechange=$id");
+      header("Location: ./?namechange=$id");
+      exit();
+    }
+    header("Location: .");
     exit();
   } //if !prompt
 } ///END OF editform
 
-//dump([isset($_GET['edit']),  $pwd, $clientflag]);
 //directly load form.html.php if only one user/client
-//(isset($_GET['edit'])) || isset($_GET['agency']) || $pwd || $clientflag
+//(isset()) || isset($_GET['agency']) || $pwd || $clientflag
 
 if (checkIsset($_GET, ['edit', 'agency', 'pwd', 'clientflag'])) {
-
   $clientflag = $_GET['clientflag'] ?? NULL;
   $pwd = $_GET['pwd'] ?? NULL;
+  $namechange = $_GET['namechange'] ?? NULL;
+
+  if (isset($_GET['namechange'])) {
+    $legend = 'Name succesfully changed';
+  }
+
   include CONNECT;
   $class = '';
   $admin = ($priv === 'Admin');
@@ -743,7 +753,7 @@ if (checkIsset($_GET, ['edit', 'agency', 'pwd', 'clientflag'])) {
   $override = $pwd ? $pwd : NULL;
   $override = $override ?? $_COOKIE['username'] ?? NULL;
   $class = $override ? 'details override' : 'details';
-  $legend = "You may now proceed with your edits and submit the form.";
+  $legend = isset($legend) ? $legend : ($override ? "You may now proceed with your edits and submit the form." : '');
 
   //prep roles...
   if (preg_match('/admin/i', $priv)) {
@@ -775,21 +785,17 @@ if (checkIsset($_GET, ['edit', 'agency', 'pwd', 'clientflag'])) {
       return $role['id'] !== 'Admin';
     });
   }
-  $action = "editform";
   include 'form.html.php';
   exit();
 } //get_edit
 
-//dump(44);
 //LANDING...
 //$sql = defaultQuery($key, $priv);
 //display users___________________________________________________________________
 $sql = "SELECT user.id, user.name FROM user LEFT JOIN (SELECT user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer ON $domainstr=employer.domain WHERE employer.domain IS NULL"; //this overwrites above query to filter out users as employees
 $sql = "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS NULL"; //USING ID NOT DOMAIN
 $admin = isApproved($priv, 'ADMIN');
-//dump(3,$prompt);
 
-//dump(4666);
 if (isset($_POST['user'])) { //dropdown
   if ($_POST['user'] === '') {
     header("Location: ./?selectuser");
@@ -797,7 +803,7 @@ if (isset($_POST['user'])) { //dropdown
   }
   list($users, $selected, $pagehead, $pagetitle) = filterUsers($_POST['user'], $pagetitle);
 }
-
+//dump('land');
 //on landing try client; a single client will redirect to form.html.php, a multi team client will prepare variables for users.html.php
 if ($users === []) {
   include CONNECT;
@@ -837,11 +843,13 @@ if ($admin) {
 //include CONNECT;
 //reOrderTable($pdo);
 //reAssignClient($pdo);
-
 $message = $message ? $message : $error;
 $usercount = isApproved($priv, 'ADMIN') ? 2 : count($users); //2 ie more than 1
 //setExtent is largely used for displaying conditional content, appropriate buttons etc..
 setExtent($usercount);
+
+
+
 if ($usercount === 1 && !isset($prompt)) {
   $calltext = "Delete User";
   $callroute = "delete=$key";
@@ -850,6 +858,9 @@ if ($usercount === 1 && !isset($prompt)) {
     unset($callroute);
     unset($calltext);
     $location .= "&error=$error";
+  }
+  if (isset($_GET['namechange'])) {
+    $location .= "&namechange";
   }
   header("Location: $location"); //GO DIRECT TO EDIT FORM, unless...
   exit();
