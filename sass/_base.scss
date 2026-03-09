@@ -166,16 +166,17 @@ form {
     top: 0.3em;
     color: var(--main-color);
     &:hover {
-      color: var(--head);
+      color: var(--contrast);
     }
   }
   input[type="submit"] {
     padding: 0.25em 0.5em;
     cursor: pointer;
     font: var(--default);
-    background-color: var(--contrast);
+    background-color: var(--bg);
     &:hover {
       background-color: black;
+      background-color: var(--contrast);
     }
   }
   label {
@@ -266,7 +267,8 @@ main {
       display: inline-block;
       &:hover {
         text-decoration: none;
-        background: black;
+        background: var(--bg);
+        color: var(--bright);
         color: white;
       }
     }
@@ -532,7 +534,8 @@ form[name="logoutform"] {
     position: relative;
     background-color: var(--bg);
     &:hover {
-      background-color: black;
+      background-color: var(--contrast);
+      border-color: silver;
     }
   }
   #upload .paginate & input {

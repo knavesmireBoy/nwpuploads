@@ -17,8 +17,8 @@ if ((isApproved($priv, 'admin') || $editor) && !empty($id)) {
 ?>
 <form action="?<?= $action; ?>" method="post" name="usersform" class="<?= empty($class) ? 'details' : $class; ?>">
 	<?php
-	if (preg_match("/override/", $class)) { ?>
-		<a href="." class="cancel">X</a>
+	if (isset($class) && preg_match("/override/", $class)) { ?>
+		<a href="./?cancel" class="cancel">X</a>
 	<?php }
 	?>
 	<div>

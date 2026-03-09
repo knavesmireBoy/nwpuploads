@@ -101,7 +101,7 @@ if (count($files) > 0): ?>
                         <form action="." method="post" name="<?= $f['id']; ?>">
                             <div><input type="hidden" name="action" value="delete" />
                                 <input type="hidden" name="id" value="<?= $id; ?>" />
-                                <input type="submit" value="Delete" />
+                                <input type="submit" value="Delete" title="delete or update"/>
                             </div>
                         </form>
                     </td>

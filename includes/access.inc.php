@@ -50,6 +50,9 @@ function userIsLoggedIn()
         unset($_SESSION['email']);
         unset($_SESSION['password']);
         //header("Location: " . $_POST['goto']);
+        $setcookie = doSetCookie(false);
+        $setcookie('email', $_POST['email']);
+        $setcookie('username', $_POST['name']);
         $e = $_GET['error'] ?? '';
         $location .= $e ? "/?loginerror=$e" : '';
         header($location);

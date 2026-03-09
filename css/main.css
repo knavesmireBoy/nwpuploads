@@ -230,16 +230,17 @@ form > a.cancel {
   color: var(--main-color);
 }
 form > a.cancel:hover {
-  color: var(--head);
+  color: var(--contrast);
 }
 form input[type=submit] {
   padding: 0.25em 0.5em;
   cursor: pointer;
   font: var(--default);
-  background-color: var(--contrast);
+  background-color: var(--bg);
 }
 form input[type=submit]:hover {
   background-color: black;
+  background-color: var(--contrast);
 }
 form label {
   font: var(--georgia);
@@ -319,7 +320,8 @@ main > p a {
 }
 main > p a:hover {
   text-decoration: none;
-  background: black;
+  background: var(--bg);
+  color: var(--bright);
   color: white;
 }
 main > p.call {
@@ -577,7 +579,8 @@ form[name=logoutform] {
   background-color: var(--bg);
 }
 #upload form[name=logoutform] input:hover {
-  background-color: black;
+  background-color: var(--contrast);
+  border-color: silver;
 }
 #upload .paginate form[name=logoutform] input {
   top: 0;

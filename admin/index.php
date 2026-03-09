@@ -10,6 +10,7 @@ function query()
 }
 
 $super = "andrewsykes@btinternet.com";
+$prompt = NULL;
 $users = [];
 $id = $_GET['edit'] ?? '';
 $error = query();
@@ -43,6 +44,14 @@ $pwd = $_GET['pwd'] ?? NULL;
 $agency = $_GET['agency'] ?? NULL;
 $echange = $_GET['echange'] ?? NULL;
 $lastuser = $_GET['lastuser'] ?? NULL;
+
+
+function unsetDetails()
+{
+  $setcookie = doSetCookie(false);
+  $setcookie('email', $_POST['email']);
+  $setcookie('username', $_POST['name']);
+}
 
 function queryEmail($editor, $obj)
 {
@@ -530,13 +539,16 @@ if (isset($_GET['delete'])) {
   }
 }
 
-if (isset($_POST['change'])) {
+if (isset($_POST['change']) || isset($_GET['cancel'])) {
   if ($_POST['change'] == 'Yes') {
     $id = $_POST['id'];
     header("Location: ./?edit=$id");
     exit();
+  } else {
+    unsetDetails();
   }
 }
+
 
 if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   include CONNECT;
@@ -660,12 +672,12 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     }
     header('Location: .');
     exit();
-  }
+  } //if !prompt
 } ///END OF editform
 
-
+//dump([isset($_GET['edit']),  $pwd, $clientflag]);
 //directly load form.html.php if only one user/client
-if ((isset($_GET['edit'])) || $agency || $pwd || $clientflag) {
+if ((isset($_GET['edit'])) || $pwd || $clientflag) {
   include CONNECT;
   $class = '';
   $admin = ($priv === 'Admin');
@@ -679,7 +691,6 @@ if ((isset($_GET['edit'])) || $agency || $pwd || $clientflag) {
   $callroute = "delete=$id";
 
   $warning = 'You do not have sufficient privileges to edit this users details.';
-
   list($editor, $echange, $domain, $_agency) = canEdit($id, $_POST['email'] ?? '', $priv);
 
   //DON'T FORGET WE CAN ARRIVE HERE DIRECT FROM A LINK AND NOT FROM A REDIRECT FROM EDITING
@@ -732,7 +743,6 @@ if ((isset($_GET['edit'])) || $agency || $pwd || $clientflag) {
 
   //$name = $row['name'];
   //$email = $row['email'];
-
   $override = $pwd ? $pwd : NULL;
   $override = $override ?? $_COOKIE['username'] ?? NULL;
   $class = $override ? 'details override' : 'details';
@@ -772,14 +782,16 @@ if ((isset($_GET['edit'])) || $agency || $pwd || $clientflag) {
   exit();
 } //get_edit
 
-
+//dump(44);
 //LANDING...
 //$sql = defaultQuery($key, $priv);
 //display users___________________________________________________________________
 $sql = "SELECT user.id, user.name FROM user LEFT JOIN (SELECT user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer ON $domainstr=employer.domain WHERE employer.domain IS NULL"; //this overwrites above query to filter out users as employees
 $sql = "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS NULL"; //USING ID NOT DOMAIN
 $admin = isApproved($priv, 'ADMIN');
+//dump(3,$prompt);
 
+//dump(4666);
 if (isset($_POST['user'])) { //dropdown
   if ($_POST['user'] === '') {
     header("Location: ./?selectuser");
@@ -801,6 +813,7 @@ if ($users === []) {
 
 //if $prompt is set and we have a one member client this will yield an empty set
 if ($users === []) {
+
   include CONNECT;
   if (!$admin) {
     $sql .= " AND user.id=$key";
