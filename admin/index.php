@@ -13,8 +13,8 @@ function query()
 function unsetDetails()
 {
   $setcookie = doSetCookie(false);
-  $setcookie('email', $_POST['email']);
-  $setcookie('username', $_POST['name']);
+  $setcookie('email', $_POST['email'] ?? '');
+  $setcookie('username', $_POST['name'] ?? '');
 }
 
 function queryEmail($editor, $obj)
@@ -101,9 +101,10 @@ function canEdit($id, $postemail, $priv)
 function filterUsers($key, $pagetitle, $error = '')
 {
   $users = [];
+  $namechange = $_GET['namechange'] ?? NULL;
   $selected = true;
   include CONNECT;
-  $sql = "SELECT user.id, user.name, client.domain FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain=:dom ORDER BY name";
+  $sql = "SELECT user.id, user.name, user.email, client.domain FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain=:dom ORDER BY name";
   $st = $pdo->prepare($sql);
   $st->bindValue(":dom", $key);
   doPreparedQuery($st, "Unable to identify domain");
@@ -113,15 +114,20 @@ function filterUsers($key, $pagetitle, $error = '')
     $pagehead = "Manage Team";
     foreach ($rows as $row) {
       $users[$row['id']] = $row['name'];
+      if ($namechange && ($row['email'] === $_SESSION['email'])) {
+        $key = $row['id'];
+      }
     }
     $usercount = count($users);
     setExtent($usercount);
-    if ($usercount === 1) {
-      $key = $row['id'];
-      $usercount = 1;
+    if ($usercount === 1 || $namechange) {
+      $key = $namechange ? $key : $row['id'];
+      //$usercount = 1;
       $location = "./?edit=$key";
       if (!empty($error)) {
         $location .= "&error=$error";
+      } else if ($namechange) {
+        $location .= "&namechange";
       }
       header("Location: $location");
       exit;
@@ -569,9 +575,11 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
 
   list($editor, $echange, $domain, $agency, $name) = canEdit($id, $_POST['email'], $priv);
   list($domchange, $dom, $com) = queryEmail($editor, $_POST);
+  $domfail = !$domchange || !preg_match("/\.$com$/", $domain);
 
-  if ($editor && $echange && !$override) {
+  if ($editor && $echange && !$domfail && !$override) {
     $title = "Prompt";
+    preg_match("/\.$com$/", $domain);
     $prompt = "Changing your email will log you out of the current session. Proceed?";
     $call = "change";
     $pos = "Yes";
@@ -588,13 +596,15 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
       $prompt = "Only the database administrator is permitted to amend the email domain. You may amend the local-part, and your username. Proceed?";
     }
   }
+
   if (!isset($prompt)) {
     list($domchange, $dom, $com) = queryEmail($editor, $_POST);
     $checkDomain = isEmployer($dom);
     $edom = "$dom.$com";
     list($clientid) = $checkDomain();
+
     if (!$domain) {
-      if (!$domchange) {
+      if (!$domfail) {
         $assoc = true;
       } else {
         //attempt by freelancer to join client; no priv
@@ -616,6 +626,11 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
           header($relocation);
           exit();
         }
+      }
+      else if($domfail){
+        $relocation = "Location: ./?clientflag=$id";
+        header($relocation);
+        exit();
       }
     }
     if ($editor || $agency) {
