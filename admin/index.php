@@ -147,6 +147,20 @@ function canEdit($id, $postemail, $priv)
   $postemail = $postemail ? strtolower($postemail) : $logemail;
   return [$logemail === $dbemail, $dbemail !== $postemail, $row['domain'] ?? '', isApproved($priv, 'admin'), $row['name'] ?? ''];
 }
+
+
+function domFail($change, $client, $editor)
+{
+  if ($change) {
+    if ($client) {
+      return true;
+    }
+    if ($editor && !$client) {
+      return false;
+    }
+  }
+  return false;
+}
 //$key expected to be freelance id (int) or domain (str)
 function filterUsers($key, $pagetitle, $error = '')
 {
@@ -366,6 +380,7 @@ if (isset($_GET['add'])) {
   $route = "Add";
   $action = 'addform';
   $button = 'Add User';
+  $legend = null;
   $override = '';
   $crud = isApproved($priv, 'admin');
   $admin = isApproved($priv, 'ADMIN');
@@ -588,10 +603,9 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   list($editor, $echange, $domain, $agency, $name) = canEdit($id, $_POST['email'], $priv);
   list($domchange, $comchange, $dom, $com) = queryEmail($editor, $admin, $_POST);
 
-  $echange = $domchange || $comchange;
-  dump([$domafail, $domchange, $comchange, $echange, $dom, $com]);
+  $domfail = domFail($domchange || $comchange, $domain, $editor);
 
-  if (!$override && $editor && $echange) {
+  if (!$override && $editor && $echange && !$domfail) {
     $title = "Prompt";
     $prompt = "Changing your email will log you out of the current session. Proceed?";
     $call = "change";
@@ -643,7 +657,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     if ($editor || $agency) {
       include CONNECT;
       $sql = "UPDATE user SET name=:name, email=:email";
-      $sql .= $assoc ? ", client_id=:cid" : ' ';
+      $sql .= $assoc ? ", client_id=:cid" : '';
       $sql .= " WHERE id=:id";
       $st = $pdo->prepare($sql);
       if ($assoc) {
@@ -696,14 +710,13 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
 
 
 //////
-
 //directly load form.html.php if only one user/client
-//(isset()) || isset($_GET['agency']) || $pwd || $clientflag
 
 if (checkIsset($_GET, ['edit', 'agency', 'pwd', 'clientflag'])) {
   $clientflag = $_GET['clientflag'] ?? NULL;
   $pwd = $_GET['pwd'] ?? NULL;
   $namechange = $_GET['namechange'] ?? NULL;
+  $_agency = $_GET['agency'] ?? NULL;
 
   if (isset($_GET['namechange'])) {
     $legend = 'Name succesfully changed';
