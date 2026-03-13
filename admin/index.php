@@ -593,7 +593,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
 
   if (!$override && $editor && $echange) {
     $title = "Prompt";
-    preg_match("/\.$com$/", $domain);
     $prompt = "Changing your email will log you out of the current session. Proceed?";
     $call = "change";
     $pos = "Yes";
