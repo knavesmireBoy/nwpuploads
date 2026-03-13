@@ -145,7 +145,7 @@ function canEdit($id, $postemail, $priv)
     $dbemail = strtolower($email);
   }
   $postemail = $postemail ? strtolower($postemail) : $logemail;
-  return [$logemail === $dbemail, $row['domain'] ?? '', isApproved($priv, 'admin'), $row['name'] ?? ''];
+  return [$logemail === $dbemail, $dbemail !== $postemail, $row['domain'] ?? '', isApproved($priv, 'admin'), $row['name'] ?? ''];
 }
 //$key expected to be freelance id (int) or domain (str)
 function filterUsers($key, $pagetitle, $error = '')
@@ -354,7 +354,7 @@ if (!$roleplay || $pagehead_role) {
   exit();
 }
 list($key, $priv) = $roleplay;
-list($_editor, $_domain, $_agency) = canEdit($id, '', $priv);
+list($_editor, $_echange, $_domain, $_agency) = canEdit($id, '', $priv);
 $pagetitle = preg_match("/client/i", $priv) ? "Admin" : "Admin | Edit Users";
 
 //end of initial globals
@@ -414,7 +414,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
     header("Location: ./?addnotice");
     exit();
   }
-  list($editor, $domain, $agency) = canEdit($id, $_POST['email'], $priv);
+  list($editor, $echange, $domain, $agency) = canEdit($id, $_POST['email'], $priv);
 
   $sql = "INSERT INTO user (name, email, password, client_id) VALUES(:nom, :e,:pwd, :clientid)";
   $st = $pdo->prepare($sql);
@@ -479,7 +479,7 @@ if (isset($_POST['confirm'])) {
     $roles = [];
     $admin = isApproved($priv, 'ADMIN');
     $clientadmin = isApproved($priv, 'admin');
-    list($editor, $domain, $agency) = canEdit($id, '', $priv);
+    list($editor, $echange, $domain, $agency) = canEdit($id, '', $priv);
     $crud = ($agency || $editor);
 
     //editor or freelance
@@ -585,7 +585,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   $canAssign = isEmployer($_POST, 'employer');
   $hasEmployer = isEmployer($_POST, 'id');
 
-  list($editor, $domain, $agency, $name) = canEdit($id, $_POST['email'], $priv);
+  list($editor, $echange, $domain, $agency, $name) = canEdit($id, $_POST['email'], $priv);
   list($domchange, $comchange, $dom, $com) = queryEmail($editor, $admin, $_POST);
 
   $echange = $domchange || $comchange;
@@ -722,7 +722,7 @@ if (checkIsset($_GET, ['edit', 'agency', 'pwd', 'clientflag'])) {
   $callroute = "delete=$id";
 
   $warning = 'You do not have sufficient privileges to edit this users details.';
-  list($editor, $domain, $agency) = canEdit($id, $_POST['email'] ?? '', $priv);
+  list($editor, $echange, $domain, $agency) = canEdit($id, $_POST['email'] ?? '', $priv);
 
   //DON'T FORGET WE CAN ARRIVE HERE DIRECT FROM A LINK AND NOT FROM A REDIRECT FROM EDITING
   if (isset($_GET['error'])) {
