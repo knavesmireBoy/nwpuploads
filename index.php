@@ -3,8 +3,6 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php';
 require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
 
-
-
 function fromPayload($str, ...$args)
 {
     return implode(' ', array_merge([$str], $args));
@@ -21,7 +19,6 @@ function clientFromUpload($txt, ...$args)
 function userFromUpload()
 {
     return "SELECT user.id, user.name, user.email, user.client_id FROM upload INNER JOIN user ON upload.userid = user.id INNER JOIN (SELECT userid FROM upload WHERE id=:id) AS owt ON user.id = owt.userid WHERE user.id = owt.userid";
-
     return "SELECT user.id, user.name, user.email, user.client_id FROM upload INNER JOIN user ON upload.userid = user.id WHERE user.id =:id";
 }
 
@@ -32,7 +29,6 @@ function selectUploaded($order, $start, $limit)
     $order = " ORDER BY $order LIMIT $start, $limit";
     return [$select, $from, $order];
 }
-
 
 function presentList($role, $flag = 'admin')
 {
