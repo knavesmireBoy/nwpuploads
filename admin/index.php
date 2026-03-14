@@ -149,13 +149,14 @@ function canEdit($id, $postemail, $priv)
 }
 
 
-function domFail($change, $client, $editor)
+function domFail($change, $isclient, $editor, $admin)
 {
+  $crud = $editor && !$admin;
   if ($change) {
-    if ($client) {
+    if ($isclient || $admin) {
       return true;
     }
-    if ($editor && !$client) {
+    if ($crud) {
       return false;
     }
   }
@@ -496,7 +497,6 @@ if (isset($_POST['confirm'])) {
     $clientadmin = isApproved($priv, 'admin');
     list($editor, $echange, $domain, $agency) = canEdit($id, '', $priv);
     $crud = ($agency || $editor);
-
     //editor or freelance
     if (!$domain) {
       if ($admin && $editor) {
@@ -603,8 +603,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   list($editor, $echange, $domain, $agency, $name) = canEdit($id, $_POST['email'], $priv);
   list($domchange, $comchange, $dom, $com) = queryEmail($editor, $admin, $_POST);
 
-  $domfail = domFail($domchange || $comchange, $domain, $editor);
-
+  $domfail = domFail($domchange || $comchange, $domain, $editor, $admin);
   if (!$override && $editor && $echange && !$domfail) {
     $title = "Prompt";
     $prompt = "Changing your email will log you out of the current session. Proceed?";
@@ -632,6 +631,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     if (!$domain) {
       if (!$domfail) {
         $assoc = true;
+        $relocate = null;
       } else {
         //attempt by freelancer to join client; no priv
         if ($clientid && !$admin) {
@@ -713,6 +713,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
 //directly load form.html.php if only one user/client
 
 if (checkIsset($_GET, ['edit', 'agency', 'pwd', 'clientflag'])) {
+
   $clientflag = $_GET['clientflag'] ?? NULL;
   $pwd = $_GET['pwd'] ?? NULL;
   $namechange = $_GET['namechange'] ?? NULL;
@@ -742,6 +743,8 @@ if (checkIsset($_GET, ['edit', 'agency', 'pwd', 'clientflag'])) {
     unset($calltext);
     unset($callroute);
   }
+
+  
   if (!$agency) {
     if ($editor || $agency) {
       $warning = '';
@@ -757,13 +760,14 @@ if (checkIsset($_GET, ['edit', 'agency', 'pwd', 'clientflag'])) {
 
   if (!$message) { //either editor or admin
     $warning = 'Polite Notice: changing an email or password will automatically log you out.';
-    $message = ($pwd && $ed) ? $warning : ''; //alert if yourself
+    $message = ($pwd && $editor) ? $warning : ''; //alert if yourself
     $message = $message ? $message : ($clientflag ? 'You do not have sufficient privileges to change the domain name. Please contact the database administrator.' : '');
 
     if ($message && ($message === $warning)) {
       $message .= ' You can proceed now that the form is in override mode but you will need to log in again with your updated details.';
     }
   }
+
   if ($clientflag) {
     $sql = "SELECT user.id, user.name, user.email FROM client LEFT JOIN user ON $domainstr = client.domain WHERE user.id=:dom";
     $st = $pdo->prepare($sql);
@@ -783,7 +787,6 @@ if (checkIsset($_GET, ['edit', 'agency', 'pwd', 'clientflag'])) {
   $id = $row['id'];
   $name = isset($_COOKIE['username']) ? $_COOKIE['username'] : $row['name'];
   $email = isset($_COOKIE['email']) ? $_COOKIE['email'] : $row['email'];
-
   $override = $pwd ? $pwd : NULL;
   $override = $override ?? $_COOKIE['username'] ?? NULL;
   $class = $override ? 'details override' : 'details';
