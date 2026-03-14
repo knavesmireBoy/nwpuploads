@@ -148,8 +148,7 @@ function canEdit($id, $postemail, $priv)
   return [$logemail === $dbemail, $dbemail !== $postemail, $row['domain'] ?? '', isApproved($priv, 'admin'), $row['name'] ?? ''];
 }
 
-
-function domFail($change, $isclient, $editor, $admin)
+function domCheck($change, $isclient, $editor, $admin)
 {
   $crud = $editor && !$admin;
   if ($change) {
@@ -162,6 +161,23 @@ function domFail($change, $isclient, $editor, $admin)
   }
   return false;
 }
+
+//return true for fail
+function domCheckFactory($isclient)
+{
+  if ($isclient) {
+    return function ($change, $editor = null, $admin = null) {
+      return $change;
+    };
+  }
+  return function ($change, $editor, $admin) {
+    if ($change) {
+      return $admin ? $admin : ($editor ? false : true);
+    }
+    return false;
+  };
+}
+
 //$key expected to be freelance id (int) or domain (str)
 function filterUsers($key, $pagetitle, $error = '')
 {
@@ -323,7 +339,7 @@ if (!userIsLoggedIn()) {
   include TEMPLATE . 'login.html.php';
   exit();
 }
-
+$lefty = "SELECT user.id, LEFT(user.email, LOCATE('@', user.email) -1) AS name FROM user WHERE id=:id";
 $super = "andrewsykes@btinternet.com";
 $prompt = NULL;
 $users = [];
@@ -603,7 +619,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   list($editor, $echange, $domain, $agency, $name) = canEdit($id, $_POST['email'], $priv);
   list($domchange, $comchange, $dom, $com) = queryEmail($editor, $admin, $_POST);
 
-  $domfail = domFail($domchange || $comchange, $domain, $editor, $admin);
+  $domfail = domCheck($domchange || $comchange, $domain, $editor, $admin);
   if (!$override && $editor && $echange && !$domfail) {
     $title = "Prompt";
     $prompt = "Changing your email will log you out of the current session. Proceed?";
@@ -744,7 +760,7 @@ if (checkIsset($_GET, ['edit', 'agency', 'pwd', 'clientflag'])) {
     unset($callroute);
   }
 
-  
+
   if (!$agency) {
     if ($editor || $agency) {
       $warning = '';
