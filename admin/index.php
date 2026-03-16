@@ -4,7 +4,7 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
 
 function query()
 {
-  $lib = ['nousers' => "<Unable to find any users", "addnotice" => "Please fill required fields", "selectuser" => "Please select a user for editing", "clientflag" => "Cannot assign this user to a new client", "lastuser" => "To remove this last user, please delete the client instead", "denied" => "You do not have the privileges to delete this user", "deniedbyclient" => "There must be at least one administrator role, please assign another user before removing your credentials from the database", "access" => "You do not have the privileges to add a user", "deniedbyadmin" => "Cannot delete this user until a new client admin role is assigned to this client", "self" => "Only a peer can perform this deletion", "freelancer" => "Cannot assign this domain", 'addno' => 'You do not have the required privilges to add a user'];
+  $lib = ['nousers' => "<Unable to find any users", "addnotice" => "Please fill required fields", "selectuser" => "Please select a user for editing", "domainflag" => "Cannot assign this user to a new client", "lastuser" => "To remove this last user, please delete the client instead", "denied" => "You do not have the privileges to delete this user", "deniedbyclient" => "There must be at least one administrator role, please assign another user before removing your credentials from the database", "access" => "You do not have the privileges to add a user", "deniedbyadmin" => "Cannot delete this user until a new client admin role is assigned to this client", "self" => "Only a peer can perform this deletion", "freelancer" => "Cannot assign this domain", 'addno' => 'You do not have the required privilges to add a user'];
   $query = explode('=', $_SERVER["QUERY_STRING"]);
   $q = $query[1] ?? $query[0];
   return $lib[$q] ?? NULL;
@@ -632,7 +632,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   $admin = isApproved($priv, 'ADMIN');
   $employerid = empty($_POST['employer']) ? 0 : intval($_POST['employer']);
   $location = 'Location: .';
-  $relocate = "Location: ./?clientflag=$id";
+  $relocate = "Location: ./?domainflag=$id";
   $canAssign = isEmployer($_POST, 'employer');
   $hasEmployer = isEmployer($_POST, 'id');
 
@@ -756,10 +756,10 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
 //////
 //directly load form.html.php if only one user/client
 
-if (checkIsset($_GET, ['edit', 'agency', 'pwd', 'clientflag'])) {
+if (checkIsset($_GET, ['edit', 'agency', 'pwd', 'domainflag'])) {
 
 
-  $clientflag = $_GET['clientflag'] ?? NULL;
+  $domainflagID = $_GET['domainflag'] ?? NULL;
   $pwd = $_GET['pwd'] ?? NULL;
   $namechange = $_GET['namechange'] ?? NULL;
   $_agency = $_GET['agency'] ?? NULL;
@@ -776,7 +776,7 @@ if (checkIsset($_GET, ['edit', 'agency', 'pwd', 'clientflag'])) {
   $adminClient = preg_match('/admin/i', $priv) && preg_match('/client/i', $priv);
   $message = $_GET['error'] ?? '';
   $id = isset($_GET['edit']) ? $_GET['edit'] : ($pwd ? $pwd : NULL);
-  $id = !empty($id) ? $id : $clientflag ?? '';
+  $id = !empty($id) ? $id : $domainflagID ?? '';
 
   $calltext = "Delete User";
   $callroute = "delete=$id";
@@ -806,17 +806,18 @@ if (checkIsset($_GET, ['edit', 'agency', 'pwd', 'clientflag'])) {
   if (!$message) { //either editor or admin
     $warning = 'Polite Notice: changing an email or password will automatically log you out.';
     $message = ($pwd && $editor) ? $warning : ''; //alert if yourself
-    $message = $message ? $message : ($clientflag ? 'You do not have sufficient privileges to change the domain name. Please contact the database administrator.' : '');
+    $message = $message ? $message : ($domainflagID ? 'You do not have sufficient privileges to change the domain name. Please contact the database administrator.' : '');
 
     if ($message && ($message === $warning)) {
       $message .= ' You can proceed now that the form is in override mode but you will need to log in again with your updated details.';
     }
   }
 
-  if ($clientflag) {
+  if ($domainflagID) {
     $sql = "SELECT user.id, user.name, user.email FROM client LEFT JOIN user ON $domainstr = client.domain WHERE user.id=:dom";
     $st = $pdo->prepare($sql);
-    $st->bindValue(":dom", $clientflag);
+    $st->bindValue(":dom", $domainflagID);
+    //this may fail if user is not a client, so $clientrow is conditional
     doPreparedQuery($st, "Error fetching user details.");
     $clientrow = $st->fetch(PDO::FETCH_ASSOC);
   }
