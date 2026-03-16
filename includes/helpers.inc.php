@@ -6,6 +6,28 @@ function dump($arg)
     exit;
 }
 
+
+function likeDomain($change, $domain)
+{
+    if ($change) {
+        include CONNECT;
+        $st = $pdo->prepare("SELECT client.id FROM client WHERE client.domain LIKE :dom");
+        $st->bindValue(":dom", "$domain%");
+        doPreparedQuery($st, 'Error finding the domain');
+        return $st->fetch();
+    }
+    return false;
+}
+
+function doBest($pred, $actions)
+{
+    return function (...$args) use ($pred, $actions) {
+        return array_reduce($actions, function ($a, $b) use ($pred, $args) {
+            return $a && $pred(...$args) ? $a : $b;
+        });
+    };
+}
+
 function checkIsset($o, $props, $flag = false)
 {
     if ($flag) {
@@ -27,11 +49,26 @@ function decode($qs)
 
 function parseEmail($email)
 {
+
     $i = strpos($email, '@');
-    $edom = substr($email, $i + 1);
-    $i = strpos($edom, '.');
-    $top = substr($edom, $i + 1);
-    $second = substr($edom, 0, strlen($edom) - strlen($top) - 1);
+    if ($i) {
+        $edom = substr($email, $i + 1);
+        $i = strrpos($edom, '.');
+        $top = substr($edom, $i + 1);
+        $second = substr($edom, 0, strlen($edom) - strlen($top) - 1);
+        $i = strrpos($second, '.');
+    } else { //$email may just be a domain
+        $i = strrpos($email, '.');
+        $top = substr($email, $i + 1);
+        $second = substr($email, 0, $i);
+        $i = null;
+        $i = strrpos($second, '.');
+    }
+    if ($i) {
+        $aux = substr($second, $i + 1);
+        $top = "$aux.$top";
+        $second = substr($second,  0, strlen($top) - $i);
+    }
     return [$second, $top];
 }
 

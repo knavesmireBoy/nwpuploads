@@ -10,9 +10,9 @@ function query()
   return $lib[$q] ?? NULL;
 }
 
-function unsetDetails()
+function unsetDetails($bool = false)
 {
-  $setcookie = doSetCookie(false);
+  $setcookie = doSetCookie($bool);
   $setcookie('email', $_POST['email'] ?? '');
   $setcookie('username', $_POST['name'] ?? '');
 }
@@ -68,6 +68,7 @@ function isEmployer($o, $p = '')
 function queryEmail($editor, $admin, $obj)
 {
   $ecom = null;
+  $edom = null;
   $hasEmployer = isEmployer($obj, 'id');
   list($dom, $com) = parseEmail($obj['email'] ?? '');
   if ($editor) {
@@ -75,8 +76,12 @@ function queryEmail($editor, $admin, $obj)
     $domchange = $dom !== $edom;
   } else {
     list($_, $domain) = $hasEmployer();
-    $domchange = $domain ? $dom !== $domain : null;
+    list($edom, $ecom) = parseEmail($domain);
+    //need to obtain existing email;
+    $domchange = $domain ? ($dom !== $edom || $com !== $ecom) : null;
   }
+  //forces a admin/user to query database for existing domain
+  $domchange = !isset($domchange) ? true : false;
   $comchange = $ecom ? $com !== $ecom : null;
   return [$domchange, $comchange, $dom, $com];
 }
@@ -163,18 +168,37 @@ function domCheck($change, $isclient, $editor, $admin)
 }
 
 //return true for fail
-function domCheckFactory($isclient)
+function domCheckFactory1($client, $admin)
 {
-  if ($isclient) {
-    return function ($change, $editor = null, $admin = null) {
+  if ($client) {
+    return function ($change, $editor = null) {
       return $change;
     };
   }
-  return function ($change, $editor, $admin) {
-    if ($change) {
-      return $admin ? $admin : ($editor ? false : true);
-    }
-    return false;
+  if ($admin) {
+    return function ($change, $editor) {
+      return $change ? $editor : false;
+    };
+  }
+  return function ($change, $editor) {
+    return $change && !$editor;
+  };
+}
+
+function domCheckFactory($client, $admin, $editor, $actions)
+{
+  if ($client) {
+    return function ($change) use ($actions) {
+      return $actions['client']($change);
+    };
+  }
+  if ($admin && $editor) {
+    return function ($change) use ($actions, $editor) {
+      return $actions['admin']($change, $editor);
+    };
+  }
+  return function ($change) use ($actions, $editor) {
+    return $actions['user']($change, $editor);
   };
 }
 
@@ -605,10 +629,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   $rolechange = null;
   $domchange = false;
 
-  $setcookie = doSetCookie(false);
-  $setcookie('email', $_POST['email']);
-  $setcookie('username', $_POST['name']);
-
   $admin = isApproved($priv, 'ADMIN');
   $employerid = empty($_POST['employer']) ? 0 : intval($_POST['employer']);
   $location = 'Location: .';
@@ -619,8 +639,14 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   list($editor, $echange, $domain, $agency, $name) = canEdit($id, $_POST['email'], $priv);
   list($domchange, $comchange, $dom, $com) = queryEmail($editor, $admin, $_POST);
 
-  $domfail = domCheck($domchange || $comchange, $domain, $editor, $admin);
-  if (!$override && $editor && $echange && !$domfail) {
+  $usercb = curry2('likeDomain')($dom);
+  $actions = ['client' => 'identity', 'admin' => function ($arg, $editor) {
+    return $arg ? $editor : false;
+  }, 'user' => $usercb];
+
+  $validateDom = domCheckFactory($domain, $admin, $editor, $actions);
+  $domfail = $validateDom($domchange || $comchange);
+  if (!$override && ($editor && $echange && !$domfail)) {
     $title = "Prompt";
     $prompt = "Changing your email will log you out of the current session. Proceed?";
     $call = "change";
@@ -640,6 +666,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   }
 
   if (!isset($prompt)) {
+    //  unsetDetails();
+
     $checkDomain = isEmployer($dom);
     $edom = "$dom.$com";
     list($clientid) = $checkDomain();
@@ -730,10 +758,12 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
 
 if (checkIsset($_GET, ['edit', 'agency', 'pwd', 'clientflag'])) {
 
+
   $clientflag = $_GET['clientflag'] ?? NULL;
   $pwd = $_GET['pwd'] ?? NULL;
   $namechange = $_GET['namechange'] ?? NULL;
   $_agency = $_GET['agency'] ?? NULL;
+  $clientrow = null;
 
   if (isset($_GET['namechange'])) {
     $legend = 'Name succesfully changed';
@@ -746,7 +776,7 @@ if (checkIsset($_GET, ['edit', 'agency', 'pwd', 'clientflag'])) {
   $adminClient = preg_match('/admin/i', $priv) && preg_match('/client/i', $priv);
   $message = $_GET['error'] ?? '';
   $id = isset($_GET['edit']) ? $_GET['edit'] : ($pwd ? $pwd : NULL);
-  $id = !empty($id) ? $id : $_POST['id'] ?? '';
+  $id = !empty($id) ? $id : $clientflag ?? '';
 
   $calltext = "Delete User";
   $callroute = "delete=$id";
@@ -759,7 +789,6 @@ if (checkIsset($_GET, ['edit', 'agency', 'pwd', 'clientflag'])) {
     unset($calltext);
     unset($callroute);
   }
-
 
   if (!$agency) {
     if ($editor || $agency) {
@@ -789,8 +818,10 @@ if (checkIsset($_GET, ['edit', 'agency', 'pwd', 'clientflag'])) {
     $st = $pdo->prepare($sql);
     $st->bindValue(":dom", $clientflag);
     doPreparedQuery($st, "Error fetching user details.");
-    $row = $st->fetch(PDO::FETCH_ASSOC);
+    $clientrow = $st->fetch(PDO::FETCH_ASSOC);
   }
+
+  $row = $clientrow ? $clientrow : $row;
 
   $route = "Edit";
   $pagehead = 'Edit User';
@@ -799,7 +830,6 @@ if (checkIsset($_GET, ['edit', 'agency', 'pwd', 'clientflag'])) {
   $roles = [];
   $clientlist = [];
   $selectedRoles = [];
-
   $id = $row['id'];
   $name = isset($_COOKIE['username']) ? $_COOKIE['username'] : $row['name'];
   $email = isset($_COOKIE['email']) ? $_COOKIE['email'] : $row['email'];
@@ -845,6 +875,8 @@ if (checkIsset($_GET, ['edit', 'agency', 'pwd', 'clientflag'])) {
 //LANDING...
 //$sql = defaultQuery($key, $priv);
 //display users___________________________________________________________________
+
+
 $sql = "SELECT user.id, user.name FROM user LEFT JOIN (SELECT user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer ON $domainstr=employer.domain WHERE employer.domain IS NULL"; //this overwrites above query to filter out users as employees
 $sql = "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS NULL"; //USING ID NOT DOMAIN
 $admin = isApproved($priv, 'ADMIN');

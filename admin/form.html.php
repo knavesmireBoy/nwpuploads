@@ -26,7 +26,7 @@ if ((isApproved($priv, 'admin') || $editor) && !empty($id)) {
 	<div>
 		<label for="name">Name</label><input id="name" type="text" name="name" value="<?= $name ?? ''; ?>" required autocomplete="off" />
 		<label for="email">Email</label><input type="email" id="email" name="email" value="<?= $email ?? ''; ?>" required autocomplete="off" />
-		<label for="password">Password</label><input id="password" type="password" name="password" /><input type="hidden" name="employer"
+		<label for="password">Password</label><input id="password" type="password" name="password" /><input type="hidden" name="employer" autocomplete="new-password"
 			value="<?= $employer ?? ''; ?>" />
 	</div>
 	<?php include TEMPLATE . '_roles.html.php'; ?>
