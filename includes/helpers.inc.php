@@ -14,7 +14,7 @@ function likeDomain($change, $domain)
         $st = $pdo->prepare("SELECT client.id FROM client WHERE client.domain LIKE :dom");
         $st->bindValue(":dom", "$domain%");
         doPreparedQuery($st, 'Error finding the domain');
-        return $st->fetch();
+        return $st->fetch(PDO::FETCH_ASSOC)['id'];
     }
     return false;
 }
@@ -67,7 +67,7 @@ function parseEmail($email)
     if ($i) {
         $aux = substr($second, $i + 1);
         $top = "$aux.$top";
-        $second = substr($second,  0, strlen($top) - $i);
+        $second = substr($second,  0, $i);
     }
     return [$second, $top];
 }
