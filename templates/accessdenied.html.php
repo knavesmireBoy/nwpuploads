@@ -1,7 +1,6 @@
 <?php include 'base.html.php';
 $root = $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/';
-$admin = preg_match("/administrators/i", $error);//?find a better way
-$route = $admin ? '..' : '.';
+$route = preg_match("/administrators/i", $error) ? '..' : '.';
 ?>
 	<h1>Access Denied</h1>
 	<p><?= $error; ?></p>
