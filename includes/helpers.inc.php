@@ -6,6 +6,24 @@ function dump($arg)
     exit;
 }
 
+function filterDefinedVars($vars)
+{
+    $filter = [];
+    foreach ($vars as $k => $v) {
+        if (strtoupper($k) !== $k) {
+            $filter[$k] = $v;
+        }
+    }
+    return $filter;
+}
+
+
+function searchGroup($neddle, $haystack, $outcomes = null)
+{
+    $i = array_search($neddle, $haystack);
+    return is_array($outcomes) ? $outcomes[$i] : $i;
+}
+
 
 function likeDomain($change, $domain)
 {

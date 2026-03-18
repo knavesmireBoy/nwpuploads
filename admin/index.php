@@ -150,7 +150,7 @@ function canEdit($id, $postemail, $priv)
     $dbemail = strtolower($email);
   }
   $postemail = $postemail ? strtolower($postemail) : $logemail;
-  return [$logemail === $dbemail, $dbemail !== $postemail, $row['domain'] ?? '', isApproved($priv, 'admin'), $row['name'] ?? ''];
+  return [$dbemail !== $postemail, $logemail === $dbemail, $row['domain'] ?? '', isApproved($priv, 'admin'), $row['name'] ?? ''];
 }
 
 function domCheck($change, $isclient, $editor, $admin)
@@ -168,30 +168,14 @@ function domCheck($change, $isclient, $editor, $admin)
 }
 
 //return true for fail
-function domCheckFactory1($client, $admin)
-{
-  if ($client) {
-    return function ($change, $editor = null) {
-      return $change;
-    };
-  }
-  if ($admin) {
-    return function ($change, $editor) {
-      return $change ? $editor : false;
-    };
-  }
-  return function ($change, $editor) {
-    return $change && !$editor;
-  };
-}
-
-function domCheckFactory($client, $admin, $editor, $actions)
+function domCheckFactory1($client, $admin, $editor, $actions)
 {
   if ($client) {
     return function ($change) use ($actions) {
       return $actions['client']($change);
     };
-  } else if ($admin && $editor) {
+  }
+  if ($admin) {
     return function ($change) use ($actions, $editor) {
       return $actions['admin']($change, $editor);
     };
@@ -201,6 +185,12 @@ function domCheckFactory($client, $admin, $editor, $actions)
   };
 }
 
+function domCheckFactory($i, $actions)
+{
+  return function ($change) use ($i, $actions) {
+    return $actions[$i]($change);
+  };
+}
 //$key expected to be freelance id (int) or domain (str)
 function filterUsers($key, $pagetitle, $error = '')
 {
@@ -254,7 +244,7 @@ function defaultQuery($key, $priv)
 //domain would change if updating client, but not the users email
 function updateUserDomain($old, $new, $id = 0)
 {
-  if ($old && $new) {
+  if (($old && $new) && ($old !== $new)) {
     include CONNECT;
     $concat = replaceStrPos($new);
     //update email of employees IF the domain of client changes
@@ -409,7 +399,7 @@ if (!$roleplay || $pagehead_role) {
   exit();
 }
 list($key, $priv) = $roleplay;
-list($_editor, $_echange, $_domain, $_agency) = canEdit($id, '', $priv);
+list($_echange, $_editor, $_domain, $_agency) = canEdit($id, '', $priv);
 $pagetitle = preg_match("/client/i", $priv) ? "Admin" : "Admin | Edit Users";
 
 //end of initial globals
@@ -470,7 +460,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
     header("Location: ./?addnotice");
     exit();
   }
-  list($editor, $echange, $domain, $agency) = canEdit($id, $_POST['email'], $priv);
+  list($echange, $editor, $domain, $agency) = canEdit($id, $_POST['email'], $priv);
 
   $sql = "INSERT INTO user (name, email, password, client_id) VALUES(:nom, :e,:pwd, :clientid)";
   $st = $pdo->prepare($sql);
@@ -533,7 +523,7 @@ if (isset($_POST['confirm'])) {
     $roles = [];
     $admin = isApproved($priv, 'ADMIN');
     $clientadmin = isApproved($priv, 'admin');
-    list($editor, $echange, $domain, $agency) = canEdit($id, '', $priv);
+    list($echange, $editor, $domain, $agency) = canEdit($id, '', $priv);
     $crud = ($agency || $editor);
     //editor or freelance
     if (!$domain) {
@@ -616,42 +606,41 @@ if (isset($_POST['change']) || isset($_GET['cancel'])) {
 
 if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   include CONNECT;
+  $local = [];
   $action = "editform";
   $override = $_POST['override'];
   $id = $_POST['id'];
   $roles = $_POST['roles'] ?? [];
-  $assoc = false;
-  $revert = false;
-  $email = null;
+  $admin = isApproved($priv, 'ADMIN');
+
   $role = null;
   $rolechange = null;
-  $domchange = false;
 
-  $admin = isApproved($priv, 'ADMIN');
-  $employerid = empty($_POST['employer']) ? null : intval($_POST['employer']);
+  $employerid = empty($_POST['employer']) ? null : $_POST['employer'];
   $location = 'Location: .';
   $relocate = "Location: ./?domainflag=$id";
-  $canAssign = isEmployer($_POST, 'employer');
-  $hasEmployer = isEmployer($_POST, 'id');
 
-  list($editor, $echange, $domain, $agency, $name) = canEdit($id, $_POST['email'], $priv);
+  list($echange, $editor, $domain, $agency, $name) = canEdit($id, $_POST['email'], $priv);
   list($domchange, $comchange, $dom, $com) = queryEmail($editor, $_POST);
 
   //validating domain: have these functions return TRUE to indicate failure
   $clientFunc = function ($change, $arg) {
     return $change && $arg;
   };
-    $adminFunc = function ($change, $editor) {
+  $adminFunc = function ($change, $editor) {
     return $change ? $editor : false;
   };
 
   $clientcb = $admin ? curry2($clientFunc)($employerid) : 'identity';
   $admincb = curry2($adminFunc)($editor);
-
   $usercb = curry2('likeDomain')($dom);
+
   $actions = ['client' => $clientcb, 'admin' => $admincb, 'user' => $usercb];
 
-  $validateDom = domCheckFactory($domain, $admin, $editor, $actions);
+  $k = searchGroup(true, [$domain, $admin, true], ['client', 'admin', 'user']);
+  $validateDom = $actions[$k];
+  unset($k);
+  //returned curried function expects a $change boolean: $domchange || $comchange
   $domfail = $validateDom($domchange || $comchange);
 
   if (!$override && ($editor && $echange && !$domfail)) {
@@ -672,15 +661,30 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
       $prompt = "Only the database administrator is permitted to amend the email domain. You may amend the local-part, and your username. Proceed?";
     }
   }
+  dump(filterDefinedVars(get_defined_vars()));
 
   if (!isset($prompt)) {
-    //  unsetDetails();
+    //unsetDetails();
     $edom = "$dom.$com";
     if (!$domfail) {
       $assoc = true;
       $relocate = null;
-      if (!$domain) {
-        list($assoc, $domain) = $canAssign();
+      $_byClientID = isEmployer($_POST, 'employer');
+      list($_, $dom) = $_byClientID();
+      if (!$dom) {
+        //in the process of disassociating ie currently belong to a client check you've entered a new domain;
+        if ($edom === $domain) {
+          $relocate = "Location: ./?domainassoc=$id";
+          $setcookie = doSetCookie(true);
+          $setcookie('username', $_POST['name']);
+          $setcookie('email', $_POST['email']);
+        } else {
+          $dom = $edom;
+          $edom = $domain;
+          $domain = $dom;
+        }
+      } else if (!$domain) {
+        $domain = $dom;
       }
     }
     if (isset($relocate)) {
@@ -699,7 +703,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
         $st->bindValue(":cid", $employerid);
       }
       $st->bindValue(":name", $_POST['name']);
-      $st->bindValue(":email", $revert ? $email : $_POST['email']);
+      $st->bindValue(":email", $_POST['email']);
       $st->bindValue(":id", $id);
       doPreparedQuery($st, 'Error setting user details');
 
@@ -741,13 +745,15 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     header($location);
     exit();
   } //if !prompt
+
 } ///END OF editform //////
 
 
 //////
 //directly load form.html.php if only one user/client
-if (checkIsset($_GET, ['edit', 'pwd', 'domainflag'])) {
+if (checkIsset($_GET, ['edit', 'pwd', 'domainflag', 'domainassoc'])) {
   $domainflagID = $_GET['domainflag'] ?? NULL;
+  $domainassocID = $_GET['domainassoc'] ?? NULL;
   $pwdID = $_GET['pwd'] ?? NULL;
   $namechange = $_GET['namechange'] ?? NULL;
   $clientrow = null;
@@ -762,13 +768,13 @@ if (checkIsset($_GET, ['edit', 'pwd', 'domainflag'])) {
   $adminClient = preg_match('/admin/i', $priv) && preg_match('/client/i', $priv);
   $message = $_GET['error'] ?? '';
   $id = isset($_GET['edit']) ? $_GET['edit'] : ($pwdID ?? NULL);
-  $id = !empty($id) ? $id : $domainflagID ?? '';
+  $id = !empty($id) ? $id : $domainflagID ?? $domainassocID ?? '';
 
   $calltext = "Delete User";
   $callroute = "delete=$id";
 
   $warning = 'You do not have sufficient privileges to edit this users details.';
-  list($editor, $echange, $domain, $agency) = canEdit($id, $_POST['email'] ?? '', $priv);
+  list($echange, $editor, $domain, $agency) = canEdit($id, $_POST['email'] ?? '', $priv);
 
   //DON'T FORGET WE CAN ARRIVE HERE DIRECT FROM A LINK AND NOT FROM A REDIRECT FROM EDITING
   if (isset($_GET['error'])) {
@@ -793,13 +799,14 @@ if (checkIsset($_GET, ['edit', 'pwd', 'domainflag'])) {
     $warning = 'Polite Notice: changing an email or password will automatically log you out.';
     $message = ($pwdID && $editor) ? $warning : ''; //alert if yourself
     $message = $message ? $message : ($domainflagID ? 'You do not have sufficient privileges to change the domain name. Please contact the database administrator.' : '');
+    $message = $message ? $message : ($domainassocID ? 'Please provide a new domain for this user' : '');
 
     if ($message && ($message === $warning)) {
       $message .= ' You can proceed now that the form is in override mode but you will need to log in again with your updated details.';
     }
   }
 
-  if ($domainflagID) {
+  if ($domainflagID || $domainassocID) {
     $sql = "SELECT user.id, user.name, user.email FROM client LEFT JOIN user ON $domainstr = client.domain WHERE user.id=:dom";
     $st = $pdo->prepare($sql);
     $st->bindValue(":dom", $domainflagID);
@@ -820,6 +827,7 @@ if (checkIsset($_GET, ['edit', 'pwd', 'domainflag'])) {
   $id = $row['id'];
   $name = isset($_COOKIE['username']) ? $_COOKIE['username'] : $row['name'];
   $email = isset($_COOKIE['email']) ? $_COOKIE['email'] : $row['email'];
+  unsetDetails();
   $override = $pwdID ?? NULL;
   $override = $override ?? $_COOKIE['username'] ?? NULL;
   $class = $override ? 'details override' : 'details';
@@ -863,10 +871,10 @@ if (checkIsset($_GET, ['edit', 'pwd', 'domainflag'])) {
 //$sql = defaultQuery($key, $priv);
 //display users___________________________________________________________________
 
-
 $sql = "SELECT user.id, user.name FROM user LEFT JOIN (SELECT user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer ON $domainstr=employer.domain WHERE employer.domain IS NULL"; //this overwrites above query to filter out users as employees
 $sql = "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS NULL"; //USING ID NOT DOMAIN
 $admin = isApproved($priv, 'ADMIN');
+
 
 if (isset($_POST['user'])) { //dropdown
   if ($_POST['user'] === '') {
@@ -877,6 +885,7 @@ if (isset($_POST['user'])) { //dropdown
 }
 //dump('land');
 //on landing try client; a single client will redirect to form.html.php, a multi team client will prepare variables for users.html.php
+
 if ($users === []) {
   include CONNECT;
   $st = doQuery($pdo, "SELECT domain FROM client LEFT JOIN user ON $domainstr = client.domain WHERE user.id=$key", '');
