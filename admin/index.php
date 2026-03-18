@@ -153,44 +153,29 @@ function canEdit($id, $postemail, $priv)
   return [$dbemail !== $postemail, $logemail === $dbemail, $row['domain'] ?? '', isApproved($priv, 'admin'), $row['name'] ?? ''];
 }
 
-function domCheck($change, $isclient, $editor, $admin)
+
+function verifyDom($editor, $admin, $domain, $employerid)
 {
-  $crud = $editor && !$admin;
-  if ($change) {
-    if ($isclient || $admin) {
-      return true;
-    }
-    if ($crud) {
-      return false;
-    }
-  }
-  return false;
+  list($domchange, $comchange, $dom, $com) = queryEmail($editor, $_POST);
+  //validating domain: have these functions return TRUE to indicate failure
+  $clientFunc = function ($change, $arg) {
+    return $change && $arg;
+  };
+  $adminFunc = function ($change, $editor) {
+    return $change ? $editor : false;
+  };
+
+  $clientcb = $admin ? curry2($clientFunc)($employerid) : 'identity';
+  $admincb = curry2($adminFunc)($editor);
+  $usercb = curry2('likeDomain')($dom);
+  $actions = ['client' => $clientcb, 'admin' => $admincb, 'user' => $usercb];
+  $k = searchGroup(true, [$domain, $admin, true], ['client', 'admin', 'user']);
+  $validateDom = $actions[$k];
+  //returned curried function expects a $change boolean: $domchange || $comchange
+  $domfail = $validateDom($domchange || $comchange);
+  return [$domfail, "$dom.$com"];
 }
 
-//return true for fail
-function domCheckFactory1($client, $admin, $editor, $actions)
-{
-  if ($client) {
-    return function ($change) use ($actions) {
-      return $actions['client']($change);
-    };
-  }
-  if ($admin) {
-    return function ($change) use ($actions, $editor) {
-      return $actions['admin']($change, $editor);
-    };
-  }
-  return function ($change) use ($actions, $editor) {
-    return $actions['user']($change, $editor);
-  };
-}
-
-function domCheckFactory($i, $actions)
-{
-  return function ($change) use ($i, $actions) {
-    return $actions[$i]($change);
-  };
-}
 //$key expected to be freelance id (int) or domain (str)
 function filterUsers($key, $pagetitle, $error = '')
 {
@@ -616,32 +601,11 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   $role = null;
   $rolechange = null;
 
-  $employerid = empty($_POST['employer']) ? null : $_POST['employer'];
   $location = 'Location: .';
   $relocate = "Location: ./?domainflag=$id";
-
   list($echange, $editor, $domain, $agency, $name) = canEdit($id, $_POST['email'], $priv);
-  list($domchange, $comchange, $dom, $com) = queryEmail($editor, $_POST);
 
-  //validating domain: have these functions return TRUE to indicate failure
-  $clientFunc = function ($change, $arg) {
-    return $change && $arg;
-  };
-  $adminFunc = function ($change, $editor) {
-    return $change ? $editor : false;
-  };
-
-  $clientcb = $admin ? curry2($clientFunc)($employerid) : 'identity';
-  $admincb = curry2($adminFunc)($editor);
-  $usercb = curry2('likeDomain')($dom);
-
-  $actions = ['client' => $clientcb, 'admin' => $admincb, 'user' => $usercb];
-
-  $k = searchGroup(true, [$domain, $admin, true], ['client', 'admin', 'user']);
-  $validateDom = $actions[$k];
-  unset($k);
-  //returned curried function expects a $change boolean: $domchange || $comchange
-  $domfail = $validateDom($domchange || $comchange);
+  list($domfail, $postdom) = verifyDom($editor, $admin, $domain, nullify($_POST['employer']));
 
   if (!$override && ($editor && $echange && !$domfail)) {
     $title = "Prompt";
@@ -652,7 +616,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     $action = './?editform';
     $formname = 'changedetailsform';
     $template = 'confirm.html.php';
-    $crud = $editor || $agency;
     $setcookie = doSetCookie(true);
     $setcookie('username', $_POST['name']);
     if (!$domchange) {
@@ -661,26 +624,23 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
       $prompt = "Only the database administrator is permitted to amend the email domain. You may amend the local-part, and your username. Proceed?";
     }
   }
-  dump(filterDefinedVars(get_defined_vars()));
 
   if (!isset($prompt)) {
     //unsetDetails();
-    $edom = "$dom.$com";
     if (!$domfail) {
-      $assoc = true;
       $relocate = null;
-      $_byClientID = isEmployer($_POST, 'employer');
-      list($_, $dom) = $_byClientID();
+      $byClientID = isEmployer($_POST, 'employer');
+      list($_, $dom) = $byClientID();
       if (!$dom) {
         //in the process of disassociating ie currently belong to a client check you've entered a new domain;
-        if ($edom === $domain) {
+        if ($postdom === $domain) {
           $relocate = "Location: ./?domainassoc=$id";
           $setcookie = doSetCookie(true);
           $setcookie('username', $_POST['name']);
           $setcookie('email', $_POST['email']);
         } else {
-          $dom = $edom;
-          $edom = $domain;
+          $dom = $postdom;
+          $postdom = $domain;
           $domain = $dom;
         }
       } else if (!$domain) {
@@ -698,10 +658,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
       $sql .= $assoc ? ", client_id=:cid" : '';
       $sql .= " WHERE id=:id";
       $st = $pdo->prepare($sql);
-
-      if ($assoc) {
-        $st->bindValue(":cid", $employerid);
-      }
+      $st->bindValue(":cid", $employerid);
       $st->bindValue(":name", $_POST['name']);
       $st->bindValue(":email", $_POST['email']);
       $st->bindValue(":id", $id);
@@ -745,7 +702,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     header($location);
     exit();
   } //if !prompt
-
+//note unset unneeded vars at this point??
 } ///END OF editform //////
 
 

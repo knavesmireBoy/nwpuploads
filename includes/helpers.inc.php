@@ -6,6 +6,11 @@ function dump($arg)
     exit;
 }
 
+function nullify($arg)
+{
+    return empty($arg) ? NULL : $arg;
+}
+
 function filterDefinedVars($vars)
 {
     $filter = [];
