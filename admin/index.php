@@ -332,6 +332,17 @@ function updatePassword($pdo, $password, $id)
   return doPreparedQuery($st, 'Error setting user password.');
 }
 
+function isContractor($email, $clientid = NULL)
+{
+  include CONNECT;
+  $sql = queryClient(true);
+  $st = $pdo->prepare($sql);
+  $st->bindValue(':aux', $email);
+  doPreparedQuery($st, 'Error querying client credentials');
+  $row = $st->fetch(PDO::FETCH_ASSOC);
+  return (isset($row['employer']) && is_null($clientid)) ? $row['employer'] : $clientid;
+}
+
 if (!userIsLoggedIn()) {
   $pagetitle = "Log In";
   include TEMPLATE . 'login.html.php';
@@ -358,21 +369,11 @@ $callroute = 'add';
 $formvars = ['pagetitle', 'message', 'name', 'email', 'job', 'roles', 'id', 'route', 'override', 'button', 'priv'];
 $uservars = ['manage', 'priv', 'client', 'users'];
 $domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
-$is_client_sql = "SELECT client.id AS employer, domain, email FROM client LEFT JOIN user ON $domainstr = client.domain WHERE user.email=:email";
 
-$isContractor = function ($email, $clientid = NULL) {
-  include CONNECT;
-  $sql = queryClient(true);
-  $st = $pdo->prepare($sql);
-  $st->bindValue(':aux', $email);
-  doPreparedQuery($st, 'Error querying client credentials');
-  $row = $st->fetch(PDO::FETCH_ASSOC);
-  return (isset($row['employer']) && is_null($clientid)) ? $row['employer'] : $clientid;
-};
+$is_client_sql = "SELECT client.id AS employer, domain, email FROM client LEFT JOIN user ON $domainstr = client.domain WHERE user.email=:email";
 
 $agency = NULL;
 $lastuser = $_GET['lastuser'] ?? NULL;
-
 $roleplay = obtainUserRole();
 $pagehead_role = $roleplay && !obtainUserRole(true);
 
@@ -386,8 +387,9 @@ if (!$roleplay || $pagehead_role) {
 list($key, $priv) = $roleplay;
 list($_echange, $_editor, $_domain, $_agency) = canEdit($id, '', $priv);
 $pagetitle = preg_match("/client/i", $priv) ? "Admin" : "Admin | Edit Users";
-
 //end of initial globals
+
+
 if (isset($_GET['domain'])) {
   updateUserDomain($_GET['domain'], $_GET['updated']);
 }
@@ -396,12 +398,11 @@ if (isset($_GET['add'])) {
   $route = "Add";
   $action = 'addform';
   $button = 'Add User';
+  $pagehead = "New User";
   $legend = null;
   $override = '';
-  $crud = isApproved($priv, 'admin');
   $admin = isApproved($priv, 'ADMIN');
-  $clientadmin = isApproved($priv, 'Client Admin');
-  if (!$crud) {
+  if (!isApproved($priv, 'admin')) {
     header("Location: ./?addno");
     exit();
   }
@@ -412,20 +413,18 @@ if (isset($_GET['add'])) {
       $clientlist[$row['id']] = $row['name'];
     }
   }
-  if ($clientadmin && !$admin) {
+  if (isApproved($priv, 'Client Admin') && !$admin) {
     unset($clientlist);
     $st = $pdo->prepare($is_client_sql);
     $st->bindValue(":email", $_SESSION['email']);
     doPreparedQuery($st, "Error fetching client details");
     $row = $st->fetch(PDO::FETCH_ASSOC);
-    $employer = empty($row) ? NULL : $row['employer'];
+    $employer = nullify($row['employer']);
     $email = $row['domain'];
-
     $roles = safeFilter($roles, function ($role) {
       return $role['id'] !== 'Admin';
     });
   }
-  $pagehead = "New User";
   include 'form.html.php';
   exit();
 } //////////////END OF ASSIGN
@@ -449,15 +448,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
 
   $sql = "INSERT INTO user (name, email, password, client_id) VALUES(:nom, :e,:pwd, :clientid)";
   $st = $pdo->prepare($sql);
-  /*
-  applies to admin users only as $_POST['employer'] is set by default by client
-  if the email field corresponds to an existing client AND there is no selection in the assign to client drop down $_POST['employer'] then we can correct with the isContractor function
-  if we have a client id provided by $_POST['employer'] we must check that the supplied email DOMAIN matches
-  Potentially there may be a case for having a contractor role but it would have to be deleted if the client was removed from the database and without a clientid this would not happen through the referential integrity enforced by the database. But an additional check could be made at this point, in the meantime the "contractor" would be free to leave the role
-  */
-
   list($domchange, $comchange, $dom, $com) = queryEmail($editor, $_POST);
-
   $clientid = likeDomain(true, $dom);
   $employerid = $employerid ?? $clientid;
   $edom = "$dom.$com";
@@ -468,12 +459,10 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
   $res = doPreparedQuery($st, 'Error adding user');
   $aid = lastInsert($pdo);
 
-
   if (isset($_POST['password']) && $_POST['password'] != '') {
     $res = updatePassword($pdo, $_POST['password'], $aid);
   }
   $roles = isset($_POST['roles']) ? $_POST['roles'] : [];
-
   if ($employerid) {
     $id = $employerid ?? $contractorId;
     $st = doQuery($pdo, "SELECT domain FROM client WHERE id=$id", "Error retrieving clients from database, oops");
@@ -487,11 +476,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
     doPreparedQuery($st, 'Error fetching domain.');
     $row = $st->fetch(PDO::FETCH_ASSOC);
     updateUserDomain($row['dom'], $truedom, $aid);
-    /*
-    if ($contractorId) { //required?
-      doQuery($pdo, "UPDATE user INNER JOIN client ON $domainstr = client.domain SET client_id=$contractorId WHERE $domainstr = client.domain", "Error updating client");
-    }
-      */
   }
   resetRoles($priv, $roles, $aid);
   header('Location: .');
@@ -591,7 +575,6 @@ if (isset($_POST['change']) || isset($_GET['cancel'])) {
 
 if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   include CONNECT;
-  $local = [];
   $action = "editform";
   $override = $_POST['override'];
   $id = $_POST['id'];
@@ -659,7 +642,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
       $nwpsql .= $nwpassoc ? ", client_id=:cid" : '';
       $nwpsql .= " WHERE id=:id";
       $st = $pdo->prepare($nwpsql);
-      if($nwpassoc){
+      if ($nwpassoc) {
         $st->bindValue(":cid", $nwpemployerid);
       }
       $st->bindValue(":name", $_POST['name']);
@@ -883,7 +866,6 @@ if ($admin) {
 //include CONNECT;
 //reOrderTable($pdo);
 //reAssignClient($pdo);
-
 
 $message = $message ? $message : $error;
 $usercount = isApproved($priv, 'ADMIN') ? 2 : count($users); //2 ie more than 1

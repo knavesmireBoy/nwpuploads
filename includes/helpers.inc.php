@@ -15,7 +15,7 @@ function filterDefinedVars($vars, $flag = '')
 {
     $filter = [];
     foreach ($vars as $k => $v) {
-        if (strtoupper($k) !== $k && !preg_match('/nwp/', $k)) {
+        if (!preg_match('/nwp/', $k)) {
             $filter[$k] = $v;
         }
     }
