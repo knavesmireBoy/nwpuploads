@@ -173,7 +173,7 @@ function verifyDom($editor, $admin, $domain, $employerid)
   $validateDom = $actions[$k];
   //returned curried function expects a $change boolean: $domchange || $comchange
   $domfail = $validateDom($domchange || $comchange);
-  return [$domfail, "$dom.$com"];
+  return [$domfail, "$dom.$com", $domchange, $employerid];
 }
 
 //$key expected to be freelance id (int) or domain (str)
@@ -598,16 +598,16 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   $roles = $_POST['roles'] ?? [];
   $admin = isApproved($priv, 'ADMIN');
 
-  $role = null;
-  $rolechange = null;
+  $nwprole = null;
+  $nwprolechange = null;
 
   $location = 'Location: .';
-  $relocate = "Location: ./?domainflag=$id";
-  list($echange, $editor, $domain, $agency, $name) = canEdit($id, $_POST['email'], $priv);
+  $nwprelocate = "Location: ./?domainflag=$id";
+  list($nwpechange, $nwpeditor, $nwpdomain, $nwpagency, $name) = canEdit($id, $_POST['email'], $priv);
 
-  list($domfail, $postdom) = verifyDom($editor, $admin, $domain, nullify($_POST['employer']));
+  list($nwpdomfail, $nwppostdom, $nwpdomchange, $nwpemployerid) = verifyDom($nwpeditor, $admin, $nwpdomain, nullify($_POST['employer']));
 
-  if (!$override && ($editor && $echange && !$domfail)) {
+  if (!$override && ($nwpeditor && $nwpechange && !$nwpdomfail)) {
     $title = "Prompt";
     $prompt = "Changing your email will log you out of the current session. Proceed?";
     $call = "change";
@@ -618,7 +618,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     $template = 'confirm.html.php';
     $setcookie = doSetCookie(true);
     $setcookie('username', $_POST['name']);
-    if (!$domchange) {
+    if (!$nwpdomchange) {
       $setcookie('email', $_POST['email']);
     } else {
       $prompt = "Only the database administrator is permitted to amend the email domain. You may amend the local-part, and your username. Proceed?";
@@ -627,38 +627,41 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
 
   if (!isset($prompt)) {
     //unsetDetails();
-    if (!$domfail) {
-      $relocate = null;
-      $byClientID = isEmployer($_POST, 'employer');
-      list($_, $dom) = $byClientID();
+    if (!$nwpdomfail) {
+      $nwprelocate = null;
+      $nwpassoc = true;
+      $nwp = isEmployer($_POST, 'employer');
+      list($_, $dom) = $nwp();
       if (!$dom) {
         //in the process of disassociating ie currently belong to a client check you've entered a new domain;
-        if ($postdom === $domain) {
-          $relocate = "Location: ./?domainassoc=$id";
+        if ($nwppostdom === $nwpdomain) {
+          $nwprelocate = "Location: ./?domainassoc=$id";
           $setcookie = doSetCookie(true);
           $setcookie('username', $_POST['name']);
           $setcookie('email', $_POST['email']);
         } else {
-          $dom = $postdom;
-          $postdom = $domain;
-          $domain = $dom;
+          $dom = $nwppostdom;
+          $nwppostdom = $nwpdomain;
+          $nwpdomain = $dom;
         }
-      } else if (!$domain) {
-        $domain = $dom;
+      } else if (!$nwpdomain) {
+        $nwpdomain = $dom;
       }
     }
-    if (isset($relocate)) {
-      header($relocate);
+    if (isset($nwprelocate)) {
+      header($nwprelocate);
       exit();
     }
 
-    if ($editor || $agency) {
+    if ($nwpeditor || $nwpagency) {
       include CONNECT;
-      $sql = "UPDATE user SET name=:name, email=:email";
-      $sql .= $assoc ? ", client_id=:cid" : '';
-      $sql .= " WHERE id=:id";
-      $st = $pdo->prepare($sql);
-      $st->bindValue(":cid", $employerid);
+      $nwpsql = "UPDATE user SET name=:name, email=:email";
+      $nwpsql .= $nwpassoc ? ", client_id=:cid" : '';
+      $nwpsql .= " WHERE id=:id";
+      $st = $pdo->prepare($nwpsql);
+      if($nwpassoc){
+        $st->bindValue(":cid", $nwpemployerid);
+      }
       $st->bindValue(":name", $_POST['name']);
       $st->bindValue(":email", $_POST['email']);
       $st->bindValue(":id", $id);
@@ -674,22 +677,21 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
         }
       }
 
-      $sql = "UPDATE user SET client_id=:cid WHERE id =:id";
-      $st = $pdo->prepare($sql);
-      $st->bindValue(":cid", $employerid);
+      $st = $pdo->prepare("UPDATE user SET client_id=:cid WHERE id =:id");
+      $st->bindValue(":cid", $nwpemployerid);
       $st->bindValue(":id", $id);
       doPreparedQuery($st, 'Error updating client id');
-      updateUserDomain($edom, $domain, $id);
+      updateUserDomain($nwppostdom, $nwpdomain, $id);
 
-      if ($agency) {
-        $role = getCurrentRole($id);
+      if ($nwpagency) {
+        $nwprole = getCurrentRole($id);
         deleteRole($id, $priv);
         resetRoles($priv, $roles, $id);
-        $rolechange = verifyRole($role, getCurrentRole($id));
+        $nwprolechange = verifyRole($nwprole, getCurrentRole($id));
         //$clientid is allowed to be NULL (not any other empty) if a user wants to disassociate from a client
       }
-      if ($editor) {
-        if ($echange || ($rolechange && $editor)) {
+      if ($nwpeditor) {
+        if ($nwpechange || ($nwprolechange && $nwpeditor)) {
           header("Location: ../?action=logout");
           exit();
         }
@@ -702,7 +704,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     header($location);
     exit();
   } //if !prompt
-//note unset unneeded vars at this point??
+  filterDefinedVars(get_defined_vars());
 } ///END OF editform //////
 
 
@@ -831,6 +833,7 @@ if (checkIsset($_GET, ['edit', 'pwd', 'domainflag', 'domainassoc'])) {
 $sql = "SELECT user.id, user.name FROM user LEFT JOIN (SELECT user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer ON $domainstr=employer.domain WHERE employer.domain IS NULL"; //this overwrites above query to filter out users as employees
 $sql = "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS NULL"; //USING ID NOT DOMAIN
 $admin = isApproved($priv, 'ADMIN');
+
 
 
 if (isset($_POST['user'])) { //dropdown

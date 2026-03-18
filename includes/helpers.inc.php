@@ -11,15 +11,15 @@ function nullify($arg)
     return empty($arg) ? NULL : $arg;
 }
 
-function filterDefinedVars($vars)
+function filterDefinedVars($vars, $flag = '')
 {
     $filter = [];
     foreach ($vars as $k => $v) {
-        if (strtoupper($k) !== $k) {
+        if (strtoupper($k) !== $k && !preg_match('/nwp/', $k)) {
             $filter[$k] = $v;
         }
     }
-    return $filter;
+    return $flag === 'keys' ? array_keys($filter) : ($flag === 'values' ? array_values($filter) : $filter);
 }
 
 
