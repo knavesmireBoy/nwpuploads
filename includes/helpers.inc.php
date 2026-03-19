@@ -6,12 +6,26 @@ function dump($arg)
     exit;
 }
 
+function equals($a, $b, $loose = false)
+{
+    return $loose ?  $a == $b : $a === $b;
+}
+
 function nullify($arg)
 {
     return empty($arg) ? NULL : $arg;
 }
 
-function filterDefinedVars($vars, $flag = '')
+//!! $flag indicate whether $args should be supplied as an array to call_user_func_array
+function negate($predicate, $flag = false)
+{
+    return function (...$args) use ($predicate, $flag) {
+        return $flag ? !$predicate($args) : !$predicate(...$args);
+    };
+}
+
+
+function filterDefinedVars1($vars, $flag = '')
 {
     $filter = [];
     foreach ($vars as $k => $v) {
@@ -20,6 +34,25 @@ function filterDefinedVars($vars, $flag = '')
         }
     }
     return $flag === 'keys' ? array_keys($filter) : ($flag === 'values' ? array_values($filter) : $filter);
+}
+
+function filterDefinedVars($predicates, $flag = '')
+{
+    $fails = [];
+    $L = count($predicates);
+    foreach (get_defined_vars() as $k => $v) {
+        $i = 0;
+        $fail = true;
+        dump($k);
+        for ($i; $i < $L; $i++) {
+            $fail = $fail && $predicates[$i]($k);
+        }
+        if ($fail) {
+            dump($k);
+            unset($$k);
+        }
+    }
+   // dump($fails);
 }
 
 
@@ -72,7 +105,9 @@ function decode($qs)
 
 function parseEmail($email)
 {
-
+    //james.bond@topsecret.co.uk
+    //strrpos to get LAST occurence of '.' so as to avoid finding james[.]bond
+    //instead finding co[.]uk
     $i = strpos($email, '@');
     if ($i) {
         $edom = substr($email, $i + 1);
@@ -244,9 +279,20 @@ function add($a, $b)
     return $a + $b;
 }
 
+
+function subtract($a, $b)
+{
+    return $a - $b;
+}
+
 function multiply($a, $b)
 {
     return $a * $b;
+}
+
+function divide($a, $b)
+{
+    return $a / $b;
 }
 
 //https://eddmann.com/posts/using-partial-application-in-php/
@@ -270,9 +316,24 @@ function composer(...$fns)
 {
     return array_reduce($fns, function ($f, $g) {
         return function (...$vals) use ($f, $g) {
-            $f($g(...$vals));
+            return $f($g(...$vals));
         };
     }, 'identity');
+}
+
+function reduceroo($result, $item)
+{
+    return !is_array($result) ? call_user_func_array($item, [$result]) : call_user_func_array($item, $result);
+};
+
+
+function compose($reducer)
+{
+    return function (...$cbs) use ($reducer) {
+        return function (...$args) use ($cbs, $reducer) {
+            return array_reduce($cbs, $reducer, ...$args);
+        };
+    };
 }
 
 
