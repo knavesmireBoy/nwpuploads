@@ -25,9 +25,10 @@ function queryClient($mixed = false)
   $e = " WHERE user.email=:aux";
   $i = " WHERE user.id=:aux";
 
-  $like = "SELECT client.id AS employer, domain, user.name FROM client WHERE client.domain LIKE '$mixed%'";
-
   if (is_array($mixed)) {
+    $mixed = $mixed[0];
+    $like = "SELECT client.id AS employer, domain FROM client WHERE client.domain LIKE '$mixed%'";
+
     return $like;
   } else {
     $x = $mixed === 'email' ? $e  : ($mixed === 'id' ? $i : '');
@@ -331,22 +332,22 @@ function updatePassword($pdo, $password, $id)
 
 function refreshDomain($priv, $posted)
 {
-
   if ($priv === 'Admin') {
     return function ($postdom, $dbdom) use ($posted) {
       //in the process of disassociating ie currently belong to a client check you've entered a new domain;
+      $id = $posted['id'];
+      $relocate = null;
       if ($postdom === $dbdom) {
-        $id = $posted['id'];
-        $relocate = "Location: ./?domainassoc=$id";
         $setcookie = doSetCookie(true);
         $setcookie('username', $posted['name']);
         $setcookie('email', $posted['email']);
+        $relocate = "Location: ./?domainassoc=$id";
       }
-      return [$postdom, $dbdom, true];
+      return [$postdom, $dbdom, true, $relocate];
     };
   } else {
     return function ($postdom, $dbdom) {
-      return [$postdom, $dbdom, false];
+      return [$postdom, $dbdom, false, null];
     };
   }
 }
@@ -612,7 +613,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   list($nwpechange, $editor, $nwpdomain, $nwpagency, $name) = canEdit($id, $_POST['email'], $priv);
 
   list($nwpdomfail, $nwppostdom, $nwpdomchange, $nwpemployerid) = verifyDom($editor, $nwpadmin, $nwpdomain, nullify($_POST['employer']));
-
   if (!$override && ($editor && $nwpechange && !$nwpdomfail)) {
     $title = "Prompt";
     $prompt = "Changing your email will log you out of the current session. Proceed?";
@@ -632,15 +632,16 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   }
 
   if (!isset($prompt)) {
-    //unsetDetails();
     if (!$nwpdomfail) {
       $nwprelocate = null;
       $nwpassoc = true;
       $nwp = isEmployer($_POST, 'employer');
       list($_, $dom) = $nwp();
-      if (!$dom) {
+      if (!$dom && !$override) {
+        $nwp = isEmployer($_POST, 'id');
+        list($_, $nwpdomain) = $nwp();
         $nwp = refreshDomain($priv, $_POST);
-        list($nwppostdom, $nwpdomain, $nwpassoc) = $nwp($nwppostdom, $nwpdomain);
+        list($nwppostdom, $nwpdomain, $nwpassoc, $nwprelocate) = $nwp($nwppostdom, $nwpdomain);
       } else if (!$nwpdomain) {
         $nwpdomain = $dom;
       }
@@ -656,8 +657,17 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
       $nwpsql .= $nwpassoc ? ", client_id=:cid" : '';
       $nwpsql .= " WHERE id=:id";
       $nwpst = $pdo->prepare($nwpsql);
+      /*
+      if admin fails to assign a new domain to a user then reassign rather than have 
+      a client_id of null while an email doain points to a client "Contractor Scenario"
+      */
+      if ($nwpdomain && !$nwpemployerid) {
+        $nwp = isEmployer([$nwpdomain]);
+        list($nwpemployerid) = $nwp();
+      }
+
       if ($nwpassoc) {
-        $nwpst->bindValue(":cid", $nwpemployerid);
+        $nwpst->bindValue(":cid", nullify($nwpemployerid));
       }
       $nwpst->bindValue(":name", $_POST['name']);
       $nwpst->bindValue(":email", $_POST['email']);
@@ -679,6 +689,9 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
       $nwpst->bindValue(":id", $id);
       doPreparedQuery($nwpst, 'Error updating client id');
       */
+
+
+      // dump([$nwpemployerid, $nwppostdom, $nwpdomain]);
       updateUserDomain($nwppostdom, $nwpdomain, $id);
 
       if ($nwpagency) {
@@ -733,9 +746,6 @@ if (checkIsset($_GET, ['edit', 'pwd', 'domainflag', 'domainassoc'])) {
     unset($callroute);
   }
 
-
-
-
   if (!$_agency) {
     if ($editor || $nwpagency) {
       $warning = '';
@@ -753,7 +763,7 @@ if (checkIsset($_GET, ['edit', 'pwd', 'domainflag', 'domainassoc'])) {
     $warning = 'Polite Notice: changing an email or password will automatically log you out.';
     $message = ($pwdID && $editor) ? $warning : ''; //alert if yourself
     $message = $message ? $message : ($domainflagID ? 'You do not have sufficient privileges to change the domain name. Please contact the database administrator.' : '');
-    $message = $message ? $message : ($domainassocID ? 'Please provide a new domain for this user' : '');
+    $message = $message ? $message : ($domainassocID ? 'You must assign a new domain if you are unassigning from the current client' : '');
 
     if ($message && ($message === $warning)) {
       $message .= ' You can proceed now that the form is in override mode but you will need to log in again with your updated details.';
@@ -761,8 +771,7 @@ if (checkIsset($_GET, ['edit', 'pwd', 'domainflag', 'domainassoc'])) {
   }
 
   if ($flagID) {
-    $sql = queryClient('id');
-    $nwpst = $pdo->prepare($sql);
+    $nwpst = $pdo->prepare(queryClient('id'));
     $nwpst->bindValue(":aux", $flagID);
     //this may fail if user is not a client, so $clientrow is conditional
     doPreparedQuery($nwpst, "Error fetching user details.");
@@ -785,6 +794,7 @@ if (checkIsset($_GET, ['edit', 'pwd', 'domainflag', 'domainassoc'])) {
   $override = $pwdID ?? NULL;
   $override = $override ?? $_COOKIE['username'] ?? NULL;
   $override = $override ?? $_COOKIE['email'] ?? NULL;
+  $override = $override ?? $flagID ?? NULL;
   unsetDetails();
 
   $class = $override ? 'details override' : 'details';
