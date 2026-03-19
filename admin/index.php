@@ -329,7 +329,6 @@ function updatePassword($pdo, $password, $id)
   return doPreparedQuery($st, 'Error setting user password.');
 }
 
-
 function refreshDomain($priv, $posted)
 {
   if ($priv === 'Admin') {
@@ -343,11 +342,11 @@ function refreshDomain($priv, $posted)
         $setcookie('email', $posted['email']);
         $relocate = "Location: ./?domainassoc=$id";
       }
-      return [$postdom, $dbdom, true, $relocate];
+      return [$postdom, $dbdom, 'assoc', $relocate];
     };
   } else {
     return function ($postdom, $dbdom) {
-      return [$postdom, $dbdom, false, null];
+      return [$postdom, $dbdom, '', null];
     };
   }
 }
@@ -659,7 +658,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
       $nwpst = $pdo->prepare($nwpsql);
       /*
       if admin fails to assign a new domain to a user then reassign rather than have 
-      a client_id of null while an email doain points to a client "Contractor Scenario"
+      a client_id of null while an email domain points to a client "Contractor Scenario"
       */
       if ($nwpdomain && !$nwpemployerid) {
         $nwp = isEmployer([$nwpdomain]);
