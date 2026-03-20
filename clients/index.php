@@ -196,4 +196,13 @@ foreach ($nwprows as $nwprow) {
   );
 }
 
+/*
+$x = 'timothy west';
+$a = substr($x, strlen($x) - strpos(strrev($x), ' '));
+$b = substr($x, strpos($x, ' ') +1 );
+dump($a);
+
+$ql = "SELECT SUBSTRING(user.name, LENGTH(user.name) - LOCATE(' ', REVERSE(user.name)) +2) AS brill FROM user WHERE id = 53";
+$ql = "SELECT SUBSTRING(user.name, LOCATE(' ', user.name) +1) AS user FROM user WHERE id=53";
+*/
 include 'clients.html.php';

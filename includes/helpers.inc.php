@@ -6,7 +6,8 @@ function dump($arg)
     exit;
 }
 
-function checkUpper($str){
+function checkUpper($str)
+{
     return strtoupper($str) === $str;
 }
 function equals($a, $b, $loose = false)
@@ -48,16 +49,14 @@ function filterDefinedVars($vars, $predicates, $flag = '')
         $fail = true;
         for ($i; $i < $L; $i++) {
             $fail = $predicates[$i]($k);
-            if($fail){
+            if ($fail) {
                 break;
-            }
-            else {
+            } else {
                 $filtered[$k] = $v;
             }
         }
     }
     return $flag === 'k' ? array_keys($filtered) : ($flag === 'v' ? array_values($filtered) : $filtered);
-
 }
 
 
@@ -352,7 +351,7 @@ function lastInsert($pdo, $db = 'mysql')
 function fromStrPos($db = 'mysql')
 {
     if ($db === 'postgres') {
-        return "substring(user.email FROM POSITION('@' IN email) + 1)";
+        return "SUBSTRING(user.email FROM POSITION('@' IN email) + 1)";
     } else {
         return "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
     }
@@ -361,9 +360,19 @@ function fromStrPos($db = 'mysql')
 function replaceStrPos($new, $db = 'mysql')
 {
     if ($db === 'postgres') {
-        return "CONCAT(LEFT(email, substring(email FROM POSITION('@' IN email) + 1)), '$new')";
+        return "CONCAT(LEFT(email, SUBSTRING(email FROM POSITION('@' IN email) + 1)), '$new')";
     } else {
         return "CONCAT(LEFT(email, INSTR(email, '@')), '$new')";
+    }
+}
+
+function coalesce($db = 'mysql')
+{
+    if ($db === 'postgres') {
+        return "COALESCE(NULLIF(SUBSTRING(user.name, FROM POSITION(' ', IN user.name) +1), ''), user.name) AS `user`";
+    } else {
+        return "COALESCE(NULLIF(SUBSTR(user.name, LOCATE(' ', user.name) +1), ''), user.name) AS `user`";
+        return "COALESCE(NULLIF(SUBSTR(user.name, LENGTH(user.name) - LOCATE(' ', REVERSE(user.name)) +2), ''), user.name) AS `user`";
     }
 }
 
