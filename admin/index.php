@@ -229,9 +229,10 @@ function filterUsers($key, $pagetitle, $error = '')
   return [$users, $selected, $pagehead, $pagetitle];
 }
 
-function updateUserDetails($domain, $client_id, $assoc)
+function updateUserDetails($id, $domain, $client_id, $assoc)
 {
   include CONNECT;
+  $assoc = $domain && !$client_id ? false : $assoc;
   $sql = "UPDATE user SET name=:name, email=:email";
   $sql .= $assoc ? ", client_id=:cid" : '';
   $sql .= " WHERE id=:id";
@@ -239,9 +240,8 @@ function updateUserDetails($domain, $client_id, $assoc)
   /*
   if admin fails to assign a new domain to a user then obtain the client_id from the domain and reassign rather than have a client_id of null while an email domain points to a client "Contractor Scenario"
   */
-  $assoc = $domain && !$client_id ? false : $assoc;
   if ($assoc) {
-    $st->bindValue(":cid", nullify($nwpemployerid));
+    $st->bindValue(":cid", nullify($client_id));
   }
   $st->bindValue(":name", $_POST['name']);
   $st->bindValue(":email", $_POST['email']);
@@ -685,7 +685,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
           exit();
         }
       }
-      updateUserDetails($nwpdomain, $nwpemployerid, $nwpassoc);
+      updateUserDetails($id, $nwpdomain, $nwpemployerid, $nwpassoc);
       updateUserDomain($nwppostdom, $nwpdomain, $id);
 
       if ($nwpagency) {
@@ -773,6 +773,7 @@ if (checkIsset($_GET, ['edit', 'pwd', 'domainflag', 'domainassoc'])) {
     $nwpclientrow = $nwpst->fetch(PDO::FETCH_ASSOC);
   }
 
+  //make sure not to overrwrite the $nwprow variable
   $nwprow = $nwpclientrow ? $nwpclientrow : $nwprow;
 
   $route = "Edit";
