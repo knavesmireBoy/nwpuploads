@@ -714,15 +714,16 @@ form[name=downloads] div input:hover {
 #admin_client main > form {
   background-color: rgba(255, 255, 255, 0.5);
 }
-#admin_user main > form#yesno,
-#admin_client main > form#yesno {
+#admin_user main > form#yesno, #admin_user main > form.prompt,
+#admin_client main > form#yesno,
+#admin_client main > form.prompt {
   background-color: var(--bg);
 }
 
-#admin_user, #admin_client {
+#admin_client {
   background-color: var(--prompt);
 }
-#admin_user h1 + form, #admin_client h1 + form {
+#admin_client h1 + form {
   margin: 3em auto 0;
 }
 

@@ -642,13 +642,14 @@ form[name="downloads"] div input {
   main {
     > form {
       background-color: rgba(255, 255, 255, 0.5);
-      &#yesno {
+      &#yesno, &.prompt {
         background-color: var(--bg);
       }
+      
     }
   }
 }
-#admin_user, #admin_client {
+#admin_client {
   background-color: var(--prompt);
   //have a decent margin if no optional button is present
   h1 + form {

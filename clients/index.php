@@ -94,7 +94,6 @@ if (isset($_GET['add'])) {
   exit();
 }
 
-
 if (isset($_GET['associate'])) {
   $dom = $_GET['associate'];
   include CONNECT;
@@ -119,7 +118,6 @@ if (isset($_POST['associate'])) {
   $nwpst->bindValue(":dom", $dom);
   doPreparedQuery($nwpst, 'Error fetching id.');
   $nwprows = $nwpst->fetchAll(PDO::FETCH_ASSOC);
-
   foreach ($nwprows as $nwprow) {
     $id = $nwprow['id'];
     $nwpst = $pdo->prepare("UPDATE user SET client_id=:cid WHERE id=:id");
@@ -143,7 +141,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Added') {
     include TEMPLATE . 'error.html.php';
     exit();
   }
-
   $nwpst = $pdo->prepare("SELECT id FROM user WHERE $nwpdomainstr =:dom");
   $nwpst->bindValue(':dom', $dom);
   doPreparedQuery($nwpst, 'Error selecting client by domain.');
@@ -159,7 +156,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Added') {
 /// DEFAULT /////
 include CONNECT;
 $nwpsql = "SELECT id, name, domain from client"; // THE DEFAULT QUERY
-//$cid = 0; //$id MAY have been set by delete so don't overwrite;
 
 if (isset($_POST['action']) && $_POST['action'] == 'Choose' && $_POST['client'] != '') {
   include CONNECT;
@@ -184,9 +180,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'Choose' && $_POST['client'] 
   $nwpsql .= " WHERE id=:id";
 }
 $nwpsql .= " ORDER BY name";
-
 $nwpst = $pdo->prepare($nwpsql);
-
 if (isset($clientid)) {
   $nwpst->bindValue(":id", $clientid);
 }

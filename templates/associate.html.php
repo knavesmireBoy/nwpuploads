@@ -1,5 +1,5 @@
 
-<form action="." method="post" name="choice" class="prompt">
+<form action="." method="post" name="choice" class="prompt" id="yesno">
 <input type="hidden" name="dom" value="<?= $clientdom; ?>" />
 <input type="hidden" name="id" value="<?= $clientid; ?>" />
 <p><?= "Associate existing users with $clientname?"; ?></p>
