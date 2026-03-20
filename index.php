@@ -272,7 +272,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'upload') {
     $nwpst->bindValue(":sized", $size);
     $nwpst->bindValue(":userid", $key);
     $res = doPreparedQuery($nwpst, "<p>Database error storing file information!</p>");
-    $insertId = lastInsert($pdo);
+    $insertId = lastInsert($pdo, DBSYSTEM, 'upload');
     $nwpsql = "SELECT user.email, user.name, upload.id, upload.filename FROM user INNER JOIN upload ON user.id=upload.userid WHERE upload.id=:id";
     $nwpst = $pdo->prepare($nwpsql);
     $nwpst->bindValue(":id", $insertId);

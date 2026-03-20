@@ -12,3 +12,4 @@ define("INCLUDES", __DIR__ . '/includes/');
 define("WEBSITE", '/nwp_uploads/');
 define('BASE_PATH', __DIR__);
 define('CONNECT', __DIR__  . '/includes/db.inc.php');
+define('DBSYSTEM', 'mysql');

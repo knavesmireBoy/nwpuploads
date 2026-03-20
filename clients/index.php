@@ -129,12 +129,12 @@ if (isset($_POST['associate'])) {
 if (isset($_POST['action']) && $_POST['action'] === 'Added') {
   include CONNECT;
   $dom = $_POST['domain'];
-  $nwpst = $pdo->prepare("INSERT INTO client (name, domain, tel) VALUES (:nom, :dom, :tel)");
+  $nwpst = $pdo->prepare("INSERT INTO client (name, domain, tel) VALUES (:nom, :dom, :tel)" );
   $nwpst->bindValue(':nom', $_POST['name']);
   $nwpst->bindValue(':dom', $dom);
   $nwpst->bindValue(':tel', $_POST['tel']);
   $res = doPreparedQuery($nwpst, 'Error adding client.');
-  $clientid = lastInsert($pdo);
+  $clientid = lastInsert($pdo, DBSYSTEM, 'client');
   //alert required for non unique domains. I attempted to enter uni.com
   if (!$res) {
     $error = 'Error adding client.';

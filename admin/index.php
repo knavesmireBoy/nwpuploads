@@ -451,7 +451,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
   $nwpst->bindValue(':pwd', $_POST['password']);
   $nwpst->bindValue(':clientid', nullify($employerid));
   $res = doPreparedQuery($nwpst, 'Error adding user');
-  $aid = lastInsert($pdo);
+  $aid = lastInsert($pdo, DBSYSTEM, 'user');
 
   if (isset($_POST['password']) && $_POST['password'] != '') {
     $res = updatePassword($pdo, $_POST['password'], $aid);
