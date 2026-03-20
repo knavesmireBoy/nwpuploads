@@ -22,19 +22,16 @@ function getDomain($pdo, $id)
   return $row['domain'];
 }
 
-$domainstr = "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
+$nwpdomainstr = fromStrPos();
 $pagetitle = "Manage Clients";
 $selected = null;
-
 list($key, $priv) = obtainUserRole(true);
-
 
 if ($priv !== 'Admin') {
   $e = 'Only Account Administrators may access this page!';
   header("Location: ../?loginerror=$e");
   exit();
 }
-
 
 if (isset($_GET['delete'])) {
   $id = $_GET['delete'];
@@ -51,24 +48,23 @@ if (isset($_GET['delete'])) {
 if (isset($_POST['confirm'])) {
   if ($_POST['confirm'] == 'Yes' && isset($_POST['id'])) {
     include CONNECT;
-    $st = $pdo->prepare("DELETE FROM client WHERE id =:id");
-    $st->bindValue(":id", $_POST['id']);
-    doPreparedQuery($st, 'Error deleting client.');
+    $nwpst = $pdo->prepare("DELETE FROM client WHERE id =:id");
+    $nwpst->bindValue(":id", $_POST['id']);
+    doPreparedQuery($nwpst, 'Error deleting client.');
   }
   header('Location: .');
   exit();
 }
 
-////////////END OF DELETE....START OF EDIT
-if (isset($_POST['action']) && $_POST['action'] == 'Edited' || isset($_GET['dom'])) {
+if (isset($_POST['action']) && ($_POST['action'] == 'Edited' || isset($_GET['dom']))) {
   include CONNECT;
   $dom = getDomain($pdo, $_POST['id']);
-  $st = $pdo->prepare("UPDATE client SET name=:nom, domain=:dom, tel=:tel WHERE id=:id");
-  $st->bindValue(':nom', $_POST['name']);
-  $st->bindValue(':dom', $_POST['domain']);
-  $st->bindValue(':tel', $_POST['tel']);
-  $st->bindValue(':id',  $_POST['id']);
-  $res = doPreparedQuery($st, 'Error updating client.');
+  $nwpst = $pdo->prepare("UPDATE client SET name=:nom, domain=:dom, tel=:tel WHERE id=:id");
+  $nwpst->bindValue(':nom', $_POST['name']);
+  $nwpst->bindValue(':dom', $_POST['domain']);
+  $nwpst->bindValue(':tel', $_POST['tel']);
+  $nwpst->bindValue(':id',  $_POST['id']);
+  $res = doPreparedQuery($nwpst, 'Error updating client.');
   if (!$res) {
     $error = 'Error updating client.';
     include TEMPLATE . 'error.html.php';
@@ -94,18 +90,19 @@ if (isset($_GET['add'])) {
   $pagetitle = 'Admin | Client';
   include 'form.html.php';
   exit();
-} //////////////END OF ADD
+}
 
 
 if (isset($_GET['associate'])) {
   $dom = $_GET['associate'];
   include CONNECT;
-  $sql = "SELECT id, name, domain FROM client WHERE domain='$dom'";
-  $st = doQuery($pdo, $sql, 'Error fetching id.');
-  $row = $st->fetch(PDO::FETCH_ASSOC);
-  $clientdom = $row['domain'];
-  $clientname = $row['name'];
-  $clientid = $row['id'];
+  $nwpst = $pdo->prepare("SELECT id, name, domain FROM client WHERE domain=:dom");
+  $nwpst->bindValue(":dom", $dom);
+  $nwpst = doPreparedQuery($nwpst, 'Error fetching id.');
+  $nwprow = $nwpst->fetch(PDO::FETCH_ASSOC);
+  $clientdom = $nwprow['domain'];
+  $clientname = $nwprow['name'];
+  $clientid = $nwprow['id'];
   $pos = 'proceed';
   $neg = 'decline';
   $call = "associate";
@@ -114,27 +111,29 @@ if (isset($_GET['associate'])) {
 
 if (isset($_POST['associate'])) {
   include CONNECT;
+
+  $nwpst = $pdo->prepare("SELECT id FROM user WHERE $nwpdomainstr=:dom");
+  $nwpst->bindValue(":dom", $dom);
+
   $dom = strtolower($_POST['dom']);
   $_cid = strtolower($_POST['id']);
-  $sql = "SELECT id FROM user WHERE $domainstr = '$dom'";
-  $st = doQuery($pdo, $sql, 'Error adding client.');
-  $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+  $nwpst = doPreparedQuery($nwpst, 'Error fetching id.');
+  $nwpst->bindValue(":dom", $dom);
+  $nwprows = $nwpst->fetchAll(PDO::FETCH_ASSOC);
 
-  foreach ($rows as $row) {
-    $id = $row['id'];
-    $sql = "UPDATE user SET client_id='$_cid' WHERE id='$id'";
-    doQuery($pdo, $sql, 'Error updating user.');
+  foreach ($nwprows as $nwprow) {
+    $id = $nwprow['id'];
+    doQuery($pdo, "UPDATE user SET client_id='$_cid' WHERE id=$id", 'Error updating user.');
   }
 }
 if (isset($_POST['action']) && $_POST['action'] === 'Added') {
   include CONNECT;
   $dom = $_POST['domain'];
-  $sql = "INSERT INTO client (name, domain, tel) VALUES (:nom, :dom, :tel)";
-  $st = $pdo->prepare($sql);
-  $st->bindValue(':nom', $_POST['name']);
-  $st->bindValue(':dom', $dom);
-  $st->bindValue(':tel', $_POST['tel']);
-  $res = doPreparedQuery($st, 'Error adding client.');
+  $nwpst = $pdo->prepare("INSERT INTO client (name, domain, tel) VALUES (:nom, :dom, :tel)");
+  $nwpst->bindValue(':nom', $_POST['name']);
+  $nwpst->bindValue(':dom', $dom);
+  $nwpst->bindValue(':tel', $_POST['tel']);
+  $res = doPreparedQuery($nwpst, 'Error adding client.');
   $clientid = lastInsert($pdo);
   //alert required for non unique domains. I attempted to enter uni.com
   if (!$res) {
@@ -143,10 +142,10 @@ if (isset($_POST['action']) && $_POST['action'] === 'Added') {
     exit();
   }
 
-  $sql = "SELECT id FROM user WHERE $domainstr = '$dom'";
-  $st = doQuery($pdo, $sql, 'Error adding client.');
-  $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-  if (!empty($rows)) {
+  $sql = "SELECT id FROM user WHERE $nwpdomainstr = '$dom'";
+  $nwpst = doQuery($pdo, $sql, 'Error adding client.');
+  $nwprows = $nwpst->fetchAll(PDO::FETCH_ASSOC);
+  if (!empty($nwprows)) {
     header("Location: ./?associate=$dom");
     exit();
   }
@@ -162,20 +161,19 @@ $sql = "SELECT id, name, domain from client"; // THE DEFAULT QUERY
 if (isset($_POST['action']) && $_POST['action'] == 'Choose' && $_POST['client'] != '') {
   include CONNECT;
   $selected = true;
-  $sql = "SELECT id, name, domain, tel FROM client WHERE id =:id";
   $id = $_POST['client'];
-  $st = $pdo->prepare($sql);
-  $st->bindValue(":id", $id);
-  $res = doPreparedQuery($st, 'Error fetching client details.');
-  $row = $st->fetch(PDO::FETCH_ASSOC);
+  $nwpst = $pdo->prepare("SELECT id, name, domain, tel FROM client WHERE id =:id");
+  $nwpst->bindValue(":id", $id);
+  doPreparedQuery($nwpst, 'Error fetching client details.');
+  $nwprow = $nwpst->fetch(PDO::FETCH_ASSOC);
   $pagehead = 'Edit Client';
   $action = 'editform';
   $route = 'Edited';
   $calltext = "Delete Client";
   $callroute = "delete=$id";
-  $name = $row['name'];
-  $domain = $row['domain'];
-  $tel = $row['tel'];
+  $name = $nwprow['name'];
+  $domain = $nwprow['domain'];
+  $tel = $nwprow['tel'];
   $button = 'Update Client';
   include 'form.html.php';
   exit();
@@ -184,21 +182,21 @@ if (isset($_POST['action']) && $_POST['action'] == 'Choose' && $_POST['client'] 
 }
 $sql .= " ORDER BY name";
 
-$st = $pdo->prepare($sql);
+$nwpst = $pdo->prepare($sql);
 
 if (isset($clientid)) {
-  $st->bindValue(":id", $clientid);
+  $nwpst->bindValue(":id", $clientid);
 }
-doPreparedQuery($st, "Error retrieving clients from database!");
-$rows = $st->fetchAll();
+doPreparedQuery($nwpst, "Error retrieving clients from database!");
+$nwprows = $nwpst->fetchAll();
 $clients = [];
 
-foreach ($rows as $row) {
+foreach ($nwprows as $nwprow) {
   $clients[] = array(
-    'id' => $row['id'],
-    'name' => $row['name'],
-    'domain' => $row['domain']
+    'id' => $nwprow['id'],
+    'name' => $nwprow['name'],
+    'domain' => $nwprow['domain']
   );
 }
-
+$predicates = [partial('preg_match', '/^nwp/')];
 include 'clients.html.php';

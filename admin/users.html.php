@@ -2,6 +2,26 @@
 include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
 include_once TEMPLATE . 'base.html.php';
+
+foreach (get_defined_vars() as $k => $v) {
+	$i = 0;
+	$fail = false;
+	$L = count($predicates);
+	for ($i; $i < $L; $i++) {
+	  $fail = $predicates[$i]($k);
+	  if ($fail) {
+		unset($$k);
+		break;
+	  }
+	}
+  }
+  unset($k);
+  unset($v);
+  unset($i);
+  unset($L);
+  unset($fail);
+
+
 $optgroup = $priv === 'Admin' ? 'clients' : '';
 ?>
 <h1><?= $pagehead; ?></h1>

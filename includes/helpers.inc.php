@@ -6,6 +6,9 @@ function dump($arg)
     exit;
 }
 
+function checkUpper($str){
+    return strtoupper($str) === $str;
+}
 function equals($a, $b, $loose = false)
 {
     return $loose ?  $a == $b : $a === $b;
@@ -36,23 +39,25 @@ function filterDefinedVars1($vars, $flag = '')
     return $flag === 'keys' ? array_keys($filter) : ($flag === 'values' ? array_values($filter) : $filter);
 }
 
-function filterDefinedVars($predicates, $flag = '')
+function filterDefinedVars($vars, $predicates, $flag = '')
 {
-    $fails = [];
+    $filtered = [];
     $L = count($predicates);
-    foreach (get_defined_vars() as $k => $v) {
+    foreach ($vars as $k => $v) {
         $i = 0;
         $fail = true;
-        dump($k);
         for ($i; $i < $L; $i++) {
-            $fail = $fail && $predicates[$i]($k);
-        }
-        if ($fail) {
-            dump($k);
-            unset($$k);
+            $fail = $predicates[$i]($k);
+            if($fail){
+                break;
+            }
+            else {
+                $filtered[$k] = $v;
+            }
         }
     }
-   // dump($fails);
+    return $flag === 'k' ? array_keys($filtered) : ($flag === 'v' ? array_values($filtered) : $filtered);
+
 }
 
 
