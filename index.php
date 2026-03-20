@@ -69,7 +69,8 @@ function buildQuery($role, $flag = 'admin')
             //by default listing by user will list by first name "Amanda White, Sally Bowles"
             //where as lastname may be more desirable, so lets do that if you hit the file heading
             if (isset($_GET['sort']) && preg_match("/uf/", $_GET['sort'])) {
-                $select .= ", COALESCE(NULLIF(SUBSTR(user.name, LENGTH(user.name) - LOCATE(' ', REVERSE(user.name)) +1), ''), user.name) AS `user`";
+                $coalesce = orderByLastName();
+                $select .= $coalesce;
             } else {
                 $select .= ", user.name as user";
             }

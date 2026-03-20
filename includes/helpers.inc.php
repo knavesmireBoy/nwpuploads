@@ -366,13 +366,13 @@ function replaceStrPos($new, $db = 'mysql')
     }
 }
 
-function coalesce($db = 'mysql')
+function orderByLastName($db = 'mysql')
 {
     if ($db === 'postgres') {
-        return "COALESCE(NULLIF(SUBSTRING(user.name, FROM POSITION(' ', IN user.name) +1), ''), user.name) AS `user`";
+        return ", COALESCE(NULLIF(SUBSTRING(user.name, FROM POSITION(' ', IN user.name) +1), ''), user.name) AS `user`";
     } else {
-        return "COALESCE(NULLIF(SUBSTR(user.name, LOCATE(' ', user.name) +1), ''), user.name) AS `user`";
-        return "COALESCE(NULLIF(SUBSTR(user.name, LENGTH(user.name) - LOCATE(' ', REVERSE(user.name)) +2), ''), user.name) AS `user`";
+        return ", COALESCE(NULLIF(SUBSTR(user.name, LOCATE(' ', user.name) +1), ''), user.name) AS `user`";
+        return ", COALESCE(NULLIF(SUBSTR(user.name, LENGTH(user.name) - LOCATE(' ', REVERSE(user.name)) +2), ''), user.name) AS `user`";
     }
 }
 
