@@ -229,7 +229,8 @@ function filterUsers($key, $pagetitle, $error = '')
   return [$users, $selected, $pagehead, $pagetitle];
 }
 
-function updateUserDetails($domain, $client_id, $assoc) {
+function updateUserDetails($domain, $client_id, $assoc)
+{
   include CONNECT;
   $sql = "UPDATE user SET name=:name, email=:email";
   $sql .= $assoc ? ", client_id=:cid" : '';
@@ -718,7 +719,7 @@ if (checkIsset($_GET, ['edit', 'pwd', 'domainflag', 'domainassoc'])) {
   $pwdID = $_GET['pwd'] ?? NULL;
   $domainflagID = $_GET['domainflag'] ?? NULL;
   $domainassocID = $_GET['domainassoc'] ?? NULL;
-  $flagID = $domainflagID ?? $domainassocID ?? NULL;
+  $flagID = $pwdID ?? $domainflagID ?? $domainassocID ?? NULL;
   $namechange = $_GET['namechange'] ?? NULL;
   $nwpclientrow = null;
   $legend = isset($_GET['namechange']) ? 'Name succesfully changed' : NULL;
@@ -763,7 +764,7 @@ if (checkIsset($_GET, ['edit', 'pwd', 'domainflag', 'domainassoc'])) {
       $message .= ' You can proceed now that the form is in override mode but you will need to log in again with your updated details.';
     }
   }
-//dump($override);
+  //dump($override);
   if ($flagID) {
     $nwpst = $pdo->prepare(queryClient('id'));
     $nwpst->bindValue(":aux", $flagID);
@@ -785,8 +786,6 @@ if (checkIsset($_GET, ['edit', 'pwd', 'domainflag', 'domainassoc'])) {
   $id = $nwprow['id'];
   $name = isset($_COOKIE['username']) ? $_COOKIE['username'] : $nwprow['name'];
   $email = isset($_COOKIE['email']) ? $_COOKIE['email'] : $nwprow['email'];
-
-
 
   $override = $pwdID;
   $override = $override ?? $_COOKIE['username'] ?? NULL;
@@ -821,7 +820,8 @@ if (checkIsset($_GET, ['edit', 'pwd', 'domainflag', 'domainassoc'])) {
       doPreparedQuery($nwpst, "Error retrieving client id from user!");
       $nwprow = $nwpst->fetch(PDO::FETCH_ASSOC);
     }
-    $employer = $nwprow['employer']; //selects client in drop down menu
+    //selects client in drop down menu UNLESS you have the warning about assigning a new domain
+    $employer =  $domainassocID ? NULL : $nwprow['employer']; 
   }
 
   if ($nwpClient) {

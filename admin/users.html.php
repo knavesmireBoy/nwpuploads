@@ -3,52 +3,49 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php'
 include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
 include_once TEMPLATE . 'base.html.php';
 $optgroup = $priv === 'Admin' ? 'clients' : '';
-
 ?>
-	<h1><?= $pagehead; ?></h1>
-	<p class='error'><?= $error; ?></p>
-	<?php
+<h1><?= $pagehead; ?></h1>
+<p class='error'><?= $error; ?></p>
+<?php
 
-	if (isApproved($priv, 'admin') || isset($editor)) {
-		ob_start();
-		$obstart = true;
-		include TEMPLATE . '_call.html.php';
-	}
-	?>
-	<?php
-
-	if (empty($selected)): 
-	?>
-		<form action="" method="post" name="userform" class="choose">
-			<label for="user"></label><select id="user" name="user">
-				<option value="">Select one</option>
-				<?php if ($optgroup) {
+if (isApproved($priv, 'admin') || isset($editor)) {
+	ob_start();
+	$obstart = true;
+	include TEMPLATE . '_call.html.php';
+}
+?>
+<?php
+if (empty($selected)):
+?>
+	<form action="" method="post" name="userform" class="choose">
+		<label for="user"></label><select id="user" name="user">
+			<option value="">Select one</option>
+			<?php if ($optgroup) {
 				$group = $client;
 				include TEMPLATE . '_optgroup.html.php';
 				$optgroup = 'users';
 				$group = $users;
 				include TEMPLATE . '_optgroup.html.php';
-				}
-				?>
-			</select>
-			<input type="submit" name="action" value="Choose" />
-
-		</form>
-	<?php elseif (preg_match("/client/i", $priv) || (isset($selected))):
-	?>
-		<div class="clientgroup">
-			<?php
-			foreach ($users as $k => $user):
-				include '_users.html.php';
-			endforeach;
+			}
 			?>
-		</div>
+		</select>
+		<input type="submit" name="action" value="Choose" />
+	</form>
+<?php elseif (preg_match("/client/i", $priv) || (isset($selected))):
+?>
+	<div class="clientgroup">
 		<?php
-	endif;
-	if (isset($prompt) && isset($obstart)) {
-		ob_end_clean();
-		include TEMPLATE . 'prompt.html.php';
-	}
-	?>
+		foreach ($users as $k => $user):
+			include '_users.html.php';
+		endforeach;
+		?>
+	</div>
+<?php
+endif;
+if (isset($prompt) && isset($obstart)) {
+	ob_end_clean();
+	include TEMPLATE . 'prompt.html.php';
+}
+?>
 <?php
 include "_footer.html.php";
