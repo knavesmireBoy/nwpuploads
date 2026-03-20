@@ -85,7 +85,7 @@ function buildQuery($role, $flag = 'admin')
                 } else $where .= " AND upload.filename LIKE '%$ext'";
             }
             //CLIENTS USE EMAIL DOMAIN AS ID IN DROP DOWN THERFORE NOT A NUMBER
-           
+            //check $byuser is not zero
             if (!empty($byuser) && is_numeric($byuser)) {
                 if ($byuser == $getuser) {
                     $where .= " AND user.id=$byuser";

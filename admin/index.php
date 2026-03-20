@@ -147,12 +147,12 @@ function verifyDom($editor, $admin, $domain, $employerid)
   list($domchange, $comchange, $dom, $com) = queryEmail($editor, $_POST);
   //validating domain: have these functions return TRUE to indicate failure
   $clientFunc = function ($change, $arg) {
+   // return false;
     return $change && $arg;
   };
   $adminFunc = function ($change, $editor) {
     return $change ? $editor : false;
   };
-
   $clientcb = $admin ? curry2($clientFunc)($employerid) : 'identity';
   $admincb = curry2($adminFunc)($editor);
   $usercb = curry2('likeDomain')($dom);
@@ -207,10 +207,11 @@ function filterUsers($key, $pagetitle, $error = '')
   return [$users, $selected, $pagehead, $pagetitle];
 }
 
-function updateUserDetails($id, $domain, $client_id, $assoc)
+function updateUserDetails($id, $client_id, $assoc)
 {
   include CONNECT;
-  $assoc = $domain && !$client_id ? false : $assoc;
+
+  //$assoc = $domain && !$client_id ? false : $assoc;
   $sql = "UPDATE user SET name=:name, email=:email";
   $sql .= $assoc ? ", client_id=:cid" : '';
   $sql .= " WHERE id=:id";
@@ -581,6 +582,9 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   list($nwpechange, $editor, $nwpdomain, $nwpagency, $name) = canEdit($id, $_POST['email'], $priv);
 
   list($nwpdomfail, $nwppostdom, $nwpdomchange, $nwpemployerid) = verifyDom($editor, $nwpadmin, $nwpdomain, nullify($_POST['employer']));
+
+
+
   if (!$override && ($editor && $nwpechange && !$nwpdomfail)) {
     $title = "Prompt";
     $prompt = "Changing your email will log you out of the current session. Proceed?";
@@ -592,6 +596,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     $template = 'confirm.html.php';
     $setcookie = doSetCookie(true);
     $setcookie('username', $_POST['name']);
+    $nwpswitch = false;
     if (!$nwpdomchange) {
       $setcookie('email', $_POST['email']);
     } else {
@@ -629,8 +634,16 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
           exit();
         }
       }
-      updateUserDetails($id, $nwpdomain, $nwpemployerid, $nwpassoc);
-      updateUserDomain($nwppostdom, $nwpdomain, $id);
+
+      if ($nwppostdom && !$nwpemployerid) {
+        $nwpswitch = true;
+      }
+      updateUserDetails($id, $nwpemployerid, $nwpassoc);
+      if ($nwpswitch) {
+        updateUserDomain($nwpdomain, $nwppostdom, $id);
+      } else {
+        updateUserDomain($nwppostdom, $nwpdomain, $id);
+      }
 
       if ($nwpagency) {
         $nwprole = getCurrentRole($id);
@@ -707,7 +720,6 @@ if (checkIsset($_GET, ['edit', 'pwd', 'domainflag', 'domainassoc'])) {
       $message .= ' You can proceed now that the form is in override mode but you will need to log in again with your updated details.';
     }
   }
-  //dump($override);
   if ($flagID) {
     $nwpst = $pdo->prepare(queryClient('id'));
     $nwpst->bindValue(":aux", $flagID);
