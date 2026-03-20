@@ -347,9 +347,9 @@ function lastInsert($pdo, $db = 'mysql')
 function fromStrPos($db = 'mysql')
 {
     if ($db === 'postgres') {
-        return "substring(email FROM POSITION('@' IN email) + 1)";
+        return "substring(user.email FROM POSITION('@' IN email) + 1)";
     } else {
-        return "RIGHT(email, LENGTH(email) - LOCATE('@', email))";
+        return "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
     }
 }
 
