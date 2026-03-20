@@ -383,6 +383,7 @@ $pagetitle = preg_match("/client/i", $priv) ? "Admin" : "Admin | Edit Users";
 $nwpadmin = isApproved($priv, 'ADMIN');
 
 if (isset($_GET['domain'])) {
+  //set by client/index.php: updates the second and top level domains of the users email address
   updateUserDomain($_GET['domain'], $_GET['updated']);
 }
 if (isset($_GET['add'])) {

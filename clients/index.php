@@ -8,6 +8,8 @@ if (!userIsLoggedIn()) {
   exit();
 }
 
+$predicates = [partial('preg_match', '/^nwp/')];
+
 $goto = '..';
 $calltext = "Add New Client";
 $callroute = 'add';
@@ -98,7 +100,7 @@ if (isset($_GET['associate'])) {
   include CONNECT;
   $nwpst = $pdo->prepare("SELECT id, name, domain FROM client WHERE domain=:dom");
   $nwpst->bindValue(":dom", $dom);
-  $nwpst = doPreparedQuery($nwpst, 'Error fetching id.');
+  doPreparedQuery($nwpst, 'Error fetching id.');
   $nwprow = $nwpst->fetch(PDO::FETCH_ASSOC);
   $clientdom = $nwprow['domain'];
   $clientname = $nwprow['name'];
@@ -111,19 +113,19 @@ if (isset($_GET['associate'])) {
 
 if (isset($_POST['associate'])) {
   include CONNECT;
-
+  $dom = strtolower($_POST['dom']);
+  $nwpclientID = strtolower($_POST['id']);
   $nwpst = $pdo->prepare("SELECT id FROM user WHERE $nwpdomainstr=:dom");
   $nwpst->bindValue(":dom", $dom);
-
-  $dom = strtolower($_POST['dom']);
-  $_cid = strtolower($_POST['id']);
-  $nwpst = doPreparedQuery($nwpst, 'Error fetching id.');
-  $nwpst->bindValue(":dom", $dom);
+  doPreparedQuery($nwpst, 'Error fetching id.');
   $nwprows = $nwpst->fetchAll(PDO::FETCH_ASSOC);
 
   foreach ($nwprows as $nwprow) {
     $id = $nwprow['id'];
-    doQuery($pdo, "UPDATE user SET client_id='$_cid' WHERE id=$id", 'Error updating user.');
+    $nwpst = $pdo->prepare("UPDATE user SET client_id=:cid WHERE id=:id");
+    $nwpst->bindValue(":id", $id);
+    $nwpst->bindValue(":cid", $nwpclientID);
+    doPreparedQuery($nwpst, 'Error updating user.');
   }
 }
 if (isset($_POST['action']) && $_POST['action'] === 'Added') {
@@ -142,8 +144,9 @@ if (isset($_POST['action']) && $_POST['action'] === 'Added') {
     exit();
   }
 
-  $sql = "SELECT id FROM user WHERE $nwpdomainstr = '$dom'";
-  $nwpst = doQuery($pdo, $sql, 'Error adding client.');
+  $nwpst = $pdo->prepare("SELECT id FROM user WHERE $nwpdomainstr =:dom");
+  $nwpst->bindValue(':dom', $dom);
+  doPreparedQuery($nwpst, 'Error selecting client by domain.');
   $nwprows = $nwpst->fetchAll(PDO::FETCH_ASSOC);
   if (!empty($nwprows)) {
     header("Location: ./?associate=$dom");
@@ -155,7 +158,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Added') {
 
 /// DEFAULT /////
 include CONNECT;
-$sql = "SELECT id, name, domain from client"; // THE DEFAULT QUERY
+$nwpsql = "SELECT id, name, domain from client"; // THE DEFAULT QUERY
 //$cid = 0; //$id MAY have been set by delete so don't overwrite;
 
 if (isset($_POST['action']) && $_POST['action'] == 'Choose' && $_POST['client'] != '') {
@@ -166,23 +169,23 @@ if (isset($_POST['action']) && $_POST['action'] == 'Choose' && $_POST['client'] 
   $nwpst->bindValue(":id", $id);
   doPreparedQuery($nwpst, 'Error fetching client details.');
   $nwprow = $nwpst->fetch(PDO::FETCH_ASSOC);
+  $name = $nwprow['name'];
+  $domain = $nwprow['domain'];
+  $tel = $nwprow['tel'];
   $pagehead = 'Edit Client';
   $action = 'editform';
   $route = 'Edited';
   $calltext = "Delete Client";
   $callroute = "delete=$id";
-  $name = $nwprow['name'];
-  $domain = $nwprow['domain'];
-  $tel = $nwprow['tel'];
   $button = 'Update Client';
   include 'form.html.php';
   exit();
   $clientid = $id;
-  $sql .= " WHERE id=:id";
+  $nwpsql .= " WHERE id=:id";
 }
-$sql .= " ORDER BY name";
+$nwpsql .= " ORDER BY name";
 
-$nwpst = $pdo->prepare($sql);
+$nwpst = $pdo->prepare($nwpsql);
 
 if (isset($clientid)) {
   $nwpst->bindValue(":id", $clientid);
@@ -198,5 +201,5 @@ foreach ($nwprows as $nwprow) {
     'domain' => $nwprow['domain']
   );
 }
-$predicates = [partial('preg_match', '/^nwp/')];
+
 include 'clients.html.php';
