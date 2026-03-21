@@ -23,20 +23,19 @@ function unsetDetails($bool = false)
   $setcookie('username', $_POST['name'] ?? '');
 }
 
-function queryClient($mixed = false)
+function queryClient($str = '')
 {
   //NOTE id AS employer AND domain in that order as expected by list($employer, $domain)
   $dom = fromStrPos();
   $sql = "SELECT client.id AS employer, domain, user.id, user.email, user.name FROM client LEFT JOIN user ON $dom = client.domain";
-  $options = ['email' => " WHERE user.email=:aux", 'id' => " WHERE user.id=:aux", 'employer' => " WHERE client.id=:aux"];
 
-  if (is_array($mixed)) {
-    $mixed = $mixed[0];
-    $like = "SELECT client.id AS employer, domain FROM client WHERE client.domain LIKE '$mixed%'";
-    return $like;
-  } else {
-    $x = $options[strtolower($mixed)] ?? '';
-    return  $sql . $x;
+  $options = ['email' => " WHERE user.email=:aux", 'id' => " WHERE user.id=:aux", 'employer' => " WHERE client.id=:aux"];
+  $where = $options[strtolower($str)] ?? null;
+
+  if ($where) {
+    return $sql . $where;
+  } else if (!empty($str)) {
+    return "SELECT client.id AS employer, domain FROM client WHERE client.domain LIKE '$str%'";
   }
 }
 
@@ -58,14 +57,8 @@ function isEmployer($o, $p = '')
     $id = $o[$p] ?? 0;
   }
   if (preg_match('/employer/i', $p)) {
-    if (is_array($o)) {
       $id = $o[$p] ?? 0;
       $sql = "SELECT client.id, domain FROM client WHERE client.id =:aux";
-    } else {
-      $p = strtolower($p);
-      $sql = queryClient('employer');
-      $id = $o->$p ?? 0;
-    }
   }
 
   return function () use ($id, $sql, $flag) {
@@ -149,14 +142,17 @@ function canEdit($id, $postemail, $priv)
 
 function verifyDom($editor, $admin, $domain, $employerid)
 {
+  /* business rules
+  forbid moving user between because clients we cannot have a client with no users
+  and although we could check for that we also have to manage validating/setting roles
+  and also what business do we have, better to delete a user then assign to a new client
+  */
   list($domchange, $comchange, $dom, $com) = queryEmail($editor, $_POST);
   //validating domain: have these functions return TRUE to indicate failure
-  $fn = isEmployer([$dom]);
+  $fn = isEmployer($dom);
   list($cid) = $fn();
-  $fn =  isEmployer(toObject(['employer' => $cid]), 'EMPLOYER');
-  $count = count($fn()) > 1;
   $clientFunc = function ($change, $arg) {
-    // return false;
+    //make sure BOTH arguments are true for domfail
     return $change && $arg;
   };
   $adminFunc = function ($change, $editor) {
@@ -610,17 +606,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
       $prompt = "Only the database administrator is permitted to amend the email domain. You may amend the local-part, and your username. Proceed?";
     }
   }
-  /*
-  admin on client
-  1 assign user to client : update domain AND add client_id assoc !$dom
-  2 assign client to new client update domain AND update client_id assoc
-  3 unassign from client : input fresh domain AND nullify client_id assoc
-  BUT
-  2 and 3: would potentialy leave a client with no users which should not be allowed
-  we could have a last user warning, but it is better to delete the client and then assign
-  to a new client
-  */
-
   if (!isset($prompt)) {
     //no domchange but potential employerid
     if (!$nwpdomfail) {
