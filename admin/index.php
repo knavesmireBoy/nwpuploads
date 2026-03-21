@@ -28,16 +28,14 @@ function queryClient($mixed = false)
   //NOTE id AS employer AND domain in that order as expected by list($employer, $domain)
   $dom = fromStrPos();
   $sql = "SELECT client.id AS employer, domain, user.id, user.email, user.name FROM client LEFT JOIN user ON $dom = client.domain";
-  $e = " WHERE user.email=:aux";
-  $i = " WHERE user.id=:aux";
+  $options = ['email' => " WHERE user.email=:aux", 'id' => " WHERE user.id=:aux", 'employer' => " WHERE client.id=:aux"];
 
   if (is_array($mixed)) {
     $mixed = $mixed[0];
     $like = "SELECT client.id AS employer, domain FROM client WHERE client.domain LIKE '$mixed%'";
-
     return $like;
   } else {
-    $x = $mixed === 'email' ? $e  : ($mixed === 'id' ? $i : '');
+    $x = $options[strtolower($mixed)] ?? '';
     return  $sql . $x;
   }
 }
@@ -46,6 +44,7 @@ function queryClient($mixed = false)
 function isEmployer($o, $p = '')
 {
   $id = null;
+  $flag = $p && checkUpper($p);
   //https://stackoverflow.com/questions/2628138/how-to-select-domain-name-from-email-address
   if (!$p) {
     $sql = queryClient($o);
@@ -58,19 +57,25 @@ function isEmployer($o, $p = '')
     $sql = queryClient('id');
     $id = $o[$p] ?? 0;
   }
-  if ($p === 'employer') {
-    $id = $o[$p] ?? 0;
-    $sql = "SELECT client.id, domain FROM client WHERE client.id =:aux";
+  if (preg_match('/employer/i', $p)) {
+    if (is_array($o)) {
+      $id = $o[$p] ?? 0;
+      $sql = "SELECT client.id, domain FROM client WHERE client.id =:aux";
+    } else {
+      $p = strtolower($p);
+      $sql = queryClient('employer');
+      $id = $o->$p ?? 0;
+    }
   }
 
-  return function () use ($id, $sql) {
+  return function () use ($id, $sql, $flag) {
     include CONNECT;
     $st = $pdo->prepare($sql);
     if (isset($id)) {
       $st->bindValue(':aux',  $id);
     }
     doPreparedQuery($st, 'Error fetching client.');
-    return $st->fetch(PDO::FETCH_NUM);
+    return $flag ? $st->fetchAll(PDO::FETCH_NUM) : $st->fetch(PDO::FETCH_NUM);
   };
 }
 //doozy
@@ -146,21 +151,25 @@ function verifyDom($editor, $admin, $domain, $employerid)
 {
   list($domchange, $comchange, $dom, $com) = queryEmail($editor, $_POST);
   //validating domain: have these functions return TRUE to indicate failure
+  $fn = isEmployer([$dom]);
+  list($cid) = $fn();
+  $fn =  isEmployer(toObject(['employer' => $cid]), 'EMPLOYER');
+  $count = count($fn()) > 1;
   $clientFunc = function ($change, $arg) {
-   // return false;
+    // return false;
     return $change && $arg;
   };
   $adminFunc = function ($change, $editor) {
     return $change ? $editor : false;
   };
-  $clientcb = $admin ? curry2($clientFunc)($employerid) : 'identity';
+  $clientcb = $admin ? curry2($clientFunc)($employerid || $cid) : 'identity';
   $admincb = curry2($adminFunc)($editor);
   $usercb = curry2('likeDomain')($dom);
   $actions = ['client' => $clientcb, 'admin' => $admincb, 'user' => $usercb];
   $k = searchGroup(true, [$domain, $admin, true], ['client', 'admin', 'user']);
   $validateDom = $actions[$k];
   //the returned curried function expects a $change boolean: $domchange || $comchange
-  $domfail = $validateDom($domchange || $comchange);
+  $domfail = $validateDom($domchange || $comchange || $cid != $employerid);
   return [$domfail, "$dom.$com", $domchange, $employerid];
 }
 
@@ -573,17 +582,15 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   $override = $_POST['override'];
   $id = $_POST['id'];
   $roles = $_POST['roles'] ?? [];
-
+  $nwpold = null;
+  $nwpnew = null;
   $nwprole = null;
   $nwprolechange = null;
 
   $location = 'Location: .';
   $nwprelocate = "Location: ./?domainflag=$id";
   list($nwpechange, $editor, $nwpdomain, $nwpagency, $name) = canEdit($id, $_POST['email'], $priv);
-
   list($nwpdomfail, $nwppostdom, $nwpdomchange, $nwpemployerid) = verifyDom($editor, $nwpadmin, $nwpdomain, nullify($_POST['employer']));
-
-
 
   if (!$override && ($editor && $nwpechange && !$nwpdomfail)) {
     $title = "Prompt";
@@ -603,21 +610,36 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
       $prompt = "Only the database administrator is permitted to amend the email domain. You may amend the local-part, and your username. Proceed?";
     }
   }
+  /*
+  admin on client
+  1 assign user to client : update domain AND add client_id assoc !$dom
+  2 assign client to new client update domain AND update client_id assoc
+  3 unassign from client : input fresh domain AND nullify client_id assoc
+  BUT
+  2 and 3: would potentialy leave a client with no users which should not be allowed
+  we could have a last user warning, but it is better to delete the client and then assign
+  to a new client
+  */
 
   if (!isset($prompt)) {
+    //no domchange but potential employerid
     if (!$nwpdomfail) {
       $nwprelocate = null;
       $nwpassoc = true;
       $nwp = isEmployer($_POST, 'employer');
-      list($_, $dom) = $nwp();
-      //ADMIN ONLY empty $dom then we ar unassigning user from client, make sure you provide their new domain
-      if (!$dom && !$override) {
+      list($_, $nwpemployerdom) = $nwp();
+      //ADMIN ONLY empty $nwpemployerdom then we are unassigning user from client, make sure you provide their new domain
+      if (!$nwpemployerdom && !$override) {
         $nwp = isEmployer($_POST, 'id');
-        list($_, $nwpdomain) = $nwp();
+        list($clientid, $nwpdomain) = $nwp();
         $nwp = refreshDomain($priv, $_POST);
         list($nwppostdom, $nwpdomain, $nwpassoc, $nwprelocate) = $nwp($nwppostdom, $nwpdomain);
-      } else if (!$nwpdomain) {
-        $nwpdomain = $dom;
+      } else if (!$nwpdomain && $nwpemployerdom) {
+        $nwpnew = $nwpemployerdom;
+        $nwpold = $nwppostdom;
+      } else if ($nwpdomain !== $nwpemployerdom) {
+        $nwpnew = $nwpemployerdom;
+        $nwpold = $nwpdomain;
       }
     }
     if (isset($nwprelocate)) {
@@ -635,15 +657,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
         }
       }
 
-      if ($nwppostdom && !$nwpemployerid) {
-        $nwpswitch = true;
-      }
       updateUserDetails($id, $nwpemployerid, $nwpassoc);
-      if ($nwpswitch) {
-        updateUserDomain($nwpdomain, $nwppostdom, $id);
-      } else {
-        updateUserDomain($nwppostdom, $nwpdomain, $id);
-      }
+      updateUserDomain($nwpold, $nwpnew, $id);
 
       if ($nwpagency) {
         $nwprole = getCurrentRole($id);
@@ -747,7 +762,7 @@ if (checkIsset($_GET, ['edit', 'pwd', 'domainflag', 'domainassoc'])) {
   unsetDetails();
 
   $class = $override ? 'details override' : 'details';
-  $legend = isset($legend) ? $legend : ($override ? "You may now proceed with your edits and submit the form." : '');
+  $legend = isset($legend) ? $legend : ($override && !$message ? "You may now proceed with your edits and submit the form." : '');
 
   //prep roles...
   if (preg_match('/admin/i', $priv)) {

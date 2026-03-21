@@ -649,3 +649,7 @@ function reAssoc($roles, $keys, $k, $v, $ret, $i, $j)
         return $ret;
     }
 }
+function toObject($o, $arg = false)
+{
+    return json_decode(json_encode($o), $arg);
+}
