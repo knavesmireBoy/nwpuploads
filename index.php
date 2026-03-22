@@ -36,11 +36,8 @@ function presentList($role, $flag = 'admin')
     $client = [];
     if (isApproved($role, $flag)) {
         include CONNECT;
-        $sqlu = "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS NULL ORDER BY name";
-
-        $st = doQuery($pdo, $sqlu, "Error retrieving details");
+        $st = doQuery($pdo, "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS NULL ORDER BY name", "Error retrieving details");
         $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-
         foreach ($rows as $row) {
             $users[$row['id']] = $row['name'];
         }
@@ -48,14 +45,16 @@ function presentList($role, $flag = 'admin')
     $sqlc = "SELECT employer.user_id, employer.name, employer.domain FROM
     (SELECT user.name, user.id as user_id, client.domain FROM user INNER JOIN client ON RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))=client.domain) AS employer";
     */
-        $sqlc = "SELECT name, domain, tel FROM client ORDER BY name";
-        $st = doQuery($pdo, $sqlc, "Database error fetching clients");
+        $st = doQuery($pdo, "SELECT id, name, domain, tel FROM client ORDER BY name", "Database error fetching clients");
         $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-
+        $st = $pdo->prepare("SELECT user.id, user.name FROM client INNER JOIN user ON user.client_id=client.id WHERE client.id=:id");
         foreach ($rows as $row) {
-            $client[$row['domain']] = $row['name'];
+            $st->bindValue(":id", $row['id']);
+            doPreparedQuery($st, "Database error fetching user");
+            if ($st->fetch(PDO::FETCH_ASSOC)) {
+                $client[$row['domain']] = $row['name'];
+            }
         }
-
         return [$users, $client];
     }
 }
@@ -93,7 +92,7 @@ function buildQuery($role, $flag = 'admin')
                 }
             } else {
                 if ($getuser) {
-                 $where .= " AND $domainstr='$getuser'";
+                    $where .= " AND $domainstr='$getuser'";
                 }
             }
             if ($bytext) {
@@ -330,7 +329,7 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
 
 if (isset($_POST['action']) && $_POST['action'] == 'delete') {
 
-   // dump($_GET);
+    // dump($_GET);
     //obtain user id/client name
     $id = $_POST['id']; //id of file
     $title = "Prompt";

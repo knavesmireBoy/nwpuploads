@@ -27,14 +27,18 @@ function queryClient($str = '')
 {
   //NOTE id AS employer AND domain in that order as expected by list($employer, $domain)
   $dom = fromStrPos();
+  $where = null;
   $sql = "SELECT client.id AS employer, domain, user.id, user.email, user.name FROM client LEFT JOIN user ON $dom = client.domain";
-
   $options = ['email' => " WHERE user.email=:aux", 'id' => " WHERE user.id=:aux", 'employer' => " WHERE client.id=:aux"];
-  $where = $options[strtolower($str)] ?? null;
-
+  if (is_string($str)) {
+    $where = $options[strtolower($str)] ?? null;
+  }
   if ($where) {
     return $sql . $where;
-  } else if (!empty($str)) {
+  } else if (is_array($str)) {
+    $str = $str[0];
+    return "SELECT user.id, user.name, roleid AS role FROM user INNER JOIN client ON user.client_id = client.id INNER JOIN userrole ON userrole.userid = user.id WHERE client.domain='$str'";
+  } else {
     return "SELECT client.id AS employer, domain FROM client WHERE client.domain LIKE '$str%'";
   }
 }
@@ -57,8 +61,8 @@ function isEmployer($o, $p = '')
     $id = $o[$p] ?? 0;
   }
   if (preg_match('/employer/i', $p)) {
-      $id = $o[$p] ?? 0;
-      $sql = "SELECT client.id, domain FROM client WHERE client.id =:aux";
+    $id = $o[$p] ?? 0;
+    $sql = "SELECT client.id, domain FROM client WHERE client.id =:aux";
   }
 
   return function () use ($id, $sql, $flag) {
@@ -100,17 +104,21 @@ function presentList($role, $flag = 'admin')
   if (isApproved($role, $flag)) {
     include CONNECT;
     $sqlu = "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS NULL ORDER BY name";
-
     $st = doQuery($pdo, $sqlu, "Error retrieving details");
     $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-
     foreach ($rows as $row) {
       $users[$row['id']] = $row['name'];
     }
-    $st = doQuery($pdo, "SELECT name, domain, tel FROM client ORDER BY name", "Database error fetching clients");
+    $st = doQuery($pdo, "SELECT id, name, domain, tel FROM client ORDER BY name", "Database error fetching clients");
     $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+    $st = $pdo->prepare("SELECT user.id, user.name FROM client INNER JOIN user ON user.client_id=client.id WHERE client.id=:id");
+
     foreach ($rows as $row) {
-      $client[$row['domain']] = $row['name'];
+      $st->bindValue(":id", $row['id']);
+      doPreparedQuery($st, "Database error fetching user");
+      if ($st->fetch(PDO::FETCH_ASSOC)) {
+        $client[$row['id']] = $row['name'];
+      }
     }
     return [$users, $client];
   }
@@ -176,11 +184,14 @@ function filterUsers($key, $pagetitle, $error = '')
   $namechange = $_GET['namechange'] ?? NULL;
   $selected = true;
   include CONNECT;
+
   $sql = "SELECT user.id, user.name, user.email, client.domain FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain=:dom ORDER BY name";
+
   $st = $pdo->prepare($sql);
   $st->bindValue(":dom", $key);
   doPreparedQuery($st, "Unable to identify domain");
   $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+
   $pagehead = "Manage User";
   if (!empty($rows)) {
     $pagehead = "Manage Team";
@@ -407,11 +418,9 @@ if (isset($_GET['add'])) {
   }
   $roles = fetchAllRoles($pdo, $nwproleorder);
   if ($nwpadmin) {
-    $rows = doQuery($pdo, "SELECT * FROM client", "");
-    foreach ($rows as $row) {
-      $clientlist[$row['id']] = $row['name'];
-    }
+    list($_, $clientlist) = presentList($priv);
   }
+
   if (isApproved($priv, 'Client Admin') && !$nwpadmin) {
     unset($clientlist);
     $nwpst = $pdo->prepare(queryClient('email'));
@@ -503,10 +512,9 @@ if (isset($_POST['confirm'])) {
         exit();
       }
     }
-    $sql = "SELECT user.id FROM user INNER JOIN client ON user.client_id = client.id WHERE client.domain='$domain'";
+    $sql = queryClient([$domain]);
     $st = doQuery($pdo, $sql, 'Error fetching client.');
     $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-
     if (count($rows) === 1) {
       $location = $editor ? "Location: ./?deniedbyclient" : "Location: ./?lastuser";
       header($location);
@@ -767,6 +775,8 @@ if (checkIsset($_GET, ['edit', 'pwd', 'domainflag', 'domainassoc'])) {
     foreach ($nwprows as $nwp_row) {
       $clientlist[$nwp_row['id']] = $nwp_row['name'];
     }
+    list($_, $clientlist) = presentList($priv);
+
     if (!isset($nwprow['employer'])) {
       $nwpst = $pdo->prepare("SELECT client_id AS employer FROM user WHERE id=:id");
       $nwpst->bindValue(":id", $id);
@@ -828,10 +838,17 @@ if ($users === []) {
 //prepare list
 if ($admin) {
   include CONNECT;
-  $nwpres = doQuery($pdo, "SELECT client.domain, client.name FROM client ORDER BY name", 'Database error fetching clients:');
+  $nwpres = doQuery($pdo, "SELECT id, client.domain, client.name FROM client ORDER BY name", 'Database error fetching clients:');
   $nwprows = $nwpres->fetchAll();
+
+  $nwpst = $pdo->prepare("SELECT user.id, user.name FROM client INNER JOIN user ON user.client_id=client.id WHERE client.id=:id");
   foreach ($nwprows as $nwprow) {
-    $client[$nwprow['domain']] = $nwprow['name'];
+    $nwpst->bindValue(":id", $nwprow['id']);
+    doPreparedQuery($nwpst, "Database error fetching user");
+    //ensure client has at least one active user
+    if ($nwpst->fetch(PDO::FETCH_ASSOC)) {
+      $client[$nwprow['domain']] = $nwprow['name'];
+    }
   }
 }
 
