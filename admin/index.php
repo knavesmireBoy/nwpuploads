@@ -552,11 +552,6 @@ if (isset($_POST['confirm'])) {
         $roles[$ro['id']] = $nwpro['role'];
       }
     }
-    /*
-    only Admin or Client Admin roles SHOULD get to this point
-    but an "Employer" could have more than one "Client Admin" roles
-    if removing one 
-    */
     $roles = safeFilter($roles, function ($role) {
       return preg_match("/admin/i", $role);
     });
