@@ -1,4 +1,6 @@
-<?php if (!empty($clientlist)) : ?>
+<?php 
+
+if (!empty($clientlist)) : ?>
     <fieldset>
             <legend>Assign to Client</legend>
             <select name="employer" id="employer">

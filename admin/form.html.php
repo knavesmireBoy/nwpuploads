@@ -46,8 +46,8 @@ if ((isApproved($priv, 'admin') || $editor) && !empty($id)) {
 		<label for="password">Password</label><input id="password" type="password" name="password" /><input type="hidden" name="employer" autocomplete="new-password"
 			value="<?= $employer ?? ''; ?>" />
 	</div>
-	<?php include TEMPLATE . '_roles.html.php'; ?>
-	<?php include  TEMPLATE . '_clientlist.html.php'; ?>
+	<?php include TEMPLATE . '_roles.html.php'; 
+	 include  TEMPLATE . '_clientlist.html.php'; ?>
 	<input type="hidden" name="id" value="<?= $id ?? ''; ?>" />
 	<input type="hidden" name="action" value="<?= $route; ?>" />
 	<input type="hidden" name="override" value="<?= $override ?? ''; ?>" />

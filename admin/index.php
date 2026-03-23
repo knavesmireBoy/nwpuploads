@@ -97,6 +97,27 @@ function queryEmail($editor, $obj)
   return [$domchange, $comchange, $dom, $com];
 }
 
+function canAssign($editor, $domain, $userid)
+{
+  include CONNECT;
+  $st = doQuery($pdo, queryClient([$domain]), 'Error fetching client.');
+  $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+  $role = '';
+  if (count($rows) === 1) {
+    return $editor ? "Location: ./?deniedbyclient" : "Location: ./?lastuser";
+  }
+  if (!empty($rows)) {
+    foreach ($rows as $row) {
+      if ($row['id'] == $userid) {
+        $role = $row['role'];
+      }
+    }
+    if ($role && $role === 'Client Admin') {
+      return $editor ? "Location: ./?deniedbyclient" : "Location: ./?deniedbyadmin";
+    }
+  }
+}
+
 function presentList($role, $flag = 'admin')
 {
   $users = [];
@@ -116,6 +137,7 @@ function presentList($role, $flag = 'admin')
     foreach ($rows as $row) {
       $st->bindValue(":id", $row['id']);
       doPreparedQuery($st, "Database error fetching user");
+      //filters out clients that hane no users
       if ($st->fetch(PDO::FETCH_ASSOC)) {
         $client[$row['id']] = $row['name'];
       }
@@ -148,17 +170,23 @@ function canEdit($id, $postemail, $priv)
   return [$dbemail !== $postemail, $logemail === $dbemail, $row['domain'] ?? '', isApproved($priv, 'admin'), $row['name'] ?? ''];
 }
 
-function verifyDom($editor, $admin, $domain, $employerid)
+function verifyDom($editor, $admin, $domain, $employerid, $data)
 {
-  /* business rules
-  forbid moving user between because clients we cannot have a client with no users
-  and although we could check for that we also have to manage validating/setting roles
-  and also what business do we have, better to delete a user then assign to a new client
-  */
-  list($domchange, $comchange, $dom, $com) = queryEmail($editor, $_POST);
+  list($domchange, $comchange, $dom, $com) = queryEmail($editor, $data);
   //validating domain: have these functions return TRUE to indicate failure
   $fn = isEmployer($dom);
   list($cid) = $fn();
+
+  if ($employerid && $cid && ($cid !== $employerid)) {
+    $location = canAssign($editor, $domain, $data['id']);
+
+    if ($location) {
+      header($location);
+      exit();
+    }
+  }
+
+  $domchange = $_SESSION['email'] !== SUPERUSER ? true : $domchange;
   $clientFunc = function ($change, $arg) {
     //make sure BOTH arguments are true for domfail
     return $change && $arg;
@@ -173,7 +201,7 @@ function verifyDom($editor, $admin, $domain, $employerid)
   $k = searchGroup(true, [$domain, $admin, true], ['client', 'admin', 'user']);
   $validateDom = $actions[$k];
   //the returned curried function expects a $change boolean: $domchange || $comchange
-  $domfail = $validateDom($domchange || $comchange || $cid != $employerid);
+  $domfail = $validateDom($domchange || $comchange);
   return [$domfail, "$dom.$com", $domchange, $employerid];
 }
 
@@ -512,11 +540,8 @@ if (isset($_POST['confirm'])) {
         exit();
       }
     }
-    $sql = queryClient([$domain]);
-    $st = doQuery($pdo, $sql, 'Error fetching client.');
-    $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-    if (count($rows) === 1) {
-      $location = $editor ? "Location: ./?deniedbyclient" : "Location: ./?lastuser";
+    $location = canAssign($editor, $domain, $_POST['id']);
+    if ($location) {
       header($location);
       exit();
     }
@@ -594,7 +619,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   $location = 'Location: .';
   $nwprelocate = "Location: ./?domainflag=$id";
   list($nwpechange, $editor, $nwpdomain, $nwpagency, $name) = canEdit($id, $_POST['email'], $priv);
-  list($nwpdomfail, $nwppostdom, $nwpdomchange, $nwpemployerid) = verifyDom($editor, $nwpadmin, $nwpdomain, nullify($_POST['employer']));
+  list($nwpdomfail, $nwppostdom, $nwpdomchange, $nwpemployerid) = verifyDom($editor, $nwpadmin, $nwpdomain, nullify($_POST['employer']), $_POST);
+
 
   if (!$override && ($editor && $nwpechange && !$nwpdomfail)) {
     $title = "Prompt";
@@ -619,14 +645,11 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     if (!$nwpdomfail) {
       $nwprelocate = null;
       $nwpassoc = true;
-      $nwp = isEmployer($_POST, 'employer');
-      list($_, $nwpemployerdom) = $nwp();
+      list($_, $nwpemployerdom) = isEmployer($_POST, 'employer')();
       //ADMIN ONLY empty $nwpemployerdom then we are unassigning user from client, make sure you provide their new domain
       if (!$nwpemployerdom && !$override) {
-        $nwp = isEmployer($_POST, 'id');
-        list($clientid, $nwpdomain) = $nwp();
-        $nwp = refreshDomain($priv, $_POST);
-        list($nwppostdom, $nwpdomain, $nwpassoc, $nwprelocate) = $nwp($nwppostdom, $nwpdomain);
+        list($clientid, $nwpdomain) = isEmployer($_POST, 'id')();
+        list($nwppostdom, $nwpdomain, $nwpassoc, $nwprelocate) = refreshDomain($priv, $_POST)($nwppostdom, $nwpdomain);
       } else if (!$nwpdomain && $nwpemployerdom) {
         $nwpnew = $nwpemployerdom;
         $nwpold = $nwppostdom;
@@ -667,7 +690,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
         }
       }
     }
-
     if ($name && $name !== $_POST['name']) {
       $location .= "/?namechange=$id";
     }
