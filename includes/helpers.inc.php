@@ -88,6 +88,10 @@ function doBest($pred, $actions)
     };
 }
 
+function getter($o, $p){
+    return isset($o[$p]);
+}
+
 function checkIsset($o, $props, $flag = false)
 {
     if ($flag) {
