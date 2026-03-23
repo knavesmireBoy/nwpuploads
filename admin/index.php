@@ -103,6 +103,7 @@ function canAssign($editor, $domain, $userid)
   $st = doQuery($pdo, queryClient([$domain]), 'Error fetching client.');
   $rows = $st->fetchAll(PDO::FETCH_ASSOC);
   $role = '';
+  $relocate = null;
   if (count($rows) === 1) {
     return $editor ? "Location: ./?deniedbyclient" : "Location: ./?lastuser";
   }
@@ -114,8 +115,12 @@ function canAssign($editor, $domain, $userid)
       }
     }
     if ($role && $role === 'Client Admin') {
-      return $editor ? "Location: ./?deniedbyclient" : "Location: ./?deniedbyadmin";
+      $relocate = $editor ? "Location: ./?deniedbyclient" : "Location: ./?deniedbyadmin";
     }
+  }
+  if ($relocate) {
+    header($relocate);
+    exit();
   }
 }
 
@@ -147,7 +152,7 @@ function presentList($role, $flag = 'admin')
   }
 }
 
-function checkCurrentDetails($id, $p = '')
+function retrieveDetails($id, $p = '')
 {
   include CONNECT;
   $sql = "SELECT user.name, user.email, client.domain FROM user LEFT JOIN client ON user.client_id=client.id WHERE user.id=:id ORDER BY name";
@@ -158,15 +163,11 @@ function checkCurrentDetails($id, $p = '')
   return  $p ? $row[$p] : $row;
 }
 
-function canEdit($id, $postemail, $priv)
+function stateQuery($id, $postemail, $priv)
 {
   $logemail = strtolower($_SESSION['email']); //may be admin/user, client admin/user or user/user
-  $row = checkCurrentDetails($id);
-  $email = $row['email'] ?? '';
-  $dbemail = null;
-  if ($row) {
-    $dbemail = strtolower($email);
-  }
+  $row = retrieveDetails($id);
+  $dbemail = isset($row) ? strtolower($row['email']) : null;
   $postemail = $postemail ? strtolower($postemail) : $logemail;
   return [$dbemail !== $postemail, $logemail === $dbemail, $row['domain'] ?? '', isApproved($priv, 'admin'), $row['name'] ?? ''];
 }
@@ -179,15 +180,11 @@ function verifyDom($editor, $admin, $domain, $employerid, $data)
   list($cid) = $fn();
 
   if ($employerid && $cid && ($cid !== $employerid)) {
-    $location = canAssign($editor, $domain, $data['id']);
-
-    if ($location) {
-      header($location);
-      exit();
-    }
+    canAssign($editor, $domain, $data['id']);
   }
 
-  $domchange = $_SESSION['email'] !== SUPERUSER ? true : $domchange;
+  $domchange = $admin && ($_SESSION['email'] !== SUPERUSER) ? true : $domchange;
+
   $clientFunc = function ($change, $arg) {
     //make sure BOTH arguments are true for domfail
     return $change && $arg;
@@ -366,7 +363,6 @@ function updatePassword($pdo, $password, $id)
 function refreshDomain($priv, $posted)
 {
   if ($priv === 'Admin') {
-
     return function ($postdom, $dbdom) use ($posted) {
       //in the process of disassociating ie currently belong to a client check you've entered a new domain;
       $id = $posted['id'];
@@ -381,7 +377,7 @@ function refreshDomain($priv, $posted)
     };
   } else {
     return function ($postdom, $dbdom) {
-      return [$postdom, $dbdom, '', null];
+      return [$postdom, $dbdom, $postdom === $dbdom, null];
     };
   }
 }
@@ -425,7 +421,7 @@ if (!$nwproleplay || $pagehead_role) {
   exit();
 }
 list($key, $priv) = $nwproleplay;
-list($nwp_echange, $nwp_editor, $nwp_domain, $nwp_agency) = canEdit($nwp_id, '', $priv);
+list($nwp_echange, $nwp_editor, $nwp_domain, $nwp_agency) = stateQuery($nwp_id, '', $priv);
 $pagetitle = preg_match("/client/i", $priv) ? "Admin" : "Admin | Edit Users";
 //end of initial globals
 $nwpadmin = isApproved($priv, 'ADMIN');
@@ -484,7 +480,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
     header("Location: ./?addnotice");
     exit();
   }
-  list($echange, $editor, $domain, $agency) = canEdit($nwp_id, $_POST['email'], $priv);
+  list($echange, $editor, $domain, $agency) = stateQuery($nwp_id, $_POST['email'], $priv);
 
   $st = $pdo->prepare("INSERT INTO user (name, email, password, client_id) VALUES(:nom, :e,:pwd, :clientid)");
   list($domchange, $comchange, $dom, $com) = queryEmail($editor, $_POST);
@@ -530,7 +526,7 @@ if (isset($_POST['confirm'])) {
     $role = null;
     $roles = [];
     $clientadmin = isApproved($priv, 'admin');
-    list($echange, $editor, $domain, $agency) = canEdit($_POST['id'], '', $priv);
+    list($echange, $editor, $domain, $agency) = stateQuery($_POST['id'], '', $priv);
     $crud = ($agency || $editor);
     //editor or freelance
     if (!$domain) {
@@ -543,11 +539,7 @@ if (isset($_POST['confirm'])) {
         exit();
       }
     }
-    $location = canAssign($editor, $domain, $_POST['id']);
-    if ($location) {
-      header($location);
-      exit();
-    }
+    canAssign($editor, $domain, $_POST['id']);
 
     $rolesql = "SELECT role.id AS role, userrole.userid AS id FROM role LEFT JOIN userrole ON role.id = userrole.roleid WHERE userrole.userid=:id";
     $st = $pdo->prepare($rolesql);
@@ -621,9 +613,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
 
   $location = 'Location: .';
   $nwprelocate = "Location: ./?domainflag=$id";
-  list($nwpechange, $editor, $nwpdomain, $nwpagency, $name) = canEdit($id, $_POST['email'], $priv);
+  list($nwpechange, $editor, $nwpdomain, $nwpagency, $name) = stateQuery($id, $_POST['email'], $priv);
   list($nwpdomfail, $nwppostdom, $nwpdomchange, $nwpemployerid) = verifyDom($editor, $nwpadmin, $nwpdomain, nullify($_POST['employer']), $_POST);
-
 
   if (!$override && ($editor && $nwpechange && !$nwpdomfail)) {
     $title = "Prompt";
@@ -644,26 +635,18 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     }
   }
   if (!isset($prompt)) {
-    //no domchange but potential employerid
     if (!$nwpdomfail) {
       $nwprelocate = null;
       $nwpassoc = true;
       list($_, $nwpemployerdom) = isEmployer($_POST, 'employer')();
-      //ADMIN ONLY empty $nwpemployerdom then we are unassigning user from client, make sure you provide their new domain
-
       if (!$nwpemployerdom && !$override) {
-        $nwprelocate = canAssign($editor, $nwpdomain, $id);
-        if($nwprelocate){
-          header($nwprelocate);
-          exit();
-        }
-        list($clientid, $nwpdomain) = isEmployer($_POST, 'id')();
+        canAssign($editor, $nwpdomain, $id);
+
+
         list($nwppostdom, $nwpdomain, $nwpassoc, $nwprelocate) = refreshDomain($priv, $_POST)($nwppostdom, $nwpdomain);
       } else if (!$nwpdomain && $nwpemployerdom) {
-        $nwpnew = $nwpemployerdom;
         $nwpold = $nwppostdom;
       } else if ($nwpdomain !== $nwpemployerdom) {
-        $nwpnew = $nwpemployerdom;
         $nwpold = $nwpdomain;
       }
     }
@@ -681,8 +664,9 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
           exit();
         }
       }
-
+      list($nwpemployerid) = $nwpemployerid ?? isEmployer($_POST, 'id')();
       updateUserDetails($id, $nwpemployerid, $nwpassoc);
+      $nwpnew = $nwpemployerdom; //reassign qualifying users
       updateUserDomain($nwpold, $nwpnew, $id);
 
       if ($nwpagency) {
@@ -711,7 +695,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
 //////
 //directly load form.html.php if only one user/client
 if (checkIsset($_GET, array_merge(['edit'], $redirects))) {
-
   $override = null;
   $nwpclientrow = null;
   $employer = null;
@@ -732,7 +715,7 @@ if (checkIsset($_GET, array_merge(['edit'], $redirects))) {
   $calltext = "Delete User";
   $callroute = "delete=$id";
   $warning = 'You do not have sufficient privileges to edit this users details.';
-  list($nwpechange, $editor, $nwpdomain, $nwpagency) = canEdit($id, $_POST['email'] ?? '', $priv);
+  list($nwpechange, $editor, $nwpdomain, $nwpagency) = stateQuery($id, $_POST['email'] ?? '', $priv);
   //DON'T FORGET WE CAN ARRIVE HERE DIRECT FROM A LINK AND NOT FROM A REDIRECT FROM EDITING
   if (isset($_GET['error'])) {
     unset($calltext);
