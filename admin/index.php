@@ -430,6 +430,7 @@ if (isset($_GET['domain'])) {
   updateUserDomain($_GET['domain'], $_GET['updated']);
 }
 if (isset($_GET['add'])) {
+
   include CONNECT;
   $route = "Add";
   $action = 'addform';
@@ -449,18 +450,18 @@ if (isset($_GET['add'])) {
 
   if (isApproved($priv, 'Client Admin') && !$nwpadmin) {
     unset($clientlist);
-    $nwpst = $pdo->prepare(queryClient('email'));
-    $nwpst->bindValue(":aux", $_SESSION['email']);
+    $st = $pdo->prepare(queryClient('email'));
+    $st->bindValue(":aux", $_SESSION['email']);
     doPreparedQuery($st, "Error fetching client details");
     $row = $st->fetch(PDO::FETCH_ASSOC);
     $employer = nullify($row['employer']);
     $email = $row['email'];
+    $email = preg_replace("/[^@]+(@.+)/", "$1", $email);
     $roles = safeFilter($roles, function ($role) {
       return $role['id'] !== 'Admin';
     });
   }
   $admin = $nwpadmin;
-
   include 'form.html.php';
   exit();
 } //////////////END OF ASSIGN
