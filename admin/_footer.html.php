@@ -3,7 +3,6 @@
 $single = $_SESSION['extent'] <= 1;
 $k = $single && ($priv === 'Client Admin') ? 'Client' : $priv;
 //could be failed attempt to edit form from a TEAM member
-
 $k = !$single ? 'Client Admin' : $k;
 $routes = ['Client' => '_return2uploads.html.php', 'Client Admin' => '_return2list.html.php', 'Admin' => '_return2list.html.php'];
 

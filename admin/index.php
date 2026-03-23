@@ -398,7 +398,6 @@ $pagehead = "Edit details";
 $message = $error ?? '';
 $denied = false;
 $usercount = 0;
-setExtent(0);
 $selected = null;
 $goto = '.';
 $pageid = 'admin_user';
@@ -856,7 +855,9 @@ if ($admin) {
 }
 
 $message = $message ? $message : $error;
-$usercount = isApproved($priv, 'ADMIN') ? 2 : count($users); //2 ie more than 1
+
+
+$usercount = isApproved($priv, 'ADMIN') ? 2 : $_SESSION['extent'] ?? count($users); //2 ie more than 1
 //setExtent is largely used for displaying conditional content, appropriate buttons etc..
 setExtent($usercount);
 
@@ -872,6 +873,7 @@ if ($usercount === 1 && !isset($prompt)) {
   if (isset($_GET['namechange'])) {
     $location .= "&namechange";
   }
+
   header("Location: $location"); //GO DIRECT TO EDIT FORM, unless...
   exit();
 } else { //usercount is zero or more than one
