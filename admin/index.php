@@ -136,7 +136,7 @@ function canAssign($editor, $domain, $userid)
   }
 }
 
-function presentList($role, $prop = 'id', $flag = 'admin')
+function presentClientList($role, $prop = 'id', $flag = 'admin')
 {
   $users = [];
   $client = [];
@@ -455,7 +455,7 @@ if (isset($_GET['add'])) {
   }
   $roles = fetchAllRoles($pdo, $nwproleorder);
   if ($nwpadmin) {
-    list($_, $clientlist) = presentList($priv);
+    list($_, $clientlist) = presentClientList($priv);
   }
 
   if (isApproved($priv, 'Client Admin') && !$nwpadmin) {
@@ -765,7 +765,7 @@ if (checkIsset($_GET, array_merge(['edit'], $redirects))) {
     $roles = fetchAllRoles($pdo, $nwproleorder, $selectedRoles);
   }
   if ($nwpadmin) {
-    list($_, $clientlist) = presentList($priv);
+    list($_, $clientlist) = presentClientList($priv);
     if (!isset($nwprow['employer']) && !isset($_GET['domainassoc'])) {
       $nwpst = $pdo->prepare("SELECT client_id AS employer FROM user WHERE id=:id");
       $nwpst->bindValue(":id", $id);
@@ -819,26 +819,9 @@ if ($users === []) {
   }
 }
 
-//prepare list
 if ($admin) {
   include CONNECT;
-
-  $nwpres = doQuery($pdo, "SELECT id, client.domain, client.name FROM client ORDER BY name", 'Database error fetching clients:');
-  $nwprows = $nwpres->fetchAll();
-
-  $nwpst = $pdo->prepare("SELECT user.id, user.name FROM client INNER JOIN user ON user.client_id=client.id WHERE client.id=:id");
-
-
-  foreach ($nwprows as $nwprow) {
-    $nwpst->bindValue(":id", $nwprow['id']);
-    doPreparedQuery($nwpst, "Database error fetching user");
-    //ensures client has at least one active user
-    if ($nwpst->fetch(PDO::FETCH_ASSOC)) {
-      $client[$nwprow['domain']] = $nwprow['name'];
-    }
-  }
- list($_, $client) = presentList($priv, 'domain');
-
+  list($_, $client) = presentClientList($priv, 'domain');
 }
 $message = $message ? $message : $error;
 //2 ie more than 1
