@@ -149,6 +149,7 @@ function myDomain($fileid)
     return [$ownerid, $ownername, $domain, $multi, $editor];
 }
 
+setExtent(0);
 $predicates = [partial('preg_match', '/^nwp/')];
 $pageid = 'upload';
 $pagetitle = 'Log In';

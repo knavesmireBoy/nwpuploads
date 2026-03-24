@@ -1,6 +1,8 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
 //NOTE arrow functions not introduced until PHP 7.4; default mac installation is 7.3xx
+
+
 function fix()
 {
   include CONNECT;
@@ -390,11 +392,16 @@ function refreshDomain($priv, $posted)
   }
 }
 //// END OF FUNCTIONS ///////// END OF FUNCTIONS ///////// END OF FUNCTIONS ///////// END OF FUNCTIONS /////
+
+
 if (!userIsLoggedIn()) {
   $pagetitle = "Log In";
   include TEMPLATE . 'login.html.php';
   exit();
 }
+
+//dump($_SESSION['extent']);
+
 /*
 $lefty is not used just kept for ref
 $lefty = "SELECT user.id, LEFT(user.email, LOCATE('@', user.email) -1) AS name FROM user WHERE id=:id";
@@ -630,7 +637,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     if (!$nwpdomchange) {
       $setcookie('email', $_POST['email']);
     } else {
-      $prompt = "Only the database administrator is permitted to amend the email domain ($nwpdomain). You may amend the local-part, and you may amend your username. Proceed?";
+      $prompt = $nwpdomain ? "Only the database administrator is permitted to amend the email domain. You may amend the local-part, and you may amend your username. Proceed?" : $prompt;
     }
   }
   if (!isset($prompt)) {
@@ -688,7 +695,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
 
 //DIRECTLY load form.html.php if only one user/client
 if (checkIsset($_GET, array_merge(['edit'], $redirects))) {
-
   $override = null;
   $nwpclientrow = null;
   $employer = null;
@@ -740,7 +746,6 @@ if (checkIsset($_GET, array_merge(['edit'], $redirects))) {
       $message .= ' You can proceed now that the form is in override mode but you will need to log in again with your updated details.';
     }
   }
-
   $nwpst = $pdo->prepare(queryClient('id'));
   $nwpst->bindValue(":aux", $id);
   //this may fail if user is not a client, so $nwpclientrow is conditional
@@ -770,6 +775,8 @@ if (checkIsset($_GET, array_merge(['edit'], $redirects))) {
     }
     $roles = fetchAllRoles($pdo, $nwproleorder, $selectedRoles);
   }
+
+  // dump($nwprow);
   if ($nwpadmin) {
     list($_, $clientlist) = presentList($priv);
     if (!isset($nwprow['employer']) && !isset($_GET['domainassoc'])) {
@@ -782,7 +789,6 @@ if (checkIsset($_GET, array_merge(['edit'], $redirects))) {
     $employer =  $nwprow['employer'] ?? null;
   }
   $employer = $employer ?? $nwprow['employer'] ?? null;
-
   $roles = safeFilter($roles, $nwpRolesCallback);
   $admin = $nwpadmin;
   include 'form.html.php';
@@ -800,6 +806,8 @@ if (isset($_POST['user'])) { //dropdown
   }
   list($users, $selected, $pagehead, $pagetitle) = filterUsers($_POST['user'], $pagetitle);
 }
+//dump($_SESSION['extent']);
+
 //on landing try client; a single client will redirect to form.html.php, a multi team client will prepare variables for users.html.php
 if ($users === []) {
   include CONNECT;
@@ -809,6 +817,7 @@ if ($users === []) {
   $nwprow = $nwpst->fetch(PDO::FETCH_ASSOC);
   if (isset($nwprow['domain']) && !isset($prompt)) {
     list($users, $selected, $pagehead, $pagetitle) = filterUsers($nwprow['domain'], $pagetitle, $error);
+
     setExtent(count($users));
   }
 }
@@ -842,9 +851,11 @@ if ($admin) {
 }
 $message = $message ? $message : $error;
 //2 ie more than 1
-$usercount = isApproved($priv, 'ADMIN') ? 2 : $_SESSION['extent'] ?? count($users);
+$usercount = isApproved($priv, 'ADMIN') ? 11 : count($users);
+
 //setExtent is largely used for displaying conditional content, appropriate buttons etc..
 setExtent($usercount);
+
 if ($usercount === 1 && !isset($prompt)) {
   $calltext = "Delete User";
   $callroute = "delete=$key";
