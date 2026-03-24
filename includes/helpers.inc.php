@@ -10,10 +10,6 @@ function checkUpper($str)
 {
     return strtoupper($str) === $str;
 }
-function equalz($a, $b, $loose = false)
-{
-    return $loose ?  $a == $b : $a === $b;
-}
 
 function equals($a, $b)
 {

@@ -136,7 +136,7 @@ function canAssign($editor, $domain, $userid)
   }
 }
 
-function presentList($role, $flag = 'admin')
+function presentList($role, $prop = 'id', $flag = 'admin')
 {
   $users = [];
   $client = [];
@@ -147,17 +147,16 @@ function presentList($role, $flag = 'admin')
     foreach ($rows as $row) {
       $users[$row['id']] = $row['name'];
     }
-    $st = doQuery($pdo, "SELECT id, name, domain, tel FROM client ORDER BY name", "Database error fetching clients");
+    $st = doQuery($pdo, "SELECT client.id, client.name, client.domain, client.tel FROM client ORDER BY name", "Database error fetching clients");
     $rows = $st->fetchAll(PDO::FETCH_ASSOC);
 
     $st = $pdo->prepare("SELECT user.id, user.name FROM client INNER JOIN user ON user.client_id=client.id WHERE client.id=:id");
-
     foreach ($rows as $row) {
       $st->bindValue(":id", $row['id']);
       doPreparedQuery($st, "Database error fetching user");
       //filters out clients that have no users
       if ($st->fetch(PDO::FETCH_ASSOC)) {
-        $client[$row['id']] = $row['name'];
+        $client[$row[$prop]] = $row['name'];
       }
     }
     return [$users, $client];
@@ -819,20 +818,27 @@ if ($users === []) {
     $users[$nwprow['id']] = $nwprow['name'];
   }
 }
+
 //prepare list
 if ($admin) {
   include CONNECT;
+
   $nwpres = doQuery($pdo, "SELECT id, client.domain, client.name FROM client ORDER BY name", 'Database error fetching clients:');
   $nwprows = $nwpres->fetchAll();
+
   $nwpst = $pdo->prepare("SELECT user.id, user.name FROM client INNER JOIN user ON user.client_id=client.id WHERE client.id=:id");
+
+
   foreach ($nwprows as $nwprow) {
     $nwpst->bindValue(":id", $nwprow['id']);
     doPreparedQuery($nwpst, "Database error fetching user");
-    //ensure client has at least one active user
+    //ensures client has at least one active user
     if ($nwpst->fetch(PDO::FETCH_ASSOC)) {
       $client[$nwprow['domain']] = $nwprow['name'];
     }
   }
+ list($_, $client) = presentList($priv, 'domain');
+
 }
 $message = $message ? $message : $error;
 //2 ie more than 1
