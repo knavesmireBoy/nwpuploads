@@ -1,8 +1,6 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
 //NOTE arrow functions not introduced until PHP 7.4; default mac installation is 7.3xx
-
-
 function fix()
 {
   include CONNECT;
@@ -87,7 +85,7 @@ function isEmployer($o, $p = '')
     return $flag ? $st->fetchAll(PDO::FETCH_NUM) : $st->fetch(PDO::FETCH_NUM);
   };
 }
-//doozy
+
 function queryEmail($editor, $obj)
 {
   $ecom = null;
@@ -137,6 +135,7 @@ function canAssign($editor, $domain, $userid)
     exit();
   }
 }
+
 function presentList($role, $flag = 'admin')
 {
   $users = [];
@@ -257,7 +256,6 @@ function filterUsers($key, $pagetitle, $error = '')
     header("Location: ./?edit=$key");
     exit;
   }
-  //load users
   return [$users, $selected, $pagehead, $pagetitle];
 }
 
@@ -391,16 +389,13 @@ function refreshDomain($priv, $posted)
     };
   }
 }
-//// END OF FUNCTIONS ///////// END OF FUNCTIONS ///////// END OF FUNCTIONS ///////// END OF FUNCTIONS /////
-
+//// END OF FUNCTIONS ///////// END OF FUNCTIONS ///////// END OF FUNCTIONS /////////
 
 if (!userIsLoggedIn()) {
   $pagetitle = "Log In";
   include TEMPLATE . 'login.html.php';
   exit();
 }
-
-//dump($_SESSION['extent']);
 
 /*
 $lefty is not used just kept for ref
@@ -530,7 +525,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
   exit();
 } //end of addform
 
-//exits
 if (isset($_POST['confirm'])) {
   $location = " .";
   if ($_POST['confirm'] == 'Yes') {
@@ -638,8 +632,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
       $setcookie('email', $_POST['email']);
     } /*else {
       $prompt = $nwpdomain ? "Only the database administrator is permitted to amend the email domain. You may amend the local-part, and you may amend your username. Proceed?" : $prompt;
-    }
-      */
+    }*/
   }
   if (!isset($prompt)) {
     if (!$nwpdomfail) {
@@ -655,9 +648,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
       header($nwprelocate);
       exit();
     }
-
     $nwpold = domReplace($nwpdomain, $nwpemployerdom, $nwppostdom);
-
     if ($editor || $nwpagency) {
       if (isset($_POST['password']) && $_POST['password'] != '') {
         if ($override) {
@@ -667,7 +658,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
           exit();
         }
       }
-
       $nwpemployerid ? $nwpemployerid : list($nwpemployerid) = isEmployer($_POST, 'id')();
       $nwpnew = $nwpemployerdom; //reassign qualifying users
       updateUserDetails($id, $nwpemployerid, $nwpassoc);
@@ -723,7 +713,6 @@ if (checkIsset($_GET, array_merge(['edit'], $redirects))) {
     unset($calltext);
     unset($callroute);
   }
-
   if (!$nwp_agency) {
     if ($editor || $nwpagency) {
       $warning = '';
@@ -776,8 +765,6 @@ if (checkIsset($_GET, array_merge(['edit'], $redirects))) {
     }
     $roles = fetchAllRoles($pdo, $nwproleorder, $selectedRoles);
   }
-
-  // dump($nwprow);
   if ($nwpadmin) {
     list($_, $clientlist) = presentList($priv);
     if (!isset($nwprow['employer']) && !isset($_GET['domainassoc'])) {
@@ -807,8 +794,6 @@ if (isset($_POST['user'])) { //dropdown
   }
   list($users, $selected, $pagehead, $pagetitle) = filterUsers($_POST['user'], $pagetitle);
 }
-//dump($_SESSION['extent']);
-
 //on landing try client; a single client will redirect to form.html.php, a multi team client will prepare variables for users.html.php
 if ($users === []) {
   include CONNECT;
@@ -818,7 +803,6 @@ if ($users === []) {
   $nwprow = $nwpst->fetch(PDO::FETCH_ASSOC);
   if (isset($nwprow['domain']) && !isset($prompt)) {
     list($users, $selected, $pagehead, $pagetitle) = filterUsers($nwprow['domain'], $pagetitle, $error);
-
     setExtent(count($users));
   }
 }
@@ -852,8 +836,7 @@ if ($admin) {
 }
 $message = $message ? $message : $error;
 //2 ie more than 1
-$usercount = isApproved($priv, 'ADMIN') ? 11 : count($users);
-
+$usercount = isApproved($priv, 'ADMIN') ? 2 : count($users);
 //setExtent is largely used for displaying conditional content, appropriate buttons etc..
 setExtent($usercount);
 
