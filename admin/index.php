@@ -8,7 +8,6 @@ function fix()
   reAssignClient($pdo);
 }
 
-
 function domReplace($current, $neue, $fallback)
 {
   if (!$current && $neue) {
@@ -76,7 +75,6 @@ function isEmployer($o, $p = '')
     $id = $o[$p] ?? 0;
     $sql = "SELECT client.id, domain FROM client WHERE client.id =:aux";
   }
-
   return function () use ($id, $sql, $flag) {
     include CONNECT;
     $st = $pdo->prepare($sql);
@@ -137,7 +135,6 @@ function canAssign($editor, $domain, $userid)
     exit();
   }
 }
-
 function presentList($role, $flag = 'admin')
 {
   $users = [];
@@ -265,8 +262,6 @@ function filterUsers($key, $pagetitle, $error = '')
 function updateUserDetails($id, $client_id, $assoc)
 {
   include CONNECT;
-
-  //$assoc = $domain && !$client_id ? false : $assoc;
   $sql = "UPDATE user SET name=:name, email=:email";
   $sql .= $assoc ? ", client_id=:cid" : '';
   $sql .= " WHERE id=:id";
@@ -394,7 +389,7 @@ function refreshDomain($priv, $posted)
     };
   }
 }
-
+//// END OF FUNCTIONS ///////// END OF FUNCTIONS ///////// END OF FUNCTIONS ///////// END OF FUNCTIONS /////
 if (!userIsLoggedIn()) {
   $pagetitle = "Log In";
   include TEMPLATE . 'login.html.php';
@@ -421,7 +416,6 @@ $nwproleplay = obtainUserRole();
 $pagehead_role = $nwproleplay && !obtainUserRole(true);
 $predicates = [partial('preg_match', '/^nwp/')];
 $redirects = ['pwd', 'domainflag', 'domainassoc'];
-
 $nwpagency = null;
 $nwproleorder = ['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'];
 
@@ -433,6 +427,9 @@ if (!$nwproleplay || $pagehead_role) {
   exit();
 }
 list($key, $priv) = $nwproleplay;
+
+$nwpRolesCallback = preg_match('/client/i', $priv) ? composer(negate(curry2('equals')('Admin')), curry2('getter')('id')) : 'identity';
+
 list($nwp_echange, $nwp_editor, $nwp_domain, $nwp_agency) = stateQuery($nwp_id, '', $priv);
 $pagetitle = preg_match("/client/i", $priv) ? "Admin" : "Admin | Edit Users";
 //end of initial globals
@@ -443,7 +440,6 @@ if (isset($_GET['domain'])) {
   updateUserDomain($_GET['domain'], $_GET['updated']);
 }
 if (isset($_GET['add'])) {
-
   include CONNECT;
   $route = "Add";
   $action = 'addform';
@@ -470,8 +466,7 @@ if (isset($_GET['add'])) {
     $employer = nullify($row['employer']);
     $email = $row['email'];
     $email = preg_replace("/[^@]+(@.+)/", "$1", $email);
-    $nwpcb = preg_match('/client/i', $priv) ? composer(negate(curry2('equals')('Admin')), curry2('getter')('id')) : 'identity';
-    $roles = safeFilter($roles, $nwpcb);
+    $roles = safeFilter($roles, $nwpRolesCallback);
   }
   $admin = $nwpadmin;
   include 'form.html.php';
@@ -531,7 +526,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
 //exits
 if (isset($_POST['confirm'])) {
   $location = " .";
-
   if ($_POST['confirm'] == 'Yes') {
     include CONNECT;
     $role = null;
@@ -551,9 +545,7 @@ if (isset($_POST['confirm'])) {
       }
     }
     canAssign($editor, $domain, $_POST['id']);
-
-    $rolesql = "SELECT role.id AS role, userrole.userid AS id FROM role LEFT JOIN userrole ON role.id = userrole.roleid WHERE userrole.userid=:id";
-    $st = $pdo->prepare($rolesql);
+    $st = $pdo->prepare("SELECT role.id AS role, userrole.userid AS id FROM role LEFT JOIN userrole ON role.id = userrole.roleid WHERE userrole.userid=:id");
 
     if (!empty($rows)) {
       foreach ($rows as $r) {
@@ -616,13 +608,12 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   $nwpnew = null;
   $nwprole = null;
   $nwprolechange = null;
-
-  $nwpemployerid = $_POST['employer'] ? $_POST['employer'] : $_POST['employed'];
+  $nwpemployerid = isset($_POST['employer']) ? $_POST['employer'] : $_POST['employed'];
 
   $location = 'Location: .';
   $nwprelocate = "Location: ./?domainflag=$id";
   list($nwpechange, $editor, $nwpdomain, $nwpagency, $name) = stateQuery($id, $_POST['email'], $priv);
-  list($nwpdomfail, $nwppostdom, $nwpdomchange, $nwpemployerid) = verifyDom($editor, $nwpadmin, $nwpdomain, nullify($_POST['employer']), $_POST);
+  list($nwpdomfail, $nwppostdom, $nwpdomchange, $nwpemployerid) = verifyDom($editor, $nwpadmin, $nwpdomain, nullify($nwpemployerid), $_POST);
 
   if (!$override && ($editor && $nwpechange && !$nwpdomfail)) {
     $title = "Prompt";
@@ -646,8 +637,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     if (!$nwpdomfail) {
       $nwprelocate = null;
       $nwpassoc = true;
-      list($_, $nwpemployerdom) = isEmployer($_POST, 'employer')();
-      if (!$nwpemployerdom && !$override) {
+      //   list($_, $nwpemployerdom) = isEmployer($_POST, 'employer')();
+      if (!$nwpemployerid && !$override) {
         canAssign($editor, $nwpdomain, $id);
         list($nwppostdom, $nwpdomain, $nwpassoc, $nwprelocate) = refreshDomain($priv, $_POST)($nwppostdom, $nwpdomain);
       }
@@ -679,7 +670,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
         deleteRole($id, $priv);
         resetRoles($priv, $roles, $id);
         $nwprolechange = verifyRole($nwprole, getCurrentRole($id));
-        //$clientid is allowed to be null (not any other empty) if a user wants to disassociate from a client
       }
       if ($editor) {
         if ($nwpechange || ($nwprolechange && $editor)) {
@@ -698,6 +688,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
 
 //DIRECTLY load form.html.php if only one user/client
 if (checkIsset($_GET, array_merge(['edit'], $redirects))) {
+
   $override = null;
   $nwpclientrow = null;
   $employer = null;
@@ -719,6 +710,7 @@ if (checkIsset($_GET, array_merge(['edit'], $redirects))) {
   $callroute = "delete=$id";
   $warning = 'You do not have sufficient privileges to edit this users details.';
   list($nwpechange, $editor, $nwpdomain, $nwpagency) = stateQuery($id, $_POST['email'] ?? '', $priv);
+
   //DON'T FORGET WE CAN ARRIVE HERE DIRECT FROM A LINK AND NOT FROM A REDIRECT FROM EDITING
   if (isset($_GET['error'])) {
     unset($calltext);
@@ -748,13 +740,12 @@ if (checkIsset($_GET, array_merge(['edit'], $redirects))) {
       $message .= ' You can proceed now that the form is in override mode but you will need to log in again with your updated details.';
     }
   }
-  if ($flagID) {
-    $nwpst = $pdo->prepare(queryClient('id'));
-    $nwpst->bindValue(":aux", $flagID);
-    //this may fail if user is not a client, so $nwpclientrow is conditional
-    doPreparedQuery($nwpst, "Error fetching user details.");
-    $nwpclientrow = $nwpst->fetch(PDO::FETCH_ASSOC);
-  }
+
+  $nwpst = $pdo->prepare(queryClient('id'));
+  $nwpst->bindValue(":aux", $id);
+  //this may fail if user is not a client, so $nwpclientrow is conditional
+  doPreparedQuery($nwpst, "Error fetching user details.");
+  $nwpclientrow = $nwpst->fetch(PDO::FETCH_ASSOC);
   //make sure not to overrwrite the $nwprow variable
   $nwprow = $nwpclientrow ? $nwpclientrow : $nwprow;
   $id = $nwprow['id'];
@@ -779,10 +770,8 @@ if (checkIsset($_GET, array_merge(['edit'], $redirects))) {
     }
     $roles = fetchAllRoles($pdo, $nwproleorder, $selectedRoles);
   }
-
   if ($nwpadmin) {
     list($_, $clientlist) = presentList($priv);
-
     if (!isset($nwprow['employer']) && !isset($_GET['domainassoc'])) {
       $nwpst = $pdo->prepare("SELECT client_id AS employer FROM user WHERE id=:id");
       $nwpst->bindValue(":id", $id);
@@ -792,10 +781,9 @@ if (checkIsset($_GET, array_merge(['edit'], $redirects))) {
     //selects client in drop down menu UNLESS you have the warning ('domainassoc') about assigning a new domain
     $employer =  $nwprow['employer'] ?? null;
   }
+  $employer = $employer ?? $nwprow['employer'] ?? null;
 
-  $nwpcb = preg_match('/client/i', $priv) ? composer(negate(curry2('equals')('Admin')), curry2('getter')('id')) : 'identity';
-  $roles = safeFilter($roles, $nwpcb);
-
+  $roles = safeFilter($roles, $nwpRolesCallback);
   $admin = $nwpadmin;
   include 'form.html.php';
   exit();
@@ -824,7 +812,6 @@ if ($users === []) {
     setExtent(count($users));
   }
 }
-
 //if $prompt is set and we have a one member client this will yield an empty set
 if ($users === []) {
   include CONNECT;
@@ -838,7 +825,6 @@ if ($users === []) {
     $users[$nwprow['id']] = $nwprow['name'];
   }
 }
-
 //prepare list
 if ($admin) {
   include CONNECT;
@@ -854,12 +840,11 @@ if ($admin) {
     }
   }
 }
-
 $message = $message ? $message : $error;
-$usercount = isApproved($priv, 'ADMIN') ? 2 : $_SESSION['extent'] ?? count($users); //2 ie more than 1
+//2 ie more than 1
+$usercount = isApproved($priv, 'ADMIN') ? 2 : $_SESSION['extent'] ?? count($users);
 //setExtent is largely used for displaying conditional content, appropriate buttons etc..
 setExtent($usercount);
-
 if ($usercount === 1 && !isset($prompt)) {
   $calltext = "Delete User";
   $callroute = "delete=$key";
@@ -872,7 +857,6 @@ if ($usercount === 1 && !isset($prompt)) {
   if (isset($_GET['namechange'])) {
     $location .= "&namechange";
   }
-
   header("Location: $location"); //GO DIRECT TO EDIT FORM, unless...
   exit();
 } else { //usercount is zero or more than one
