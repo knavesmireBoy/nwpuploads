@@ -200,7 +200,7 @@ function verifyDom($editor, $admin, $domain, $employerid, $data)
   $validateDom = $actions[$k];
   //the returned curried function expects a $change boolean: $domchange || $comchange
   $domfail = $validateDom($domchange || $comchange);
-  return [$domfail, "$dom.$com", $domchange, $employerid];
+  return [$domfail, "$dom.$com", $domchange, nullify($employerid)];
 }
 
 //$key expected to be freelance id (int) or domain (str)
@@ -468,8 +468,7 @@ if (isset($_GET['add'])) {
 
 if (isset($_POST['action']) && $_POST['action'] === 'Add') {
   include CONNECT;
-  //client_id: the only empty value MUST BE null, not empty string or zero
-  $employerid = empty($_POST['employer']) ? null : $_POST['employer'];
+  $employerid = nullify($_POST['employer']);
   $clientadmin = preg_match("/admin/i", $priv) && preg_match("/client/i", $priv);
   $essentials = [$_POST['name'], $_POST['email'], $_POST['password']];
   $essentials = array_filter($essentials, function ($item) {
@@ -605,6 +604,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   $nwpnew = null;
   $nwprole = null;
   $nwprolechange = null;
+  $nwpemployerid = $_POST['employer'] ?? $_POST['employed'];
 
   $location = 'Location: .';
   $nwprelocate = "Location: ./?domainflag=$id";
@@ -626,7 +626,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     if (!$nwpdomchange) {
       $setcookie('email', $_POST['email']);
     } else {
-      $prompt = "Only the database administrator is permitted to amend the email domain. You may amend the local-part, and your username. Proceed?";
+      $prompt = "Only the database administrator is permitted to amend the email domain ($nwpdomain). You may amend the local-part, and you may amend your username. Proceed?";
     }
   }
   if (!isset($prompt)) {
@@ -636,8 +636,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
       list($_, $nwpemployerdom) = isEmployer($_POST, 'employer')();
       if (!$nwpemployerdom && !$override) {
         canAssign($editor, $nwpdomain, $id);
-
-
         list($nwppostdom, $nwpdomain, $nwpassoc, $nwprelocate) = refreshDomain($priv, $_POST)($nwppostdom, $nwpdomain);
       } else if (!$nwpdomain && $nwpemployerdom) {
         $nwpold = $nwppostdom;
