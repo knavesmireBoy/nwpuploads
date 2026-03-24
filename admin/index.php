@@ -636,9 +636,10 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     $nwpswitch = false;
     if (!$nwpdomchange) {
       $setcookie('email', $_POST['email']);
-    } else {
+    } /*else {
       $prompt = $nwpdomain ? "Only the database administrator is permitted to amend the email domain. You may amend the local-part, and you may amend your username. Proceed?" : $prompt;
     }
+      */
   }
   if (!isset($prompt)) {
     if (!$nwpdomfail) {
