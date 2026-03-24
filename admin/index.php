@@ -159,7 +159,7 @@ function presentClientList($role, $prop = 'id', $flag = 'admin')
         $client[$row[$prop]] = $row['name'];
       }
     }
-    return [$users, $client];
+    return $client;
   }
 }
 
@@ -388,14 +388,13 @@ function refreshDomain($priv, $posted)
     };
   }
 }
-//// END OF FUNCTIONS ///////// END OF FUNCTIONS ///////// END OF FUNCTIONS /////////
 
+//// END OF FUNCTIONS ///////// END OF FUNCTIONS ///////// END OF FUNCTIONS /////////
 if (!userIsLoggedIn()) {
   $pagetitle = "Log In";
   include TEMPLATE . 'login.html.php';
   exit();
 }
-
 /*
 $lefty is not used just kept for ref
 $lefty = "SELECT user.id, LEFT(user.email, LOCATE('@', user.email) -1) AS name FROM user WHERE id=:id";
@@ -416,7 +415,7 @@ $nwp_id = $_GET['edit'] ?? null;
 $nwproleplay = obtainUserRole();
 $pagehead_role = $nwproleplay && !obtainUserRole(true);
 $predicates = [partial('preg_match', '/^nwp/')];
-$redirects = ['pwd', 'domainflag', 'domainassoc'];
+$redirects = ['pwd', 'domainflag', 'domainassoc', 'namechange'];
 $nwpagency = null;
 $nwproleorder = ['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'];
 
@@ -455,7 +454,7 @@ if (isset($_GET['add'])) {
   }
   $roles = fetchAllRoles($pdo, $nwproleorder);
   if ($nwpadmin) {
-    list($_, $clientlist) = presentClientList($priv);
+    $clientlist = presentClientList($priv);
   }
 
   if (isApproved($priv, 'Client Admin') && !$nwpadmin) {
@@ -637,7 +636,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     if (!$nwpdomfail) {
       $nwprelocate = null;
       $nwpassoc = true;
-      //   list($_, $nwpemployerdom) = isEmployer($_POST, 'employer')();
+         list($_, $nwpemployerdom) = isEmployer($_POST, 'employer')();
       if (!$nwpemployerid && !$override) {
         canAssign($editor, $nwpdomain, $id);
         list($nwppostdom, $nwpdomain, $nwpassoc, $nwprelocate) = refreshDomain($priv, $_POST)($nwppostdom, $nwpdomain);
@@ -676,8 +675,9 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
       }
     }
     if ($name && $name !== $_POST['name']) {
-      $location .= "/?namechange=$id";
+        $location .= "/?namechange=$id";
     }
+
     header($location);
     exit();
   } //if !prompt
@@ -765,7 +765,7 @@ if (checkIsset($_GET, array_merge(['edit'], $redirects))) {
     $roles = fetchAllRoles($pdo, $nwproleorder, $selectedRoles);
   }
   if ($nwpadmin) {
-    list($_, $clientlist) = presentClientList($priv);
+    $clientlist = presentClientList($priv);
     if (!isset($nwprow['employer']) && !isset($_GET['domainassoc'])) {
       $nwpst = $pdo->prepare("SELECT client_id AS employer FROM user WHERE id=:id");
       $nwpst->bindValue(":id", $id);
@@ -821,7 +821,7 @@ if ($users === []) {
 
 if ($admin) {
   include CONNECT;
-  list($_, $client) = presentClientList($priv, 'domain');
+  $client = presentClientList($priv, 'domain');
 }
 $message = $message ? $message : $error;
 //2 ie more than 1
