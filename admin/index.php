@@ -8,6 +8,16 @@ function fix()
   reAssignClient($pdo);
 }
 
+
+function domReplace($current, $neue, $fallback)
+{
+  if (!$current && $neue) {
+    return $fallback;
+  } else if ($current !== $neue) {
+    return $current;
+  }
+}
+
 function query()
 {
   $lib = ['nousers' => "<Unable to find any users", "addnotice" => "Please fill required fields", "selectuser" => "Please select a user for editing", "domainflag" => "Cannot assign this user to a new client", "lastuser" => "To remove this last user, please delete the client instead", "denied" => "You do not have the privileges to delete this user", "deniedbyclient" => "There must be at least one administrator role, please assign another user before removing your credentials from the database", "access" => "You do not have the privileges to add a user", "deniedbyadmin" => "Cannot (re)move a user with a client admin role", "self" => "Only a peer can perform this deletion", "freelancer" => "Cannot assign this domain", 'addno' => 'You do not have the required privilges to add a user'];
@@ -641,16 +651,14 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
       if (!$nwpemployerdom && !$override) {
         canAssign($editor, $nwpdomain, $id);
         list($nwppostdom, $nwpdomain, $nwpassoc, $nwprelocate) = refreshDomain($priv, $_POST)($nwppostdom, $nwpdomain);
-      } else if (!$nwpdomain && $nwpemployerdom) {
-        $nwpold = $nwppostdom;
-      } else if ($nwpdomain !== $nwpemployerdom) {
-        $nwpold = $nwpdomain;
       }
     }
     if (isset($nwprelocate)) {
       header($nwprelocate);
       exit();
     }
+
+    $nwpold = domReplace($nwpdomain, $nwpemployerdom, $nwppostdom);
 
     if ($editor || $nwpagency) {
       if (isset($_POST['password']) && $_POST['password'] != '') {
@@ -661,9 +669,10 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
           exit();
         }
       }
-      list($nwpemployerid) = $nwpemployerid ?? isEmployer($_POST, 'id')();
-      updateUserDetails($id, $nwpemployerid, $nwpassoc);
+
+      $nwpemployerid ? $nwpemployerid : list($nwpemployerid) = isEmployer($_POST, 'id')();
       $nwpnew = $nwpemployerdom; //reassign qualifying users
+      updateUserDetails($id, $nwpemployerid, $nwpassoc);
       updateUserDomain($nwpold, $nwpnew, $id);
 
       if ($nwpagency) {
