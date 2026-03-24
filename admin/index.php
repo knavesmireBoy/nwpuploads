@@ -29,15 +29,17 @@ function queryClient($str = '')
   $dom = fromStrPos();
   $where = null;
   $sql = "SELECT client.id AS employer, domain, user.id, user.email, user.name FROM client LEFT JOIN user ON $dom = client.domain";
+
   $options = ['email' => " WHERE user.email=:aux", 'id' => " WHERE user.id=:aux", 'employer' => " WHERE client.id=:aux"];
   if (is_string($str)) {
     $where = $options[strtolower($str)] ?? null;
   }
   if ($where) {
     return $sql . $where;
-  } else if (is_array($str)) {
-    $str = $str[0];
-    return "SELECT user.id, user.name, roleid AS role FROM user INNER JOIN client ON user.client_id = client.id INNER JOIN userrole ON userrole.userid = user.id WHERE client.domain='$str'";
+  } else if (is_array($str)) { //empty array to signify fetchAll
+    return "SELECT user.id, user.name, user.email, client.domain, roleid AS role FROM user INNER JOIN client ON user.client_id = client.id INNER JOIN userrole ON userrole.userid = user.id WHERE client.domain=:aux ORDER BY name";
+  } else if (is_null($str)) {
+    return "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS NULL";
   } else {
     return "SELECT client.id AS employer, domain FROM client WHERE client.domain LIKE '$str%'";
   }
@@ -100,7 +102,9 @@ function queryEmail($editor, $obj)
 function canAssign($editor, $domain, $userid)
 {
   include CONNECT;
-  $st = doQuery($pdo, queryClient([$domain]), 'Error fetching client.');
+  $st = $pdo->prepare(queryClient([]));
+  $st->bindValue(":aux", $domain);
+  doPreparedQuery($st, 'Error obtaining details');
   $rows = $st->fetchAll(PDO::FETCH_ASSOC);
   $role = '';
   $relocate = null;
@@ -130,20 +134,20 @@ function presentList($role, $flag = 'admin')
   $client = [];
   if (isApproved($role, $flag)) {
     include CONNECT;
-    $sqlu = "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS null ORDER BY name";
-    $st = doQuery($pdo, $sqlu, "Error retrieving details");
+    $st = doQuery($pdo, queryClient(null), "Error retrieving details");
     $rows = $st->fetchAll(PDO::FETCH_ASSOC);
     foreach ($rows as $row) {
       $users[$row['id']] = $row['name'];
     }
     $st = doQuery($pdo, "SELECT id, name, domain, tel FROM client ORDER BY name", "Database error fetching clients");
     $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+
     $st = $pdo->prepare("SELECT user.id, user.name FROM client INNER JOIN user ON user.client_id=client.id WHERE client.id=:id");
 
     foreach ($rows as $row) {
       $st->bindValue(":id", $row['id']);
       doPreparedQuery($st, "Database error fetching user");
-      //filters out clients that hane no users
+      //filters out clients that have no users
       if ($st->fetch(PDO::FETCH_ASSOC)) {
         $client[$row['id']] = $row['name'];
       }
@@ -156,6 +160,7 @@ function retrieveDetails($id, $p = '')
 {
   include CONNECT;
   $sql = "SELECT user.name, user.email, client.domain FROM user LEFT JOIN client ON user.client_id=client.id WHERE user.id=:id ORDER BY name";
+
   $st = $pdo->prepare($sql);
   $st->bindValue(":id", $id);
   doPreparedQuery($st, "Error fetching user details");
@@ -182,7 +187,6 @@ function verifyDom($editor, $admin, $domain, $employerid, $data)
   if ($employerid && $cid && ($cid !== $employerid)) {
     canAssign($editor, $domain, $data['id']);
   }
-
   $domchange = $admin && ($_SESSION['email'] !== SUPERUSER) ? true : $domchange;
 
   $clientFunc = function ($change, $arg) {
@@ -211,10 +215,9 @@ function filterUsers($key, $pagetitle, $error = '')
   $selected = true;
   include CONNECT;
 
-  $sql = "SELECT user.id, user.name, user.email, client.domain FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain=:dom ORDER BY name";
-
+  $sql = queryClient([]);
   $st = $pdo->prepare($sql);
-  $st->bindValue(":dom", $key);
+  $st->bindValue(":aux", $key);
   doPreparedQuery($st, "Unable to identify domain");
   $rows = $st->fetchAll(PDO::FETCH_ASSOC);
 
@@ -387,10 +390,10 @@ if (!userIsLoggedIn()) {
   include TEMPLATE . 'login.html.php';
   exit();
 }
-/*$lefty not used just kept for ref
+/*
+$lefty is not used just kept for ref
 $lefty = "SELECT user.id, LEFT(user.email, LOCATE('@', user.email) -1) AS name FROM user WHERE id=:id";
 */
-//$super = "andrewsykes@btinternet.com";
 $prompt = null;
 $users = [];
 $error = query();
@@ -604,7 +607,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   $nwpnew = null;
   $nwprole = null;
   $nwprolechange = null;
-  $nwpemployerid = $_POST['employer'] ?? $_POST['employed'];
+
+  $nwpemployerid = $_POST['employer'] ? $_POST['employer'] : $_POST['employed'];
 
   $location = 'Location: .';
   $nwprelocate = "Location: ./?domainflag=$id";
@@ -684,9 +688,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   } //if !prompt
 } ///END OF editform //////
 
-
-//////
-//directly load form.html.php if only one user/client
+//DIRECTLY load form.html.php if only one user/client
 if (checkIsset($_GET, array_merge(['edit'], $redirects))) {
   $override = null;
   $nwpclientrow = null;
@@ -695,7 +697,7 @@ if (checkIsset($_GET, array_merge(['edit'], $redirects))) {
   $clientlist = [];
   $selectedRoles = [];
   $route = "Edit";
-  $pagehead = 'Edit User';
+  $pagehead = "Edit User";
   $action = 'editform';
   $button = 'Update User';
   $namechange = $_GET['namechange'] ?? null;
@@ -794,7 +796,7 @@ if (checkIsset($_GET, array_merge(['edit'], $redirects))) {
 } //get_edit
 
 //\\\\\\|/////////\\\\\\|/////////\\\\\\|/////////\\\\\\|/////////\\\\\\|/////////\\\\\\|///////
-$nwpsql = "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS null"; //USING ID NOT DOMAIN
+$nwpsql = queryClient(NULL);
 $admin = isApproved($priv, 'ADMIN');
 
 if (isset($_POST['user'])) { //dropdown
@@ -836,7 +838,6 @@ if ($admin) {
   include CONNECT;
   $nwpres = doQuery($pdo, "SELECT id, client.domain, client.name FROM client ORDER BY name", 'Database error fetching clients:');
   $nwprows = $nwpres->fetchAll();
-
   $nwpst = $pdo->prepare("SELECT user.id, user.name FROM client INNER JOIN user ON user.client_id=client.id WHERE client.id=:id");
   foreach ($nwprows as $nwprow) {
     $nwpst->bindValue(":id", $nwprow['id']);
@@ -849,8 +850,6 @@ if ($admin) {
 }
 
 $message = $message ? $message : $error;
-
-
 $usercount = isApproved($priv, 'ADMIN') ? 2 : $_SESSION['extent'] ?? count($users); //2 ie more than 1
 //setExtent is largely used for displaying conditional content, appropriate buttons etc..
 setExtent($usercount);
