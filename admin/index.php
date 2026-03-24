@@ -470,9 +470,8 @@ if (isset($_GET['add'])) {
     $employer = nullify($row['employer']);
     $email = $row['email'];
     $email = preg_replace("/[^@]+(@.+)/", "$1", $email);
-    $roles = safeFilter($roles, function ($role) {
-      return $role['id'] !== 'Admin';
-    });
+    $nwpcb = preg_match('/client/i', $priv) ? composer(negate(curry2('equals')('Admin')), curry2('getter')('id')) : 'identity';
+    $roles = safeFilter($roles, $nwpcb);
   }
   $admin = $nwpadmin;
   include 'form.html.php';
@@ -794,11 +793,9 @@ if (checkIsset($_GET, array_merge(['edit'], $redirects))) {
     $employer =  $nwprow['employer'] ?? null;
   }
 
-  if (preg_match('/admin/i', $priv) && preg_match('/client/i', $priv)) {
-    $roles = safeFilter($roles, function ($role) {
-      return $role['id'] !== 'Admin';
-    });
-  }
+  $nwpcb = preg_match('/client/i', $priv) ? composer(negate(curry2('equals')('Admin')), curry2('getter')('id')) : 'identity';
+  $roles = safeFilter($roles, $nwpcb);
+
   $admin = $nwpadmin;
   include 'form.html.php';
   exit();

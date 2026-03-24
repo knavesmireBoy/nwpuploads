@@ -10,9 +10,14 @@ function checkUpper($str)
 {
     return strtoupper($str) === $str;
 }
-function equals($a, $b, $loose = false)
+function equalz($a, $b, $loose = false)
 {
     return $loose ?  $a == $b : $a === $b;
+}
+
+function equals($a, $b)
+{
+    return $a === $b;
 }
 
 function nullify($arg)
@@ -88,9 +93,16 @@ function doBest($pred, $actions)
     };
 }
 
-function getter($o, $p){
-    return isset($o[$p]);
+function getter($o, $p)
+{
+    return isset($o[$p]) ? $o[$p] : NULL;
 }
+
+function howzer($o, $p)
+{
+    return isset($o[$p]) ? $o[$p] : NULL;
+}
+
 
 function checkIsset($o, $props, $flag = false)
 {
@@ -320,6 +332,7 @@ function curry2($fun)
     };
 }
 
+//expects functions to run loike this ($c, $b, $a) and an initial argument is expected by identity
 function composer(...$fns)
 {
     return array_reduce($fns, function ($f, $g) {
@@ -328,6 +341,7 @@ function composer(...$fns)
         };
     }, 'identity');
 }
+
 
 function reduceroo($result, $item)
 {
