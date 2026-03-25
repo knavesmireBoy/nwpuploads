@@ -11,21 +11,21 @@ function fromPayload($str, ...$args)
 function clientFromUpload($txt, ...$args)
 {
     $str = fromPayload($txt, ...$args);
-    $tmptable = "(SELECT upload.userid FROM user INNER JOIN upload ON upload.userid = user.id WHERE upload.id=:id) AS tmp";
-    $derived = " user INNER JOIN client ON client.id = user.client_id INNER JOIN upload ON user.id = upload.userid INNER JOIN (SELECT client.id FROM client INNER JOIN user on user.client_id = client.id INNER JOIN $tmptable WHERE user.id = tmp.userid) AS T ON client.id = T.id WHERE client.id = T.id";
+    $tmptable = "(SELECT upload.userid FROM usr INNER JOIN upload ON upload.userid = usr.id WHERE upload.id=:id) AS tmp";
+    $derived = " usr INNER JOIN client ON client.id = usr.client_id INNER JOIN upload ON usr.id = upload.userid INNER JOIN (SELECT client.id FROM client INNER JOIN usr on usr.client_id = client.id INNER JOIN $tmptable WHERE usr.id = tmp.userid) AS T ON client.id = T.id WHERE client.id = T.id";
     return $str . $derived;
 }
 
 function userFromUpload()
 {
-    return "SELECT user.id, user.name, user.email, user.client_id FROM upload INNER JOIN user ON upload.userid = user.id INNER JOIN (SELECT userid FROM upload WHERE id=:id) AS owt ON user.id = owt.userid WHERE user.id = owt.userid";
-    return "SELECT user.id, user.name, user.email, user.client_id FROM upload INNER JOIN user ON upload.userid = user.id WHERE user.id =:id";
+    return "SELECT usr.id, usr.name, usr.email, usr.client_id FROM upload INNER JOIN usr ON upload.userid = usr.id INNER JOIN (SELECT userid FROM upload WHERE id=:id) AS owt ON usr.id = owt.userid WHERE usr.id = owt.userid";
+    return "SELECT usr.id, usr.name, usr.email, usr.client_id FROM upload INNER JOIN usr ON upload.userid = usr.id WHERE usr.id =:id";
 }
 
 function selectUploaded($order, $start, $limit)
 {
-    $select = "SELECT upload.id, filename, mimetype, description, filepath, file, size, time,  MID(file, 11, 14) AS origin, user.email, user.name";
-    $from = " FROM upload INNER JOIN user ON upload.userid=user.id";
+    $select = "SELECT upload.id, filename, mimetype, description, filepath, file, size, time,  MID(file, 11, 14) AS origin, usr.email, usr.name";
+    $from = " FROM upload INNER JOIN usr ON upload.userid=usr.id";
     $order = " ORDER BY $order LIMIT $limit OFFSET $start";
     return [$select, $from, $order];
 }
@@ -36,18 +36,18 @@ function presentList($role, $flag = 'admin')
     $client = [];
     if (isApproved($role, $flag)) {
         include CONNECT;
-        $st = doQuery($pdo, "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS NULL ORDER BY name", "Error retrieving details");
+        $st = doQuery($pdo, "SELECT usr.id, usr.name FROM usr LEFT JOIN client ON usr.client_id=client.id WHERE client.domain IS NULL ORDER BY name", "Error retrieving details");
         $rows = $st->fetchAll(PDO::FETCH_ASSOC);
         foreach ($rows as $row) {
             $users[$row['id']] = $row['name'];
         }
         /*
     $sqlc = "SELECT employer.user_id, employer.name, employer.domain FROM
-    (SELECT user.name, user.id as user_id, client.domain FROM user INNER JOIN client ON RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))=client.domain) AS employer";
+    (SELECT usr.name, usr.id as user_id, client.domain FROM usr INNER JOIN client ON RIGHT(usr.email, LENGTH(usr.email) - LOCATE('@', usr.email))=client.domain) AS employer";
     */
         $st = doQuery($pdo, "SELECT id, name, domain, tel FROM client ORDER BY name", "Database error fetching clients");
         $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-        $st = $pdo->prepare("SELECT user.id, user.name FROM client INNER JOIN user ON user.client_id=client.id WHERE client.id=:id");
+        $st = $pdo->prepare("SELECT usr.id, usr.name FROM client INNER JOIN usr ON usr.client_id=client.id WHERE client.id=:id");
         foreach ($rows as $row) {
             $st->bindValue(":id", $row['id']);
             doPreparedQuery($st, "Database error fetching user");
@@ -71,9 +71,9 @@ function buildQuery($role, $flag = 'admin')
                 $coalesce = orderByLastName();
                 $select .= $coalesce;
             } else {
-                $select .= ", user.name as user";
+                $select .= ", usr.name as user";
             }
-            $from .= " INNER JOIN userrole ON user.id=userrole.userid";
+            $from .= " INNER JOIN userrole ON usr.id=userrole.userid";
             $where  = ' WHERE TRUE';
             $ext = isset($_GET['ext']) ? $_GET['ext'] : null;
             $getuser = isset($_GET['u']) ? $_GET['u'] : '';
@@ -88,7 +88,7 @@ function buildQuery($role, $flag = 'admin')
             //check $byuser is not zero
             if (!empty($byuser) && is_numeric($byuser)) {
                 if ($byuser == $getuser) {
-                    $where .= " AND user.id=$byuser";
+                    $where .= " AND usr.id=$byuser";
                 }
             } else {
                 if ($getuser) {
@@ -100,11 +100,11 @@ function buildQuery($role, $flag = 'admin')
             }
         } else {
             $email = $_SESSION['email'];
-            $st = $pdo->prepare("SELECT user.id, user.name FROM user WHERE user.client_id IS NULL AND user.email=:email");
+            $st = $pdo->prepare("SELECT usr.id, usr.name FROM usr WHERE usr.client_id IS NULL AND usr.email=:email");
             $st->bindValue(":email", "$email");
             doPreparedQuery($st, 'Error retreiving user details');
             $row = $st->fetch(PDO::FETCH_ASSOC);
-            $where = $row ? " WHERE user.email='$email'" : " WHERE client.domain = $domainstr";
+            $where = $row ? " WHERE usr.email='$email'" : " WHERE client.domain = $domainstr";
             $i = strpos($email, '@');
             $dom = substr($email, $i + 1);
             if (!$row) {
@@ -114,7 +114,7 @@ function buildQuery($role, $flag = 'admin')
         $sql = $select;
         $tel = ", client.name AS client, client.tel";
         //note LEFT join to include just 'users' also
-        $from .= " LEFT JOIN client ON user.client_id = client.id";
+        $from .= " LEFT JOIN client ON usr.client_id = client.id";
         $sql .= $tel . $from . $where . $order;
         return [$pdo, $sql];
     };
@@ -135,7 +135,7 @@ function myDomain($fileid)
     list($ownerid, $ownername, $email) = $st->fetch(PDO::FETCH_NUM);
     $editor = $email === $_SESSION['email'];
 
-    $sql = clientFromUpload("SELECT ", "upload.userid,", "user.name,", "client.domain FROM ");
+    $sql = clientFromUpload("SELECT ", "upload.userid,", "usr.name,", "client.domain FROM ");
     $st = $pdo->prepare($sql);
     $st->bindValue(":id", $fileid);
     doPreparedQuery($st, 'Failed to obtain userid');
@@ -234,7 +234,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'upload') {
         $row = $nwpst->fetch(PDO::FETCH_NUM);
         if ($row && count($row) > 0) {
             //RETURNS one user, as relationship between file and user is one to one.
-            $nwpsql = "SELECT employer.user_name, employer.user_id FROM (SELECT user.name AS user_name, user.id AS user_id, client.domain, client.id FROM user INNER JOIN client ON $nwpdomainstr = client.domain INNER JOIN userrole ON user.id = userrole.userid WHERE userrole.roleid LIKE :myrole ORDER BY client.id) AS employer WHERE employer.domain=:id LIMIT 1";
+            $nwpsql = "SELECT employer.user_name, employer.user_id FROM (SELECT usr.name AS user_name, usr.id AS user_id, client.domain, client.id FROM usr INNER JOIN client ON $nwpdomainstr = client.domain INNER JOIN userrole ON usr.id = userrole.userid WHERE userrole.roleid LIKE :myrole ORDER BY client.id) AS employer WHERE employer.domain=:id LIMIT 1";
             $nwpst = $pdo->prepare($nwpsql);
             $nwpst->bindValue(":id", $key);
             $nwpst->bindValue(":myrole", 'Client%');
@@ -244,7 +244,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'upload') {
             if (!$key) {
                 //$key will be empty if above query returned empty set, reset
                 $key = $_POST['user'];
-                $nwpsql = "SELECT user.id from user INNER JOIN client ON user.client_id=client.id WHERE user.email=:id";
+                $nwpsql = "SELECT usr.id from usr INNER JOIN client ON usr.client_id=client.id WHERE usr.email=:id";
                 $nwpst = $pdo->prepare($nwpsql);
                 $nwpst->bindValue(":id", $key);
                 doPreparedQuery($nwpst, 'Error fetching user details');
@@ -271,7 +271,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'upload') {
     $nwpst->bindValue(":userid", $key);
     $res = doPreparedQuery($nwpst, "<p>Database error storing file information!</p>");
     $insertId = lastInsert($pdo, DBSYSTEM, 'upload');
-    $nwpsql = "SELECT user.email, user.name, upload.id, upload.filename FROM user INNER JOIN upload ON user.id=upload.userid WHERE upload.id=:id";
+    $nwpsql = "SELECT usr.email, usr.name, upload.id, upload.filename FROM usr INNER JOIN upload ON usr.id=upload.userid WHERE upload.id=:id";
     $nwpst = $pdo->prepare($nwpsql);
     $nwpst->bindValue(":id", $insertId);
     doPreparedQuery($nwpst, 'Error selecting email address.');
@@ -363,14 +363,14 @@ if (isset($_POST['proceed']) && $_POST['proceed'] === 'destroy') {
     $_extent = $_POST['extent'];
     $deletejoins = array(
         /*doozy, obtain client id from file id to filter list of client files */
-        "DELETE upload FROM user INNER JOIN client ON client.id = user.client_id INNER JOIN upload  ON user.id = upload.userid INNER JOIN (SELECT client.id FROM client INNER JOIN user on user.client_id = client.id  INNER JOIN (SELECT upload.userid FROM user INNER JOIN upload ON upload.userid = user.id WHERE upload.id=:id) AS tmp WHERE user.id = tmp.userid) AS T ON client.id = T.id WHERE client.id = T.id",
-        "DELETE upload FROM upload INNER JOIN user ON upload.userid = user.id INNER JOIN (SELECT userid FROM upload  WHERE id =:id) AS owt ON user.id = owt.userid WHERE user.id = owt.userid",
+        "DELETE upload FROM usr INNER JOIN client ON client.id = usr.client_id INNER JOIN upload  ON usr.id = upload.userid INNER JOIN (SELECT client.id FROM client INNER JOIN usr on usr.client_id = client.id  INNER JOIN (SELECT upload.userid FROM usr INNER JOIN upload ON upload.userid = usr.id WHERE upload.id=:id) AS tmp WHERE usr.id = tmp.userid) AS T ON client.id = T.id WHERE client.id = T.id",
+        "DELETE upload FROM upload INNER JOIN usr ON upload.userid = usr.id INNER JOIN (SELECT userid FROM upload  WHERE id =:id) AS owt ON usr.id = owt.userid WHERE usr.id = owt.userid",
         "DELETE FROM upload WHERE id =:id   "
     );
 
     $selectors = [
         clientFromUpload("SELECT upload.file FROM "),
-        "SELECT upload.file FROM upload INNER JOIN user ON upload.userid = user.id INNER JOIN (SELECT userid FROM upload  WHERE id=:id) AS owt ON user.id = owt.userid WHERE user.id = owt.userid",
+        "SELECT upload.file FROM upload INNER JOIN usr ON upload.userid = usr.id INNER JOIN (SELECT userid FROM upload  WHERE id=:id) AS owt ON usr.id = owt.userid WHERE usr.id = owt.userid",
         "SELECT upload.file FROM upload WHERE id=:id"
     ];
 
@@ -447,7 +447,7 @@ if (isset($_POST['update']) || isset($_POST['swap'])) {
     $answer = $answer ?? $_POST['affirm'] ?? NULL;
     $email = $_SESSION['email'];
 
-    $nwpsql = "SELECT upload.id, filename, description, upload.userid, user.name FROM upload INNER JOIN user ON upload.userid=user.id  WHERE upload.id=:id";
+    $nwpsql = "SELECT upload.id, filename, description, upload.userid, usr.name FROM upload INNER JOIN usr ON upload.userid=usr.id  WHERE upload.id=:id";
     $nwpst = $pdo->prepare($nwpsql);
     $nwpst->bindValue(":id", $_POST['id']);
     doPreparedQuery($nwpst, 'Database error fetching stored files.');
@@ -462,7 +462,7 @@ if (isset($_POST['update']) || isset($_POST['swap'])) {
     $id =  $_POST['id']; //CRUCIAL to pass id to file amend form (update.html.php)
 
     if (preg_match("/client/i", $priv)) {
-        $nwpsql = "SELECT employer.id, employer.name FROM upload INNER JOIN user ON upload.userid = user.id INNER JOIN (SELECT user.id, user.name, client.domain FROM user INNER JOIN client ON $nwpdomainstr=client.domain) AS employer ON $nwpdomainstr=employer.domain WHERE upload.id=:id ORDER BY name"; //colleagues
+        $nwpsql = "SELECT employer.id, employer.name FROM upload INNER JOIN usr ON upload.userid = usr.id INNER JOIN (SELECT usr.id, usr.name, client.domain FROM usr INNER JOIN client ON $nwpdomainstr=client.domain) AS employer ON $nwpdomainstr=employer.domain WHERE upload.id=:id ORDER BY name"; //colleagues
         $nwpst = $pdo->prepare($nwpsql);
         $nwpst->bindValue(":id", $row['id']);
         doPreparedQuery($nwpst, 'Database error fetching colleagues.');
@@ -472,7 +472,7 @@ if (isset($_POST['update']) || isset($_POST['swap'])) {
         }
     }
     if ($priv === 'Admin') {
-        $nwpsql = "SELECT user.name, user.id FROM user LEFT JOIN client ON user.client_id=client.id  WHERE client.domain IS NULL UNION SELECT user.name, user.id FROM user INNER JOIN client ON user.client_id=client.id ORDER BY name";
+        $nwpsql = "SELECT usr.name, usr.id FROM usr LEFT JOIN client ON usr.client_id=client.id  WHERE client.domain IS NULL UNION SELECT usr.name, usr.id FROM usr INNER JOIN client ON usr.client_id=client.id ORDER BY name";
         $nwpst = doQuery($pdo, $nwpsql, 'Database error fetching users.');
         $rows = $nwpst->fetchAll(PDO::FETCH_ASSOC);
         foreach ($rows as $row) {
@@ -510,7 +510,7 @@ if (isset($_GET['p']) && is_numeric($_GET['p'])) {
     include CONNECT;
     $nwpsql = "SELECT COUNT(upload.id) as total from upload ";
     if (preg_match("/client/i", $priv)) {
-        $nwpsql .= " INNER JOIN user on upload.userid = user.id WHERE user.email=:email";
+        $nwpsql .= " INNER JOIN usr on upload.userid = usr.id WHERE usr.email=:email";
     }
     $nwpst = $pdo->prepare($nwpsql);
     $nwpst->bindValue(":email", $_SESSION['email']);
@@ -525,7 +525,7 @@ if (isset($_GET['p']) && is_numeric($_GET['p'])) {
         $pages = ceil($records / $display);
     }
 } //end of IF NOT PAGES SET
-$sorter = array('f' => 'filename ASC', 'ff' => 'filename DESC', 'u' => 'user ASC', 'uu' => 'user DESC', 'uf' => 'user ASC, filename ASC', 'uuf' => 'user DESC, filename ASC',  'uff' => 'user ASC, filename DESC',  'uuff' => 'user DESC, filename DESC', 'ut' => 'user ASC, time ASC', 'utt' => 'user ASC, time DESC', 'uut' => 'user DESC, time ASC', 'uutt' => 'user DESC, time DESC', 't' => 'time ASC', 'tt' => 'time DESC');
+$sorter = array('f' => 'filename ASC', 'ff' => 'filename DESC', 'u' => 'usr ASC', 'uu' => 'usr DESC', 'uf' => 'usr ASC, filename ASC', 'uuf' => 'usr DESC, filename ASC',  'uff' => 'usr ASC, filename DESC',  'uuff' => 'usr DESC, filename DESC', 'ut' => 'usr ASC, time ASC', 'utt' => 'usr ASC, time DESC', 'uut' => 'usr DESC, time ASC', 'uutt' => 'usr DESC, time DESC', 't' => 'time ASC', 'tt' => 'time DESC');
 $mainclass = $pages === 1 ? '' : 'paginate';
 if (isset($_GET['s']) && is_numeric($_GET['s'])) {
     $start = $_GET['s'];
