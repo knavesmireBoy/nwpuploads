@@ -155,7 +155,6 @@ $pageid = 'upload';
 $pagetitle = 'Log In';
 $pagehead = 'Log In!';
 $error = '';
-$myip = '86.160.57.166';
 $user_id = 0;
 $text = '';
 $suffix = '';

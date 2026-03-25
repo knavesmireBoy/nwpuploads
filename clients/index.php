@@ -9,8 +9,6 @@ if (!userIsLoggedIn()) {
 }
 
 $predicates = [partial('preg_match', '/^nwp/')];
-
-$goto = '..';
 $calltext = "Add New Client";
 $callroute = 'add';
 $pageid = 'admin_client';
@@ -19,7 +17,7 @@ function getDomain($pdo, $id)
 {
   $st = $pdo->prepare("SELECT domain FROM client WHERE id=:id");
   $st->bindValue(':id',  $id);
-  doPreparedQuery($st, '<h4>Problem</h4>');
+  doPreparedQuery($st, 'Problem finding domain');
   $row = $st->fetch(PDO::FETCH_ASSOC);
   return $row['domain'];
 }
@@ -74,7 +72,6 @@ if (isset($_POST['action']) && ($_POST['action'] == 'Edited' || isset($_GET['dom
   }
   $id = $_POST['id'];
   $newdom = getDomain($pdo, $_POST['id']);
-
   if ($dom !== $newdom) {
     header("Location: ../admin/?domain=$dom&updated=$newdom");
     exit();
@@ -157,7 +154,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Added') {
 include CONNECT;
 $nwpsql = "SELECT id, name, domain from client"; // THE DEFAULT QUERY
 
-if (isset($_POST['action']) && $_POST['action'] == 'Choose' && $_POST['client'] != '') {
+if (isset($_POST['action']) && $_POST['action'] === 'Choose' && $_POST['client'] !== '') {
   include CONNECT;
   $selected = true;
   $id = $_POST['client'];
@@ -197,11 +194,6 @@ foreach ($nwprows as $nwprow) {
 }
 
 /*
-$x = 'timothy west';
-$a = substr($x, strlen($x) - strpos(strrev($x), ' '));
-$b = substr($x, strpos($x, ' ') +1 );
-dump($a);
-
 $ql = "SELECT SUBSTRING(user.name, LENGTH(user.name) - LOCATE(' ', REVERSE(user.name)) +2) AS brill FROM user WHERE id = 53";
 $ql = "SELECT SUBSTRING(user.name, LOCATE(' ', user.name) +1) AS user FROM user WHERE id=53";
 */
