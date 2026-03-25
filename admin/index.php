@@ -38,7 +38,7 @@ function unsetDetails($bool = false)
 function queryClient($str = '')
 {
   //NOTE id AS employer AND domain in that order as expected by list($employer, $domain)
-  $dom = fromStrPos();
+  $dom = fromStrPos(DBSYSTEM);
   $where = null;
   $sql = "SELECT client.id AS employer, domain, usr.id, usr.email, usr.name FROM client LEFT JOIN usr ON $dom = client.domain";
 

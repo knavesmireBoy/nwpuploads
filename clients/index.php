@@ -22,7 +22,7 @@ function getDomain($pdo, $id)
   return $row['domain'];
 }
 
-$nwpdomainstr = fromStrPos();
+$nwpdomainstr = fromStrPos(DBSYSTEM);
 $pagetitle = "Manage Clients";
 $selected = null;
 list($key, $priv) = obtainUserRole(true);

@@ -399,7 +399,7 @@ function lastInsert($pdo, $db = 'mysql', $tblname = '')
 function fromStrPos($db = 'mysql')
 {
     if ($db === 'postgres') {
-        return "SUBSTRING(usr.email FROM POSITION('@' IN email) + 1)";
+        return "SUBSTRING(email FROM POSITION('@' IN email) + 1)";
     } else {
         return "RIGHT(usr.email, LENGTH(usr.email) - LOCATE('@', usr.email))";
     }
@@ -408,7 +408,7 @@ function fromStrPos($db = 'mysql')
 function replaceStrPos($new, $db = 'mysql')
 {
     if ($db === 'postgres') {
-        return "CONCAT(LEFT(email, SUBSTRING(email FROM POSITION('@' IN email) + 1)), '$new')";
+        return "CONCAT(SUBSTRING(email FROM 1 FOR POSITION('@' IN email)), '$new')";
     } else {
         return "CONCAT(LEFT(email, INSTR(email, '@')), '$new')";
     }
@@ -417,7 +417,7 @@ function replaceStrPos($new, $db = 'mysql')
 function orderByLastName($db = 'mysql')
 {
     if ($db === 'postgres') {
-        return ", COALESCE(NULLIF(SUBSTRING(usr.name, FROM POSITION(' ', IN usr.name) +1), ''), usr.name) AS `user`";
+        return ", COALESCE(NULLIF(SUBSTRING(name FROM POSITION(' ' IN name) +1), ''), name) AS user FROM usr";
     } else {
         return ", COALESCE(NULLIF(SUBSTR(usr.name, LOCATE(' ', usr.name) +1), ''), usr.name) AS `user`";
         return ", COALESCE(NULLIF(SUBSTR(usr.name, LENGTH(usr.name) - LOCATE(' ', REVERSE(usr.name)) +2), ''), usr.name) AS `user`";

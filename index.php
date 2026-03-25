@@ -62,7 +62,7 @@ function presentList($role, $flag = 'admin')
 function buildQuery($role, $flag = 'admin')
 {
     return function ($select, $from, $order) use ($role, $flag) {
-        $domainstr = fromStrPos();
+        $domainstr = fromStrPos(DBSYSTEM);
         include CONNECT;
         if (isApproved($role, $flag)) {
             //by default listing by user will list by first name "Amanda White, Sally Bowles"
@@ -182,7 +182,7 @@ if (!userIsLoggedIn()) {
 if ($roleplay = obtainUserRole()) {
     list($key, $priv) = $roleplay;
     //!!?!! V. USEFUL VARIABLE IN GLOBAL SPACE
-    $nwpdomainstr = fromStrPos();
+    $nwpdomainstr = fromStrPos(DBSYSTEM);
 } else {
     $error = 'Only valid clients may access this page.';
     include TEMPLATE . 'accessdenied.html.php';
