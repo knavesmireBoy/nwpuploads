@@ -148,7 +148,7 @@ function myDomain($fileid)
     list($userid, $name, $domain) = $st->fetch(PDO::FETCH_NUM);
     return [$ownerid, $ownername, $domain, $multi, $editor];
 }
-
+//setExtent do this here
 setExtent(0);
 $predicates = [partial('preg_match', '/^nwp/')];
 $pageid = 'upload';
@@ -208,7 +208,6 @@ $uhead = $qs . $ufn($state);
 $thead = $qs . $tfn($state);
 
 if (isset($_POST['action']) && $_POST['action'] == 'upload') {
-    //Bail out if the file isn't really an upload
     if (!is_uploaded_file($_FILES['upload']['tmp_name'])) {
         header("Location: ./?nofile");
         exit();
@@ -481,7 +480,7 @@ if (isset($_POST['update']) || isset($_POST['swap'])) {
             $all_users[$row['id']] = $row['name'];
         }
     }
-} ///
+} 
 
 if (isset($_POST['original'])) {
     //CAN ONLY BE SET BY ADMIN, 'original' is common to both options of file amend block
@@ -505,9 +504,6 @@ if (isset($_POST['original'])) {
     exit();
 }
 ///end of F I L E AMEND BLOCK___________________________________________________________________
-
-//
-
 if (isset($_GET['p']) && is_numeric($_GET['p'])) {
     $pages = $_GET['p'];
 } else { // counts all files
@@ -538,7 +534,6 @@ if (isset($_GET['s']) && is_numeric($_GET['s'])) {
     $start = 0;
 }
 
-//$sort = (isset($_GET['sort']) ? $_GET['sort'] : '1');
 $sort = $_GET['sort'] ?? '1';
 
 foreach ($sorter as $k => $v) {
@@ -581,7 +576,6 @@ list($pdo, $nwpsql) = $nwpbuild($select, $from, $order);
 $nwpst = doQuery($pdo, $nwpsql, 'Database error fetching files. ');
 $nwprows = $nwpst->fetchAll(PDO::FETCH_ASSOC);
 
-//dump($nwpsql);
 $files = array();
 foreach ($nwprows as $nwprow) {
     $files[] = array(
@@ -600,8 +594,6 @@ foreach ($nwprows as $nwprow) {
         'size' => $nwprow['size']
     );
 }
-
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/base.html.php';
 $error =  $lib[$_SERVER["QUERY_STRING"]] ?? '';
-//$arr = getDefinedVars();
 include $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/templates/files.html.php';

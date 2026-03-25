@@ -32,6 +32,8 @@ function unsetDetails($bool = false)
   $setcookie('username', $_POST['name'] ?? '');
 }
 
+
+
 function queryClient($str = '')
 {
   //NOTE id AS employer AND domain in that order as expected by list($employer, $domain)
@@ -607,12 +609,14 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   $nwpnew = null;
   $nwprole = null;
   $nwprolechange = null;
-  $nwpemployerid = isset($_POST['employer']) ? $_POST['employer'] : $_POST['employed'];
+  $nwpcid = $nwpadmin ? 'employer' : 'employed';
+  $nwpemployerid = nullify($_POST[$nwpcid]);
 
   $location = 'Location: .';
   $nwprelocate = "Location: ./?domainflag=$id";
   list($nwpechange, $editor, $nwpdomain, $nwpagency, $name) = stateQuery($id, $_POST['email'], $priv);
-  list($nwpdomfail, $nwppostdom, $nwpdomchange, $nwpemployerid) = verifyDom($editor, $nwpadmin, $nwpdomain, nullify($nwpemployerid), $_POST);
+  list($nwpdomfail, $nwppostdom, $nwpdomchange, $nwpemployerid) = verifyDom($editor, $nwpadmin, $nwpdomain, $nwpemployerid, $_POST);
+
 
   if (!$override && ($editor && $nwpechange && !$nwpdomfail)) {
     $title = "Prompt";
@@ -656,11 +660,9 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
           exit();
         }
       }
-      $nwpemployerid ? $nwpemployerid : list($nwpemployerid) = isEmployer($_POST, 'id')();
-      $nwpnew = $nwpemployerdom; //reassign qualifying users
+      $nwpnew = $nwpemployerdom ?? $nwppostdom; //reassign qualifying users
       updateUserDetails($id, $nwpemployerid, $nwpassoc);
       updateUserDomain($nwpold, $nwpnew, $id);
-
       if ($nwpagency) {
         $nwprole = getCurrentRole($id);
         deleteRole($id, $priv);
