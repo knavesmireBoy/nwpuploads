@@ -4,7 +4,7 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php'
 function databaseContainsUser($email, $password)
 {
     include 'db.inc.php';
-    $sql = "SELECT COUNT(*) FROM user INNER JOIN userrole ON user.id=userrole.userid WHERE email=:email AND password=:pwd";
+    $sql = "SELECT COUNT(*) FROM usr INNER JOIN userrole ON usr.id=userrole.userid WHERE email=:email AND password=:pwd";
     $st = $pdo->prepare($sql);
     $st->bindValue(":email", $email);
     $st->bindValue(":pwd", $password);
@@ -66,9 +66,9 @@ function userIsLoggedIn()
 function obtainUserRole($flag = false)
 {
     include 'db.inc.php';
-    $sql = "SELECT user.id, userrole.roleid FROM userrole INNER JOIN user ON user.id=userrole.userid where user.email=:email";
+    $sql = "SELECT usr.id, userrole.roleid FROM userrole INNER JOIN usr ON usr.id=userrole.userid where usr.email=:email";
     if ($flag) {
-        $sql = "SELECT user.id, userrole.roleid FROM user INNER JOIN userrole ON user.id=userrole.userid WHERE (userrole.roleid LIKE 'Client%' OR userrole.roleid LIKE '%Admin') AND user.email=:email";
+        $sql = "SELECT usr.id, userrole.roleid FROM usr INNER JOIN userrole ON usr.id=userrole.userid WHERE (userrole.roleid LIKE 'Client%' OR userrole.roleid LIKE '%Admin') AND usr.email=:email";
     }
     $email = $_SESSION['email'];
     $st = $pdo->prepare($sql);

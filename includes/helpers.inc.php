@@ -222,7 +222,7 @@ function isApproved($role, $str = 'admin')
 
 function reAssignClient($pdo)
 {
-    $sql = "SELECT user.id, RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email)) AS dom FROM user LEFT JOIN userrole ON userid = user.id WHERE roleid = 'Client Admin' ORDER by dom";
+    $sql = "SELECT usr.id, RIGHT(usr.email, LENGTH(usr.email) - LOCATE('@', usr.email)) AS dom FROM usr LEFT JOIN userrole ON userid = usr.id WHERE roleid = 'Client Admin' ORDER by dom";
     $update = "UPDATE userrole SET roleid = 'Client' WHERE userid=:id";
     $st = doQuery($pdo, $sql, 'Failed to Update Role');
     $rows = $st->fetchAll(PDO::FETCH_ASSOC);
@@ -239,9 +239,9 @@ function reAssignClient($pdo)
 function reOrderTable($pdo)
 {
 
-    $st = doQuery($pdo, "SELECT id FROM user ORDER by id", "");
+    $st = doQuery($pdo, "SELECT id FROM usr ORDER by id", "");
     $count = 1;
-    $sql = "UPDATE user SET id=:count WHERE id=:current";
+    $sql = "UPDATE usr SET id=:count WHERE id=:current";
     $all = $st->fetchAll(PDO::FETCH_NUM);
     $all = array_merge(...$all);
     $l = count($all);
@@ -256,7 +256,7 @@ function reOrderTable($pdo)
         }
         $count++;
     }
-    $sql = "ALTER table user AUTO_INCREMENT = $count";
+    $sql = "ALTER table usr AUTO_INCREMENT = $count";
     doQuery($pdo, $sql, "Error on Auto Increment");
 }
 
@@ -399,9 +399,9 @@ function lastInsert($pdo, $db = 'mysql', $tblname = '')
 function fromStrPos($db = 'mysql')
 {
     if ($db === 'postgres') {
-        return "SUBSTRING(user.email FROM POSITION('@' IN email) + 1)";
+        return "SUBSTRING(usr.email FROM POSITION('@' IN email) + 1)";
     } else {
-        return "RIGHT(user.email, LENGTH(user.email) - LOCATE('@', user.email))";
+        return "RIGHT(usr.email, LENGTH(usr.email) - LOCATE('@', usr.email))";
     }
 }
 
@@ -417,10 +417,10 @@ function replaceStrPos($new, $db = 'mysql')
 function orderByLastName($db = 'mysql')
 {
     if ($db === 'postgres') {
-        return ", COALESCE(NULLIF(SUBSTRING(user.name, FROM POSITION(' ', IN user.name) +1), ''), user.name) AS `user`";
+        return ", COALESCE(NULLIF(SUBSTRING(usr.name, FROM POSITION(' ', IN usr.name) +1), ''), usr.name) AS `user`";
     } else {
-        return ", COALESCE(NULLIF(SUBSTR(user.name, LOCATE(' ', user.name) +1), ''), user.name) AS `user`";
-        return ", COALESCE(NULLIF(SUBSTR(user.name, LENGTH(user.name) - LOCATE(' ', REVERSE(user.name)) +2), ''), user.name) AS `user`";
+        return ", COALESCE(NULLIF(SUBSTR(usr.name, LOCATE(' ', usr.name) +1), ''), usr.name) AS `user`";
+        return ", COALESCE(NULLIF(SUBSTR(usr.name, LENGTH(usr.name) - LOCATE(' ', REVERSE(usr.name)) +2), ''), usr.name) AS `user`";
     }
 }
 

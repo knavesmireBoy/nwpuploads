@@ -40,18 +40,18 @@ function queryClient($str = '')
   //NOTE id AS employer AND domain in that order as expected by list($employer, $domain)
   $dom = fromStrPos();
   $where = null;
-  $sql = "SELECT client.id AS employer, domain, user.id, user.email, user.name FROM client LEFT JOIN user ON $dom = client.domain";
+  $sql = "SELECT client.id AS employer, domain, usr.id, usr.email, usr.name FROM client LEFT JOIN usr ON $dom = client.domain";
 
-  $options = ['email' => " WHERE user.email=:aux", 'id' => " WHERE user.id=:aux", 'employer' => " WHERE client.id=:aux"];
+  $options = ['email' => " WHERE usr.email=:aux", 'id' => " WHERE usr.id=:aux", 'employer' => " WHERE client.id=:aux"];
   if (is_string($str)) {
     $where = $options[strtolower($str)] ?? null;
   }
   if ($where) {
     return $sql . $where;
   } else if (is_array($str)) { //empty array to signify fetchAll
-    return "SELECT user.id, user.name, user.email, client.domain, roleid AS role FROM user INNER JOIN client ON user.client_id = client.id INNER JOIN userrole ON userrole.userid = user.id WHERE client.domain=:aux ORDER BY name";
+    return "SELECT usr.id, usr.name, usr.email, client.domain, roleid AS role FROM usr INNER JOIN client ON usr.client_id = client.id INNER JOIN userrole ON userrole.userid = usr.id WHERE client.domain=:aux ORDER BY name";
   } else if (is_null($str)) {
-    return "SELECT user.id, user.name FROM user LEFT JOIN client ON user.client_id=client.id WHERE client.domain IS NULL";
+    return "SELECT usr.id, usr.name FROM usr LEFT JOIN client ON usr.client_id=client.id WHERE client.domain IS NULL";
   } else {
     return "SELECT client.id AS employer, domain FROM client WHERE client.domain LIKE '$str%'";
   }
@@ -153,7 +153,7 @@ function presentClientList($role, $prop = 'id', $flag = 'admin')
     $st = doQuery($pdo, "SELECT client.id, client.name, client.domain, client.tel FROM client ORDER BY name", "Database error fetching clients");
     $rows = $st->fetchAll(PDO::FETCH_ASSOC);
 
-    $st = $pdo->prepare("SELECT user.id, user.name FROM client INNER JOIN user ON user.client_id=client.id WHERE client.id=:id");
+    $st = $pdo->prepare("SELECT usr.id, usr.name FROM client INNER JOIN usr ON usr.client_id=client.id WHERE client.id=:id");
     foreach ($rows as $row) {
       $st->bindValue(":id", $row['id']);
       doPreparedQuery($st, "Database error fetching user");
@@ -169,7 +169,7 @@ function presentClientList($role, $prop = 'id', $flag = 'admin')
 function retrieveDetails($id, $p = '')
 {
   include CONNECT;
-  $sql = "SELECT user.name, user.email, client.domain FROM user LEFT JOIN client ON user.client_id=client.id WHERE user.id=:id ORDER BY name";
+  $sql = "SELECT usr.name, usr.email, client.domain FROM usr LEFT JOIN client ON usr.client_id=client.id WHERE usr.id=:id ORDER BY name";
 
   $st = $pdo->prepare($sql);
   $st->bindValue(":id", $id);
@@ -262,7 +262,7 @@ function filterUsers($key, $pagetitle, $error = '')
 function updateUserDetails($id, $client_id, $assoc)
 {
   include CONNECT;
-  $sql = "UPDATE user SET name=:name, email=:email";
+  $sql = "UPDATE usr SET name=:name, email=:email";
   $sql .= $assoc ? ", client_id=:cid" : '';
   $sql .= " WHERE id=:id";
   $st = $pdo->prepare($sql);
@@ -282,7 +282,7 @@ function updateUserDomain($old, $new, $id = 0)
     include CONNECT;
     $concat = replaceStrPos($new);
     //update email of employees IF the domain of client changes
-    $sql = "UPDATE user SET email = $concat WHERE email LIKE '%$old'";
+    $sql = "UPDATE usr SET email = $concat WHERE email LIKE '%$old'";
     //but restrict to a specific employee (eg leaving)
     if ($id) {
       $sql .= " AND id=$id";
@@ -348,7 +348,7 @@ function deleteRole($id, $role)
 function deleteAlready($id)
 {
   include CONNECT;
-  $st = $pdo->prepare("DELETE FROM user WHERE id =:id");
+  $st = $pdo->prepare("DELETE FROM usr WHERE id =:id");
   $st->bindValue(':id', $id);
   doPreparedQuery($st, 'Error deleting user.');
   header('Location: . ');
@@ -359,7 +359,7 @@ function updatePassword($password, $id)
 {
   include CONNECT;
   $password = md5($password . 'uploads');
-  $st = $pdo->prepare("UPDATE user SET password =:pwd  WHERE id =:id");
+  $st = $pdo->prepare("UPDATE usr SET password =:pwd  WHERE id =:id");
   $st->bindValue(':pwd', $password);
   $st->bindValue(':id', $id);
   return doPreparedQuery($st, 'Error setting user password.');
@@ -484,7 +484,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
   }
   list($echange, $editor, $domain, $agency) = stateQuery($nwp_id, $_POST['email'], $priv);
 
-  $st = $pdo->prepare("INSERT INTO user (name, email, password, client_id) VALUES(:nom, :e,:pwd, :clientid)");
+  $st = $pdo->prepare("INSERT INTO usr (name, email, password, client_id) VALUES(:nom, :e,:pwd, :clientid)");
   list($domchange, $comchange, $dom, $com) = queryEmail($editor, $_POST);
   $clientid = likeDomain(true, $dom);
   $employerid = $employerid ?? $clientid;
@@ -506,7 +506,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
     $nwprow = $st->fetch(PDO::FETCH_ASSOC);
     $dbdom = $nwprow['domain'];
 
-    $st = $pdo->prepare("SELECT email FROM user WHERE client_id=:cid AND id=:aid");
+    $st = $pdo->prepare("SELECT email FROM usr WHERE client_id=:cid AND id=:aid");
     $st->bindValue(':aid', $nwpInsertID);
     $st->bindValue(':cid', intval($employerid));
     doPreparedQuery($st, 'Error fetching domain.');
@@ -771,7 +771,7 @@ if (checkIsset($_GET, array_merge(['edit'], $redirects))) {
   if ($nwpadmin) {
     $clientlist = presentClientList($priv);
     if (!isset($nwprow['employer']) && !isset($_GET['domainassoc'])) {
-      $nwpst = $pdo->prepare("SELECT client_id AS employer FROM user WHERE id=:id");
+      $nwpst = $pdo->prepare("SELECT client_id AS employer FROM usr WHERE id=:id");
       $nwpst->bindValue(":id", $id);
       doPreparedQuery($nwpst, "Error retrieving client id from user!");
       $nwprow = $nwpst->fetch(PDO::FETCH_ASSOC);
@@ -814,7 +814,7 @@ if ($users === []) {
 if ($users === []) {
   include CONNECT;
   if (!$admin) {
-    $nwpsql .= " AND user.id=$key";
+    $nwpsql .= " AND usr.id=$key";
   }
   $nwpsql .= " ORDER BY name";
   $nwpst = doQuery($pdo, $nwpsql, '');

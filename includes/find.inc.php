@@ -5,13 +5,13 @@ if ($priv != "Admin") {
     $email = $_SESSION['email'];
     $iskey = false;
     include CONNECT;
-    $st = $pdo->prepare("SELECT $domainstr FROM user WHERE user.email=:email");
+    $st = $pdo->prepare("SELECT $domainstr FROM usr WHERE usr.email=:email");
     $st->bindValue(":email", $email);
     doPreparedQuery($st, "Error finding domain");
     $row = $st->fetch(PDO::FETCH_NUM);
     $dom = $row[0];
 
-    $sql = "SELECT COUNT(*) AS dom FROM user INNER JOIN client ON $domainstr=client.domain WHERE $domainstr=:dom AND client.domain=:dommo";
+    $sql = "SELECT COUNT(*) AS dom FROM usr INNER JOIN client ON $domainstr=client.domain WHERE $domainstr=:dom AND client.domain=:dommo";
 
     $st = $pdo->prepare($sql);
     $st->bindValue(":dom", $dom);
@@ -20,12 +20,12 @@ if ($priv != "Admin") {
     $count = $row ? $row['dom'] : [];
 
     if (count($count) > 0) {
-        $where = " WHERE user.email=:email"; //client
+        $where = " WHERE usr.email=:email"; //client
     } else {
-        $where = " WHERE user.id=:key"; //user
+        $where = " WHERE usr.id=:key"; //user
         $iskey = true;
     }
-    $sql = "SELECT employer.id, employer.name FROM user INNER JOIN (SELECT user.id, user.name, client.domain FROM user INNER JOIN client ON $domainstr=client.domain) AS employer ON $domainstr=employer.domain $where";
+    $sql = "SELECT employer.id, employer.name FROM usr INNER JOIN (SELECT usr.id, usr.name, client.domain FROM usr INNER JOIN client ON $domainstr=client.domain) AS employer ON $domainstr=employer.domain $where";
     $st = $pdo->prepare($sql);
     if ($iskey) {
         $st->bindValue(":key", $key);

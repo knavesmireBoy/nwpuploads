@@ -1,9 +1,9 @@
 <?php
 include CONNECT;
 $tel = '';
-$from .= " INNER JOIN userrole ON user.id=userrole.userid";
+$from .= " INNER JOIN userrole ON usr.id=userrole.userid";
 $user_id =  $_GET['user'] ?? ''; //either a user id (int) or a client domain (str)
-$select .= ", user.name as user";
+$select .= ", usr.name as user";
 $check = NULL;
 if ($priv == 'Admin') {
     //will either return empty set(no error) or produce count. Test to see if a client has been selected.
@@ -20,7 +20,7 @@ if ($priv == 'Admin') {
         $check = count($row);
     } else {
         if ($user_id != '') {
-            $where = " WHERE user.id=$user_id";
+            $where = " WHERE usr.id=$user_id";
         } else {
             $where = ' WHERE TRUE';
         }
@@ -28,10 +28,10 @@ if ($priv == 'Admin') {
 } //admin
 else { //multi client
     if ($user_id != '') { // A user is selected 
-        $where = " WHERE user.id=$user_id";
+        $where = " WHERE usr.id=$user_id";
     } else {
         $email = $_SESSION['email'];
-        $where = " WHERE user.email='$email'";
+        $where = " WHERE usr.email='$email'";
     }
 }
 $text = $_GET['text'];
