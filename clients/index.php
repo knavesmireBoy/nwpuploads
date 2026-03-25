@@ -111,13 +111,13 @@ if (isset($_POST['associate'])) {
   include CONNECT;
   $dom = strtolower($_POST['dom']);
   $nwpclientID = strtolower($_POST['id']);
-  $nwpst = $pdo->prepare("SELECT id FROM user WHERE $nwpdomainstr=:dom");
+  $nwpst = $pdo->prepare("SELECT id FROM usr WHERE $nwpdomainstr=:dom");
   $nwpst->bindValue(":dom", $dom);
   doPreparedQuery($nwpst, 'Error fetching id.');
   $nwprows = $nwpst->fetchAll(PDO::FETCH_ASSOC);
   foreach ($nwprows as $nwprow) {
     $id = $nwprow['id'];
-    $nwpst = $pdo->prepare("UPDATE user SET client_id=:cid WHERE id=:id");
+    $nwpst = $pdo->prepare("UPDATE usr SET client_id=:cid WHERE id=:id");
     $nwpst->bindValue(":id", $id);
     $nwpst->bindValue(":cid", $nwpclientID);
     doPreparedQuery($nwpst, 'Error updating user.');
@@ -138,7 +138,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Added') {
     include TEMPLATE . 'error.html.php';
     exit();
   }
-  $nwpst = $pdo->prepare("SELECT id FROM user WHERE $nwpdomainstr =:dom");
+  $nwpst = $pdo->prepare("SELECT id FROM usr WHERE $nwpdomainstr =:dom");
   $nwpst->bindValue(':dom', $dom);
   doPreparedQuery($nwpst, 'Error selecting client by domain.');
   $nwprows = $nwpst->fetchAll(PDO::FETCH_ASSOC);
@@ -194,7 +194,7 @@ foreach ($nwprows as $nwprow) {
 }
 
 /*
-$ql = "SELECT SUBSTRING(user.name, LENGTH(user.name) - LOCATE(' ', REVERSE(user.name)) +2) AS brill FROM user WHERE id = 53";
-$ql = "SELECT SUBSTRING(user.name, LOCATE(' ', user.name) +1) AS user FROM user WHERE id=53";
+$ql = "SELECT SUBSTRING(usr.name, LENGTH(usr.name) - LOCATE(' ', REVERSE(usr.name)) +2) AS brill FROM usr WHERE id = 53";
+$ql = "SELECT SUBSTRING(usr.name, LOCATE(' ', usr.name) +1) AS user FROM usr WHERE id=53";
 */
 include 'clients.html.php';
