@@ -13,6 +13,6 @@ define("WEBSITE", '/nwp_uploads/');
 define('BASE_PATH', __DIR__);
 define('CONNECT', __DIR__  . '/includes/db.inc.php');
 define('DBSYSTEM', 'mysql');
-define('SUPERUSER', 'andrewsykes@btinternet.com');
+define('SUPERUSER', 'files@northwolds.co.uk');
 define('MYIP', '86.160.57.166');
 define('PAGINATE', 5);

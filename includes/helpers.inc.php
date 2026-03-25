@@ -285,10 +285,11 @@ function generateRandomString($length = 10)
     return substr(str_shuffle(str_repeat($x = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil($length / strlen($x)))), 1, $length);
 }
 
-function identity($arg)
+function identity($arg = null)
 {
     return $arg;
 }
+
 
 function add($a, $b)
 {
@@ -328,10 +329,42 @@ function curry2($fun)
     };
 }
 
-//expects functions to run loike this ($c, $b, $a) and an initial argument is expected by identity
+function curryl2($fun)
+{
+    return function ($arg1) use ($fun) {
+        return function ($arg2) use ($fun, $arg1) {
+            return $fun($arg1, $arg2);
+        };
+    };
+}
+
+function curry3($fun)
+{
+    return function ($arg3) use ($fun) {
+        return function ($arg2) use ($fun, $arg3) {
+            return function ($arg1) use ($fun, $arg3, $arg2) {
+                return $fun($arg1, $arg2, $arg3);
+            };
+        };
+    };
+}
+
+
+//expects functions to run like this ($c, $b, $a) and an initial argument is expected by identity
 function composer(...$fns)
 {
     return array_reduce($fns, function ($f, $g) {
+        return function (...$vals) use ($f, $g) {
+            return $f($g(...$vals));
+        };
+    }, 'identity');
+}
+
+
+function docompose($a, $b)
+{
+    return array_reduce([$a, $b], function ($f, $g) {
+
         return function (...$vals) use ($f, $g) {
             return $f($g(...$vals));
         };

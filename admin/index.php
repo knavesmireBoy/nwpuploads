@@ -200,8 +200,8 @@ function verifyDom($editor, $admin, $domain, $employerid, $data)
   if ($employerid && $cid && ($cid !== $employerid)) {
     canAssign($editor, $domain, $data['id']);
   }
-  $domchange = $admin && ($_SESSION['email'] !== SUPERUSER) ? true : $domchange;
 
+  $domchange = $admin && ($_SESSION['email'] !== SUPERUSER) ? true : $domchange;
   $clientFunc = function ($change, $arg) {
     //make sure BOTH arguments are true for domfail
     return $change && $arg;
@@ -604,6 +604,13 @@ if (isset($_POST['change']) || isset($_GET['cancel'])) {
 }
 
 if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
+
+/*
+the idea behind prefacing variables with nwp is to
+reduce potential conflict leaking into templates
+all nwp variables are unset but that is not really required but nwp variables should be ephemeral
+*/
+
   include CONNECT;
   $action = "editform";
   $override = $_POST['override'];
@@ -620,7 +627,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   $nwprelocate = "Location: ./?domainflag=$id";
   list($nwpechange, $editor, $nwpdomain, $nwpagency, $name) = stateQuery($id, $_POST['email'], $priv);
   list($nwpdomfail, $nwppostdom, $nwpdomchange, $nwpemployerid) = verifyDom($editor, $nwpadmin, $nwpdomain, $nwpemployerid, $_POST);
-
   if (!$override && ($editor && $nwpechange && !$nwpdomfail)) {
     $title = "Prompt";
     $prompt = "Changing your email will log you out of the current session. Proceed?";
@@ -662,10 +668,16 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
           exit();
         }
       }
-      $nwpold = domReplace($nwpdomain, $nwpemployerdom, $nwppostdom);
-      $nwpnew = domReplace($nwpdomain, $nwpemployerdom, $nwppostdom, true);
+      $nwpSetDom = partial('domReplace', $nwpdomain, $nwpemployerdom, $nwppostdom);
       updateUserDetails($id, $nwpemployerid, $nwpassoc);
-      updateUserDomain($nwpold, $nwpnew, $id);
+      /*
+      //playing with docompose; this works, but ..
+      with composing one mans eloquence is anothers gobbledygook; problem is its usually the same guy; a few weeks apart
+      it can help to reduce variables
+      $update = curry2('docompose')(curry2('docompose')($nwpSetDom)(curry3('updateUserDomain')($id)))(curry2('docompose')($nwpSetDom));
+      $update(true)(false);
+      */
+      updateUserDomain($nwpSetDom(false), $nwpSetDom(true), $id);
       if ($nwpagency) {
         $nwprole = getCurrentRole($id);
         deleteRole($id, $priv);
@@ -682,7 +694,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
     if ($name && $name !== $_POST['name']) {
         $location .= "/?namechange=$id";
     }
-
     header($location);
     exit();
   } //if !prompt
