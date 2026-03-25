@@ -20,15 +20,13 @@ foreach (get_defined_vars() as $k => $v) {
   unset($i);
   unset($L);
   unset($fail);
-
-
-$optgroup = $priv === 'Admin' ? 'clients' : '';
+$optgroup = $admin ? 'clients' : '';
 ?>
 <h1><?= $pagehead; ?></h1>
 <p class='error'><?= $error; ?></p>
 <?php
 
-if (isApproved($priv, 'admin') || isset($editor)) {
+if ($admin || isset($editor)) {
 	ob_start();
 	$obstart = true;
 	include TEMPLATE . '_call.html.php';
@@ -41,7 +39,7 @@ if (empty($selected)):
 		<label for="user"></label><select id="user" name="user">
 			<option value="">Select one</option>
 			<?php if ($optgroup) {
-				$group = $client;
+				$group = $clients;
 				include TEMPLATE . '_optgroup.html.php';
 				$optgroup = 'users';
 				$group = $users;

@@ -27,7 +27,7 @@ $domain = false;
 	<p><?= $message; ?></p>
 <?php
 }
-if ((isApproved($priv, 'admin') || $editor) && !empty($id)) {
+if (($admin || $editor) && !empty($id)) {
 	include TEMPLATE . '_call.html.php';
 }
 ?>
@@ -44,12 +44,8 @@ if ((isApproved($priv, 'admin') || $editor) && !empty($id)) {
 		<label for="name">Name</label><input id="name" type="text" name="name" value="<?= $name ?? ''; ?>" required autocomplete="off" />
 		<label for="email">Email</label><input type="email" id="email" name="email" value="<?= $email ?? ''; ?>" required autocomplete="off" />
 		<label for="password">Password</label><input id="password" type="password" name="password" />
-
 		<input type="hidden" name="employed" autocomplete="new-password"
             value="<?= $employer ?? ''; ?>" />
-
-
-
 	</div>
 	<?php include TEMPLATE . '_roles.html.php'; 
 	 include  TEMPLATE . '_clientlist.html.php'; ?>

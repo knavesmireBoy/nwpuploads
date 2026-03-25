@@ -8,10 +8,6 @@ function fix()
   reAssignClient($pdo);
 }
 
-function onNotice($override, $location, $function){
-
-}
-
 function domReplace($current, $neue, $fallback, $new = false)
 {
   if($new){
@@ -38,8 +34,6 @@ function unsetDetails($bool = false)
   $setcookie('email', $_POST['email'] ?? '');
   $setcookie('username', $_POST['name'] ?? '');
 }
-
-
 
 function queryClient($str = '')
 {
@@ -190,7 +184,7 @@ function stateQuery($id, $postemail, $priv)
   $row = retrieveDetails($id);
   $dbemail = isset($row) ? strtolower($row['email']) : null;
   $postemail = $postemail ? strtolower($postemail) : $logemail;
-  return [$dbemail !== $postemail, $logemail === $dbemail, $row['domain'] ?? '', isApproved($priv, 'admin'), $row['name'] ?? ''];
+  return [$dbemail !== $postemail, nullify($logemail === $dbemail), $row['domain'] ?? '', isApproved($priv, 'admin'), $row['name'] ?? ''];
 }
 
 function verifyDom($editor, $admin, $domain, $employerid, $data)
@@ -199,11 +193,9 @@ function verifyDom($editor, $admin, $domain, $employerid, $data)
   //validating domain: have these functions return TRUE to indicate failure
   $fn = isEmployer($dom);
   list($cid) = $fn();
-
   if ($employerid && $cid && ($cid !== $employerid)) {
     canAssign($editor, $domain, $data['id']);
   }
-
   $domchange = $admin && ($_SESSION['email'] !== SUPERUSER) ? true : $domchange;
   $clientFunc = function ($change, $arg) {
     //make sure BOTH arguments are true for domfail
@@ -274,10 +266,6 @@ function updateUserDetails($id, $client_id, $assoc)
   $sql .= $assoc ? ", client_id=:cid" : '';
   $sql .= " WHERE id=:id";
   $st = $pdo->prepare($sql);
-  /*
-  if admin fails to assign a new domain to a user then obtain the client_id from the domain and reassign rather than have a client_id of null while an email domain points to a client.
-  "A Contractor Scenario would be where the user has no client_id but shares the domain, but then they would not be deleted if a client were removed creating redundancy in the database; avoid"
-  */
   if ($assoc) {
     $st->bindValue(":cid", nullify($client_id));
   }
@@ -411,13 +399,13 @@ $lefty = "SELECT user.id, LEFT(user.email, LOCATE('@', user.email) -1) AS name F
 */
 $prompt = null;
 $users = [];
-$error = query();
-$pagehead = "Edit details";
-$message = $error ?? '';
 $denied = false;
 $usercount = 0;
 $selected = null;
-$goto = '.';
+$nwpagency = null;
+$error = query();
+$pagehead = "Edit details";
+$message = $error ?? '';
 $pageid = 'admin_user';
 $calltext = "Add New User";
 $callroute = 'add';
@@ -426,7 +414,6 @@ $nwproleplay = obtainUserRole();
 $pagehead_role = $nwproleplay && !obtainUserRole(true);
 $predicates = [partial('preg_match', '/^nwp/')];
 $redirects = ['pwd', 'domainflag', 'domainassoc', 'namechange'];
-$nwpagency = null;
 $nwproleorder = ['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'];
 
 if (!$nwproleplay || $pagehead_role) {
@@ -437,9 +424,8 @@ if (!$nwproleplay || $pagehead_role) {
   exit();
 }
 list($key, $priv) = $nwproleplay;
-
+//filters Admin role if Client Admin is logged in
 $nwpRolesCallback = preg_match('/client/i', $priv) ? composer(negate(curry2('equals')('Admin')), curry2('getter')('id')) : 'identity';
-
 list($nwp_echange, $nwp_editor, $nwp_domain, $nwp_agency) = stateQuery($nwp_id, '', $priv);
 $pagetitle = preg_match("/client/i", $priv) ? "Admin" : "Admin | Edit Users";
 //end of initial globals
@@ -456,7 +442,7 @@ if (isset($_GET['add'])) {
   $button = 'Add User';
   $pagehead = "New User";
   $legend = null;
-  $override = '';
+  $override = null;
 
   if (!isApproved($priv, 'admin')) {
     header("Location: ./?addno");
@@ -557,8 +543,8 @@ if (isset($_POST['confirm'])) {
     $st = $pdo->prepare("SELECT role.id AS role, userrole.userid AS id FROM role LEFT JOIN userrole ON role.id = userrole.roleid WHERE userrole.userid=:id");
 
     if (!empty($rows)) {
-      foreach ($rows as $r) {
-        $st->bindValue(':id',  $r['id']);
+      foreach ($rows as $ro) {
+        $st->bindValue(':id',  $ro['id']);
         doPreparedQuery($st, 'Error fetching roles.');
         $nwpro = $st->fetch(PDO::FETCH_ASSOC);
         $roles[$ro['id']] = $nwpro['role'];
@@ -608,13 +594,11 @@ if (isset($_POST['change']) || isset($_GET['cancel'])) {
 }
 
 if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
-
 /*
 the idea behind prefacing variables with nwp is to
 reduce potential conflict leaking into templates
 all nwp variables are unset, not really required but and indication that such variables are ephemeral
 */
-
   include CONNECT;
   $action = "editform";
   $override = $_POST['override'];
@@ -795,6 +779,7 @@ if (checkIsset($_GET, array_merge(['edit'], $redirects))) {
     //selects client in drop down menu UNLESS you have the warning ('domainassoc') about assigning a new domain
     $employer =  $nwprow['employer'] ?? null;
   }
+  //$employer is clientid supplied to a hidden field in the edit form
   $employer = $employer ?? $nwprow['employer'] ?? null;
   $roles = safeFilter($roles, $nwpRolesCallback);
   $admin = $nwpadmin;
@@ -839,16 +824,12 @@ if ($users === []) {
   }
 }
 
-if ($admin) {
-  include CONNECT;
-  $client = presentClientList($priv, 'domain');
-}
+$clients = $admin ? presentClientList($priv, 'domain') : [];
 $message = $message ? $message : $error;
 //2 ie more than 1
 $usercount = isApproved($priv, 'ADMIN') ? 2 : count($users);
 //setExtent is largely used for displaying conditional content, appropriate buttons etc..
 setExtent($usercount);
-
 if ($usercount === 1 && !isset($prompt)) {
   $calltext = "Delete User";
   $callroute = "delete=$key";
@@ -864,6 +845,5 @@ if ($usercount === 1 && !isset($prompt)) {
   header("Location: $location"); //GO DIRECT TO EDIT FORM, unless...
   exit();
 } else { //usercount is zero or more than one
-  //...clients of one in number can only end up here if a prompt is set and usercount is zero
   include 'users.html.php';
 }
