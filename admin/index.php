@@ -8,9 +8,12 @@ function fix()
   reAssignClient($pdo);
 }
 
+function onNotice($override, $location, $function){
+
+}
+
 function domReplace($current, $neue, $fallback, $new = false)
 {
-
   if($new){
     return $neue ?? $fallback;
   }
@@ -364,8 +367,9 @@ function deleteAlready($id)
   exit();
 }
 
-function updatePassword($pdo, $password, $id)
+function updatePassword($password, $id)
 {
+  include CONNECT;
   $password = md5($password . 'uploads');
   $st = $pdo->prepare("UPDATE user SET password =:pwd  WHERE id =:id");
   $st->bindValue(':pwd', $password);
@@ -507,7 +511,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
   $nwpInsertID = lastInsert($pdo, DBSYSTEM, 'user');
 
   if (isset($_POST['password']) && $_POST['password'] != '') {
-    $res = updatePassword($pdo, $_POST['password'], $nwpInsertID);
+    updatePassword($_POST['password'], $nwpInsertID);
   }
   $roles = isset($_POST['roles']) ? $_POST['roles'] : [];
   if ($employerid) {
@@ -608,7 +612,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
 /*
 the idea behind prefacing variables with nwp is to
 reduce potential conflict leaking into templates
-all nwp variables are unset but that is not really required but nwp variables should be ephemeral
+all nwp variables are unset, not really required but and indication that such variables are ephemeral
 */
 
   include CONNECT;
@@ -662,7 +666,7 @@ all nwp variables are unset but that is not really required but nwp variables sh
     if ($editor || $nwpagency) {
       if (isset($_POST['password']) && $_POST['password'] != '') {
         if ($override) {
-          $res = updatePassword($pdo, $_POST['password'], $id);
+          updatePassword($_POST['password'], $id);
         } else {
           header("Location: ./?pwd=$id");
           exit();

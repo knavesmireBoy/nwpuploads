@@ -49,7 +49,7 @@ function userIsLoggedIn()
         unset($_SESSION['loggedIn']);
         unset($_SESSION['email']);
         unset($_SESSION['password']);
-        //header("Location: " . $_POST['goto']);
+        setExtent(0);
         $setcookie = doSetCookie(false);
         $setcookie('email', $_POST['email']);
         $setcookie('username', $_POST['name']);
