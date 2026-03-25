@@ -8,8 +8,12 @@ function fix()
   reAssignClient($pdo);
 }
 
-function domReplace($current, $neue, $fallback)
+function domReplace($current, $neue, $fallback, $new = false)
 {
+
+  if($new){
+    return $neue ?? $fallback;
+  }
   if (!$current && $neue) {
     return $fallback;
   } else if ($current !== $neue) {
@@ -617,7 +621,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
   list($nwpechange, $editor, $nwpdomain, $nwpagency, $name) = stateQuery($id, $_POST['email'], $priv);
   list($nwpdomfail, $nwppostdom, $nwpdomchange, $nwpemployerid) = verifyDom($editor, $nwpadmin, $nwpdomain, $nwpemployerid, $_POST);
 
-
   if (!$override && ($editor && $nwpechange && !$nwpdomfail)) {
     $title = "Prompt";
     $prompt = "Changing your email will log you out of the current session. Proceed?";
@@ -650,7 +653,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
       header($nwprelocate);
       exit();
     }
-    $nwpold = domReplace($nwpdomain, $nwpemployerdom, $nwppostdom);
     if ($editor || $nwpagency) {
       if (isset($_POST['password']) && $_POST['password'] != '') {
         if ($override) {
@@ -660,7 +662,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
           exit();
         }
       }
-      $nwpnew = $nwpemployerdom ?? $nwppostdom; //reassign qualifying users
+      $nwpold = domReplace($nwpdomain, $nwpemployerdom, $nwppostdom);
+      $nwpnew = domReplace($nwpdomain, $nwpemployerdom, $nwppostdom, true);
       updateUserDetails($id, $nwpemployerid, $nwpassoc);
       updateUserDomain($nwpold, $nwpnew, $id);
       if ($nwpagency) {
