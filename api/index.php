@@ -1,7 +1,7 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
-include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/config.php';
+include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/includes/helpers.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/includes/access.inc.php';
 
 function fromPayload($str, ...$args)
 {
@@ -217,7 +217,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'upload') {
     $time = time();
     //$uploadname = $time . getRemoteAddr() . $ext;
     $uploadname = $time . $ext;
-    $path = '../../filestore/';
+    $path = FILESTORE;
     $filedname =  $path . $uploadname;
     // Copy the file (if it is deemed safe)
     if (!copy($uploadfile, $filedname)) {
@@ -308,12 +308,13 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
     $uploadfile = $file['file'];
     $size = $file['size'];
     $filepath .= $uploadfile;
-    $fullpath = $_SERVER['DOCUMENT_ROOT'] . $filepath;
+   // $fullpath = $filepath;
     if (!file_exists($filepath)) {
         header("Location: .");
         exit();
     }
-    $filedata = file_get_contents($fullpath);
+
+    $filedata = file_get_contents($filepath);
     $disposition = $_GET['action'] == 'download' ? 'attachment' : 'inline';
     //$mimetype = 'application/x-unknown'; application/octet-stream
     //Content-type must come before Content-disposition
@@ -327,8 +328,6 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
 } // end of download
 
 if (isset($_POST['action']) && $_POST['action'] == 'delete') {
-
-    // dump($_GET);
     //obtain user id/client name
     $id = $_POST['id']; //id of file
     $title = "Prompt";
@@ -359,7 +358,7 @@ if (isset($_GET['upload'])) {
 
 if (isset($_POST['proceed']) && $_POST['proceed'] === 'destroy') {
     include CONNECT;
-    $path = '../../filestore/';
+    $path = FILESTORE;
     $_extent = $_POST['extent'];
     $deletejoins = array(
         /*doozy, obtain client id from file id to filter list of client files */

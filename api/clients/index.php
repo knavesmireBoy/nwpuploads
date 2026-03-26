@@ -1,6 +1,6 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/includes/access.inc.php';
 
 if (!userIsLoggedIn()) {
   $pagetitle = "Log In";

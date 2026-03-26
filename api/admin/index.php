@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/includes/access.inc.php';
 //NOTE arrow functions not introduced until PHP 7.4; default mac installation is 7.3xx
 function fix()
 {
@@ -429,6 +429,7 @@ $nwpRolesCallback = preg_match('/client/i', $priv) ? composer(negate(curry2('equ
 list($nwp_echange, $nwp_editor, $nwp_domain, $nwp_agency) = stateQuery($nwp_id, '', $priv);
 $pagetitle = preg_match("/client/i", $priv) ? "Admin" : "Admin | Edit Users";
 //end of initial globals
+
 $nwpadmin = isApproved($priv, 'ADMIN');
 
 if (isset($_GET['domain'])) {
@@ -724,7 +725,7 @@ if (checkIsset($_GET, array_merge(['edit'], $redirects))) {
     }
   }
   include CONNECT;
-  $nwpst = $pdo->prepare("SELECT id, name, email FROM user WHERE id =:id");
+  $nwpst = $pdo->prepare("SELECT id, name, email FROM usr WHERE id =:id");
   $nwpst->bindValue(":id", $id);
   doPreparedQuery($nwpst, "Error fetching user details");
   $nwprow = $nwpst->fetch(PDO::FETCH_ASSOC);

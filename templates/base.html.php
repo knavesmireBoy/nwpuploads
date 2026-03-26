@@ -1,6 +1,6 @@
 <?php
-$css =  is_dir('../css') ? '../css/main.css' : 'css/main.css';
-$fav =  is_dir('../assets') ? '../assets/favicon.ico' : 'assets/favicon.ico';
+$css =  is_dir('../public/css') ? '../public/css/main.css' : '../../public/css/main.css';
+$fav =  is_dir('../public/assets') ? '../public/assets/favicon.ico' : '../../assets/favicon.ico';
 
 ?>
 <!DOCTYPE html>

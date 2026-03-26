@@ -1,5 +1,5 @@
 <section id=prompt>
-    <?php include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php';
+    <?php include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/includes/helpers.inc.php';
 
     if (isset($clientlist)): ?>
         <form action="." method="post" name="clientform" class="prompt">

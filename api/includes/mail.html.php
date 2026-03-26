@@ -1,6 +1,6 @@
 <?php
 $body =  '<html><body><p>We have just uploaded the file <a href='.
-'"http://northwolds.serveftp.net/nwp_uploads/" /><strong>' . $file . '</strong></a> for printing.</p></body></html>'; 
+'"http://northwolds.serveftp.net/nwp_uploads/api/" /><strong>' . $file . '</strong></a> for printing.</p></body></html>'; 
 if (!@mail('north.wolds@btinternet.com', 'Files to North Wolds | ' . $file,  
    $body,  
     "From: $name <{$_SESSION['email']}>\n" . 

@@ -7,9 +7,10 @@ ini_set('post_max_size', '125M');
 ini_set('pcre.jit', false);
 date_default_timezone_set( "Europe/London" );
 
-define("TEMPLATE", __DIR__ . '/templates/');
-define("INCLUDES", __DIR__ . '/includes/');
-define("WEBSITE", '/nwp_uploads/');
+define("TEMPLATE", __DIR__ . '../../templates/');
+define("FILESTORE", $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/filestore/');
+define("INCLUDES", __DIR__ . '../includes/');
+define("WEBSITE", '/nwp_uploads/api/');
 define('BASE_PATH', __DIR__);
 define('CONNECT', __DIR__  . '/includes/db.inc.php');
 //define('DBSYSTEM', 'postgres');
