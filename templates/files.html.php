@@ -1,6 +1,8 @@
 <?php include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/includes/helpers.inc.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/config.php';
 
+
+
 foreach (get_defined_vars() as $k => $v) {
     $i = 0;
     $fail = false;
@@ -21,7 +23,7 @@ foreach (get_defined_vars() as $k => $v) {
 
 
 $klas = $pages > 1 ? 'paginate' : '';
-$d = 'l F j, Y';
+$dateformat = 'l F j, Y';
 $qlib = [
     'find',
     'user',
@@ -46,7 +48,6 @@ $qpass = true;
 $i = 0;
 $failedsearch = 'There were no files that matched your criteria';
 
-
 while (isset($result[$i])) {
     $qpass = $qpass && in_array($result[$i], $qlib);
     $i++;
@@ -61,7 +62,7 @@ $query = preg_match("/error/", $query) ? decode($query) : ($query ? $failedsearc
 //$d = 'j, n, Y';
 ?>
 <h1>File Uploads</h1>
-<h2><?= date($d); ?></h2>
+<h2><?= date($dateformat); ?></h2>
 
 <?php
 if (isset($template)) {
@@ -88,10 +89,14 @@ if (count($files) > 0): ?>
                 <?php
                 $fsize = formatFileSize($f['size']);
                 $client = $f['client'] ?? '';
-                $des = (empty($f['description'])  ? 'No description provided' : $f['description']);
+                $description = (empty($f['description'])  ? 'No description provided' : $f['description']);
                 $tel = $f['tel'];
                 $tel = $client && $tel ? "$client | $tel" : $client;
                 $id = $f['id'];
+
+                $a = [$description];
+                $b = array_map('html', $a);
+
                 ?>
                 <td><a title="<?= $fsize; ?>" href="<?= '?action=get&id=' . $id; ?>">
                         <?= $f['filename']; ?></a></td>
@@ -99,16 +104,15 @@ if (count($files) > 0): ?>
                     <td><?= $f['description']; ?></td>
                 <?php endif;
                 if ($priv == 'Admin') : ?>
-                    <td title="<?= $des; ?>">
+                    <td title="<?= $description; ?>">
                         <?= $f['user']; ?></td>
                 <?php endif;
                 ?>
                 <td title="<?= $tel; ?>">
                     <?php
-                    $stamp = $f["time"];
-                    $d = "g:ia F j";
+                    $dateformat = "g:ia F j";
                     //$d = "j-n-Y";
-                    echo date("j-n-Y", strtotime($stamp)); ?></td>
+                    echo date("j-n-Y", strtotime($f["time"])); ?></td>
                 <td title="download">
                     <form action="." method="get" name="downloads">
                         <div><input type="hidden" name="action" value="download" />
@@ -120,7 +124,7 @@ if (count($files) > 0): ?>
                 <?php
                 if ($priv !== 'Browser') : ?>
                     <td title="delete">
-                        <form action="." method="post" name="<?= $f['id']; ?>">
+                        <form action="." method="post" name="<?= $id; ?>">
                             <div><input type="hidden" name="action" value="delete" />
                                 <input type="hidden" name="id" value="<?= $id; ?>" />
                                 <input type="submit" value="Delete" title="delete or update"/>

@@ -7,15 +7,15 @@
 			<?php if ($priv === "Admin") { ?>
 				<optgroup label="clients">
 				<?php }
-			foreach ($client as $x => $c): ?>
-					<option value="<?= $x; ?>"><?= $c; ?>
+			foreach ($client as $k => $v): ?>
+					<option value="<?= $k; ?>"><?= $v; ?>
 					</option><?php endforeach; ?>
 				</optgroup>
 				<?php if ($priv == "Admin") { ?>
 					<optgroup label="users">
 					<?php }
-				foreach ($users as $ix => $u): ?>
-						<option value="<?= $ix; ?>"><?= $u; ?>
+				foreach ($users as $k => $v): ?>
+						<option value="<?= $v; ?>"><?= $v; ?>
 						</option><?php endforeach; ?>
 					</optgroup>
 		</select>

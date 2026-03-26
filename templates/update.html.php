@@ -8,14 +8,14 @@
 	<?php } ?>
 	<?php if (!isset($colleagues) && isset($all_users)) { ?>
 		<label for="user">User</label><select id="user" name="user">
-			<option value="">Select One</option><?php foreach ($all_users as $i => $a): ?>
-				<option value="<?= $i; ?>"><?= $a; ?></option><?php endforeach; ?>
+			<option value="">Select One</option><?php foreach ($all_users as $k => $v): ?>
+				<option value="<?= $k; ?>"><?= $v; ?></option><?php endforeach; ?>
 		</select>
 	<?php }
 	if (isset($colleagues)) { ?>
 		<label for="colleagues">Colleagues:&nbsp;</label> <select id="colleagues" name="colleagues">
-			<option value="">Select one</option><?php foreach ($colleagues as $i => $c): ?>
-				<option value="<?= $i; ?>"><?= $c; ?></option><?php endforeach; ?>
+			<option value="">Select one</option><?php foreach ($colleagues as $k => $v): ?>
+				<option value="<?= $k; ?>"><?= $v; ?></option><?php endforeach; ?>
 		</select>
 	<?php } ?>
 	<input type="hidden" name="fileid" value="<?= $id; ?>" />

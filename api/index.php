@@ -184,10 +184,10 @@ $display = 5;
 $tel = '';
 $call = '';
 $disabled  = '';
-$ext = null;
 $getuser = '';
 $bytext = '';
 $byuser = '';
+$ext = null;
 
 if (!userIsLoggedIn()) {
     include TEMPLATE . 'login.html.php';
@@ -455,7 +455,7 @@ if (isset($_POST['update']) || isset($_POST['swap'])) {
     doPreparedQuery($nwpst, 'Database error fetching stored files.');
     $nwprow = $nwpst->fetch(PDO::FETCH_ASSOC);
     $filename = $nwprow['filename'];
-    $description = $row['description'];
+    $description = $nwprow['description'];
     $userid = $nwprow['userid'];
     //$aname = $row['name'];
     $button = "Update";
@@ -497,7 +497,7 @@ if (isset($_POST['original'])) {
     } else {
         $nwpst = $pdo->prepare("UPDATE upload SET userid=:userid, description=:descrip, filename=:fname WHERE id =:fileid");
         $nwpst->bindValue(':userid', $nwpuser);
-        $nwpst->bindValue(':descrip', $_POST['description']);
+        $nwpst->bindValue(':descrip', html($_POST['description']));
         $nwpst->bindValue(':fname', $nwpfilename);
         $nwpst->bindValue(':fileid', $_POST['fileid']);
     }
