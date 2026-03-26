@@ -206,6 +206,8 @@ if ($roleplay = obtainUserRole()) {
     exit(); // endof OBTAIN access level
 }
 
+dump($priv);
+
 if ($priv === 'Browser') {
     $disabled = 'disabled';
 }
