@@ -1,7 +1,9 @@
 <?php
-require_once 'config.php';
+require_once '/config.php';
 include_once HELPERS;
 include_once ACCESS;
+
+dump(HELPERS);
 //require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/includes/access.inc.php';
 
 function fromPayload($str, ...$args)
