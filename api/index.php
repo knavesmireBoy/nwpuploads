@@ -514,7 +514,6 @@ if (isset($_GET['p']) && is_numeric($_GET['p'])) {
 } else { // counts all files
     $pages = 1;
     include CONNECT;
-    dump(517);
 
     $nwpsql = "SELECT COUNT(upload.id) as total from upload ";
     if (preg_match("/client/i", $priv)) {
