@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/config.php';
+require_once 'config.php';
 include_once HELPERS;
 include_once ACCESS;
 //require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/includes/access.inc.php';
