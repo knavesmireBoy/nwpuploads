@@ -528,6 +528,7 @@ if (isset($_GET['p']) && is_numeric($_GET['p'])) {
         exit();
     }
     $records = $nwprow['total'];
+    dump($records);
     if ($records > $display) {
         $pages = ceil($records / $display);
     }
