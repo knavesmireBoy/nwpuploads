@@ -1,10 +1,7 @@
 <?php
 
-
-phpinfo();
-
 require_once __DIR__ . '/config.php';
-//include_once HELPERS;
+include_once HELPERS;
 include_once ACCESS;
 
 var_dump(ACCESS);
