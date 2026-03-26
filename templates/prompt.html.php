@@ -14,7 +14,7 @@
                 <input type="submit" name="action" value="continue" />
             </div>
         </form>
-    <?php elseif (!isset($clientlist) && !isset($del)):
+    <?php elseif (!isset($clientlist) && !isset($delete)):
     //confirm used by several controllers
     ?>
         <form action="<?= $action; ?>" method="post" name="choice" class="prompt" id="yesno">
@@ -29,7 +29,7 @@
         </form>
     <?php endif;  ?>
 
-    <?php if (isset($del)):
+    <?php if (isset($delete)):
         //We need to determine the logic of what messages to display
         $n = $ownername ?? null;
         $c = $client[$domain] ?? null;
@@ -58,7 +58,7 @@
             <?php endif; ?>
             <input type="radio" id="cancel" name="extent" /><label for="cancel">cancel</label>
             <input type="hidden" name="id" value="<?= $id; ?>" />
-            <input type="hidden" name="<?= $del; ?>" value="destroy" />
+            <input type="hidden" name="<?= $delete; ?>" value="destroy" />
             <input type="submit" />
         </form>
     <?php endif; ?>

@@ -8,6 +8,7 @@ ini_set('pcre.jit', false);
 date_default_timezone_set( "Europe/London" );
 
 define("TEMPLATE", __DIR__ . '../../templates/');
+define("BASE", __DIR__ . '../templates/base.html');
 define("FILESTORE", $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/filestore/');
 define("INCLUDES", __DIR__ . '../includes/');
 define("HELPERS", __DIR__ . '/includes/helpers.inc.php');
@@ -20,4 +21,3 @@ define('DBSYSTEM', 'mysql');
 define('SUPERUSER', 'files@northwolds.co.uk');
 define('MYIP', '86.160.57.166');
 define('PAGINATE', 5);
-//$_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/includes/helpers.inc.php';

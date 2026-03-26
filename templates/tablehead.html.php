@@ -13,36 +13,16 @@ if ($q == '?') { //first run
     if (substr($q, -2, 1) != substr($q, -1, 1)) {
         $q = substr($q, -2, 1);
         $sort = '&sort=' . substr($q, -1, 1);
-
-        //   $sort = '?sort=' . substr($q, -1, 1);
-        //  $q = '';
-
     } else {
         $q = '?sort=';
     }
 }
-//elseif (substr($q,1,4)=='sort') {//single
 elseif (substr($q, -2, 1) == '=') {
     $sort = substr($q, -1);
     $q = '?sort=';
 } else {
     $sort = '&sort=';
 }
-
-/*
-if ((substr($sort,0,2)=='uu' and strlen($sort)<=3)) {
-    $toggle=array($sort.'f',  'u', $sort. 't' );
-}
-elseif ((substr($sort, 0,1)=='u' and strlen($sort)<=2)) {
-    $toggle=array($sort.'f', $sort. 'u', $sort. 't' );
-}
-elseif (!$sort or strlen($sort)>1 ){
-    $toggle=array('f','u','t');
-}
-else {
-    $toggle = array($sort .'f', $sort . 'u', $sort . 't' );//append to existing sort
-}
-*/
 
 ?>
 <div id="upload">
