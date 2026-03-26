@@ -13,6 +13,8 @@ try {
     $pdo = new PDO($db);
   //  $pdo = new PDO('mysql:host=localhost;dbname=uploads', 'root', 'covid19krauq');
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo->exec('SET search_path TO uploads');
+
    // $pdo->exec("SET NAMES utf8");
     //$conn = mysql_connect('localhost', 'root', 'krauq');
 } catch (PDOException $e) {
