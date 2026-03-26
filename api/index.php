@@ -1,7 +1,8 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/config.php';
-include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/includes/helpers.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/includes/access.inc.php';
+include_once HELPERS;
+include_once ACCESS;
+//require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/includes/access.inc.php';
 
 function fromPayload($str, ...$args)
 {

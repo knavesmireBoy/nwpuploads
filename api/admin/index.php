@@ -1,5 +1,6 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/includes/access.inc.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/config.php';
+require_once ACCESS;
 //NOTE arrow functions not introduced until PHP 7.4; default mac installation is 7.3xx
 function fix()
 {
@@ -196,7 +197,6 @@ function verifyDom($editor, $admin, $domain, $employerid, $data)
   if ($employerid && $cid && ($cid !== $employerid)) {
     canAssign($editor, $domain, $data['id']);
   }
-  $domchange = $admin && ($_SESSION['email'] !== SUPERUSER) ? true : $domchange;
   $clientFunc = function ($change, $arg) {
     //make sure BOTH arguments are true for domfail
     return $change && $arg;
@@ -431,6 +431,8 @@ $pagetitle = preg_match("/client/i", $priv) ? "Admin" : "Admin | Edit Users";
 //end of initial globals
 
 $nwpadmin = isApproved($priv, 'ADMIN');
+$nwpsuper = $nwpadmin && ($_SESSION['email'] === SUPERUSER);
+
 
 if (isset($_GET['domain'])) {
   //set by client/index.php: updates the second and top level domains of the users email address

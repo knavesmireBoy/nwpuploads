@@ -1,7 +1,7 @@
 <?php
-$css =  is_dir('../public/css') ? '../public/css/main.css' : '../../public/css/main.css';
-$fav =  is_dir('../public/assets') ? '../public/assets/favicon.ico' : '../../assets/favicon.ico';
-
+$dir = is_dir('../../public/') ? '../../public/' : '../public/';
+$css = $dir . "css/main.css";
+$fav = $dir . "assets/favicon.ico";
 ?>
 <!DOCTYPE html>
 <html class="no-js" lang="en">
