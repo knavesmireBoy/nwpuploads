@@ -1,5 +1,6 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/config.php';
+//require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/config.php';
+
 function dump($arg)
 {
     var_dump($arg);
