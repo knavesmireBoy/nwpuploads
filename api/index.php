@@ -206,7 +206,6 @@ if ($roleplay = obtainUserRole()) {
     exit(); // endof OBTAIN access level
 }
 
-dump($priv);
 
 if ($priv === 'Browser') {
     $disabled = 'disabled';
@@ -515,6 +514,8 @@ if (isset($_GET['p']) && is_numeric($_GET['p'])) {
 } else { // counts all files
     $pages = 1;
     include CONNECT;
+    dump(517);
+
     $nwpsql = "SELECT COUNT(upload.id) as total from upload ";
     if (preg_match("/client/i", $priv)) {
         $nwpsql .= " INNER JOIN usr on upload.userid = usr.id WHERE usr.email=:email";
