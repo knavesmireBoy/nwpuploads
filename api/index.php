@@ -25,7 +25,7 @@ function getUploadedFile()
     //$uploadname = $time . getRemoteAddr() . $ext;
     $uploadname = $time . $ext;
     $filename =  FILESTORE . $uploadname;
-    $filename =  "./$uploadname";
+    $filename =  "./tmp/$uploadname";
     return [$uploadfile, $uploadname, $filename, $realname];
 }
 
@@ -233,7 +233,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'upload') {
     list($nwpuploadfile, $nwpuploadname, $nwpfilename, $nwprealname) = getUploadedFile();
 
 
-    dump([__DIR__, is_dir('/tmp'), is_dir('../tmp'), is_dir('../public')]);
+    dump([$nwpuploadfile, $nwpfilename, is_dir('/tmp'),is_dir('/public')]);
     // Copy the file (if it is deemed safe)
     if (!copy($nwpuploadfile, $nwpfilename)) {
         $error = "Could not save file as $nwpfilename!";
