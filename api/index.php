@@ -233,7 +233,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'upload') {
     list($nwpuploadfile, $nwpuploadname, $nwpfilename, $nwprealname) = getUploadedFile();
 
 
-    dump([__DIR__, is_dir( __DIR__ . '/tmp'), is_dir( __DIR__ . '/filestore')]);
+    dump([__DIR__, is_dir( __DIR__ . '/tmp'), is_dir( __DIR__ . '../tmp'), is_dir('./tmp')]);
     // Copy the file (if it is deemed safe)
     if (!copy($nwpuploadfile, $nwpfilename)) {
         $error = "Could not save file as $nwpfilename!";
