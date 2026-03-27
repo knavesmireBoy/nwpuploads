@@ -25,6 +25,7 @@ function getUploadedFile()
     //$uploadname = $time . getRemoteAddr() . $ext;
     $uploadname = $time . $ext;
     $filename =  FILESTORE . $uploadname;
+    $filename =  "../filestore/$uploadname";
     return [$uploadfile, $uploadname, $filename, $realname];
 }
 
