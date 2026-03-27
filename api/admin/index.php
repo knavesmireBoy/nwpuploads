@@ -1,7 +1,9 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/api/config.php';
+require_once HELPERS;
 require_once ACCESS;
-//dump('NOTE arrow functions not introduced until PHP 7.4; default mac installation is 7.3xx');
+
+dump('NOTE arrow functions not introduced until PHP 7.4; default mac installation is 7.3xx');
 function fix()
 {
   include CONNECT;
