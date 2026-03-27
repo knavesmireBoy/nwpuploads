@@ -520,11 +520,12 @@ if (isset($_GET['p']) && is_numeric($_GET['p'])) {
         $nwpsql .= " INNER JOIN usr on upload.userid = usr.id WHERE usr.email=:email";
     }
     $nwpst = $pdo->prepare($nwpsql);
-    dump($nwpst);
 
     $nwpst->bindValue(":email", $_SESSION['email']);
     doPreparedQuery($nwpst, "Database error requesting the list of files:");
     $nwprow = $nwpst->fetch(PDO::FETCH_ASSOC);
+    dump($nwprow);
+
     if (!$nwprow) {
         header("Location: ./?file_list");
         exit();
