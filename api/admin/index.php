@@ -1,7 +1,6 @@
 <?php
-var_dump($_SERVER['DOCUMENT_ROOT'], __DIR__ . '../api/config.php');
-//require_once '../config.php';
-//require_once ACCESS;
+require_once $_SERVER['DOCUMENT_ROOT'] . '/api/config.php';
+require_once ACCESS;
 //dump('NOTE arrow functions not introduced until PHP 7.4; default mac installation is 7.3xx');
 function fix()
 {
