@@ -24,8 +24,8 @@ function getUploadedFile()
     $time = time();
     //$uploadname = $time . getRemoteAddr() . $ext;
     $uploadname = $time . $ext;
-    $filedname =  FILESTORE . $uploadname;
-    return [$uploadfile, $uploadname, $filedname, $realname];
+    $filename =  FILESTORE . $uploadname;
+    return [$uploadfile, $uploadname, $filename, $realname];
 }
 
 function clientFromUpload($txt, ...$args)
