@@ -44,7 +44,7 @@ function userFromUpload()
 
 function selectUploaded($order, $start, $limit)
 {
-    $select = "SELECT upload.id, filename, mimetype, description, filepath, file, size, time,  MID(file, 11, 14) AS origin, usr.email, usr.name";
+    $select = "SELECT upload.id, filename, mimetype, description, filepath, file, size, time,  SUBSTRING(file, 11, 14) AS origin, usr.email, usr.name";
     $from = " FROM upload INNER JOIN usr ON upload.userid=usr.id";
     $order = " ORDER BY $order LIMIT $limit OFFSET $start";
     return [$select, $from, $order];
