@@ -1,6 +1,6 @@
 <?php
-include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/includes/helpers.inc.php';
-include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/config.php';
+require_once '../config.php';
+include_once HELPERS;
 include_once TEMPLATE . 'base.html.php';
 foreach (get_defined_vars() as $k => $v) {
     $i = 0;

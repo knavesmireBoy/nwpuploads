@@ -5,6 +5,9 @@
     },
     "api/admin/*.php": {
       "runtime": "vercel-php@0.8.0"
+    },
+    "api/clients/*.php": {
+      "runtime": "vercel-php@0.8.0"
     }
   },
   "rewrites": [
