@@ -6,7 +6,9 @@
     },
     "routes": [
       { "src": "/(css|js|images|fonts|favicon)/(.*)", "dest": "/public/$1/$2" },
-      { "src": "/(.*)", "dest": "/api/index.php" }
+      { "src": "/(.*)\\.(.+)$", "dest": "/public/$1.$2" },
+      { "src": "/(.*)", "dest": "/api/index.php" },
+      { "source": "/:path*", "destination": "/:path*" }
     ]
   }
   
