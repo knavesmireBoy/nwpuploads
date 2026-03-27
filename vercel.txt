@@ -1,5 +1,3 @@
-
-allows download
 {
   "functions": {
     "api/*.php": {
@@ -7,15 +5,19 @@ allows download
     },
     "api/admin/*.php": {
       "runtime": "vercel-php@0.8.0"
+    },
+    "api/clients/*.php": {
+      "runtime": "vercel-php@0.8.0"
     }
   },
   "rewrites": [
     { "source": "/(css|js|images|fonts|assets)/(.*)", "destination": "/public/$1/$2" },
     { "source": "/(.*)\\.(.+)$", "destination": "/public/$1.$2" },
+    { "source": "/admin/(.*)", "destination": "/api/admin/index.php" },
+    { "source": "/clients/(.*)", "destination": "/api/clients/index.php" },
     { "source": "/(.*)", "destination": "/api/index.php" }
   ]
 }
-
 
 first to understand php-runtime for vercel please visit https://github.com/wis-aerrajiy/php-vercel
 
