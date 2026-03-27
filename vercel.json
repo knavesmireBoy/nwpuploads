@@ -2,6 +2,9 @@
   "functions": {
     "api/*.php": {
       "runtime": "vercel-php@0.8.0"
+    },
+    "api/admin/*.php": {
+      "runtime": "vercel-php@0.8.0"
     }
   },
   "rewrites": [
