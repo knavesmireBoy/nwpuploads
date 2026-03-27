@@ -388,9 +388,6 @@ function refreshDomain($priv, $posted)
     };
   }
 }
-
-dump($_ENV);
-
 //// END OF FUNCTIONS ///////// END OF FUNCTIONS ///////// END OF FUNCTIONS /////////
 if (!userIsLoggedIn()) {
   $pagetitle = "Log In";
