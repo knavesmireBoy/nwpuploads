@@ -5,9 +5,10 @@
       }
     },
     "rerwrites": [
-      { "src": "/(css|js|images|fonts|favicon)/(.*)", "dest": "/public/$1/$2" },
-      { "src": "/(.*)\\.(.+)$", "dest": "/public/$1.$2" },
-      { "src": "/(.*)", "dest": "/api/index.php" }
+      { "source": "/(css|js|images|fonts|favicon)/(.*)", "destination": "/public/$1/$2" },
+      { "source": "/(.*)\\.(.+)$", "destination": "/public/$1.$2" },
+      { "source": "/(.*)", "destination": "/api/index.php" },
+      { "source": "/:path*", "destination": "/:path*" }
     ]
   }
   
