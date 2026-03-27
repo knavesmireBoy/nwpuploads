@@ -6,6 +6,6 @@
   },
   "rewrites": [
     { "source": "/(css|js|images|fonts|assets)/(.*)", "destination": "/public/$1/$2" },
-    { "source": "/(.*)\\.(.+)$", "destination": "/public/$1.$2" }
+    { "source": "/(.*)", "destination": "/api/index.php" }
   ]
 }

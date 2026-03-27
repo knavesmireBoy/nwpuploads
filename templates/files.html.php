@@ -78,7 +78,7 @@ if (isset($template)) {
 
 if (count($files) > 0): ?>
     </form>
-    <h4>The following files are stored in the database v4</h4>
+    <h4>The following files are stored in the database no middle line</h4>
     <?php
     include '_tablehead.html.php'; ?>
     <tbody>
