@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/config.php';
+require_once __DIR__ . '../config.php';
 require_once ACCESS;
 
 if (!userIsLoggedIn()) {

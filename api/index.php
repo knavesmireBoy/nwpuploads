@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '../config.php';
+require_once __DIR__ . '/config.php';
 include_once HELPERS;
 include_once ACCESS;
 

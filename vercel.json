@@ -11,7 +11,7 @@
     { "source": "/(css|js|images|fonts|assets)/(.*)", "destination": "/public/$1/$2" },
     { "source": "/(.*)\\.(.+)$", "destination": "/public/$1.$2" },
     { "source": "/admin/(.*)", "destination": "/api/admin/index.php" },
-    { "source": "/clients/(.*)", "destination": "/api/admin/index.php" },
+    { "source": "/clients/(.*)", "destination": "/api/clients/index.php" },
     { "source": "/(.*)", "destination": "/api/index.php" }
   ]
 }
