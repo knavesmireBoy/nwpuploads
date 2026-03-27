@@ -10,7 +10,7 @@ date_default_timezone_set( "Europe/London" );
 
 define("TEMPLATE", __DIR__ . '../../templates/');
 define("BASE", __DIR__ . '../templates/base.html');
-define("FILESTORE",  __DIR__ . '../filestore/');
+define("FILESTORE",  __DIR__ . '/filestore/');
 define("INCLUDES", __DIR__ . '../includes/');
 define("HELPERS", __DIR__ . '/includes/helpers.inc.php');
 define("ACCESS", __DIR__ . '/includes/access.inc.php');
