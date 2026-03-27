@@ -4,11 +4,10 @@
         "runtime": "vercel-php@0.8.0"
       }
     },
-    "routes": [
+    "rerwrites": [
       { "src": "/(css|js|images|fonts|favicon)/(.*)", "dest": "/public/$1/$2" },
       { "src": "/(.*)\\.(.+)$", "dest": "/public/$1.$2" },
-      { "src": "/(.*)", "dest": "/api/index.php" },
-      { "source": "/:test*", "destination": "/:test*" }
+      { "src": "/(.*)", "dest": "/api/index.php" }
     ]
   }
   
