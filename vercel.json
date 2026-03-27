@@ -6,7 +6,8 @@
     },
     "rerwrites": [
       { "source": "/(css|js|images|fonts|favicon)/(.*)", "destination": "/public/$1/$2" },
-      { "source": "/(.*)\\.(.+)$", "destination": "/public/$1.$2" }
+      { "source": "/(.*)\\.(.+)$", "destination": "/public/$1.$2" },
+      { "source": "/me", "destination": "/index.html", "permanent": true }
     ]
   }
   
