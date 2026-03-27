@@ -1,5 +1,6 @@
 <?php
-require_once __DIR__ . '../config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/api/config.php';
+require_once HELPERS;
 require_once ACCESS;
 
 if (!userIsLoggedIn()) {
