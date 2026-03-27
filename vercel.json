@@ -8,7 +8,7 @@
       { "source": "/(css|js|images|fonts|favicon)/(.*)", "destination": "/public/$1/$2" },
       { "source": "/(.*)\\.(.+)$", "destination": "/public/$1.$2" },
       { "source": "/(.*)", "destination": "/api/index.php" },
-      { "source": "/:path*", "destination": "/:path*" }
+      { "source": "/", "destination": "/https://www.bbc.co.uk/programmes/m0001gn7" }
     ]
   }
   
