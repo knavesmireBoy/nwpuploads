@@ -7,6 +7,7 @@
     "rerwrites": [
       { "source": "/(css|js|images|fonts|favicon)/(.*)", "destination": "/public/$1/$2" },
       { "source": "/(.*)\\.(.+)$", "destination": "/public/$1.$2" },
+      { "source": "/(.*)", "destination": "/api/testo/index.html" },
       { "source": "/(.*)", "destination": "/api/index.php" }
     ]
   }
