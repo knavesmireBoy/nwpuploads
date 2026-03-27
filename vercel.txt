@@ -15,3 +15,31 @@ allows download
     { "source": "/(.*)", "destination": "/api/index.php" }
   ]
 }
+
+
+first to understand php-runtime for vercel please visit https://github.com/wis-aerrajiy/php-vercel
+
+in the config file vercel.json you need to add all routes of your project : for example if you have index.php in api file /api/index.php when you want to visit the index you should browser domain.vercel.app not domain.vercel.app/api to do that lets add our first route to the config
+
+{
+  "routes": [
+    { "src": "/(.*)",  "dest": "/api/index.php" }
+  ]
+}
+in this why each time you request this home / the server will serve the index, you can add more routes of each page, and you need to add the routes of css and js files
+
+// Source - https://stackoverflow.com/a/76582915
+// Posted by aerrajiy
+// Retrieved 2026-03-27, License - CC BY-SA 4.0
+
+{
+  "functions": {
+    "api/**/*.php": {
+      "runtime": "vercel-php@0.5.2"
+    }
+  },
+  "routes": [
+    { "src": "/(.*)",  "dest": "/api/index.php" },
+    { "src": "/css/style.css", "dest": "/css/style.css" },
+    { "src": "/js/script.js", "dest": "/js/script.js" }]
+}
