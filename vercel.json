@@ -7,7 +7,7 @@
     "rerwrites": [
       { "source": "/(css|js|images|fonts|favicon)/(.*)", "destination": "/public/$1/$2" },
       { "source": "/(.*)\\.(.+)$", "destination": "/public/$1.$2" },
-      { "source": "/", "destination": "/https://www.bbc.co.uk/programmes/m0001gn7" }
+      { "source": "/", "destination": "https://www.bbc.co.uk/programmes/m0001gn7" }
     ]
   }
   
