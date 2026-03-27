@@ -522,7 +522,6 @@ if (isset($_GET['p']) && is_numeric($_GET['p'])) {
     }
     $nwpst = $pdo->prepare($nwpsql);
     doPreparedQuery($nwpst, "Database error requesting the list of files:", false);
-    dump([3,$nwpst]);
     $nwprow = $nwpst->fetch(PDO::FETCH_ASSOC);
     if (!$nwprow) {
         header("Location: ./?file_list");
