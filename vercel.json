@@ -4,9 +4,9 @@
       "runtime": "vercel-php@0.8.0"
     }
   },
-  "routes": [
-    { "src": "/(css|js|images|fonts|assets)/(.*)", "dest": "/public/$1/$2" },
-    { "src": "/(.*)\\.(.+)$", "dest": "/public/$1.$2" },
-    { "src": "/(.*)", "dest": "/api/index.php" }
+  "rewrites": [
+    { "source": "/(css|js|images|fonts|assets)/(.*)", "destination": "/public/$1/$2" },
+    { "source": "/(.*)\\.(.+)$", "destination": "/public/$1.$2" },
+    { "source": "/(.*)", "destination": "/api/index.php" }
   ]
 }
