@@ -33,7 +33,8 @@ function clientFromUpload($txt, ...$args)
 {
     $str = fromPayload($txt, ...$args);
     $tmptable = "(SELECT upload.userid FROM usr INNER JOIN upload ON upload.userid = usr.id WHERE upload.id=:id) AS tmp";
-    $derived = " usr INNER JOIN client ON client.id = usr.client_id INNER JOIN upload ON usr.id = upload.userid INNER JOIN (SELECT client.id FROM client INNER JOIN usr on usr.client_id = client.id INNER JOIN $tmptable WHERE usr.id = tmp.userid) AS T ON client.id = T.id WHERE client.id = T.id";
+    $derived = " usr INNER JOIN client ON client.id = usr.client_id INNER JOIN upload ON usr.id = upload.userid INNER JOIN (SELECT client.id FROM client INNER JOIN usr on usr.client_id = client.id INNER JOIN $tmptable ON usr.id = tmp.userid WHERE usr.id = tmp.userid) AS T ON client.id = T.id WHERE client.id = T.id";
+    dump($str . $derived);
     return $str . $derived;
 }
 
