@@ -6,8 +6,7 @@
     },
     "rerwrites": [
       { "source": "/(css|js|images|fonts|favicon)/(.*)", "destination": "/public/$1/$2" },
-      { "source": "/(.*)\\.(.+)$", "destination": "/public/$1.$2" },
-      { "source": "/:path*", "destination": "/:path*" }
+      { "source": "/(.*)\\.(.+)$", "destination": "/public/$1.$2" }
     ]
   }
   
