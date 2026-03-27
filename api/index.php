@@ -515,13 +515,13 @@ if (isset($_GET['p']) && is_numeric($_GET['p'])) {
     $pages = 1;
     include CONNECT;
 
-    $nwpsql = "SELECT COUNT(upload.id) as total from upload ";
+    $nwpsql = "SELECT COUNT(upload.id) as total from upload";
     if (preg_match("/client/i", $priv)) {
         $nwpsql .= " INNER JOIN usr on upload.userid = usr.id WHERE usr.email=:email";
+        $nwpst->bindValue(":email", $_SESSION['email']);
     }
     $nwpst = $pdo->prepare($nwpsql);
-    dump([1,$nwpst]);
-    $nwpst->bindValue(":email", $_SESSION['email']);
+   // dump([1,$nwpst]);
     dump([2,$nwpst]);
 
     doPreparedQuery($nwpst, "Database error requesting the list of files:", false);
