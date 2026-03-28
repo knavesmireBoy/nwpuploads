@@ -496,7 +496,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
   $mysql = "INSERT INTO usr (name, email, password, client_id) VALUES(:nom, :e, :pwd, :clientid)";
   $postgres = "INSERT INTO usr VALUES(default, :nom, :e, :pwd, :clientid)";
   $insert = DBSYSTEM === 'postgres' ? $postgres : $mysql;
-dump($insert);
   $st = $pdo->prepare($insert);
   list($domchange, $comchange, $dom, $com) = queryEmail($editor, $_POST);
   $clientid = likeDomain(true, $dom);
@@ -506,7 +505,7 @@ dump($insert);
   $st->bindValue(':e', $_POST['email']);
   $st->bindValue(':pwd', $_POST['password']);
   $st->bindValue(':clientid', nullify($employerid));
-  $res = doPreparedQuery($st, 'Error adding user');
+  doPreparedQuery($st, 'Error adding user');
   $nwpInsertID = lastInsert($pdo, DBSYSTEM, 'user');
 
   dump($nwpInsertID);
