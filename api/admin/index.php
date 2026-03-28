@@ -246,10 +246,12 @@ function filterUsers($key, $pagetitle, $error = '')
     $pagehead = "Manage Team";
     foreach ($rows as $row) {
       $users[$row['id']] = $row['name'];
-      if ($namechange && ($row['email'] === $_SESSION['email'])) {
+      if (/*$namechange && */($row['email'] === $_SESSION['email'])) {
         $key = $row['id'];
       }
     }
+
+    
     $usercount = count($users);
     setExtent($usercount);
 
@@ -845,7 +847,7 @@ if ($users === []) {
   }
 }
 
-$clients = $admin ? presentClientList($priv) : [];
+$clients = $admin ? presentClientList($priv, 'domain') : [];
 $message = $message ? $message : $error;
 //2 ie more than 1
 $usercount = isApproved($priv, 'ADMIN') ? 2 : count($users);
