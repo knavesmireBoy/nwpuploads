@@ -247,11 +247,12 @@ function filterUsers($key, $pagetitle, $error = '')
     foreach ($rows as $row) {
       $users[$row['id']] = $row['name'];
       if (/*$namechange && */($row['email'] === $_SESSION['email'])) {
+        // $namechange = $namechange && $row['email'] === $_SESSION['email'];
         $key = $row['id'];
       }
     }
 
-    
+
     $usercount = count($users);
     setExtent($usercount);
 
