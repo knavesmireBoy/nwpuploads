@@ -84,13 +84,12 @@ function isEmployer($o, $p = '')
   return function () use ($id, $sql, $flag, $o, $p) {
     include CONNECT;
     $id = nullify($id);
-    $st = $pdo->prepare($sql);
     if (isset($id)) {
+      $st = $pdo->prepare($sql);
       $st->bindValue(':aux',  $id);
     }
-
-    doPreparedQuery($st, 'Error fetching client.');
-    if ($id) {
+    if (isset($st)) {
+      doPreparedQuery($st, 'Error fetching client.');
       return $flag ? $st->fetchAll(PDO::FETCH_NUM) : $st->fetch(PDO::FETCH_NUM);
     } else {
       return [null, null];
