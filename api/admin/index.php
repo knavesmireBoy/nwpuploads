@@ -178,7 +178,7 @@ function retrieveDetails($id, $p = '')
 {
   include CONNECT;
   $sql = "SELECT usr.name, usr.email, client.domain FROM usr LEFT JOIN client ON usr.client_id=client.id WHERE usr.id=:id ORDER BY name";
-
+dump([$id, $p]);
   $st = $pdo->prepare($sql);
   $st->bindValue(":id", $id);
   doPreparedQuery($st, "Error fetching user details!");
