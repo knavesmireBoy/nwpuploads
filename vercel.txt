@@ -47,3 +47,5 @@ in this why each time you request this home / the server will serve the index, y
     { "src": "/css/style.css", "dest": "/css/style.css" },
     { "src": "/js/script.js", "dest": "/js/script.js" }]
 }
+
+https://stackoverflow.com/questions/77218444/simple-php-page-routing-requires-in-vercel
