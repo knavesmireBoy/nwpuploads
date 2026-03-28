@@ -237,16 +237,17 @@ function filterUsers($key, $pagetitle, $error = '')
 
   $sql = queryClient([]);
   $st = $pdo->prepare($sql);
-  $st->bindValue(":aux", $key);
+  $st->bindValue(":aux", "$key");
   doPreparedQuery($st, "Unable to identify domain");
   $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+
   dump($rows);
   $pagehead = "Manage User";
   if (!empty($rows)) {
     $pagehead = "Manage Team";
     foreach ($rows as $row) {
       $users[$row['id']] = $row['name'];
-      if (/*$namechange && */($row['email'] === $_SESSION['email'])) {
+      if ($namechange && ($row['email'] === $_SESSION['email'])) {
         // $namechange = $namechange && $row['email'] === $_SESSION['email'];
         $key = $row['id'];
       }
