@@ -252,6 +252,8 @@ function filterUsers($key, $pagetitle, $error = '')
     }
     $usercount = count($users);
     setExtent($usercount);
+
+    dump([$usercount, $row]);
     if ($usercount === 1 || $namechange) {
       $key = $namechange ? $key : $row['id'];
       //$usercount = 1;
