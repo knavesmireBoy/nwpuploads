@@ -177,13 +177,16 @@ function presentClientList($role, $prop = 'id', $flag = 'admin')
 function retrieveDetails($id, $p = '')
 {
   include CONNECT;
-  $sql = "SELECT usr.name, usr.email, client.domain FROM usr LEFT JOIN client ON usr.client_id=client.id WHERE usr.id=:id ORDER BY name";
-dump([$id, $p]);
-  $st = $pdo->prepare($sql);
-  $st->bindValue(":id", $id);
-  doPreparedQuery($st, "Error fetching user details!");
-  $row = $st->fetch(PDO::FETCH_ASSOC);
-  return  $p ? $row[$p] : nullify($row);
+  if ($id) {
+    $sql = "SELECT usr.name, usr.email, client.domain FROM usr LEFT JOIN client ON usr.client_id=client.id WHERE usr.id=:id ORDER BY name";
+
+    $st = $pdo->prepare($sql);
+    $st->bindValue(":id", $id);
+    doPreparedQuery($st, "Error fetching user details!");
+    $row = $st->fetch(PDO::FETCH_ASSOC);
+    return  $p ? $row[$p] : nullify($row);
+  }
+  return null;
 }
 
 function stateQuery($id, $postemail, $priv)
