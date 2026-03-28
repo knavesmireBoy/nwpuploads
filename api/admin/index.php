@@ -852,7 +852,7 @@ $message = $message ? $message : $error;
 $usercount = isApproved($priv, 'ADMIN') ? 2 : count($users);
 //setExtent is largely used for displaying conditional content, appropriate buttons etc..
 setExtent($usercount);
-dump($key);
+dump([$usercount, $key]);
 
 if ($usercount === 1 && !isset($prompt)) {
   $calltext = "Delete User";
