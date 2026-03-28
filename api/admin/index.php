@@ -708,6 +708,8 @@ all nwp variables are unset, not really required but and indication that such va
 
 //DIRECTLY load form.html.php if only one user/client
 if (checkIsset($_GET, array_merge(['edit'], $redirects))) {
+
+  dump($_GET);
   $override = null;
   $nwpclientrow = null;
   $employer = null;
