@@ -318,9 +318,10 @@ function resetRoles($role, $roles, $id)
     include CONNECT;
     foreach ($roles as $role) {
       $st = $pdo->prepare("INSERT INTO userrole SET userid=:id, roleid=:rol");
-
       $st->bindValue(":id", $id);
       $st->bindValue(":rol", $role);
+
+      dump([$id, $role, is_int($id), is_int($role)]);
       doPreparedQuery($st, '<p>Error assigning selected role to user.</p>');
     } //end foreach
     return $roles;
@@ -507,9 +508,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
   $st->bindValue(':clientid', nullify($employerid));
   doPreparedQuery($st, 'Error adding user');
   $nwpInsertID = lastInsert($pdo, DBSYSTEM, 'usr');
-dump($nwpInsertID);
 
-  if ($nwpInsertID && isset($_POST['password']) && $_POST['password'] != '') {
+  if (isset($_POST['password']) && $_POST['password'] != '') {
     updatePassword($_POST['password'], $nwpInsertID);
   }
   $roles = isset($_POST['roles']) ? $_POST['roles'] : [];
