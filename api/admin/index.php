@@ -287,7 +287,7 @@ function updateUserDomain($old, $new, $id = 0)
 {
   if (($old && $new) && ($old !== $new)) {
     include CONNECT;
-    $concat = replaceStrPos($new);
+    $concat = replaceStrPos($new, DBSYSTEM);
     //update email of employees IF the domain of client changes
     $sql = "UPDATE usr SET email = $concat WHERE email LIKE '%$old'";
     //but restrict to a specific employee (eg leaving)
