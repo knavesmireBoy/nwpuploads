@@ -181,7 +181,7 @@ function retrieveDetails($id, $p = '')
 
   $st = $pdo->prepare($sql);
   $st->bindValue(":id", $id);
-  doPreparedQuery($st, "Error fetching user details");
+  doPreparedQuery($st, "Error fetching user details!");
   $row = $st->fetch(PDO::FETCH_ASSOC);
   return  $p ? $row[$p] : $row;
 }
@@ -189,9 +189,10 @@ function retrieveDetails($id, $p = '')
 function stateQuery($id, $postemail, $priv)
 {
   $logemail = strtolower($_SESSION['email']); //may be admin/user, client admin/user or user/user
+  dump([192,$id]);
   $row = retrieveDetails($id);
   $dbemail = isset($row) ? strtolower($row['email']) : null;
-  $postemail = $postemail ? strtolower($postemail) : $logemail;
+  $postemail = isset($postemail) ? strtolower($postemail) : $logemail;
   return [$dbemail !== $postemail, nullify($logemail === $dbemail), $row['domain'] ?? '', isApproved($priv, 'admin'), $row['name'] ?? ''];
 }
 
@@ -432,7 +433,7 @@ if (!$nwproleplay || $pagehead_role) {
 list($key, $priv) = $nwproleplay;
 //filters Admin role if Client Admin is logged in
 $nwpRolesCallback = preg_match('/client/i', $priv) ? composer(negate(curry2('equals')('Admin')), curry2('getter')('id')) : 'identity';
-list($nwp_echange, $nwp_editor, $nwp_domain, $nwp_agency) = stateQuery($nwp_id, '', $priv);
+list($nwp_echange, $nwp_editor, $nwp_domain, $nwp_agency) = stateQuery($nwp_id, null, $priv);
 $pagetitle = preg_match("/client/i", $priv) ? "Admin" : "Admin | Edit Users";
 //end of initial globals
 
@@ -537,7 +538,7 @@ if (isset($_POST['confirm'])) {
     $role = null;
     $roles = [];
     $clientadmin = isApproved($priv, 'admin');
-    list($echange, $editor, $domain, $agency) = stateQuery($_POST['id'], '', $priv);
+    list($echange, $editor, $domain, $agency) = stateQuery($_POST['id'], null, $priv);
     $crud = ($agency || $editor);
     //editor or freelance
     if (!$domain) {
@@ -720,7 +721,7 @@ if (checkIsset($_GET, array_merge(['edit'], $redirects))) {
   $calltext = "Delete User";
   $callroute = "delete=$id";
   $warning = 'You do not have sufficient privileges to edit this users details.';
-  list($nwpechange, $editor, $nwpdomain, $nwpagency) = stateQuery($id, $_POST['email'] ?? '', $priv);
+  list($nwpechange, $editor, $nwpdomain, $nwpagency) = stateQuery($id, $_POST['email'] ?? null, $priv);
 
   //DON'T FORGET WE CAN ARRIVE HERE DIRECT FROM A LINK AND NOT FROM A REDIRECT FROM EDITING
   if (isset($_GET['error'])) {
