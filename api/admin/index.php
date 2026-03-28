@@ -52,7 +52,7 @@ function queryClient($str = '')
   if ($where) {
     return $sql . $where;
   } else if (is_array($str)) { //empty array to signify fetchAll
-    return "SELECT usr.id, usr.name, usr.email, client.domain, roleid AS role FROM usr INNER JOIN client ON usr.client_id = client.id INNER JOIN userrole ON userrole.userid = usr.id WHERE client.domain=':aux' ORDER BY name";
+    return "SELECT usr.id, usr.name, usr.email, client.domain, roleid AS role FROM usr INNER JOIN client ON usr.client_id = client.id INNER JOIN userrole ON userrole.userid = usr.id WHERE client.domain=:aux ORDER BY name";
   } else if (is_null($str)) {
     return "SELECT usr.id, usr.name FROM usr LEFT JOIN client ON usr.client_id=client.id WHERE client.domain IS NULL";
   } else {
