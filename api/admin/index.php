@@ -448,7 +448,7 @@ if (isset($_GET['domain'])) {
 if (isset($_GET['add'])) {
   include CONNECT;
   $route = "Add";
-  $action = 'addform';
+  $action = '';
   $button = 'Add User';
   $pagehead = "New User";
   $legend = null;
