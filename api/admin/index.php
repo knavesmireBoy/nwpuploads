@@ -320,8 +320,6 @@ function resetRoles($role, $roles, $id)
       $st = $pdo->prepare("INSERT INTO userrole SET userid=:id, roleid=:rol");
       $st->bindValue(":id", $id);
       $st->bindValue(":rol", $role);
-
-      dump([$id, $role, is_int($id), is_int($role)]);
       doPreparedQuery($st, '<p>Error assigning selected role to user.</p>');
     } //end foreach
     return $roles;
