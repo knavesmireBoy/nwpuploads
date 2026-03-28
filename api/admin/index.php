@@ -508,9 +508,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
   doPreparedQuery($st, 'Error adding user');
   $nwpInsertID = lastInsert($pdo, DBSYSTEM, 'user');
 
-  dump($nwpInsertID);
 
-  if (isset($_POST['password']) && $_POST['password'] != '') {
+  if ($nwpInsertID && isset($_POST['password']) && $_POST['password'] != '') {
     updatePassword($_POST['password'], $nwpInsertID);
   }
   $roles = isset($_POST['roles']) ? $_POST['roles'] : [];
