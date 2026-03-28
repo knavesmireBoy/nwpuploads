@@ -71,14 +71,14 @@ function isEmployer($o, $p = '')
   }
   if ($p === 'email') {
     $sql = queryClient('email');
-    $id = $o[$p] ?? 0;
+    $id = $o[$p] ?? null;
   }
   if ($p === 'id') {
     $sql = queryClient('id');
-    $id = $o[$p] ?? 0;
+    $id = $o[$p] ?? null;
   }
   if (preg_match('/employer/i', $p)) {
-    $id = $o[$p] ?? 0;
+    $id = $o[$p] ?? null;
     $sql = "SELECT client.id, domain FROM client WHERE client.id =:aux";
   }
   return function () use ($id, $sql, $flag) {
@@ -313,6 +313,7 @@ function resetRoles($role, $roles, $id)
     include CONNECT;
     foreach ($roles as $role) {
       $st = $pdo->prepare("INSERT INTO userrole SET userid=:id, roleid=:rol");
+
       $st->bindValue(":id", $id);
       $st->bindValue(":rol", $role);
       doPreparedQuery($st, '<p>Error assigning selected role to user.</p>');
@@ -487,8 +488,11 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
     exit();
   }
   list($echange, $editor, $domain, $agency) = stateQuery($nwp_id, $_POST['email'], $priv);
+  $mysql = "INSERT INTO usr (name, email, password, client_id) VALUES(:nom, :e, :pwd, :clientid)";
+  $postgres = "INSERT INTO usr VALUES(default, :nom, :e, :pwd, :clientid)";
+  $insert = DBSYSTEM === 'postgres' ? $postgres : $mysql; 
 
-  $st = $pdo->prepare("INSERT INTO usr (name, email, password, client_id) VALUES(:nom, :e,:pwd, :clientid)");
+  $st = $pdo->prepare($insert);
   list($domchange, $comchange, $dom, $com) = queryEmail($editor, $_POST);
   $clientid = likeDomain(true, $dom);
   $employerid = $employerid ?? $clientid;
@@ -499,6 +503,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
   $st->bindValue(':clientid', nullify($employerid));
   $res = doPreparedQuery($st, 'Error adding user');
   $nwpInsertID = lastInsert($pdo, DBSYSTEM, 'user');
+
 
   if (isset($_POST['password']) && $_POST['password'] != '') {
     updatePassword($_POST['password'], $nwpInsertID);
