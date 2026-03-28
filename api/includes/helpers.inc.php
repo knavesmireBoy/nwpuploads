@@ -392,7 +392,7 @@ function compose($reducer)
 function lastInsert($pdo, $db = 'mysql', $tblname = '')
 {
     if ($db = 'postgres' && $tblname) {
-        dump("{$tblname}_id_seq");
+        dump($pdo->lastInsertId("{$tblname}_id_seq"));
         return $pdo->lastInsertId("{$tblname}_id_seq");
     }
     return $pdo->lastInsertId();
