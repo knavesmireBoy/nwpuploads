@@ -317,7 +317,7 @@ function resetRoles($role, $roles, $id)
   if (isQualified($role)) {
     include CONNECT;
     foreach ($roles as $role) {
-      $st = $pdo->prepare("INSERT INTO userrole SET userid=:id, roleid=:rol");
+      $st = $pdo->prepare("INSERT INTO userrole ('userid', 'roleid') VALUES(:id, :rol");
       $st->bindValue(":id", $id);
       $st->bindValue(":rol", $role);
       doPreparedQuery($st, '<p>Error assigning selected role to user.</p>');
