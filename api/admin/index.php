@@ -821,7 +821,6 @@ if (isset($_POST['user'])) { //dropdown
 }
 //on landing try client; a single client will redirect to form.html.php, a multi team client will prepare variables for users.html.php
 
-dump($key);
 if ($users === []) {
   include CONNECT;
   $nwpst = $pdo->prepare(queryClient('id'));
@@ -853,6 +852,7 @@ $message = $message ? $message : $error;
 $usercount = isApproved($priv, 'ADMIN') ? 2 : count($users);
 //setExtent is largely used for displaying conditional content, appropriate buttons etc..
 setExtent($usercount);
+dump($key);
 
 if ($usercount === 1 && !isset($prompt)) {
   $calltext = "Delete User";
