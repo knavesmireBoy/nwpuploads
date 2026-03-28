@@ -13,7 +13,7 @@ function fix()
 
 function domReplace($current, $neue, $fallback, $new = false)
 {
-  if($new){
+  if ($new) {
     return $neue ?? $fallback;
   }
   if (!$current && $neue) {
@@ -75,7 +75,6 @@ function isEmployer($o, $p = '')
   }
   if ($p === 'id') {
     $sql = queryClient('id');
-
     $id = $o[$p] ?? null;
   }
   if (preg_match('/employer/i', $p)) {
@@ -86,11 +85,16 @@ function isEmployer($o, $p = '')
     include CONNECT;
     $id = nullify($id);
     $st = $pdo->prepare($sql);
-   if (isset($id)) {
+    if (isset($id)) {
       $st->bindValue(':aux',  $id);
     }
+
     doPreparedQuery($st, 'Error fetching client.');
-    return $flag ? $st->fetchAll(PDO::FETCH_NUM) : $st->fetch(PDO::FETCH_NUM);
+    if ($id) {
+      return $flag ? $st->fetchAll(PDO::FETCH_NUM) : $st->fetch(PDO::FETCH_NUM);
+    } else {
+      return [null, null];
+    }
   };
 }
 
@@ -492,7 +496,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
   list($echange, $editor, $domain, $agency) = stateQuery($nwp_id, $_POST['email'], $priv);
   $mysql = "INSERT INTO usr (name, email, password, client_id) VALUES(:nom, :e, :pwd, :clientid)";
   $postgres = "INSERT INTO usr VALUES(default, :nom, :e, :pwd, :clientid)";
-  $insert = DBSYSTEM === 'postgres' ? $postgres : $mysql; 
+  $insert = DBSYSTEM === 'postgres' ? $postgres : $mysql;
 
   $st = $pdo->prepare($insert);
   list($domchange, $comchange, $dom, $com) = queryEmail($editor, $_POST);
@@ -605,7 +609,7 @@ if (isset($_POST['change']) || isset($_GET['cancel'])) {
 }
 
 if (isset($_POST['action']) && $_POST['action'] === 'Edit') {
-/*
+  /*
 the idea behind prefacing variables with nwp is to
 reduce potential conflict leaking into templates
 all nwp variables are unset, not really required but and indication that such variables are ephemeral
@@ -648,7 +652,7 @@ all nwp variables are unset, not really required but and indication that such va
     if (!$nwpdomfail) {
       $nwprelocate = null;
       $nwpassoc = true;
-         list($_, $nwpemployerdom) = isEmployer($_POST, 'employer')();
+      list($_, $nwpemployerdom) = isEmployer($_POST, 'employer')();
       if (!$nwpemployerid && !$override) {
         canAssign($editor, $nwpdomain, $id);
         list($nwppostdom, $nwpdomain, $nwpassoc, $nwprelocate) = refreshDomain($priv, $_POST)($nwppostdom, $nwpdomain);
@@ -691,7 +695,7 @@ all nwp variables are unset, not really required but and indication that such va
       }
     }
     if ($name && $name !== $_POST['name']) {
-        $location .= "/?namechange=$id";
+      $location .= "/?namechange=$id";
     }
     header($location);
     exit();
