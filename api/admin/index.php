@@ -506,7 +506,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
   $st->bindValue(':pwd', $_POST['password']);
   $st->bindValue(':clientid', nullify($employerid));
   doPreparedQuery($st, 'Error adding user');
-  $nwpInsertID = lastInsert($pdo, DBSYSTEM, 'user');
+  $nwpInsertID = lastInsert($pdo, DBSYSTEM, 'usr');
 
 
   if ($nwpInsertID && isset($_POST['password']) && $_POST['password'] != '') {

@@ -393,9 +393,9 @@ function lastInsert($pdo, $db = 'mysql', $tblname = '')
 {
     if ($db = 'postgres' && $tblname) {
         include CONNECT;
-        $st = doQuery($pdo, "SELECT currval(pg_get_serial_sequence($tblname, 'id'))", 'error obtaining last insert id');
+        $st = doQuery($pdo, "SELECT currval(pg_get_serial_sequence($tblname, 'id')) AS id", 'error obtaining last insert id');
         $row = $st->fetch(PDO::FETCH_ASSOC);
-        return $row['curval'];
+        return $row['id'];
         return $pdo->lastInsertId("{$tblname}_id_seq");
     }
     return $pdo->lastInsertId();
