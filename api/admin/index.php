@@ -237,7 +237,7 @@ function filterUsers($key, $pagetitle, $error = '')
 
   $sql = queryClient([]);
   $st = $pdo->prepare($sql);
-  $st->bindValue(":aux", "$key");
+  $st->bindValue(":aux", "'$key'");
   doPreparedQuery($st, "Unable to identify domain");
   $rows = $st->fetchAll(PDO::FETCH_ASSOC);
 
