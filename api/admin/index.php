@@ -52,6 +52,10 @@ function queryClient($str = '')
   if ($where) {
     return $sql . $where;
   } else if (is_array($str)) { //empty array to signify fetchAll
+    if (!empty($str)) {
+      $str = $str[0];
+      return "SELECT usr.id, usr.name, usr.email, client.domain, roleid AS role FROM usr INNER JOIN client ON usr.client_id = client.id INNER JOIN userrole ON userrole.userid = usr.id WHERE client.domain='$str' ORDER BY name";
+    }
     return "SELECT usr.id, usr.name, usr.email, client.domain, roleid AS role FROM usr INNER JOIN client ON usr.client_id = client.id INNER JOIN userrole ON userrole.userid = usr.id WHERE client.domain=:aux ORDER BY name";
   } else if (is_null($str)) {
     return "SELECT usr.id, usr.name FROM usr LEFT JOIN client ON usr.client_id=client.id WHERE client.domain IS NULL";
@@ -195,8 +199,6 @@ function stateQuery($id, $postemail, $priv)
   $row = retrieveDetails($id);
   $dbemail = isset($row) ? strtolower($row['email']) : null;
   $postemail = isset($postemail) ? strtolower($postemail) : $logemail;
-
-
   return [$dbemail !== $postemail, nullify($logemail === $dbemail), $row['domain'] ?? '', isApproved($priv, 'admin'), $row['name'] ?? ''];
 }
 
@@ -235,12 +237,16 @@ function filterUsers($key, $pagetitle, $error = '')
   $selected = true;
   include CONNECT;
 
-  $sql = queryClient([]);
-  $st = $pdo->prepare($sql);
-  $st->bindValue(":aux", "'$key'");
-  doPreparedQuery($st, "Unable to identify domain");
+  if (DBSYSTEM === 'postgres') {
+    $sql = queryClient([$key]);
+    $st = doQuery($pdo, $sql, 'Unable to fetch data');
+  } else {
+    $sql = queryClient([]);
+    $st = $pdo->prepare($sql);
+    $st->bindValue(":aux", $key);
+    doPreparedQuery($st, "Unable to identify domain");
+  }
   $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-
   dump($rows);
   $pagehead = "Manage User";
   if (!empty($rows)) {
@@ -252,28 +258,7 @@ function filterUsers($key, $pagetitle, $error = '')
         $key = $row['id'];
       }
     }
-
-  
-    $usercount = count($users);
-    setExtent($usercount);
-
-    if ($usercount === 1 || $namechange) {
-      $key = $namechange ? $key : $row['id'];
-      //$usercount = 1;
-      $location = "./?edit=$key";
-      if (!empty($error)) {
-        $location .= "&error=$error";
-      } else if ($namechange) {
-        $location .= "&namechange";
-      }
-      header("Location: $location");
-      exit;
-    }
-  } else {
-    header("Location: ./?edit=$key");
-    exit;
   }
-  return [$users, $selected, $pagehead, $pagetitle];
 }
 
 function updateUserDetails($id, $client_id, $assoc)
