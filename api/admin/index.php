@@ -75,17 +75,17 @@ function isEmployer($o, $p = '')
   }
   if ($p === 'id') {
     $sql = queryClient('id');
+
     $id = $o[$p] ?? null;
   }
   if (preg_match('/employer/i', $p)) {
     $id = $o[$p] ?? null;
     $sql = "SELECT client.id, domain FROM client WHERE client.id =:aux";
   }
-  return function () use ($id, $sql, $flag) {
+  return function () use ($id, $sql, $flag, $o, $p) {
     include CONNECT;
     $st = $pdo->prepare($sql);
-
-    dump([$id, $sql]);
+    dump([$o, $p, $id]);
   //  if (isset($id)) {
       $st->bindValue(':aux',  $id);
   //  }
