@@ -253,7 +253,6 @@ function filterUsers($key, $pagetitle, $error = '')
     $usercount = count($users);
     setExtent($usercount);
 
-    dump([$usercount, $row]);
     if ($usercount === 1 || $namechange) {
       $key = $namechange ? $key : $row['id'];
       //$usercount = 1;
@@ -846,7 +845,7 @@ if ($users === []) {
   }
 }
 
-$clients = $admin ? presentClientList($priv, 'domain') : [];
+$clients = $admin ? presentClientList($priv) : [];
 $message = $message ? $message : $error;
 //2 ie more than 1
 $usercount = isApproved($priv, 'ADMIN') ? 2 : count($users);
