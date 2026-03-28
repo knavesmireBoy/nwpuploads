@@ -392,7 +392,10 @@ function compose($reducer)
 function lastInsert($pdo, $db = 'mysql', $tblname = '')
 {
     if ($db = 'postgres' && $tblname) {
-        return null;
+        include CONNECT;
+        $st = doQuery($pdo, "SELECT currval(pg_get_serial_sequence('usr', 'id'))", 'error obtaining last insert id');
+        $row = $st->fetch(PDO::FETCH_ASSOC);
+        return $row['id'];
         return $pdo->lastInsertId("{$tblname}_id_seq");
     }
     return $pdo->lastInsertId();
