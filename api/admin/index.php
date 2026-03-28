@@ -252,7 +252,7 @@ function filterUsers($key, $pagetitle, $error = '')
       }
     }
 
-
+    dump([$namechange, $row, $key]);
     $usercount = count($users);
     setExtent($usercount);
 

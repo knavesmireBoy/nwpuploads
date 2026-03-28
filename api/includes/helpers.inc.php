@@ -156,7 +156,6 @@ function unsetCookie($str)
 function doSetCookie($flag)
 {
     return function ($k, $v = '', $time = -1) use ($flag) {
-
         //need if undefined here
         if (!is_string($v)) {
             if (!is_int($v)) {
@@ -664,8 +663,6 @@ function interest($total, $rate, $dur, $min = 100)
     $x = ($total * $rate);
     $y = $total * .01;
     $pay = $x + $y;
-
-
 
     $pay = max($pay, $min);
     while ($count < $dur) {
