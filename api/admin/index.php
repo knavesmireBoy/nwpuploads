@@ -437,6 +437,8 @@ if (!$nwproleplay || $pagehead_role) {
   exit();
 }
 list($key, $priv) = $nwproleplay;
+
+
 //filters Admin role if Client Admin is logged in
 $nwpRolesCallback = preg_match('/client/i', $priv) ? composer(negate(curry2('equals')('Admin')), curry2('getter')('id')) : 'identity';
 
@@ -708,8 +710,6 @@ all nwp variables are unset, not really required but and indication that such va
 
 //DIRECTLY load form.html.php if only one user/client
 if (checkIsset($_GET, array_merge(['edit'], $redirects))) {
-
-  dump($_GET);
   $override = null;
   $nwpclientrow = null;
   $employer = null;
@@ -820,6 +820,8 @@ if (isset($_POST['user'])) { //dropdown
   list($users, $selected, $pagehead, $pagetitle) = filterUsers($_POST['user'], $pagetitle);
 }
 //on landing try client; a single client will redirect to form.html.php, a multi team client will prepare variables for users.html.php
+
+dump($key);
 if ($users === []) {
   include CONNECT;
   $nwpst = $pdo->prepare(queryClient('id'));
@@ -851,6 +853,7 @@ $message = $message ? $message : $error;
 $usercount = isApproved($priv, 'ADMIN') ? 2 : count($users);
 //setExtent is largely used for displaying conditional content, appropriate buttons etc..
 setExtent($usercount);
+
 if ($usercount === 1 && !isset($prompt)) {
   $calltext = "Delete User";
   $callroute = "delete=$key";
