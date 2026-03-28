@@ -5,8 +5,8 @@ if (!empty($clientlist)) : ?>
             <legend>Assign to Client</legend>
             <select name="employer" id="employer">
                 <option value="">Select One</option>
-                <?php foreach ($clientlist as $i => $client): ?>
-                    <option value="<?= $i; ?>" <?= isset($employer) && $employer == $i ? 'selected' : ''; ?>><?= $client; ?></option>
+                <?php foreach ($clientlist as $k => $v): ?>
+                    <option value="<?= $k; ?>" <?= isset($employer) && $employer == $k ? 'selected' : ''; ?>><?= $v; ?></option>
                 <?php endforeach; ?>
             </select>
         </fieldset>
