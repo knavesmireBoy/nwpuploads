@@ -3,6 +3,8 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/api/config.php';
 require_once HELPERS;
 require_once ACCESS;
 
+dump(getenv());
+
 //dump('NOTE arrow functions not introduced until PHP 7.4; default mac installation is 7.3xx');
 function fix()
 {
@@ -85,9 +87,9 @@ function isEmployer($o, $p = '')
   return function () use ($id, $sql, $flag, $o, $p) {
     include CONNECT;
     $st = $pdo->prepare($sql);
-  //  if (isset($id)) {
+   if (isset($id)) {
       $st->bindValue(':aux',  nullify($id));
-  //  }
+    }
     doPreparedQuery($st, 'Error fetching client.');
     return $flag ? $st->fetchAll(PDO::FETCH_NUM) : $st->fetch(PDO::FETCH_NUM);
   };
