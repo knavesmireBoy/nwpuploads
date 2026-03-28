@@ -31,7 +31,7 @@ if (($admin || $editor) && !empty($id)) {
 	include TEMPLATE . '_call.html.php';
 }
 ?>
-<form action="?<?= $action; ?>" method="post" name="usersform" class="<?= empty($class) ? 'details' : $class; ?>">
+<form action="<?= $action; ?>" method="post" name="usersform" class="<?= empty($class) ? 'details' : $class; ?>">
 	<?php
 	if (isset($class) && preg_match("/override/", $class)) { ?>
 		<a href="./?cancel" class="cancel">X</a>
