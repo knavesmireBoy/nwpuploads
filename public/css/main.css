@@ -127,7 +127,7 @@ html > body {
   margin: auto;
   text-align: center;
   min-width: 100%;
-  background-color: rgb(255, 255, 200);
+  background-color: azure;
 }
 html > body > p {
   margin: 0 0 0.5em;
