@@ -2,7 +2,7 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/api/config.php';
 require_once HELPERS;
 require_once ACCESS;
-include_once TEMPLATE . 'base.html';
+//include_once TEMPLATE . 'base.html';
 
 if (!userIsLoggedIn()) {
   $pagetitle = "Log In";
