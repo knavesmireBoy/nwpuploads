@@ -54,7 +54,7 @@ function queryClient($str = '')
   } else if (is_array($str)) { //empty array to signify fetchAll
     if (!empty($str)) {
       $str = $str[0];
-      return "SELECT usr.id, usr.name, usr.email, client.domain, roleid AS role FROM usr INNER JOIN client ON usr.client_id = client.id INNER JOIN userrole ON userrole.userid = usr.id WHERE client.domain=CAST($str AS TEXT) ORDER BY name";
+      return "SELECT usr.id, usr.name, usr.email, client.domain, roleid AS role FROM usr INNER JOIN client ON usr.client_id = client.id INNER JOIN userrole ON userrole.userid = usr.id WHERE client.domain='40twenty.co.uk' ORDER BY name";
     }
     return "SELECT usr.id, usr.name, usr.email, client.domain, roleid AS role FROM usr INNER JOIN client ON usr.client_id = client.id INNER JOIN userrole ON userrole.userid = usr.id WHERE client.domain=:aux ORDER BY name";
   } else if (is_null($str)) {
