@@ -388,7 +388,7 @@ function compose($reducer)
 }
 
 
-function lastInsert($pdo, $db = 'mysql', $tblname = '')
+function lastInsert1($pdo, $db = 'mysql', $tblname = '')
 {
     if ($db === 'postgres' && $tblname) {
         include CONNECT;
@@ -404,6 +404,12 @@ function lastInsert($pdo, $db = 'mysql', $tblname = '')
     }
     return $pdo->lastInsertId();
 }
+
+function lastInsert($pdo, $db = 'mysql', $tblname = '')
+{
+    return $pdo->lastInsertId();
+}
+
 
 function fromStrPos($db = 'mysql')
 {
