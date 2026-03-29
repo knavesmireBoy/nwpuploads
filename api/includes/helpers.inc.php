@@ -390,11 +390,11 @@ function compose($reducer)
 
 function lastInsert($pdo, $db = 'mysql', $tblname = '')
 {
-    if ($db = 'postgres' && $tblname) {
+    if ($db === 'postgres' && $tblname) {
         include CONNECT;
         $pdo->exec('SET search_path TO uploads');
         try{
-        $st = doQuery($pdo, "SELECT currval(pg_get_serial_sequence($tblname, 'id')) AS id", 'error obtaining last insert id');
+        $st = doQuery($pdo, "SELECT currval(pg_get_serial_sequence('client', 'id')) AS id", 'error obtaining last insert id');
         $row = $st->fetch(PDO::FETCH_ASSOC);
         }
         catch(Exception $e){
