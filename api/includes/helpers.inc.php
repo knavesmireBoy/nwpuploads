@@ -393,9 +393,14 @@ function lastInsert($pdo, $db = 'mysql', $tblname = '')
     if ($db = 'postgres' && $tblname) {
         include CONNECT;
         $pdo->exec('SET search_path TO uploads');
+        try{
         $st = doQuery($pdo, "SELECT currval(pg_get_serial_sequence($tblname, 'id')) AS id", 'error obtaining last insert id');
         $row = $st->fetch(PDO::FETCH_ASSOC);
-        return $row['id'];
+        }
+        catch(Exception $e){
+        dump($e);
+        }
+        return isset($row) ? $row['id'] : null;
     }
     return $pdo->lastInsertId();
 }
