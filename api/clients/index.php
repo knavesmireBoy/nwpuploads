@@ -128,7 +128,10 @@ if (isset($_POST['associate'])) {
 if (isset($_POST['action']) && $_POST['action'] === 'Added') {
   include CONNECT;
   $dom = $_POST['domain'];
-  $nwpst = $pdo->prepare("INSERT INTO client (name, domain, tel) VALUES (:nom, :dom, :tel)" );
+  $mysql = "INSERT INTO client (name, domain, tel) VALUES (:nom, :dom, :tel)";
+  $postgres = "INSERT INTO usr VALUES(default, :nom, :dom, :tel)";
+  $insert = DBSYSTEM === 'postgres' ? $postgres : $mysql;
+  $nwpst = $pdo->prepare($insert);
   $nwpst->bindValue(':nom', $_POST['name']);
   $nwpst->bindValue(':dom', $dom);
   $nwpst->bindValue(':tel', $_POST['tel']);
