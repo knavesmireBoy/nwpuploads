@@ -54,7 +54,7 @@ function queryClient($str = '')
   } else if (is_array($str)) { //empty array to signify fetchAll
     if (!empty($str)) {
       $str = $str[0];
-      return "SELECT usr.id, usr.name, usr.email, client.domain, roleid AS role FROM usr INNER JOIN client ON usr.client_id = client.id INNER JOIN userrole ON userrole.userid = usr.id WHERE client.domain = CAST('40twenty.co.uk' AS TEXT) ORDER BY name";
+      return "SELECT usr.id, usr.name, usr.email, client.domain, roleid AS role FROM usr INNER JOIN client ON usr.client_id = client.id INNER JOIN userrole ON userrole.userid = usr.id WHERE client.domain = $str ORDER BY name";
     }
     return "SELECT usr.id, usr.name, usr.email, client.domain, roleid AS role FROM usr INNER JOIN client ON usr.client_id = client.id INNER JOIN userrole ON userrole.userid = usr.id WHERE client.domain=:aux ORDER BY name";
   } else if (is_null($str)) {
@@ -236,18 +236,12 @@ function filterUsers($key, $pagetitle, $error = '')
   $namechange = $_GET['namechange'] ?? null;
   $selected = true;
   include CONNECT;
+  $sql = queryClient([]);
+  $st = $pdo->prepare($sql);
+  $st->bindValue(":aux", $key);
+  doPreparedQuery($st, "Unable to identify domain");
 
-  if (DBSYSTEM === 'postgres') {
-    $sql = queryClient([$key]);
-    $st = doQuery($pdo, $sql, 'Unable to fetch data');
-  } else {
-    $sql = queryClient([]);
-    $st = $pdo->prepare($sql);
-    $st->bindValue(":aux", $key);
-    doPreparedQuery($st, "Unable to identify domain");
-  }
   $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-  dump($rows);
   $pagehead = "Manage User";
   if (!empty($rows)) {
     $pagehead = "Manage Team";
