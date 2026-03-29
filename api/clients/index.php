@@ -129,7 +129,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Added') {
   include CONNECT;
   $dom = $_POST['domain'];
   $mysql = "INSERT INTO client (name, domain, tel) VALUES (:nom, :dom, :tel)";
-  $postgres = "INSERT INTO usr VALUES(default, :nom, :dom, :tel) RETURNING id";
+  $postgres = "INSERT INTO client VALUES(default, :nom, :dom, :tel) RETURNING id";
   $insert = DBSYSTEM === 'postgres' ? $postgres : $mysql;
   $nwpst = $pdo->prepare($insert);
   $nwpst->bindValue(':nom', $_POST['name']);
@@ -137,7 +137,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Added') {
   $nwpst->bindValue(':tel', $_POST['tel']);
   $res = doPreparedQuery($nwpst, 'Error adding client.');
   $clientid = lastInsert($pdo, DBSYSTEM, 'client');
-  dump($clientid);
   //alert required for non unique domains. I attempted to enter uni.com
   if (!$res) {
     $error = 'Error adding client.';
