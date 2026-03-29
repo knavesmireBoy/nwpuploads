@@ -240,8 +240,8 @@ function filterUsers($key, $pagetitle, $error = '')
   $st = $pdo->prepare($sql);
   $st->bindValue(":aux", $key);
   doPreparedQuery($st, "Unable to identify domain");
-
   $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+
   $pagehead = "Manage User";
   if (!empty($rows)) {
     $pagehead = "Manage Team";
@@ -252,7 +252,27 @@ function filterUsers($key, $pagetitle, $error = '')
         $key = $row['id'];
       }
     }
+
+    $usercount = count($users);
+    setExtent($usercount);
+
+    if ($usercount === 1 || $namechange) {
+      $key = $namechange ? $key : $row['id'];
+      //$usercount = 1;
+      $location = "./?edit=$key";
+      if (!empty($error)) {
+        $location .= "&error=$error";
+      } else if ($namechange) {
+        $location .= "&namechange";
+      }
+      header("Location: $location");
+      exit;
+    }
+  } else {
+    header("Location: ./?edit=$key");
+    exit;
   }
+  return [$users, $selected, $pagehead, $pagetitle];
 }
 
 function updateUserDetails($id, $client_id, $assoc)
