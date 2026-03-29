@@ -234,16 +234,16 @@ function filterUsers($key, $pagetitle, $error = '')
 {
   $users = [];
   $namechange = $_GET['namechange'] ?? null;
-  $selected = true;
+  $selected = false;
   include CONNECT;
   $sql = queryClient([]);
   $st = $pdo->prepare($sql);
   $st->bindValue(":aux", $key);
   doPreparedQuery($st, "Unable to identify domain");
   $rows = $st->fetchAll(PDO::FETCH_ASSOC);
-
   $pagehead = "Manage User";
   if (!empty($rows)) {
+    $selected = true;
     $pagehead = "Manage Team";
     foreach ($rows as $row) {
       $users[$row['id']] = $row['name'];
@@ -268,7 +268,11 @@ function filterUsers($key, $pagetitle, $error = '')
       header("Location: $location");
       exit;
     }
-  } else {
+  } else if(is_int($key)){
+    /*
+    if the "domain" query fails it cannot be assumed that the selection is of a user
+    eg: one time a missing user role failed to produce a result
+    */
     header("Location: ./?edit=$key");
     exit;
   }
