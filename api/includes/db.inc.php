@@ -1,6 +1,9 @@
 <?php
 try {
-    dump(getenv());
+    $env = getenv();
+    $db = $env['DATABASE_URL'];
+    preg_match('[^:]+:([^@])+@(.)+/', $db, $matches);
+    dump($matches);
     $params = ['host' => '127.0.0.1', 'port' => 5432, 'database' => 'uploads', 'user' => 'andrewjsykes', 'password' => 'covid19krauq'];
     $params = ['host' => 'ep-rough-term-abqfwn54-pooler.eu-west-2.aws.neon.tech', 'port' => 5432, 'database' => 'uploads', 'user' => 'neondb_owner', 'password' => 'npg_njmU0gaYvNV4'];
     $db = sprintf(
