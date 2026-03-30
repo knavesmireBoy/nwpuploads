@@ -5,6 +5,7 @@ $from .= " INNER JOIN userrole ON usr.id=userrole.userid";
 $user_id =  $_GET['user'] ?? ''; //either a user id (int) or a client domain (str)
 $select .= ", usr.name as user";
 $check = NULL;
+$domainstr = fromStrPos(DBSYSTEM);
 if ($priv == 'Admin') {
     //will either return empty set(no error) or produce count. Test to see if a client has been selected.
     $sql = "SELECT domain FROM client WHERE domain=:id";
