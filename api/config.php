@@ -13,7 +13,7 @@ define("FILESTORE", '/tmp/');
 define("TEMPLATE", __DIR__ . '../../templates/');
 define("BASE", __DIR__ . '../templates/base.html');
 
-define("INCLUDES", __DIR__ . '../includes/');
+define("INCLUDES", __DIR__ . '/includes/');
 define("HELPERS", __DIR__ . '/includes/helpers.inc.php');
 define("ACCESS", __DIR__ . '/includes/access.inc.php');
 define("WEBSITE", '/nwp_uploads/api/');

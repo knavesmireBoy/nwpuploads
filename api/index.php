@@ -565,7 +565,7 @@ list($users, $client) = presentList($priv);
 //!!comes AFTER $users, $client
 ///will amend $users and $clients for non admin
 if (isset($_GET['find'])) {
-    include INCLUDES . "find.php";
+    include INCLUDES . 'find.php';
 }
 
 list($select, $from, $order) = selectUploaded($order_by, $start, $display);
