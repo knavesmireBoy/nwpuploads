@@ -8,7 +8,7 @@ ini_set('post_max_size', '125M');
 ini_set('pcre.jit', false);
 date_default_timezone_set( "Europe/London" );
 //define("FILESTORE", __DIR__ . '/filestore/');
-define("FILESTORE", '/tmp');
+define("FILESTORE", '/tmp/');
 
 define("TEMPLATE", __DIR__ . '../../templates/');
 define("BASE", __DIR__ . '../templates/base.html');
