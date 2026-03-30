@@ -169,26 +169,10 @@ function myDomain($fileid)
     list($userid, $name, $domain) = $st->fetch(PDO::FETCH_NUM);
     return [$ownerid, $ownername, $domain, $multi, $editor];
 }
-//setExtent do this here
-setExtent(0);
-$predicates = [partial('preg_match', '/^nwp/')];
+
 $pageid = 'upload';
 $pagetitle = 'Log In';
 $pagehead = 'Log In!';
-$error = '';
-$user_id = 0;
-$text = '';
-$suffix = '';
-$lib = ['nofile' => "<h4>'There was no file uploaded!'</h4>", 'fetch_files' => '<h4>Database error fetching stored files.</h4>', 'delete_file' => '<h4>Error deleting file.</h4>', 'file_list' => '<h4>Database error requesting the list of files.</h4>'];
-$clientlist = null;
-$display = 5;
-$tel = '';
-$call = '';
-$disabled  = '';
-$getuser = '';
-$bytext = '';
-$byuser = '';
-$ext = null;
 
 if (!userIsLoggedIn()) {
     include TEMPLATE . 'login.html.php';
@@ -211,6 +195,24 @@ if ($roleplay = obtainUserRole()) {
 if ($priv === 'Browser') {
     $disabled = 'disabled';
 }
+
+//setExtent do this here
+setExtent(0);
+$predicates = [partial('preg_match', '/^nwp/')];
+$error = '';
+$user_id = 0;
+$text = '';
+$suffix = '';
+$lib = ['nofile' => "<h4>'There was no file uploaded!'</h4>", 'fetch_files' => '<h4>Database error fetching stored files.</h4>', 'delete_file' => '<h4>Error deleting file.</h4>', 'file_list' => '<h4>Database error requesting the list of files.</h4>'];
+$clientlist = null;
+$display = 5;
+$tel = '';
+$call = '';
+$disabled  = '';
+$getuser = '';
+$bytext = '';
+$byuser = '';
+$ext = null;
 $pagetitle = 'File Uploads';
 
 list($qs, $state) = qsort('sort=');

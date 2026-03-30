@@ -26,6 +26,7 @@ function userIsLoggedIn()
             return FALSE;
         }
         $password = md5($_POST['password'] . 'uploads');
+
         if (databaseContainsUser($_POST['email'], $password)) {
             session_start();
             $_SESSION['loggedIn'] = TRUE;
@@ -104,6 +105,7 @@ function email($em, $id)
 
 function setExtent($count)
 {
+    session_start();
     if (is_int($count)) {
         $_SESSION['extent'] = $count;
     } else if (isset($_SESSION['extent'])) {
