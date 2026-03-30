@@ -509,7 +509,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
   }
   list($echange, $editor, $domain, $agency) = stateQuery($nwp_id, $_POST['email'], $priv);
   $mysql = "INSERT INTO usr (name, email, password, client_id) VALUES(:nom, :e, :pwd, :clientid)";
-  $postgres = "INSERT INTO usr VALUES(default, :nom, :e, :pwd, :clientid)";
+  $postgres = "INSERT INTO usr VALUES(default, :nom, :e, :pwd, :clientid) RETURNING id";
   $insert = DBSYSTEM === 'postgres' ? $postgres : $mysql;
   $st = $pdo->prepare($insert);
   list($domchange, $comchange, $dom, $com) = queryEmail($editor, $_POST);

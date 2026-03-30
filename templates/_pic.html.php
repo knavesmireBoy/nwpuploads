@@ -1,5 +1,5 @@
 <?php
-include 'base.html.php'; 
+include 'head.html.php'; 
 
 ?>
 

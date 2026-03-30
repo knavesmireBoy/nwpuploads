@@ -571,7 +571,7 @@ list($select, $from, $order) = selectUploaded($order_by, $start, $display);
 if (isset($_GET['action']) && $_GET['action'] === 'search') {
     if (!empty($_GET)) {
         include INCLUDES . 'search.inc.php';
-        include_once TEMPLATE . 'base.html.php';
+        include_once TEMPLATE . 'head.html.php';
         include TEMPLATE . 'files.html.php';
         exit();
     } else {
@@ -604,5 +604,5 @@ foreach ($nwprows as $nwprow) {
 }
 $error =  $lib[$_SERVER["QUERY_STRING"]] ?? '';
 
-include TEMPLATE . 'base.html.php';
+include TEMPLATE . 'head.html.php';
 include TEMPLATE . 'files.html.php';
