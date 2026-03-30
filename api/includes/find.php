@@ -1,4 +1,5 @@
 <?php
+dump(99);
 $template = '/search.html.php';
 //CUSTOMISES SELECT MENU overwriting DEFAULT $client and $users
 if ($priv != "Admin") {
@@ -10,9 +11,7 @@ if ($priv != "Admin") {
     doPreparedQuery($st, "Error finding domain");
     $row = $st->fetch(PDO::FETCH_NUM);
     $dom = $row[0];
-
     $sql = "SELECT COUNT(*) AS dom FROM usr INNER JOIN client ON $domainstr=client.domain WHERE $domainstr=:dom AND client.domain=:dommo";
-
     $st = $pdo->prepare($sql);
     $st->bindValue(":dom", $dom);
     $st->bindValue(":dommo", $dom);
