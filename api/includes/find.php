@@ -1,5 +1,4 @@
 <?php
-dump(99);
 $template = '/search.html.php';
 //CUSTOMISES SELECT MENU overwriting DEFAULT $client and $users
 if ($priv != "Admin") {
