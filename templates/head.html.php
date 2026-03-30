@@ -9,7 +9,7 @@ $fav =  "/assets/favicon.ico";
 	<meta content="IE=edge" http-equiv="X-UA-Compatible">
 	<meta content="width=device-width, initial-scale=1" name="viewport">
     <title><?= $pagetitle; ?></title>
-    <link rel="prefetch" href="<?= $css; ?>" type="text/css" rel="stylesheet" media="all" />
+    <link href="<?= $css; ?>" type="text/css" rel="stylesheet" media="all" />
 	<link rel="shortcut icon" type="image/jpg" href="<?= $fav; ?>">
 	<script>
 		document.cookie = 'resolution=' + Math.max(screen.width, screen.height) + '; path=/';
