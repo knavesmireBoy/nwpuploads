@@ -51,7 +51,7 @@ if (isset($suffix)) {
 $sql =  $select . $from . $where . $order;
 $st = doQuery($pdo, $sql, '<p>Error fetching file details!</p>');
 $res = $st->fetch();
-$where .= " GROUP BY total ";
+$where .= " GROUP BY name ";
 $sqlcount = $select . ', COUNT(upload.id) as total ' . $from . $where . $order;
 //$sqlcount = $select . $from . $where . $order;
 $st =  doQuery($pdo, $sqlcount, 'Error getting file count, innit');
