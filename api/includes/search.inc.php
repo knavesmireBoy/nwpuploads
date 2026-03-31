@@ -20,7 +20,7 @@ if ($priv == 'Admin') {
         $where = " WHERE domain='$dom'";
         $check = count($row);
     } else {
-        if ($user_id != '') {
+        if ($user_id !== '') {
             $where = " WHERE usr.id=$user_id";
         } else {
             $where = ' WHERE TRUE';
@@ -49,9 +49,10 @@ if (isset($suffix)) {
     }
 }
 $sql =  $select . $from . $where . $order;
-$st = doQuery($pdo, $sql, '<p>Error fetching file details!</p>');
+$st = doQuery($pdo, $sql, 'Error fetching file details!');
 $res = $st->fetch();
-$where .= " GROUP BY usr.name ";
+$where .= " GROUP BY upload.id ";
+$order = '';
 $sqlcount = $select . ', COUNT(upload.id) as total ' . $from . $where . $order;
 //$sqlcount = $select . $from . $where . $order;
 $st =  doQuery($pdo, $sqlcount, 'Error getting file count, innit');
