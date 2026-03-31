@@ -4,7 +4,10 @@ $tel = '';
 $from .= " INNER JOIN userrole ON usr.id=userrole.userid";
 $user_id =  $_GET['user'] ?? ''; //either a user id (int) or a client domain (str)
 $check = NULL;
+$where = NULL;
+$group = " GROUP BY upload.id ";
 $domainstr = fromStrPos(DBSYSTEM);
+
 if ($priv == 'Admin') {
     //will either return empty set(no error) or produce count. Test to see if a client has been selected.
     $sql = "SELECT domain FROM client WHERE domain=:id";
@@ -21,6 +24,7 @@ if ($priv == 'Admin') {
     } else {
         if ($user_id !== '') {
             $where = " WHERE usr.id=$user_id";
+            $group = '';
         } else {
             $where = ' WHERE TRUE';
         }
@@ -29,9 +33,11 @@ if ($priv == 'Admin') {
 else { //multi client
     if ($user_id != '') { // A user is selected 
         $where = " WHERE usr.id=$user_id";
+        $group = '';
     } else {
         $email = $_SESSION['email'];
         $where = " WHERE usr.email='$email'";
+        $group = '';
     }
 }
 $text = $_GET['text'];
@@ -50,9 +56,13 @@ if (isset($suffix)) {
 $sql =  $select . $from . $where . $order;
 $st = doQuery($pdo, $sql, 'Error fetching file details!');
 $res = $st->fetch();
-//$where .= " GROUP BY upload.id ";
-$sqlcount = $select . ', COUNT(upload.id) as total ' . $from . $where . $order;
-$st =  doQuery($pdo, $sqlcount, 'Error getting file count, innit');
+if($group){
+    $select .= ', COUNT(upload.id) as total ';
+    $where .= $group;
+}
+$sql = $select . $from . $where . $order;
+
+$st =  doQuery($pdo, $sql, 'Error getting file count, innit');
 $rows = $st->fetchAll(PDO::FETCH_ASSOC);
 $records = empty($rows) ? 0 : $rows[0]['total'];
 if ($records > $display) {
