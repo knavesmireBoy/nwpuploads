@@ -91,6 +91,7 @@ function buildQuery($role, $flag = 'admin')
             if (isset($_GET['sort']) && preg_match("/uf/", $_GET['sort'])) {
                 $coalesce = orderByLastName(DBSYSTEM);
                 $select .= $coalesce;
+                dump($select);
             } else {
                 //$select .= ", usr.name as user";
             }
@@ -137,6 +138,7 @@ function buildQuery($role, $flag = 'admin')
         //note LEFT join to include just 'users' also
         $from .= " LEFT JOIN client ON usr.client_id = client.id";
         $sql .= $tel . $from . $where . $order;
+    
         return [$pdo, $sql];
     };
 }
