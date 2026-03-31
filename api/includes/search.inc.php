@@ -11,7 +11,7 @@ if ($priv == 'Admin') {
     $sql = "SELECT domain FROM client WHERE domain=:id";
     $st = $pdo->prepare($sql);
     $st->bindValue(":id", $user_id);
-    doPreparedQuery($st, "<p>Unable to find domain</p>");
+    doPreparedQuery($st, "Unable to find domain");
     $row = $st->fetch(PDO::FETCH_ASSOC);
     //user_id is text(domain) for Clients
     if ($row) {
@@ -51,9 +51,9 @@ if (isset($suffix)) {
 $sql =  $select . $from . $where . $order;
 $st = doQuery($pdo, $sql, '<p>Error fetching file details!</p>');
 $res = $st->fetch();
-//$where .= " GROUP BY upload.id ";
+$where .= " GROUP BY upload.id ";
 $sqlcount = $select . ', COUNT(upload.id) as total ' . $from . $where . $order;
-//dump($sqlcount);
+dump($sqlcount);
 $st =  doQuery($pdo, $sqlcount, '<p>Error getting file count, innit</p>');
 $rows = $st->fetchAll(PDO::FETCH_ASSOC);
 $records = empty($rows) ? 0 : $rows[0]['total'];
