@@ -585,6 +585,7 @@ $nwpbuild = buildQuery($priv, 'ADMIN');
 list($pdo, $nwpsql) = $nwpbuild($select, $from, $order);
 $nwpst = doQuery($pdo, $nwpsql, 'Database error fetching files. ');
 $nwprows = $nwpst->fetchAll(PDO::FETCH_ASSOC);
+dump($nwpsql);
 
 $files = array();
 foreach ($nwprows as $nwprow) {
