@@ -51,8 +51,9 @@ if (isset($suffix)) {
 $sql =  $select . $from . $where . $order;
 $st = doQuery($pdo, $sql, '<p>Error fetching file details!</p>');
 $res = $st->fetch();
-$where .= " GROUP BY upload.id ";
+//$where .= " GROUP BY upload.id ";
 $sqlcount = $select . ', COUNT(upload.id) as total ' . $from . $where . $order;
+//dump($sqlcount);
 $st =  doQuery($pdo, $sqlcount, '<p>Error getting file count, innit</p>');
 $rows = $st->fetchAll(PDO::FETCH_ASSOC);
 $records = empty($rows) ? 0 : $rows[0]['total'];
