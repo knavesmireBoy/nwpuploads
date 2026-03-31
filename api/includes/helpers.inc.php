@@ -436,10 +436,10 @@ function replaceStrPos($new, $db = 'mysql')
 function orderByLastName($db = 'mysql')
 {
     if ($db === 'postgres') {
-        return ", COALESCE(NULLIF(SUBSTRING(name FROM POSITION(' ' IN name) +1), ''), name) AS user FROM usr";
+        return ", COALESCE(NULLIF(SUBSTRING(name FROM POSITION(' ' IN name) +1), ''), name) FROM usr";
     } else {
-        return ", COALESCE(NULLIF(SUBSTR(usr.name, LOCATE(' ', usr.name) +1), ''), usr.name) AS `user`";
-        return ", COALESCE(NULLIF(SUBSTR(usr.name, LENGTH(usr.name) - LOCATE(' ', REVERSE(usr.name)) +2), ''), usr.name) AS `user`";
+        return ", COALESCE(NULLIF(SUBSTR(usr.name, LOCATE(' ', usr.name) +1), ''), usr.name) ";
+        return ", COALESCE(NULLIF(SUBSTR(usr.name, LENGTH(usr.name) - LOCATE(' ', REVERSE(usr.name)) +2), ''), usr.name)";
     }
 }
 
