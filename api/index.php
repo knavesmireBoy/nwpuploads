@@ -1,7 +1,7 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/config.php';
-include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/helpers.inc.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/includes/access.inc.php';
+require_once __DIR__ . '/config.php';
+include_once HELPERS;
+include_once ACCESS;
 
 function fromPayload($str, ...$args)
 {
