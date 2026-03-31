@@ -3,7 +3,6 @@ include CONNECT;
 $tel = '';
 $from .= " INNER JOIN userrole ON usr.id=userrole.userid";
 $user_id =  $_GET['user'] ?? ''; //either a user id (int) or a client domain (str)
-//$select .= ", usr.name as user";
 $check = NULL;
 $domainstr = fromStrPos(DBSYSTEM);
 if ($priv == 'Admin') {
@@ -52,9 +51,7 @@ $sql =  $select . $from . $where . $order;
 $st = doQuery($pdo, $sql, 'Error fetching file details!');
 $res = $st->fetch();
 $where .= " GROUP BY upload.id ";
-$order = '';
 $sqlcount = $select . ', COUNT(upload.id) as total ' . $from . $where . $order;
-//$sqlcount = $select . $from . $where . $order;
 $st =  doQuery($pdo, $sqlcount, 'Error getting file count, innit');
 $rows = $st->fetchAll(PDO::FETCH_ASSOC);
 $records = empty($rows) ? 0 : $rows[0]['total'];
@@ -64,12 +61,11 @@ if ($records > $display) {
     $pages = 1;
 }
 
-
 $files = array();
 foreach ($rows as $row) {
     $files[] = array(
         'id' => $row['id'],
-        'user' => $row['user'],
+        'user' => $row['name'],
         'email' => $row['email'],
         'filename' => $row['filename'],
         'mimetype' => $row['mimetype'],
