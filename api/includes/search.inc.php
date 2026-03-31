@@ -24,7 +24,7 @@ if ($priv == 'Admin') {
     } else {
         if ($user_id !== '') {
             $where = " WHERE usr.id=$user_id";
-            $group = '';
+            $group = every($group, '');
         } else {
             $where = ' WHERE TRUE';
         }
@@ -33,11 +33,11 @@ if ($priv == 'Admin') {
 else { //multi client
     if ($user_id != '') { // A user is selected 
         $where = " WHERE usr.id=$user_id";
-        $group = '';
+        $group = every($group, '');
     } else {
         $email = $_SESSION['email'];
         $where = " WHERE usr.email='$email'";
-        $group = '';
+        $group = every($group, '');
     }
 }
 $text = $_GET['text'];
@@ -46,6 +46,7 @@ if ($text != '') { // Some search text was specified
 }
 $suffix = $_GET['suffix'];
 if (isset($suffix)) {
+    $group = every($group, '');
     if ($suffix == 'owt') {
         $where .= " AND (upload.filename NOT LIKE '%pdf' AND upload.filename NOT LIKE '%zip')";
     } elseif ($suffix == 'pdf' || $suffix == 'zip') {

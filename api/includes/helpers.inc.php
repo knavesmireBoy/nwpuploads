@@ -7,6 +7,10 @@ function dump($arg)
     exit;
 }
 
+function every($a, $b){
+    return $a && $b;
+}
+
 function checkUpper($str)
 {
     return strtoupper($str) === $str;
