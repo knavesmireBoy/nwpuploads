@@ -8,11 +8,11 @@ function databaseContainsUser($email, $password)
     $st = $pdo->prepare($sql);
     $st->bindValue(":email", $email);
     $st->bindValue(":pwd", $password);
-    doPreparedQuery($st, "<p>Error retrieving user:</p>");
+    doPreparedQuery($st, "Error retrieving user:");
     $result = $st->fetch(PDO::FETCH_NUM);
     if (empty($result)) {
         $error = 'Error retrieving user';
-        include 'error.html.php';
+        include TEMPLATE . 'error.html.php';
         exit();
     }
     return true;
