@@ -409,6 +409,7 @@ function refreshDomain($priv, $posted)
 //// END OF FUNCTIONS ///////// END OF FUNCTIONS ///////// END OF FUNCTIONS /////////
 if (!userIsLoggedIn()) {
   $pagetitle = "Log In";
+  $ret = '../';
   include TEMPLATE . 'login.html.php';
   exit();
 }
@@ -444,17 +445,14 @@ if (!$nwproleplay || $pagehead_role) {
 }
 list($key, $priv) = $nwproleplay;
 
-
 //filters Admin role if Client Admin is logged in
 $nwpRolesCallback = preg_match('/client/i', $priv) ? composer(negate(curry2('equals')('Admin')), curry2('getter')('id')) : 'identity';
-
 list($nwp_echange, $nwp_editor, $nwp_domain, $nwp_agency) = stateQuery($nwp_id, null, $priv);
 $pagetitle = preg_match("/client/i", $priv) ? "Admin" : "Admin | Edit Users";
 //end of initial globals
 
 $nwpadmin = isApproved($priv, 'ADMIN');
 $nwpsuper = $nwpadmin && ($_SESSION['email'] === SUPERUSER);
-
 
 if (isset($_GET['domain'])) {
   //set by client/index.php: updates the second and top level domains of the users email address

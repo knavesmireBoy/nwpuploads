@@ -6,6 +6,7 @@ require_once ACCESS;
 
 if (!userIsLoggedIn()) {
   $pagetitle = "Log In";
+  $ret = '..';
   include TEMPLATE . 'login.html.php';
   exit();
 }
