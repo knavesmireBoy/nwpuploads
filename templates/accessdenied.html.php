@@ -2,10 +2,10 @@
 $root = $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/';
 $route = preg_match("/administrators/i", $error) ? '..' : '.';
 ?>
-	<h1>Access Denied</h1>
+	<h1>Access Denied!</h1>
 	<p><?= $error; ?></p>
 	<?php
-	//header("Location: ./?action=logout&error=$error");
+	header("Location: ./?action=logout&error=$error");
 	//exit();
 	//include '_logout.html.php';
 	?>
