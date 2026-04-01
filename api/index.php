@@ -521,10 +521,11 @@ if (isset($_GET['p']) && is_numeric($_GET['p'])) {
     include CONNECT;
     $nwpsql = "SELECT COUNT(upload.id) as total from upload";
     if (preg_match("/client/i", $priv)) {
-        var_dump($priv);
         $nwpsql .= " INNER JOIN usr on upload.userid = usr.id WHERE usr.email=:email";
         $nwpst->bindValue(":email", $_SESSION['email']);
     }
+    var_dump($nwpsql);
+
     $nwpst = $pdo->prepare($nwpsql);
     dump($nwpst);
 
