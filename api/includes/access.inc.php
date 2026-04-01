@@ -29,7 +29,6 @@ function userIsLoggedIn()
             return TRUE;
         } else {
             session_start();
-            dump($_SESSION);
             unset($_SESSION['loggedIn']);
             unset($_SESSION['email']);
             unset($_SESSION['password']);
