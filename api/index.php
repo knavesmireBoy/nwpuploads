@@ -519,7 +519,6 @@ if (isset($_GET['p']) && is_numeric($_GET['p'])) {
     $pages = 1;
     include CONNECT;
 
-    dump('nicky');
 
     $nwpsql = "SELECT COUNT(upload.id) as total from upload";
     if (preg_match("/client/i", $priv)) {
@@ -529,6 +528,7 @@ if (isset($_GET['p']) && is_numeric($_GET['p'])) {
     $nwpst = $pdo->prepare($nwpsql);
     doPreparedQuery($nwpst, "Database error requesting the list of files:", false);
     $nwprow = $nwpst->fetch(PDO::FETCH_ASSOC);
+    dump($nwprow);
     if (!$nwprow) {
         header("Location: ./?file_list");
         exit();
