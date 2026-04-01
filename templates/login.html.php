@@ -16,7 +16,7 @@ $e = $loginerror ?? $_GET['loginerror'] ?? '';
 
 <?php
 if (isset($ret)) { ?>
-	<p><a href="<?= $ret; ?>">Back</a></p>
+	<p><a href="<?= $ret; ?>">Return to uploads</a></p>
 <?php }   ?>
 </body>
 
