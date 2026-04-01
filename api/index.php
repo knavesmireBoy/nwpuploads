@@ -9,6 +9,39 @@ function fromPayload($str, ...$args)
     return implode(' ', array_merge([$str], $args));
 }
 
+
+function setPages($priv){
+
+    $pages = 1;
+    if (preg_match("/client/i", $priv)) {
+        $nwptmp = " INNER JOIN usr ON upload.userid = usr.id WHERE usr.email=:email";
+    }
+   
+    if(isset($nwptmp)){
+        include CONNECT;
+        $nwpsql .= $nwptmp;
+        $nwpst = $pdo->prepare($nwpsql);
+        $nwpst->bindValue(":email", $_SESSION['email']);
+    }
+    else {
+        include CONNECT;
+        $nwpst = $pdo->prepare($nwpsql);
+        dump($nwpsql);
+    }
+    doPreparedQuery($nwpst, "Database error requesting the list of files:", false);
+    $nwprow = $nwpst->fetch(PDO::FETCH_ASSOC);
+
+    if (!$nwprow) {
+      //  header("Location: ./?file_list");
+      //  exit();
+    }
+    $records = $nwprow['total'];
+    if ($records > $display) {
+        $pages = ceil($records / $display);
+    }
+
+}
+
 $nwpuploaded = function ($arg) {
     return $_FILES['upload'][$arg];
 };
@@ -517,36 +550,12 @@ if (isset($_POST['original'])) {
 if (isset($_GET['p']) && is_numeric($_GET['p'])) {
     $pages = $_GET['p'];
 } else { // counts all files
-    $pages = 1;
-    $csql = '';
-    if (preg_match("/client/i", $priv)) {
-        $nwptmp = " INNER JOIN usr ON upload.userid = usr.id WHERE usr.email=:email";
-    }
-   
-    if(isset($nwptmp)){
-        include CONNECT;
-        $nwpsql .= $nwptmp;
-        $nwpst = $pdo->prepare($nwpsql);
-        $nwpst->bindValue(":email", $_SESSION['email']);
-    }
-    else {
-        include CONNECT;
-        $nwpst = $pdo->prepare($nwpsql);
-        dump($nwpsql);
-    }
-    doPreparedQuery($nwpst, "Database error requesting the list of files:", false);
-    $nwprow = $nwpst->fetch(PDO::FETCH_ASSOC);
-    if (!$nwprow) {
-      //  header("Location: ./?file_list");
-      //  exit();
-    }
-    $records = $nwprow['total'];
-    if ($records > $display) {
-        $pages = ceil($records / $display);
-    }
+   $pages = 1;
 } //end of IF NOT PAGES SET
+
 $sorter = array('f' => 'filename ASC', 'ff' => 'filename DESC', 'u' => 'name ASC', 'uu' => 'name DESC', 'uf' => 'name ASC, filename ASC', 'uuf' => 'name DESC, filename ASC',  'uff' => 'name ASC, filename DESC',  'uuff' => 'name DESC, filename DESC', 'ut' => 'name ASC, time ASC', 'utt' => 'name ASC, time DESC', 'uut' => 'name DESC, time ASC', 'uutt' => 'name DESC, time DESC', 't' => 'time ASC', 'tt' => 'time DESC');
 $mainclass = $pages === 1 ? '' : 'paginate';
+
 if (isset($_GET['s']) && is_numeric($_GET['s'])) {
     $start = $_GET['s'];
 } else {
@@ -593,6 +602,8 @@ if (isset($_GET['action']) && $_GET['action'] === 'search') {
 }
 $nwpbuild = buildQuery($priv, 'ADMIN');
 list($pdo, $nwpsql) = $nwpbuild($select, $from, $order);
+dump($nwpsql);
+
 $nwpst = doQuery($pdo, $nwpsql, 'Database error fetching files. ');
 $nwprows = $nwpst->fetchAll(PDO::FETCH_ASSOC);
 
