@@ -176,7 +176,7 @@ $pagetitle = 'Log In';
 $pagehead = 'Log In!';
 
 if (!userIsLoggedIn()) {
-    if(isset('loginerror')){
+    if(isset($loginerror)){
         dump(99);
     }
     include TEMPLATE . 'login.html.php';
