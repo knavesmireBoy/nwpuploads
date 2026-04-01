@@ -519,18 +519,18 @@ if (isset($_GET['p']) && is_numeric($_GET['p'])) {
 } else { // counts all files
     $pages = 1;
     include CONNECT;
-    $nwpsql = "SELECT COUNT(upload.id) as total from upload";
+    $csql = '';
     if (preg_match("/client/i", $priv)) {
-        $nwpsql .= " INNER JOIN usr on upload.userid = usr.id WHERE usr.email=:email";
-        $nwpst->bindValue(":email", $_SESSION['email']);
+        $nwptmp = " INNER JOIN usr on upload.userid = usr.id WHERE usr.email=:email";
     }
-    var_dump($nwpsql);
-
     $nwpst = $pdo->prepare($nwpsql);
-    dump($nwpst);
+    if(isset($nwptmp)){
+        $nwpsql .= $nwptmp;
+        $nwpst = $pdo->prepare($nwpsql);
+        $nwpst->bindValue(":email", $_SESSION['email']);
 
+    }
     doPreparedQuery($nwpst, "Database error requesting the list of files:", false);
-
     $nwprow = $nwpst->fetch(PDO::FETCH_ASSOC);
     if (!$nwprow) {
       //  header("Location: ./?file_list");
