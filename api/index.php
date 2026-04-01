@@ -525,10 +525,10 @@ if (isset($_GET['p']) && is_numeric($_GET['p'])) {
     }
     $nwpst = $pdo->prepare($nwpsql);
     if(isset($nwptmp)){
+        include CONNECT;
         $nwpsql .= $nwptmp;
         $nwpst = $pdo->prepare($nwpsql);
         $nwpst->bindValue(":email", $_SESSION['email']);
-
     }
     doPreparedQuery($nwpst, "Database error requesting the list of files:", false);
     $nwprow = $nwpst->fetch(PDO::FETCH_ASSOC);
