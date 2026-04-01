@@ -1,8 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 :root {
-  --font-base: 'Inter', sans-serif;
+  --font-base: "Inter", sans-serif;
   --main-color: hsl(155, 100%, 18%);
   --prompt: hsl(80, 80%, 75%);
   --bg: radial-gradient(hsl(77, 90%, 40%), white);
@@ -72,7 +71,7 @@ html {
     > main {
       flex: 1;
     }
-    background-color:gold;
+    background-color: white;
   }
 }
 
@@ -648,10 +647,10 @@ form[name="downloads"] div input {
   main {
     > form {
       background-color: rgba(255, 255, 255, 0.5);
-      &#yesno, &.prompt {
+      &#yesno,
+      &.prompt {
         background-color: var(--bg);
       }
-      
     }
   }
 }
