@@ -5,6 +5,7 @@ $from .= " INNER JOIN userrole ON usr.id=userrole.userid";
 $user_id =  $_GET['user'] ?? ''; //either a user id (int) or a client domain (str)
 $check = NULL;
 $where = NULL;
+//do not think group is required here
 $group = " GROUP BY upload.id ";
 $domainstr = fromStrPos(DBSYSTEM);
 

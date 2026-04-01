@@ -91,8 +91,6 @@ function buildQuery($role, $flag = 'admin')
             if (isset($_GET['sort']) && preg_match("/uf/", $_GET['sort'])) {
                 $coalesce = orderByLastName(DBSYSTEM);
                 $select .= $coalesce;
-            } else {
-                //$select .= ", usr.name as user";
             }
             $from .= " INNER JOIN userrole ON usr.id=userrole.userid";
             $where  = ' WHERE TRUE';
@@ -588,7 +586,6 @@ $nwpbuild = buildQuery($priv, 'ADMIN');
 list($pdo, $nwpsql) = $nwpbuild($select, $from, $order);
 $nwpst = doQuery($pdo, $nwpsql, 'Database error fetching files. ');
 $nwprows = $nwpst->fetchAll(PDO::FETCH_ASSOC);
-var_dump($nwpsql);
 
 $files = array();
 foreach ($nwprows as $nwprow) {
