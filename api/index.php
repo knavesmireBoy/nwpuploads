@@ -528,7 +528,7 @@ if (isset($_GET['p']) && is_numeric($_GET['p'])) {
     $nwpst = $pdo->prepare($nwpsql);
     doPreparedQuery($nwpst, "Database error requesting the list of files:", false);
     $nwprow = $nwpst->fetch(PDO::FETCH_ASSOC);
-    
+    dump('nicknack');
     if (!$nwprow) {
       //  header("Location: ./?file_list");
       //  exit();
@@ -569,7 +569,7 @@ list($users, $client) = presentList($priv);
 if (isset($_GET['find'])) {
     include INCLUDES . 'find.php';
 }
-dump('nickeroo');
+
 list($select, $from, $order) = selectUploaded($order_by, $start, $display);
 //!!comes AFTER $select etc..
 if (isset($_GET['action']) && $_GET['action'] === 'search') {
