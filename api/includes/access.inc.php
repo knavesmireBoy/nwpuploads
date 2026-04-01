@@ -14,7 +14,7 @@ function databaseContainsUser($email, $password)
         $error = 'Error retrieving user';
         include TEMPLATE . 'head.html.php';
         include TEMPLATE . 'error.html.php';
-        exit();
+       // exit();
     }
     return true;
 }
