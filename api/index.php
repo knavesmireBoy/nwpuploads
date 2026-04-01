@@ -180,7 +180,6 @@ if (!userIsLoggedIn()) {
     exit();
 }
 
-
 //public page
 if ($roleplay = obtainUserRole()) {
     list($key, $priv) = $roleplay;
