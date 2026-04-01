@@ -1,5 +1,6 @@
 /*https://gist.github.com/robinrendle/1d20c566c5e5fbd67f25*/
 /*Box sizing (the nuclear option)*/
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 html {
   -ms-box-sizing: border-box;
   -webkit-box-sizing: border-box;
@@ -96,6 +97,7 @@ ol, ul, dl {
 }
 
 :root {
+  --font-base: "Inter", sans-serif;
   --main-color: hsl(155, 100%, 18%);
   --prompt: hsl(80, 80%, 75%);
   --bg: radial-gradient(hsl(77, 90%, 40%), white);
@@ -128,7 +130,7 @@ html > body {
   margin: auto;
   text-align: center;
   min-width: 100%;
-  background-color: #f5f5f5;
+  background-color: honeydew;
 }
 html > body > p {
   margin: 0 0 0.5em;
@@ -245,7 +247,7 @@ form input[type=submit]:hover {
   background-color: var(--contrast);
 }
 form label {
-  font: var(--georgia);
+  font: var(--fontbase);
   padding: 0.3em 0;
   font-size: 1em;
 }
@@ -255,7 +257,7 @@ form fieldset {
 }
 form fieldset legend, form fieldset {
   border-radius: 10px;
-  font: var(--georgia);
+  font: var(--fontbase);
 }
 form p {
   margin: 0 0 1em;
