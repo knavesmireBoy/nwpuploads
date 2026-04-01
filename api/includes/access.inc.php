@@ -4,14 +4,15 @@
 function databaseContainsUser($email, $password)
 {
     include 'db.inc.php';
-    $sql = "SELECT COUNT(*) FROM usr INNER JOIN userrole ON usr.id=userrole.userid WHERE email=:email AND password=:pwd";
+    $sql = "SELECT password FROM usr INNER JOIN userrole ON usr.id=userrole.userid WHERE email=:email AND password=:pwd";
     $st = $pdo->prepare($sql);
     $st->bindValue(":email", $email);
     $st->bindValue(":pwd", $password);
     doPreparedQuery($st, "Error retrieving user:");
-    $result = $st->fetch(PDO::FETCH_NUM);
+    $result = $st->fetch(PDO::FETCH_ASSOC);
     if (empty($result)) {
         $error = 'Error retrieving user';
+        include TEMPLATE . 'head.html.php';
         include TEMPLATE . 'error.html.php';
         exit();
     }
