@@ -29,16 +29,18 @@ function userIsLoggedIn()
             $_SESSION['email'] = $e;
             $_SESSION['password'] = $password;
             return TRUE;
-        } /*else {
+        } else {
             header("Location .");
+            /*
             session_start();
             unset($_SESSION['loggedIn']);
             unset($_SESSION['email']);
             unset($_SESSION['password']);
             $GLOBALS['loginerror'] = 'The specified email address or password was incorrect.';
             return FALSE;
-        }
             */
+        }
+            
     } //end of log in attempt
 
     if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'logout') {
