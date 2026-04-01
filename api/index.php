@@ -518,9 +518,7 @@ if (isset($_GET['p']) && is_numeric($_GET['p'])) {
     $pages = $_GET['p'];
 } else { // counts all files
     $pages = 1;
-    var_dump('nicknack1');
     include CONNECT;
-
     $nwpsql = "SELECT COUNT(upload.id) as total from upload";
     if (preg_match("/client/i", $priv)) {
         $nwpsql .= " INNER JOIN usr on upload.userid = usr.id WHERE usr.email=:email";
@@ -528,6 +526,8 @@ if (isset($_GET['p']) && is_numeric($_GET['p'])) {
     }
     $nwpst = $pdo->prepare($nwpsql);
     doPreparedQuery($nwpst, "Database error requesting the list of files:", false);
+    dump('nicknack');
+
     $nwprow = $nwpst->fetch(PDO::FETCH_ASSOC);
     if (!$nwprow) {
       //  header("Location: ./?file_list");
@@ -564,7 +564,6 @@ switch ($sort) {
 //D I S P L A Y_______________________________________________________________
 ///Present list of users for administrators
 list($users, $client) = presentList($priv);
-dump('nicknack');
 
 //!!comes AFTER $users, $client
 ///will amend $users and $clients for non admin
