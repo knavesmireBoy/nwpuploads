@@ -569,7 +569,7 @@ list($users, $client) = presentList($priv);
 if (isset($_GET['find'])) {
     include INCLUDES . 'find.php';
 }
-
+dump('nickeroo');
 list($select, $from, $order) = selectUploaded($order_by, $start, $display);
 //!!comes AFTER $select etc..
 if (isset($_GET['action']) && $_GET['action'] === 'search') {
