@@ -15,19 +15,22 @@ function databaseContainsUser($email, $password)
 function userIsLoggedIn()
 {
     if (isset($_POST['action']) && $_POST['action'] == 'login') {
-        if (empty($_POST['email']) || empty($_POST['password'])) {
+        $e = trim($_POST['email']);
+        $p = $_POST['password'];
+        if ($e || $p) {
             $GLOBALS['loginerror'] = 'Please fill in both fields';
             return FALSE;
         }
-        $password = md5($_POST['password'] . 'uploads');
+        $password = md5($p . 'uploads');
 
         if (databaseContainsUser($_POST['email'], $password)) {
             session_start();
             $_SESSION['loggedIn'] = TRUE;
-            $_SESSION['email'] = trim($_POST['email']);
+            $_SESSION['email'] = $e;
             $_SESSION['password'] = $password;
             return TRUE;
-        } else {
+        } /*else {
+            header("Location .");
             session_start();
             unset($_SESSION['loggedIn']);
             unset($_SESSION['email']);
@@ -35,6 +38,7 @@ function userIsLoggedIn()
             $GLOBALS['loginerror'] = 'The specified email address or password was incorrect.';
             return FALSE;
         }
+            */
     } //end of log in attempt
 
     if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'logout') {
