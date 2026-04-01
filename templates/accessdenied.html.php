@@ -1,7 +1,7 @@
 <?php include 'head.html.php';
 //$root = $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/';
 $route = preg_match("/administrators/i", $error) ? '..' : '.';
-$route = preg_match("/administrators/i", $error) ? "../?action=logout&error=$error" : "./?action=logout&error=$error";
+$route = preg_match("/administrators/i", $error) ? "../?action=logout" : "./?action=logout";
 ?>
 	<h1>Access Denied</h1>
 	<p><?= $error; ?></p>
