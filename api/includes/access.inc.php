@@ -9,14 +9,7 @@ function databaseContainsUser($email, $password)
     $st->bindValue(":email", $email);
     $st->bindValue(":pwd", $password);
     doPreparedQuery($st, "Error retrieving user:");
-    $result = $st->fetch(PDO::FETCH_ASSOC);
-    if (empty($result)) {
-        $error = 'Error retrieving user';
-        include TEMPLATE . 'head.html.php';
-        include TEMPLATE . 'error.html.php';
-       // exit();
-    }
-    return true;
+    return $st->fetch(PDO::FETCH_ASSOC);
 }
 
 function userIsLoggedIn()
