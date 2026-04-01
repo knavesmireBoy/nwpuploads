@@ -10,36 +10,36 @@ function fromPayload($str, ...$args)
 }
 
 
-function setPages($priv){
+function setPages($priv, $display)
+{
 
     $pages = 1;
+    include CONNECT;
+    $nwpsql = "SELECT COUNT(upload.id) as total from upload ";
     if (preg_match("/client/i", $priv)) {
         $nwptmp = " INNER JOIN usr ON upload.userid = usr.id WHERE usr.email=:email";
     }
-   
-    if(isset($nwptmp)){
-        include CONNECT;
+
+    if (isset($nwptmp)) {
         $nwpsql .= $nwptmp;
         $nwpst = $pdo->prepare($nwpsql);
         $nwpst->bindValue(":email", $_SESSION['email']);
-    }
-    else {
-        include CONNECT;
+    } else {
         $nwpst = $pdo->prepare($nwpsql);
-        dump($nwpsql);
     }
     doPreparedQuery($nwpst, "Database error requesting the list of files:", false);
     $nwprow = $nwpst->fetch(PDO::FETCH_ASSOC);
 
     if (!$nwprow) {
-      //  header("Location: ./?file_list");
-      //  exit();
+        //  header("Location: ./?file_list");
+        //  exit();
     }
     $records = $nwprow['total'];
     if ($records > $display) {
         $pages = ceil($records / $display);
     }
 
+    return $pages;
 }
 
 $nwpuploaded = function ($arg) {
@@ -111,7 +111,7 @@ function presentList($role, $flag = 'admin')
         }
         return [$users, $client];
     }
-    return [[],[]];
+    return [[], []];
 }
 
 function buildQuery($role, $flag = 'admin')
@@ -550,7 +550,7 @@ if (isset($_POST['original'])) {
 if (isset($_GET['p']) && is_numeric($_GET['p'])) {
     $pages = $_GET['p'];
 } else { // counts all files
-   $pages = 1;
+    $pages = setPages($priv, $display);
 } //end of IF NOT PAGES SET
 
 $sorter = array('f' => 'filename ASC', 'ff' => 'filename DESC', 'u' => 'name ASC', 'uu' => 'name DESC', 'uf' => 'name ASC, filename ASC', 'uuf' => 'name DESC, filename ASC',  'uff' => 'name ASC, filename DESC',  'uuff' => 'name DESC, filename DESC', 'ut' => 'name ASC, time ASC', 'utt' => 'name ASC, time DESC', 'uut' => 'name DESC, time ASC', 'uutt' => 'name DESC, time DESC', 't' => 'time ASC', 'tt' => 'time DESC');
@@ -602,7 +602,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'search') {
 }
 $nwpbuild = buildQuery($priv, 'ADMIN');
 list($pdo, $nwpsql) = $nwpbuild($select, $from, $order);
-dump($nwpsql);
 
 $nwpst = doQuery($pdo, $nwpsql, 'Database error fetching files. ');
 $nwprows = $nwpst->fetchAll(PDO::FETCH_ASSOC);
