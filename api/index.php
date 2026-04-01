@@ -185,7 +185,6 @@ if ($roleplay = obtainUserRole()) {
     list($key, $priv) = $roleplay;
     //!!?!! V. USEFUL VARIABLE IN GLOBAL SPACE
     $nwpdomainstr = fromStrPos(DBSYSTEM);
-    dump('nick');
 } else {
     $error = 'Only valid clients may access this page.';
     include TEMPLATE . 'accessdenied.html.php';
@@ -519,6 +518,8 @@ if (isset($_GET['p']) && is_numeric($_GET['p'])) {
 } else { // counts all files
     $pages = 1;
     include CONNECT;
+
+    dump('nicky');
 
     $nwpsql = "SELECT COUNT(upload.id) as total from upload";
     if (preg_match("/client/i", $priv)) {
