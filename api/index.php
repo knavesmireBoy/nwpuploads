@@ -520,7 +520,7 @@ if (isset($_GET['p']) && is_numeric($_GET['p'])) {
     $pages = 1;
     $csql = '';
     if (preg_match("/client/i", $priv)) {
-        $nwptmp = " INNER JOIN usr on upload.userid = usr.id WHERE usr.email=:email";
+        $nwptmp = " INNER JOIN usr ON upload.userid = usr.id WHERE usr.email=:email";
     }
    
     if(isset($nwptmp)){
@@ -532,7 +532,7 @@ if (isset($_GET['p']) && is_numeric($_GET['p'])) {
     else {
         include CONNECT;
         $nwpst = $pdo->prepare($nwpsql);
-        dump($nwpst);
+        dump($nwpsql);
     }
     doPreparedQuery($nwpst, "Database error requesting the list of files:", false);
     $nwprow = $nwpst->fetch(PDO::FETCH_ASSOC);
