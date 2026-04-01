@@ -30,15 +30,13 @@ function userIsLoggedIn()
             $_SESSION['password'] = $password;
             return TRUE;
         } else {
-            header("Location: .");
-            /*
+            //header("Location: .");
             session_start();
             unset($_SESSION['loggedIn']);
             unset($_SESSION['email']);
             unset($_SESSION['password']);
             $GLOBALS['loginerror'] = 'The specified email address or password was incorrect.';
             return FALSE;
-            */
         }
             
     } //end of log in attempt
