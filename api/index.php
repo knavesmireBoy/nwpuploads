@@ -139,7 +139,6 @@ function buildQuery($role, $flag = 'admin')
         $sql .= $tel . $from . $where . $order;
         if (isset($coalesce)) {
             "SELECT upload.id, filename, mimetype, description, filepath, file, size, time, SUBSTRING(file, 11, 14) AS origin, usr.email, usr.name, COALESCE(NULLIF(SUBSTRING(usr.name FROM POSITION(' ' IN usr.name) +1), ''), usr.name) AS user, client.name AS client, client.tel FROM upload INNER JOIN usr ON upload.userid=usr.id INNER JOIN userrole ON usr.id=userrole.userid LEFT JOIN client ON usr.client_id = client.id WHERE TRUE ORDER BY usr.name ASC, filename ASC LIMIT 5 OFFSET 0";
-            dump($sql);
         }
         return [$pdo, $sql];
     };

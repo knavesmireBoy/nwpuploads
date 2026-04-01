@@ -435,6 +435,11 @@ function replaceStrPos($new, $db = 'mysql')
 
 function orderByLastName($db = 'mysql')
 {
+    return ", COALESCE(NULLIF(SUBSTRING('usr.name' FROM POSITION(' ' IN 'usr.name') +1), ''), 'usr.name') AS user";
+}
+
+function orderByLastName2($db = 'mysql')
+{
     if ($db === 'postgres') {
         return ", COALESCE(NULLIF(SUBSTRING(name FROM POSITION(' ' IN name) +1), ''), name) FROM usr ";
     } else {
