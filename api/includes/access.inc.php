@@ -17,7 +17,7 @@ function userIsLoggedIn()
     if (isset($_POST['action']) && $_POST['action'] == 'login') {
         $e = trim($_POST['email']);
         $p = $_POST['password'];
-        if ($e || $p) {
+        if (empty($e) || empty($p)) {
             $GLOBALS['loginerror'] = 'Please fill in both fields';
             return FALSE;
         }
