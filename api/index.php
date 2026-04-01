@@ -528,10 +528,10 @@ if (isset($_GET['p']) && is_numeric($_GET['p'])) {
     $nwpst = $pdo->prepare($nwpsql);
     doPreparedQuery($nwpst, "Database error requesting the list of files:", false);
     $nwprow = $nwpst->fetch(PDO::FETCH_ASSOC);
-    dump($nwprow);
+    
     if (!$nwprow) {
-        header("Location: ./?file_list");
-        exit();
+      //  header("Location: ./?file_list");
+      //  exit();
     }
     $records = $nwprow['total'];
     if ($records > $display) {
