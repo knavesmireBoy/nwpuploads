@@ -30,7 +30,7 @@ function userIsLoggedIn()
             $_SESSION['password'] = $password;
             return TRUE;
         } else {
-            header("Location .");
+            header("Location: .");
             /*
             session_start();
             unset($_SESSION['loggedIn']);
