@@ -550,7 +550,6 @@ function doPreparedQuery($st, $msg, $flag = false)
         return $st->execute();
     } catch (PDOException $e) {
         if ($msg) {
-            dump($e);
             $error = $msg . ' ' . $e->getMessage();
             $root =  $_SERVER['DOCUMENT_ROOT'] . '/api/';
             $root =  $_SERVER['DOCUMENT_ROOT'];
