@@ -185,6 +185,7 @@ if ($roleplay = obtainUserRole()) {
     list($key, $priv) = $roleplay;
     //!!?!! V. USEFUL VARIABLE IN GLOBAL SPACE
     $nwpdomainstr = fromStrPos(DBSYSTEM);
+    dump('nick');
 } else {
     $error = 'Only valid clients may access this page.';
     include TEMPLATE . 'accessdenied.html.php';
