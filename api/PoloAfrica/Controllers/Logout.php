@@ -2,7 +2,7 @@
 
 namespace PoloAfrica\Controllers;
 
-class Login
+class Logout
 {
     private $authentication;
     public function __construct(\Ninja\Authentication $authentication)
@@ -61,7 +61,7 @@ class Login
             'template' => 'actions.html.php',
             'title' => 'Log In Successful',
             'variables' => [
-                'user' => 'LOGIN'
+                'user' => 'LOGOUT'
             ]
         ];
     }

@@ -9,7 +9,7 @@ date_default_timezone_set( "Europe/London" );
 
 define("NINJA", 'Ninja/');
 define("CONTROLLERS", 'PoloAfrica/controllers/');
-define("FUNCTIONS", './includes/helpers.php');
+define("FUNCTIONS", './includes/helpers.inc.php');
 define("ENTITY", 'PoloAfrica/entity/');
 define("INCLUDES", 'includes/');
 define("MARKDOWN", 'Ninja/Markdown');
@@ -142,4 +142,4 @@ define("ENQUIRIES", '/enquiries/');
 define("PHOTOS",  '/gallery/display');
 
 
-include '../includes/autoload.php';
+include './includes/autoload.php';

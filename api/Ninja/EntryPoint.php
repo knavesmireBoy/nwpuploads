@@ -57,8 +57,8 @@ class EntryPoint
             $action = $public_page ? 'display' : $action;
             $user = $this->website->checkLogin($name . '/' . $action); //: array
 
-            $userid = !empty($user) ? $user[0]->id : 0;
-            $userpermissions = !empty($user) ? $user[1] : 0;
+            $userid = $user[0]->id ?? 0;
+            $userpermissions = $user[1] ?? 0;
             $controller = $this->website->getController($name, $args, [$userid, $userpermissions]);
 
             if (is_callable([$controller, $action])) {
