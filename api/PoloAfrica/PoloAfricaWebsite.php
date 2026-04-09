@@ -95,7 +95,9 @@ class PoloAfricaWebsite implements Website
             'login',
             'gallery',
             'pages',
-            'contact'
+            'contact',
+            'bolt',
+            'spadger'
         ];
         //https://stackoverflow.com/questions/534159/instantiate-a-class-from-a-variable-in-php#:~:text=Put%20the%20classname%20into%20a,%24classname(%22xyz%22)%3B
         $key = $this->validate($id, $controllers);
@@ -109,7 +111,7 @@ class PoloAfricaWebsite implements Website
     {
         $id = array_pop($user) ?? $name;
         $id = ($id === $name) ? $id : $name;
-        //..  return $this->factory($id, [...$mandatory, ...$optional, ...$user]);
+         return $this->factory($id,[],/* [...$mandatory, ...$optional, ...$user]*/);
     }
 
     private function ensureArray($arr)
@@ -180,11 +182,12 @@ class PoloAfricaWebsite implements Website
             'asset' => [$this->assetTable],
             'gallery' => [$this->galleryTable, $this->boxTable],
             'contact' => [],
+            'bolt' => [],
+            'spadger' => []
         ];
 
         $locations = ['photos' => GAL_LIST, '_enquiries' => 'processForm'];
 
-        return null;
 
         if (isset($defaultArgs[$name])) {
             $args = $this->ensureArray($args);

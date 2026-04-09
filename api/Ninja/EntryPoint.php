@@ -38,6 +38,7 @@ class EntryPoint
     public function run($uri, $method, $defaultKlas = '', $home = 'home')
     {
         try {
+      
             $this->checkUri($uri);
             if ($uri == '') {
                 $this->website->setHome($home);
@@ -47,8 +48,11 @@ class EntryPoint
             $route = explode('/', $uri);
             $name = array_shift($route);
             $action = array_shift($route);
+
             $controller = new \stdClass();
             $args = $this->website->getControllerArgs($name, $controller);
+
+
             if ($method === 'POST' && in_array($action, $this->posts)) {
                 $action .= 'Submit';
             }
@@ -60,12 +64,11 @@ class EntryPoint
             $userid = $user[0]->id ?? 0;
             $userpermissions = $user[1] ?? 0;
             $controller = $this->website->getController($name, $args, [$userid, $userpermissions]);
-
+            
             if (is_callable([$controller, $action])) {
                 //$this->website->create($name);
                 $page = $controller->$action(...$route);
                 //one could type for example editsubmit/1 in browser address bar
-
                 if ($page && is_array($page)) {
                     $vars = array_merge($this->website->getLayoutVariables('login'), $page['variables'] ?? []);
                     $output = $this->loadTemplate($page['template'], $vars);
@@ -86,11 +89,15 @@ class EntryPoint
 
         if (!isset($layoutVariables)) { //'not found'
             $layoutVariables = $this->website->getLayoutVariables($name . '/' . $action);
+
+            /*
             $layoutVariables['klas'] = $layoutVariables['klas'] ?? $defaultKlas;
             $layoutVariables['scripts'] = $this->website->getScripts($name . '/' . $action);
             $layoutVariables['user'] = !empty($user) ? $user[0]->name : null;
             $layoutVariables['pageid'] = strtolower($layoutVariables['title']);
             $layoutVariables['nav'] =  $_SESSION['nav'] ?? [];
+            */
+
             if (is_callable([$controller, 'setNavBar']) && $public_page) {
                 unset($_SESSION['pending']);
                 list($ids, $titles) = $this->website->setNavBar();
@@ -121,7 +128,9 @@ class EntryPoint
             $layoutVariables['nav'] = $navlist;
         }
         $layoutVariables['output'] = $output;
+
         $routes = array_keys($layoutVariables['nav']);
+
         if ($name === 'home' && !in_array('/home/', $routes)) {
             reLocate(current($routes));
         }

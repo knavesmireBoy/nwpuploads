@@ -2,9 +2,16 @@
 require_once 'config.php';
 include FUNCTIONS;
 //phpinfo();
+
 $layout = 'pagelayout.html.php';
 $route = fixUri();
+if(is_array($route)){
+    array_shift($route);
+    array_shift($route);
+}
 $uri = empty($route) ? '' : implode('/', $route);
+
+
 $home = 'home';
 //array of "actions" which need submit adding to string for processing forms; eg assignSubmit
 $posts = ['assign', 'create', 'contact', 'edit', 'login', 'manage', 'permissions', 'register', 'retrieve', 'retire', 'unarchive', 'relocate', 'swap'];
