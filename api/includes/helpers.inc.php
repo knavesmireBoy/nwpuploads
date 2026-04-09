@@ -7,6 +7,67 @@ function dump($arg)
     exit;
 }
 
+function doWhen($predicate, $action)
+{
+    return function (...$args) use ($predicate, $action) {
+        if ($predicate(...$args)) {
+            return $action(...$args);
+        }
+    };
+}
+
+
+function startSession()
+{
+    if (!isset($_SESSION)) {
+        session_start();
+    }
+}
+
+function reLocate($path, $prefix = '')
+{
+    header('Location: ' . $path);
+    exit;
+}
+
+function retour($arg = '')
+{
+    header("Location: /$arg");
+    exit;
+}
+
+function fixUri()
+{
+    $uri = $_SERVER['REQUEST_URI'];
+    $uri = strtok(ltrim($uri, '/'), '?');
+    $route = explode('/', $uri);
+    array_unique($route);
+    return $route;
+}
+function isDir($file)
+{
+    if ($file) {
+        $i = strpos($file, '/');
+        $file = $i === 0 ? substr($file, 1) : $file;
+        return is_dir($file) ? $file : null;
+    }
+    return null;
+}
+
+function safeScanDir($directory)
+{
+    $scandir = doWhen('identity', 'scandir');
+    $filter = partial('preg_grep', "/^[^\.]/");
+    $getValues = doWhen('identity', 'array_values');
+    $getDirFiles = composer($getValues, $filter, $scandir, 'isDir');
+    return $getDirFiles($directory);
+}
+
+function arrayDiff($arr, ...$args)
+{
+    return array_values(array_diff($arr, ...$args));
+}
+
 function every($a, $b){
     return $a && $b;
 }
