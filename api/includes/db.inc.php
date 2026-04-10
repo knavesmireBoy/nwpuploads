@@ -1,6 +1,8 @@
 <?php
-try {
 
+
+try {
+    if(DBSYSTEM === 'postgres'){
     $env = getenv();
     preg_match('/[^:]+:\/\/[^:]+:([^@]+)@(.+)/', $env['DATABASE_URL'] ?? '', $matches);
     $pwd = $matches[1] ?? null;
@@ -22,6 +24,16 @@ try {
     $pdo = new PDO($db);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $pdo->exec('SET search_path TO uploads');
+}
+else {
+    $pdo = new \PDO(
+        "mysql:host=localhost;dbname=$dbname;charset=utf8mb4",
+        $user,
+        $pwd
+    );
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo->exec('SET NAMES "utf8"');
+}
 } catch (PDOException $e) {
     $output = 'Unable to connect to the database server: ' . $e->getMessage();
     $error = $output;

@@ -1,8 +1,10 @@
 
-
-<body>
-<h1>Hello</h1>
-<main id="content" role="main" class="override"><?= $output; ?> 
+<?php
+include 'pagehead.html.php';
+?>
+<body id="<?= $pageid ?? ''; ?>">
+<main ole="main" class="<?= $mainclass ?? ''; ?>">
+<?= $output; ?> 
 </main>
 </body>
 </html>

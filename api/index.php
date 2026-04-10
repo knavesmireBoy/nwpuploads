@@ -5,10 +5,12 @@ include FUNCTIONS;
 
 $layout = 'pagelayout.html.php';
 $route = fixUri();
-if(is_array($route)){
-    array_shift($route);
-    array_shift($route);
+
+$i = array_search('api', $route);
+if(is_int($i)){
+    $route = array_slice($route, $i + 1);
 }
+
 $uri = empty($route) ? '' : implode('/', $route);
 
 

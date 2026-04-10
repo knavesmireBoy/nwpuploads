@@ -80,7 +80,7 @@ class DatabaseTable
     {
         $this->pdo = $pdo;
         $this->table = $table;
-        $this->primaryKey = $primaryKey;
+        $this->primaryKey = strpos($primaryKey, ',') ? null : $primaryKey;
         $this->className = $className;
         $this->constructorArgs = $constructorArgs;
     }

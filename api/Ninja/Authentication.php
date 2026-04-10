@@ -21,12 +21,12 @@ class Authentication
         }
     }
 
-    public function __construct(DatabaseTable $users, string $usernameColumn, string $passwordColumn)
+    public function __construct(DatabaseTable $users, string $usr, string $pwd)
     {
         startSession();
         $this->users = $users;
-        $this->usernameColumn = $usernameColumn;
-        $this->passwordColumn = $passwordColumn;
+        $this->usernameColumn = $usr;
+        $this->passwordColumn = $pwd;
     }
 
     public function login(string $username, string $password): bool
@@ -50,8 +50,9 @@ class Authentication
             return null;
         }
         $user = $this->find($this->usernameColumn, $_SESSION['username']);
-        if (!empty($user[0]) && $user[0]->{$this->passwordColumn} === $_SESSION['password']) {
-            return $user[0];
+        $user = $user[0] ?? null;
+        if ($user && $user->{$this->passwordColumn} === $_SESSION['password']) {
+            return $user;
         }
         return null;
     }
