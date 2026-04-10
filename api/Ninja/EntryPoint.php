@@ -50,7 +50,7 @@ class EntryPoint
             $action = array_shift($route);
             $controller = new \stdClass();
             $args = $this->website->getControllerArgs($name, $controller);
-
+            var_dump(1,$args);
 
             if ($method === 'POST' && in_array($action, $this->posts)) {
                 $action .= 'Submit';
@@ -59,7 +59,7 @@ class EntryPoint
             //$public_page = $name === $action;
             //$action = $public_page ? 'display' : $action;
             $user = $this->website->checkLogin($name . '/' . $action); //: array
-         
+            var_dump(2,$user);
             $userid = $user[0]->id ?? 0;
             $userpermissions = $user[1] ?? 0;
             $controller = $this->website->getController($name, $args, [$userid, $userpermissions]);
