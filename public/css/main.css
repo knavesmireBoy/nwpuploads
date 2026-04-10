@@ -130,7 +130,7 @@ html > body {
   margin: auto;
   text-align: center;
   min-width: 100%;
-  background-color: white;
+  background-color: lavenderblush;
 }
 html > body > p {
   margin: 0 0 0.5em;
@@ -157,6 +157,7 @@ h1 + p {
 
 h2 {
   color: var(--head);
+  color: red;
   font-size: 1.5em;
   margin: 1em 0;
 }

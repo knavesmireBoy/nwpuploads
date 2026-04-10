@@ -1,4 +1,7 @@
 <?php
+$css =  CSS . "main.css";
+$fav =  ASSETS . "favicon.ico";
+
 $css =  "/css/main.css";
 $fav =  "/assets/favicon.ico";
 ?>

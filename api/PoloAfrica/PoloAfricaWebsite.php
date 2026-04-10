@@ -104,7 +104,7 @@ class PoloAfricaWebsite implements Website
 
     public function setNavBar(): array
     {
-        return ['', ''];
+        return [[], []];
     }
 
     public function getController(string $name = '', array $args = [], array $user_args = []): ?object
@@ -112,10 +112,6 @@ class PoloAfricaWebsite implements Website
         $defaultArgs = [
             'logger' => [$this->authentication],
             'user' => [$this->userTable],
-            'article' => [$this->articleTable],
-            'asset' => [$this->assetTable],
-            'gallery' => [$this->galleryTable, $this->boxTable],
-            'contact' => [],
             'bolt' => [],
             'spadger' => []
         ];
@@ -125,6 +121,7 @@ class PoloAfricaWebsite implements Website
             $user_args = $this->ensureArray($user_args);
             return $this->build($name, $defaultArgs[$name], $args, $user_args);
         }
+        return null;
     }
 
     public function getScripts($key = ''): array
@@ -183,6 +180,7 @@ class PoloAfricaWebsite implements Website
 
     public function checkLogin(string $uri): array
     {
+        
         $files = scandir(isDir(ASSETS));
         $fs = preg_grep("/^\w+\.w+$/", $files);
         $dirs = arrayDiff($files, $fs);
