@@ -22,9 +22,9 @@ try {
     $posts = ['assign', 'create', 'contact', 'edit', 'login', 'manage', 'permissions', 'register', 'retrieve', 'retire', 'unarchive', 'relocate', 'swap'];
     $pp = $pages[$route[0]] ?? '';
 
-   
+    dump(88);
     $website = new \PoloAfrica\PoloAfricaWebsite($pp);
-    dump($website);
+  
     $entryPoint = new \Ninja\EntryPoint($website, $posts);
 
     $layoutVariables = $entryPoint->run($uri, $_SERVER['REQUEST_METHOD'], 'public', $home);
