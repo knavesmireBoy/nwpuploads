@@ -69,8 +69,9 @@ class EntryPoint
                 //one could type for example editsubmit/1 in browser address bar
                 if ($page && is_array($page)) {
                     $vars = array_merge($this->website->getLayoutVariables('login'), $page['variables'] ?? []);
+                    var_dump(44, $vars);
+
                     $output = $this->loadTemplate($page['template'], $vars);
-                    var_dump(44, $output);
 
                 } else {
                     retour();
