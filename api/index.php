@@ -6,6 +6,8 @@ include FUNCTIONS;
 $layout = 'pagelayout.html.php';
 $route = fixUri();
 
+dump($route);
+
 $i = array_search('api', $route);
 if(is_int($i)){
     $route = array_slice($route, $i + 1);
