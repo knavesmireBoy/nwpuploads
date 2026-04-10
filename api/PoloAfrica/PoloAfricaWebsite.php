@@ -39,15 +39,13 @@ class PoloAfricaWebsite implements Website
         $user = 'root';
         $dbname = 'uploads';
 
-        dump(999);
+    
         include CONNECT;
         $this->pdo = $pdo;
 
         $this->userRoleTable = new DatabaseTable($this->pdo, 'userrole', 'userid');
         $this->userTable = new DatabaseTable($this->pdo, 'usr', 'id', '\PoloAfrica\Entity\User', [&$this->userTable, $this->userRoleTable]);
-
-
-
+        /*
         $this->authentication = new Authentication($this->userTable, 'email', 'password');
         $this->pagesTable = new DatabaseTable($this->pdo, 'pages', 'id', '\PoloAfrica\Entity\Page', [&$this->slotTable]);
         $this->slotTable = new DatabaseTable($this->pdo, $pp, 'id', '\PoloAfrica\Entity\Slot', [&$this->slotTable]);
@@ -55,6 +53,7 @@ class PoloAfricaWebsite implements Website
         $this->articleTable = new DatabaseTable($this->pdo, 'articles', 'id', '\PoloAfrica\Entity\Article', [&$this->articleTable, $this->assetTable, $this->slotTable, 2]);
         $this->boxTable = new DatabaseTable($this->pdo, 'slot', 'id');
         $this->galleryTable = new DatabaseTable($this->pdo, 'gallery', 'id', '\PoloAfrica\Entity\Gallery', [$this->boxTable]);
+        */
     }
 
     private function validate($key, $array)
@@ -218,7 +217,6 @@ class PoloAfricaWebsite implements Website
         }
 
         $reroute = partial([$this, 'reroute'], $uri);
-        $user = $this->authentication->isLoggedIn();
         $key = '';
         $browser = \PoloAfrica\Entity\User::BROWSER;
         $content = \PoloAfrica\Entity\User::CONTENT_EDITOR;
@@ -227,7 +225,10 @@ class PoloAfricaWebsite implements Website
         $account = \PoloAfrica\Entity\User::ACCOUNT_EDITOR;
         $super = \PoloAfrica\Entity\User::SUPERADMIN;
 
-        $permit = $user ? intval($user->permissions) : 0;
+       // $user = $this->authentication->isLoggedIn();
+       // $permit = $user ? intval($user->permissions) : 0;
+
+        $user = new \stdClass;
         $tmp = ['user/edit' => $account,  'user/list' => $account, 'user/edit' => $account, 'gallery/manage' => $photo];
         $post_access = ['user/success' => $browser, 'user/haspermission' => $browser];
         //'user/register' => $browser,
@@ -281,12 +282,12 @@ class PoloAfricaWebsite implements Website
                 reLocate(REG . 'gebruiker');
             }
         } else {
-            if (isset($actions[$uri]) && !$user->hasPermission($actions[$uri])) {
+            if (isset($actions[$uri]) /*&& !$user->hasPermission($actions[$uri])*/) {
                 $reroute($actions[$uri], 'user');
                 exit;
             }
         }
-        $ret = $user ? [$user, $permit, $key] : [''];
+       // $ret = $user ? [$user, $permit, $key] : [''];
         //don't send empty args
         return [''];
         return array_filter($ret, 'identity');
