@@ -175,7 +175,7 @@ class PoloAfricaWebsite implements Website
         $fs = preg_grep("/^\w+\.w+$/", $files);
         $dirs = arrayDiff($files, $fs);
         $dirs = array_values(preg_grep("/^[^\.]/", $dirs));
-
+var_dump(22, $uri);
         function foo($root, &$ret)
         {
             $files = safeScanDir($root);
