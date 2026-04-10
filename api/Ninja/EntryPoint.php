@@ -68,8 +68,9 @@ class EntryPoint
                 $page = $controller->$action(...$route);
                 //one could type for example editsubmit/1 in browser address bar
                 if ($page && is_array($page)) {
+                    var_dump(1, $page);
                     $vars = array_merge($this->website->getLayoutVariables('login'), $page['variables'] ?? []);
-                    var_dump(44, $vars);
+                    var_dump(2, $vars);
 
                     $output = $this->loadTemplate($page['template'], $vars);
 
