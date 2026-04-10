@@ -43,7 +43,7 @@ class EntryPoint
                 $this->website->setHome($home);
                 $uri = $this->website->getDefaultRoute();
             }
-           
+
             $output = '';
             $route = explode('/', $uri);
             $name = array_shift($route);
@@ -54,7 +54,7 @@ class EntryPoint
             if ($method === 'POST' && in_array($action, $this->posts)) {
                 $action .= 'Submit';
             }
-           // $action = $this->reroute($name, $action);
+            // $action = $this->reroute($name, $action);
             $public_page = $name === $action;
             $action = $public_page ? 'display' : $action;
             $user = $this->website->checkLogin($name . '/' . $action); //: array
@@ -62,18 +62,15 @@ class EntryPoint
             $userpermissions = $user[1] ?? 0;
             $controller = $this->website->getController($name, $args, [$userid, $userpermissions]);
 
-            
+
             if (is_callable([$controller, $action])) {
                 //$this->website->create($name);
                 $page = $controller->$action(...$route);
                 //one could type for example editsubmit/1 in browser address bar
                 if ($page && is_array($page)) {
-                    var_dump(1, $page);
                     $vars = array_merge($this->website->getLayoutVariables('login'), $page['variables'] ?? []);
-                    var_dump(2, $vars);
-
                     $output = $this->loadTemplate($page['template'], $vars);
-
+                    var_dump(3333,  $output);
                 } else {
                     retour();
                 }
@@ -130,7 +127,7 @@ class EntryPoint
             $layoutVariables['nav'] = $navlist;
         }
         $layoutVariables['output'] = $output;
-
+        var_dump(444, $output);
         $routes = array_keys($layoutVariables['nav']);
 
         if ($name === 'home' && !in_array('/home/', $routes)) {
