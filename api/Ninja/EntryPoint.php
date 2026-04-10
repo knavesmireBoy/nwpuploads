@@ -48,7 +48,6 @@ class EntryPoint
             $route = explode('/', $uri);
             $name = array_shift($route);
             $action = array_shift($route);
-            var_dump($name, $action);
             $controller = new \stdClass();
             $args = $this->website->getControllerArgs($name, $controller);
 
@@ -68,6 +67,7 @@ class EntryPoint
             if (is_callable([$controller, $action])) {
                 //$this->website->create($name);
                 $page = $controller->$action(...$route);
+                var_dump($page);
                 //one could type for example editsubmit/1 in browser address bar
                 if ($page && is_array($page)) {
                     $vars = array_merge($this->website->getLayoutVariables('login'), $page['variables'] ?? []);
