@@ -9,18 +9,11 @@ use \PoloAfrica\Controllers\Pages;
 
 class PoloAfricaWebsite implements Website
 {
-    private $articleTable;
     private $userTable;
     private $userRoleTable;
-    private $assetTable;
-    private $slotTable;
-    private $boxTable;
-    private $galleryTable;
     private $pdo;
-    private $pagesTable;
     private $authentication;
-    private $pages;
-    private $pp;
+
     private $home = 'home';
 
     public function getDefaultRoute(): string
@@ -39,10 +32,8 @@ class PoloAfricaWebsite implements Website
         $user = 'root';
         $dbname = 'uploads';
 
-    
         include CONNECT;
         $this->pdo = $pdo;
-
         $this->userRoleTable = new DatabaseTable($this->pdo, 'userrole', 'userid');
         $this->userTable = new DatabaseTable($this->pdo, 'usr', 'id', '\PoloAfrica\Entity\User', [&$this->userTable, $this->userRoleTable]);
         /*
@@ -69,7 +60,7 @@ class PoloAfricaWebsite implements Website
         $eq = function ($a, $b) {
             return $a === $b;
         };
-        $arr = array_map($f, [BADMINTON, USER_LIST]);
+        $arr = array_map($f, ['', '']);
         //if at least one matches
         return array_filter($arr, partial($eq, $f($uri)));
     }
@@ -95,7 +86,7 @@ class PoloAfricaWebsite implements Website
     {
         $id = array_pop($user) ?? $name;
         $id = ($id === $name) ? $id : $name;
-         return $this->factory($id,[],/* [...$mandatory, ...$optional, ...$user]*/);
+        return $this->factory($id, [],/* [...$mandatory, ...$optional, ...$user]*/);
     }
 
     private function ensureArray($arr)
@@ -136,7 +127,7 @@ class PoloAfricaWebsite implements Website
         $accept_asset = 'accept="image/*, video/*,application/pdf"';
         $gallery_accept = 'accept="image/*"';
         $lib = [];
-        return isset($lib[$k]) ? $lib[$k] : [];
+        return $lib[$k] ?? [];
     }
 
     public function getLayoutVariables($key): array
@@ -181,7 +172,6 @@ class PoloAfricaWebsite implements Website
 
     public function checkLogin(string $uri): array
     {
-        
         $files = scandir(isDir(ASSETS));
         $fs = preg_grep("/^\w+\.w+$/", $files);
         $dirs = arrayDiff($files, $fs);
@@ -225,8 +215,8 @@ class PoloAfricaWebsite implements Website
         $account = \PoloAfrica\Entity\User::ACCOUNT_EDITOR;
         $super = \PoloAfrica\Entity\User::SUPERADMIN;
 
-       // $user = $this->authentication->isLoggedIn();
-       // $permit = $user ? intval($user->permissions) : 0;
+        // $user = $this->authentication->isLoggedIn();
+        // $permit = $user ? intval($user->permissions) : 0;
 
         $user = new \stdClass;
         $tmp = ['user/edit' => $account,  'user/list' => $account, 'user/edit' => $account, 'gallery/manage' => $photo];
@@ -287,17 +277,13 @@ class PoloAfricaWebsite implements Website
                 exit;
             }
         }
-       // $ret = $user ? [$user, $permit, $key] : [''];
+        // $ret = $user ? [$user, $permit, $key] : [''];
         //don't send empty args
         return [''];
         return array_filter($ret, 'identity');
     }
     //DDL
-    public function create($name): void
-    {
-    }
+    public function create($name): void {}
 
-    public function drop($name)
-    {
-    }
+    public function drop($name) {}
 }

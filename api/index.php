@@ -22,7 +22,6 @@ try {
     $posts = ['assign', 'create', 'contact', 'edit', 'login', 'manage', 'permissions', 'register', 'retrieve', 'retire', 'unarchive', 'relocate', 'swap'];
     $pp = $pages[$route[0]] ?? '';
     $website = new \PoloAfrica\PoloAfricaWebsite($pp);
-    dump([5, $website]);
     $entryPoint = new \Ninja\EntryPoint($website, $posts);
     $layoutVariables = $entryPoint->run($uri, $_SERVER['REQUEST_METHOD'], 'public', $home);
     echo $entryPoint->loadTemplate($layout, $layoutVariables);
