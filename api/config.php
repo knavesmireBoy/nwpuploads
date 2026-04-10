@@ -2,8 +2,9 @@
 
 function autoloader($className) {
     $fileName = str_replace('\\', '/', $className) . '.php';
-    dump(__DIR__);
-    $file = __DIR__ . '/../' . $fileName;
+    $file = __DIR__ .  "/$fileName";
+    dump([$file, file_exists($file)]);
+
     include $file;
 }
 //ini_set( "display_errors", true);
