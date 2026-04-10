@@ -171,11 +171,11 @@ class PoloAfricaWebsite implements Website
 
     public function checkLogin(string $uri): array
     {
-        $files = scandir(isDir(ASSETS));
+       /* $files = scandir(isDir(ASSETS));
         $fs = preg_grep("/^\w+\.w+$/", $files);
         $dirs = arrayDiff($files, $fs);
         $dirs = array_values(preg_grep("/^[^\.]/", $dirs));
-var_dump(22, $uri);
+
         function foo($root, &$ret)
         {
             $files = safeScanDir($root);
@@ -204,10 +204,11 @@ var_dump(22, $uri);
             };
             return $drive;
         }
-       
+       */
        // $reroute = partial([$this, 'reroute'], $uri);
-
+       var_dump(22, $uri);
         $key = '';
+        /*
         $browser = \PoloAfrica\Entity\User::BROWSER;
         $content = \PoloAfrica\Entity\User::CONTENT_EDITOR;
         $photo = \PoloAfrica\Entity\User::PHOTO_EDITOR;
@@ -217,8 +218,9 @@ var_dump(22, $uri);
 
         // $user = $this->authentication->isLoggedIn();
         // $permit = $user ? intval($user->permissions) : 0;
-
+*/
         $user = new \stdClass;
+        /*
         $tmp = ['user/edit' => $account,  'user/list' => $account, 'user/edit' => $account, 'gallery/manage' => $photo];
         $post_access = ['user/success' => $browser, 'user/haspermission' => $browser];
         //'user/register' => $browser,
@@ -264,6 +266,8 @@ var_dump(22, $uri);
             'gallery/getuntracked' => $super,
             'gallery/manage' => $super,
         ];
+        */
+        $actions = [];
 
         var_dump(11, $user);
         if (!$user) { //not logged in
