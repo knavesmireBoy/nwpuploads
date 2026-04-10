@@ -12,6 +12,8 @@ class EntryPoint
     {
         extract($variables);
         ob_start();
+
+        var_dump(TEMPLATE);
         include  TEMPLATE . $templateFileName;
         return ob_get_clean();
     }
@@ -70,7 +72,7 @@ class EntryPoint
                 if ($page && is_array($page)) {
                     $vars = array_merge($this->website->getLayoutVariables('login'), $page['variables'] ?? []);
                     $output = $this->loadTemplate($page['template'], $vars);
-                    var_dump(3333,  $output);
+                    
                 } else {
                     retour();
                 }
@@ -127,7 +129,7 @@ class EntryPoint
             $layoutVariables['nav'] = $navlist;
         }
         $layoutVariables['output'] = $output;
-        var_dump(444, $output);
+       
         $routes = array_keys($layoutVariables['nav']);
 
         if ($name === 'home' && !in_array('/home/', $routes)) {
