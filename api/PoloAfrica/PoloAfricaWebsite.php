@@ -38,6 +38,8 @@ class PoloAfricaWebsite implements Website
         $pwd = 'covid19krauq';
         $user = 'root';
         $dbname = 'uploads';
+
+        dump(999);
         include CONNECT;
         $this->pdo = $pdo;
 
