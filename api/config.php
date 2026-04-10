@@ -30,5 +30,5 @@ define('DBSYSTEM', 'postgres');
 define('SUPERUSER', 'files@northwolds.co.uk');
 define('PAGINATE', 5);
 
-spl_autoload_register('autoloader');
-session_start();
+//spl_autoload_register('autoloader');
+//session_start();

@@ -1,11 +1,11 @@
 <?php
+try {
 require_once 'config.php';
 include FUNCTIONS;
-phpinfo();
+//phpinfo();
 
 $layout = 'pagelayout.html.php';
 $route = fixUri();
-
 dump($route);
 
 $i = array_search('api', $route);
@@ -23,3 +23,7 @@ $website = new \PoloAfrica\PoloAfricaWebsite($pp);
 $entryPoint = new \Ninja\EntryPoint($website, $posts);
 $layoutVariables = $entryPoint->run($uri, $_SERVER['REQUEST_METHOD'], 'public', $home);
 echo $entryPoint->loadTemplate($layout, $layoutVariables);
+}
+catch(\Exception $e){
+    var_dump($e);
+}
