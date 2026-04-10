@@ -204,8 +204,9 @@ class PoloAfricaWebsite implements Website
             };
             return $drive;
         }
+       
+       // $reroute = partial([$this, 'reroute'], $uri);
 
-        $reroute = partial([$this, 'reroute'], $uri);
         $key = '';
         $browser = \PoloAfrica\Entity\User::BROWSER;
         $content = \PoloAfrica\Entity\User::CONTENT_EDITOR;
@@ -263,6 +264,8 @@ class PoloAfricaWebsite implements Website
             'gallery/getuntracked' => $super,
             'gallery/manage' => $super,
         ];
+
+        var_dump(11, $user);
         if (!$user) { //not logged in
             //@ baseAccess
             //a non-browser has to be able to register user/admin
@@ -272,7 +275,7 @@ class PoloAfricaWebsite implements Website
             }
         } else {
             if (isset($actions[$uri]) /*&& !$user->hasPermission($actions[$uri])*/) {
-                $reroute($actions[$uri], 'user');
+               // $reroute($actions[$uri], 'user');
                 exit;
             }
         }
