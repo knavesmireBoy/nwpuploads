@@ -28,5 +28,10 @@ define('DBSYSTEM', 'postgres');
 define('SUPERUSER', 'files@northwolds.co.uk');
 define('PAGINATE', 5);
 
+define("LOGOUT", '/logger/logout');
+define("LOGIN", '/logger/login');
+define("REG", '/logger/reg/');
+
+
 spl_autoload_register('autoloader');
 session_start();

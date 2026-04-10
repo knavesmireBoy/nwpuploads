@@ -13,8 +13,7 @@ class PoloAfricaWebsite implements Website
     private $userRoleTable;
     private $pdo;
     private $authentication;
-
-    private $home = 'home';
+    private $home = '';
 
     public function getDefaultRoute(): string
     {

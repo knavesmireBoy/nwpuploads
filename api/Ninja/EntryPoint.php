@@ -48,7 +48,7 @@ class EntryPoint
             $route = explode('/', $uri);
             $name = array_shift($route);
             $action = array_shift($route);
-
+            var_dump($name, $action);
             $controller = new \stdClass();
             $args = $this->website->getControllerArgs($name, $controller);
 
