@@ -55,23 +55,23 @@ class EntryPoint
                 $action .= 'Submit';
             }
            // $action = $this->reroute($name, $action);
-            //$public_page = $name === $action;
-            //$action = $public_page ? 'display' : $action;
-            var_dump(1,$action);
+            $public_page = $name === $action;
+            $action = $public_page ? 'display' : $action;
             $user = $this->website->checkLogin($name . '/' . $action); //: array
-            var_dump(2,$user);
             $userid = $user[0]->id ?? 0;
             $userpermissions = $user[1] ?? 0;
             $controller = $this->website->getController($name, $args, [$userid, $userpermissions]);
-            var_dump($controller, is_callable([$controller, $action]));
+
+            
             if (is_callable([$controller, $action])) {
                 //$this->website->create($name);
                 $page = $controller->$action(...$route);
-                var_dump($page);
                 //one could type for example editsubmit/1 in browser address bar
                 if ($page && is_array($page)) {
                     $vars = array_merge($this->website->getLayoutVariables('login'), $page['variables'] ?? []);
                     $output = $this->loadTemplate($page['template'], $vars);
+                    var_dump(44, $output);
+
                 } else {
                     retour();
                 }

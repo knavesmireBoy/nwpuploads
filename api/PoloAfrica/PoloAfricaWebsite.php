@@ -206,7 +206,6 @@ class PoloAfricaWebsite implements Website
         }
        */
        // $reroute = partial([$this, 'reroute'], $uri);
-       var_dump(22, $uri);
         $key = '';
         /*
         $browser = \PoloAfrica\Entity\User::BROWSER;
@@ -269,7 +268,6 @@ class PoloAfricaWebsite implements Website
         */
         $actions = [];
 
-        var_dump(11, $user);
         if (!$user) { //not logged in
             //@ baseAccess
             //a non-browser has to be able to register user/admin
