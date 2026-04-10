@@ -1,7 +1,7 @@
 <?php
 require_once 'config.php';
 include FUNCTIONS;
-//phpinfo();
+phpinfo();
 
 $layout = 'pagelayout.html.php';
 $route = fixUri();
