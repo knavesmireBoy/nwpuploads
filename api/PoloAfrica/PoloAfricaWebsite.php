@@ -131,10 +131,12 @@ class PoloAfricaWebsite implements Website
 
     public function getLayoutVariables($key): array
     {
-        $user = $this->authentication->isLoggedIn();
+       /*
+       $user = $this->authentication->isLoggedIn();
         if ($key === 'login') {
             return ['title' => 'Admin', 'loggedIn' => $user, 'user' => $user->name ?? ''];
         }
+            */
         $page = explode('/', $key);
         $gal = 'gallery';
         $defs = ['klas' => '', 'user' => $user->name ?? '', 'adminpage' => ''];
