@@ -38,12 +38,12 @@ class EntryPoint
     public function run($uri, $method, $defaultKlas = '', $home = 'home')
     {
         try {
-      
             $this->checkUri($uri);
             if ($uri == '') {
                 $this->website->setHome($home);
                 $uri = $this->website->getDefaultRoute();
             }
+           
             $output = '';
             $route = explode('/', $uri);
             $name = array_shift($route);
