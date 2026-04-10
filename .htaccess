@@ -1,8 +1,8 @@
 #RewriteEngine on
-RewriteBase /
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^.*$ index.php [NC,L,QSA]
+#RewriteBase /
+#RewriteCond %{REQUEST_FILENAME} !-f
+#RewriteCond %{REQUEST_FILENAME} !-d
+#RewriteRule ^.*$ index.php [NC,L,QSA]
 
 #RewriteRule ^/?([a-z]+)/([a-z]+)/(\d+)$ router.php [NC]
 #RewriteRule ^/?.+$ alpaca.php?delete=28 [NC]
