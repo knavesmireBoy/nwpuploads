@@ -275,7 +275,9 @@ class PoloAfricaWebsite implements Website
             //@ baseAccess
             //a non-browser has to be able to register user/admin
             //a "BROWSER" is allowed to change details at the very least user/list
+            var_dump(1);
             if ($this->baseAccess($uri) || isset($actions[$uri])) {
+                var_dump(2);
                 reLocate(REG . 'gebruiker');
             }
         } else {
@@ -287,6 +289,7 @@ class PoloAfricaWebsite implements Website
          $ret = $user ? [$user, $permit, $key] : [''];
         //don't send empty args
         //return [''];
+        var_dump(13,$ret);
         return array_filter($ret, 'identity');
     }
     //DDL
