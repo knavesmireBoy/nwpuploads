@@ -57,7 +57,8 @@ class EntryPoint
             // $action = $this->reroute($name, $action);
             $public_page = $name === $action;
             $action = $public_page ? 'display' : $action;
-            reLocate(REG . 'gebruiker');
+            dump($action);
+           // reLocate(REG . 'gebruiker');
             $user = $this->website->checkLogin($name . '/' . $action); //: array
             $userid = $user[0]->id ?? 0;
             $userpermissions = $user[1] ?? 0;

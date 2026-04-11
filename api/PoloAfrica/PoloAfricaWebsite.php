@@ -220,8 +220,6 @@ class PoloAfricaWebsite implements Website
 
         $user = new \stdClass;
 */
-
-
         $user = $this->authentication->isLoggedIn();
         dump($user);
         $permit = $user ? intval($user->permissions) : 0;
