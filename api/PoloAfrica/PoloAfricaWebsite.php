@@ -218,10 +218,11 @@ class PoloAfricaWebsite implements Website
         $account = \PoloAfrica\Entity\User::ACCOUNT_EDITOR;
         $super = \PoloAfrica\Entity\User::SUPERADMIN;
 
-        $user = new \stdClass;
 */
         $user = $this->authentication->isLoggedIn();
         $permit = $user ? intval($user->permissions) : 0;
+        $user = new \stdClass;
+
 
         /*
         $tmp = ['user/edit' => $account,  'user/list' => $account, 'user/edit' => $account, 'gallery/manage' => $photo];
@@ -290,8 +291,8 @@ class PoloAfricaWebsite implements Website
         }
         $ret = $user ? [$user, $permit, $key] : [''];
         //don't send empty args
-        //return [''];
-        var_dump(13, $ret);
+        return [''];
+      //  var_dump(13, $ret);
         return array_filter($ret, 'identity');
     }
     //DDL
