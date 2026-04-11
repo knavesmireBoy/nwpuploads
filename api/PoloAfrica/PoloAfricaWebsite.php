@@ -67,7 +67,6 @@ class PoloAfricaWebsite implements Website
         return array_filter($arr, partial($eq, $f($uri)));
     }
 
-
     private function factory(string $id, array $args)
     {
         $controllers = [
