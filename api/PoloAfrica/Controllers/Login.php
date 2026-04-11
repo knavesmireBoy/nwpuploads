@@ -16,7 +16,7 @@ class Login
        $user = null;
         if (!$user) {
             return [
-                'template' => 'login.html.php',
+                'template' => 'actions.html.php',
                 'title' => 'Admin',
                 'variables' => []
             ];
