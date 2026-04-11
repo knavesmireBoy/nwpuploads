@@ -16,7 +16,7 @@ try {
 
     $output = 'saturday';
 
-    dump(array_map('isDir', [TEMPLATE, $_SERVER['DOCUMENT_ROOT'] . '/api', TEMPLATE . $layout]));
+    dump([$route, $_SERVER['DOCUMENT_ROOT']]);
 
     include TEMPLATE . $layout;
 
