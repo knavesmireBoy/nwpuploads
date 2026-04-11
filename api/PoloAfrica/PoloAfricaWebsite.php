@@ -80,7 +80,6 @@ class PoloAfricaWebsite implements Website
         $key = $this->validate($id, $controllers);
         if ($key) {
             $klas = "PoloAfrica\\Controllers\\" . ucwords($key);
-            dump([$key, $klas]);
             return new $klas(...$args);
         }
     }
