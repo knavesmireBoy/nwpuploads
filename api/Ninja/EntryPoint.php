@@ -65,8 +65,6 @@ class EntryPoint
             $user = $this->website->checkLogin($url); //: array
             $userid = $user[0]->id ?? 0;
             $userpermissions = $user[1] ?? 0;
-            dump([$name, $args, [$userid, $userpermissions]]);
-
             $controller = $this->website->getController($name, $args, [$userid, $userpermissions]);
             if (is_callable([$controller, $action])) {
                 //$this->website->create($name);
