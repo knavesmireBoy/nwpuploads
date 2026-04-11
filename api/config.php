@@ -1,4 +1,10 @@
 <?php
+function autoloader($className) {
+    $fileName = str_replace('\\', '/', $className) . '.php';
+    $file = __DIR__ . '/../' . $fileName;
+    include $file;
+}
+
 //ini_set( "display_errors", true);
 ini_set( "display_errors", false);
 ini_set('memory_limit', '1024M'); // or you could use 1G
@@ -24,3 +30,6 @@ define('SUPERUSER', 'files@northwolds.co.uk');
 //define('SUPERUSER', 'files@northwolds.co.uk');
 define('MYIP', '86.160.57.166');
 define('PAGINATE', 5);
+
+spl_autoload_register('autoloader');
+session_start();
