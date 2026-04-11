@@ -43,23 +43,24 @@ class EntryPoint
                 $this->website->setHome($home);
                 $uri = $this->website->getDefaultRoute();
             }
-
+            $url = '';
             $output = '';
             $route = explode('/', $uri);
-            $name = array_shift($route);
-            $action = array_shift($route);
+            if(!empty($route)){
+                $name = array_shift($route);
+                $action = array_shift($route);
+                $public_page = $name === $action;
+                $action = $public_page ? 'display' : $action;
+                $url = $name . '/' . $action;
+            }
+           
             $controller = new \stdClass();
             $args = $this->website->getControllerArgs($name, $controller);
-
             if ($method === 'POST' && in_array($action, $this->posts)) {
                 $action .= 'Submit';
             }
             // $action = $this->reroute($name, $action);
-            $public_page = $name === $action;
-            $action = $public_page ? 'display' : $action;
-            dump($action);
-           // reLocate(REG . 'gebruiker');
-            $user = $this->website->checkLogin($name . '/' . $action); //: array
+            $user = $this->website->checkLogin($url); //: array
             $userid = $user[0]->id ?? 0;
             $userpermissions = $user[1] ?? 0;
             $controller = $this->website->getController($name, $args, [$userid, $userpermissions]);

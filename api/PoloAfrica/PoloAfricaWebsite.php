@@ -221,7 +221,6 @@ class PoloAfricaWebsite implements Website
         $user = new \stdClass;
 */
         $user = $this->authentication->isLoggedIn();
-        dump($user);
         $permit = $user ? intval($user->permissions) : 0;
 
         /*
@@ -274,6 +273,7 @@ class PoloAfricaWebsite implements Website
         $actions = [];
 
         if (!$user) { //not logged in
+            reLocate(REG . 'gebruiker');
             //@ baseAccess
             //a non-browser has to be able to register user/admin
             //a "BROWSER" is allowed to change details at the very least user/list
