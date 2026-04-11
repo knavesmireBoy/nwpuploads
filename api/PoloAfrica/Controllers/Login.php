@@ -12,7 +12,8 @@ class Login
 
     public function reg($arg = '')
     {
-        $user = $this->authentication->isLoggedIn();
+       // $user = $this->authentication->isLoggedIn();
+       $user = null;
         if (!$user) {
             return [
                 'template' => 'login.html.php',
