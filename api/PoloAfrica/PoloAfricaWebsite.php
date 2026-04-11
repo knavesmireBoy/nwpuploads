@@ -85,7 +85,8 @@ class PoloAfricaWebsite implements Website
     {
         $id = array_pop($user) ?? $name;
         $id = ($id === $name) ? $id : $name;
-        return $this->factory($id, [],/* [...$mandatory, ...$optional, ...$user]*/);
+        dump($id);
+        return $this->factory($id, [...$mandatory, ...$optional, ...$user]);
     }
 
     private function ensureArray($arr)
