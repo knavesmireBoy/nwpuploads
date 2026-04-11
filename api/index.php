@@ -15,8 +15,7 @@
 
     $output = 'saturday';
 
-    //include TEMPLATE . 'login.html.php';
-    include TEMPLATE . $layout;
+    include TEMPLATE . 'login.html.php';
     exit();
 
    // dump([isDir($_SERVER['DOCUMENT_ROOT'] . '/templates'), 888, isDir(__DIR__ . '../templates')]);

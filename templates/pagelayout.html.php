@@ -7,4 +7,3 @@ include 'pagehead.html.php';
 <?= $output; ?> 
 </main>
 </body>
-</html>
