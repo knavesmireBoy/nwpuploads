@@ -70,7 +70,6 @@ class PoloAfricaWebsite implements Website
         $controllers = [
             'user',
             'login',
-            'logger',
             'bolt',
             'spadger'
         ];
