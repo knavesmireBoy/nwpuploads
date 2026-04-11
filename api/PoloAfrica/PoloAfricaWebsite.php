@@ -38,7 +38,6 @@ class PoloAfricaWebsite implements Website
         $this->userRoleTable = new DatabaseTable($this->pdo, 'userrole', 'userid');
         $this->userTable = new DatabaseTable($this->pdo, 'usr', 'id', '\PoloAfrica\Entity\User', [&$this->userTable, $this->userRoleTable]);
         $this->authentication = new Authentication($this->userTable, 'email', 'password');
-        dump($this->authentication);
        /*
         $this->pagesTable = new DatabaseTable($this->pdo, 'pages', 'id', '\PoloAfrica\Entity\Page', [&$this->slotTable]);
         $this->slotTable = new DatabaseTable($this->pdo, $pp, 'id', '\PoloAfrica\Entity\Slot', [&$this->slotTable]);
