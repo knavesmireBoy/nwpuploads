@@ -14,6 +14,7 @@ class Login
     {
        // $user = $this->authentication->isLoggedIn();
        $user = null;
+       dump('reg');
         if (!$user) {
             return [
                 'template' => 'actions.html.php',
