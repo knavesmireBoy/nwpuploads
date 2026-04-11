@@ -13,7 +13,7 @@ class EntryPoint
         extract($variables);
         ob_start();
 
-        var_dump(isDir(TEMPLATE), file_exists(TEMPLATE . $templateFileName));
+        dump(isDir('../../templates'), isDir(__DIR__ . '../../templates'));
         include  TEMPLATE . $templateFileName;
         return ob_get_clean();
     }
