@@ -45,10 +45,10 @@ class PoloAfricaWebsite implements Website
         $this->articleTable = new DatabaseTable($this->pdo, 'articles', 'id', '\PoloAfrica\Entity\Article', [&$this->articleTable, $this->assetTable, $this->slotTable, 2]);
         $this->boxTable = new DatabaseTable($this->pdo, 'slot', 'id');
         $this->galleryTable = new DatabaseTable($this->pdo, 'gallery', 'id', '\PoloAfrica\Entity\Gallery', [$this->boxTable]);
-        
+         */
         $this->authentication = new \stdClass();
-        $this->userTable = new \stdClass();
-        */
+       // $this->userTable = new \stdClass();
+       
     }
 
     private function validate($key, $array)
