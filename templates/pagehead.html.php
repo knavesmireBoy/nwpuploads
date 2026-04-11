@@ -4,6 +4,7 @@ $fav =  ASSETS . "favicon.ico";
 
 $css =  "/css/main.css";
 $fav =  "/assets/favicon.ico";
+
 ?>
 <!DOCTYPE html>
 <html class="no-js" lang="en">
