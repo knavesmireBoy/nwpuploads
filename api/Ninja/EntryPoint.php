@@ -48,14 +48,14 @@ class EntryPoint
             $route = explode('/', $uri);
             $name =  '';
             $action = '';
-            if(!empty($route)){
+            if (!empty($route)) {
                 $name = array_shift($route);
                 $action = array_shift($route);
                 $public_page = $name === $action;
                 $action = $public_page ? 'display' : $action;
                 $url = $name . '/' . $action;
             }
-           
+
             $controller = new \stdClass();
             $args = $this->website->getControllerArgs($name, $controller);
             if ($method === 'POST' && in_array($action, $this->posts)) {
@@ -66,7 +66,6 @@ class EntryPoint
             $userid = $user[0]->id ?? 0;
             $userpermissions = $user[1] ?? 0;
             $controller = $this->website->getController($name, $args, [$userid, $userpermissions]);
-            dump($controller);
             if (is_callable([$controller, $action])) {
                 //$this->website->create($name);
                 $page = $controller->$action(...$route);
@@ -130,7 +129,7 @@ class EntryPoint
             $layoutVariables['nav'] = $navlist;
         }
         $layoutVariables['output'] = $output;
-       
+
         $routes = array_keys($layoutVariables['nav']);
 
         if ($name === 'home' && !in_array('/home/', $routes)) {
