@@ -36,7 +36,7 @@ class PoloAfricaWebsite implements Website
         $this->pdo = $pdo;
         
         $this->userRoleTable = new DatabaseTable($this->pdo, 'userrole', 'userid');
-       // $this->userTable = new DatabaseTable($this->pdo, 'usr', 'id', '\PoloAfrica\Entity\User', [&$this->userTable, $this->userRoleTable]);
+        $this->userTable = new DatabaseTable($this->pdo, 'usr', 'id', '\PoloAfrica\Entity\User', [&$this->userTable, $this->userRoleTable]);
        // $this->authentication = new Authentication($this->userTable, 'email', 'password');
        /*
         $this->pagesTable = new DatabaseTable($this->pdo, 'pages', 'id', '\PoloAfrica\Entity\Page', [&$this->slotTable]);
@@ -47,7 +47,7 @@ class PoloAfricaWebsite implements Website
         $this->galleryTable = new DatabaseTable($this->pdo, 'gallery', 'id', '\PoloAfrica\Entity\Gallery', [$this->boxTable]);
          */
         $this->authentication = new \stdClass();
-        $this->userTable = new \stdClass();
+       // $this->userTable = new \stdClass();
        
     }
 
