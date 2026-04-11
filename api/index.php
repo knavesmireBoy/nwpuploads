@@ -16,6 +16,8 @@ try {
 
     $output = 'saturday';
 
+    dump(array_map('isDir', [TEMPLATE, $_SERVER['DOCUMENT_ROOT'] . '/api', TEMPLATE . $layout]));
+
     include TEMPLATE . $layout;
 
     exit;
