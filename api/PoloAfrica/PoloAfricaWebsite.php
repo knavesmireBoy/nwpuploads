@@ -70,6 +70,7 @@ class PoloAfricaWebsite implements Website
         $controllers = [
             'user',
             'login',
+            'logger',
             'bolt',
             'spadger'
         ];
@@ -77,6 +78,7 @@ class PoloAfricaWebsite implements Website
         $key = $this->validate($id, $controllers);
         if ($key) {
             $klas = "PoloAfrica\\Controllers\\" . ucwords($key);
+            dump($args);
             return new $klas(...$args);
         }
     }
@@ -85,7 +87,6 @@ class PoloAfricaWebsite implements Website
     {
         $id = array_pop($user) ?? $name;
         $id = ($id === $name) ? $id : $name;
-        dump($id);
         return $this->factory($id, [...$mandatory, ...$optional, ...$user]);
     }
 
