@@ -55,10 +55,10 @@ class PoloAfricaWebsite implements Website
     private function baseAccess($uri)
     {
         $f = partial('preg_replace', '|\/|', '');
-        // $eq = fn($a, $b) => $a === $b;
         $eq = function ($a, $b) {
             return $a === $b;
         };
+        $eq = fn($a, $b) => $a === $b;
         $arr = array_map($f, ['', '']);
         //if at least one matches
         return array_filter($arr, partial($eq, $f($uri)));
@@ -217,10 +217,11 @@ class PoloAfricaWebsite implements Website
         $account = \PoloAfrica\Entity\User::ACCOUNT_EDITOR;
         $super = \PoloAfrica\Entity\User::SUPERADMIN;
 
-        // $user = $this->authentication->isLoggedIn();
-        // $permit = $user ? intval($user->permissions) : 0;
-*/
         $user = new \stdClass;
+*/
+         $user = $this->authentication->isLoggedIn();
+         $permit = $user ? intval($user->permissions) : 0;
+
         /*
         $tmp = ['user/edit' => $account,  'user/list' => $account, 'user/edit' => $account, 'gallery/manage' => $photo];
         $post_access = ['user/success' => $browser, 'user/haspermission' => $browser];
@@ -283,9 +284,9 @@ class PoloAfricaWebsite implements Website
                 exit;
             }
         }
-        // $ret = $user ? [$user, $permit, $key] : [''];
+         $ret = $user ? [$user, $permit, $key] : [''];
         //don't send empty args
-        return [''];
+        //return [''];
         return array_filter($ret, 'identity');
     }
     //DDL

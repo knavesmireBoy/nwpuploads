@@ -62,7 +62,6 @@ class EntryPoint
             $userpermissions = $user[1] ?? 0;
             $controller = $this->website->getController($name, $args, [$userid, $userpermissions]);
 
-
             if (is_callable([$controller, $action])) {
                 //$this->website->create($name);
                 $page = $controller->$action(...$route);
@@ -70,7 +69,6 @@ class EntryPoint
                 if ($page && is_array($page)) {
                     $vars = array_merge($this->website->getLayoutVariables('login'), $page['variables'] ?? []);
                     $output = $this->loadTemplate($page['template'], $vars);
-                    
                 } else {
                     retour();
                 }
