@@ -21,5 +21,6 @@
     $pp = $pages[$route[0]] ?? '';
     $website = new \PoloAfrica\PoloAfricaWebsite($pp);
     $entryPoint = new \Ninja\EntryPoint($website, $posts);
+    var_dump($website, $entryPoint);
     $layoutVariables = $entryPoint->run($uri, $_SERVER['REQUEST_METHOD'], 'public', $home);
     echo $entryPoint->loadTemplate($layout, $layoutVariables);
