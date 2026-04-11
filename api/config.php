@@ -31,5 +31,7 @@ define('SUPERUSER', 'files@northwolds.co.uk');
 define('MYIP', '86.160.57.166');
 define('PAGINATE', 5);
 
+define("REG", '/logger/reg/');
+
 spl_autoload_register('autoloader');
 session_start();
