@@ -16,7 +16,7 @@ try {
 
     $output = 'saturday';
 
-    dump([isDir($_SERVER['DOCUMENT_ROOT'] . '/api'), 5, __DIR__]);
+    dump([isDir($_SERVER['DOCUMENT_ROOT'] . '/templates'), 888, isDir(__DIR__ . '../templates')]);
 
     include TEMPLATE . $layout;
 
