@@ -1,5 +1,4 @@
 <?php
-try {
     require_once __DIR__ . '/config.php';
     include_once HELPERS;
     include_once ACCESS;
@@ -16,7 +15,10 @@ try {
 
     $output = 'saturday';
 
-    dump([isDir($_SERVER['DOCUMENT_ROOT'] . '/templates'), 888, isDir(__DIR__ . '../templates')]);
+    include TEMPLATE . 'login.html.php';
+    exit();
+
+   // dump([isDir($_SERVER['DOCUMENT_ROOT'] . '/templates'), 888, isDir(__DIR__ . '../templates')]);
 
     include TEMPLATE . $layout;
 
@@ -32,6 +34,3 @@ try {
     $entryPoint = new \Ninja\EntryPoint($website, $posts);
     $layoutVariables = $entryPoint->run($uri, $_SERVER['REQUEST_METHOD'], 'public', $home);
     echo $entryPoint->loadTemplate($layout, $layoutVariables);
-} catch (\Exception $e) {
-    var_dump($e);
-}
