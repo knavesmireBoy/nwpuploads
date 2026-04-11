@@ -217,13 +217,11 @@ class PoloAfricaWebsite implements Website
         $chief = \PoloAfrica\Entity\User::CHIEF_EDITOR;
         $account = \PoloAfrica\Entity\User::ACCOUNT_EDITOR;
         $super = \PoloAfrica\Entity\User::SUPERADMIN;
-
-*/
-        $user = $this->authentication->isLoggedIn();
-        $permit = $user ? intval($user->permissions) : 0;
+        */
+       // $user = $this->authentication->isLoggedIn();
+        //$permit = $user ? intval($user->permissions) : 0;
+        $permit = 0;
         $user = new \stdClass;
-
-
         /*
         $tmp = ['user/edit' => $account,  'user/list' => $account, 'user/edit' => $account, 'gallery/manage' => $photo];
         $post_access = ['user/success' => $browser, 'user/haspermission' => $browser];
