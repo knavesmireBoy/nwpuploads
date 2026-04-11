@@ -14,7 +14,7 @@
     }
 
     $uri = empty($route) ? '' : implode('/', $route);
-    var_dump(3,TEMPLATE);
+    var_dump(4,TEMPLATE);
     $home = 'home';
     //array of "actions" which need submit adding to string for processing forms; eg assignSubmit
     $posts = ['assign', 'create', 'contact', 'edit', 'login', 'manage', 'permissions', 'register', 'retrieve', 'retire', 'unarchive', 'relocate', 'swap'];
