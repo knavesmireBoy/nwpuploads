@@ -12,7 +12,6 @@ class EntryPoint
     {
         extract($variables);
         ob_start();
-        var_dump(2,TEMPLATE);
         include  TEMPLATE . $templateFileName;
         return ob_get_clean();
     }
