@@ -13,7 +13,7 @@ class EntryPoint
         extract($variables);
         ob_start();
 
-        var_dump(isDir(__DIR__ ), $_SERVER['DOCUMENT_ROOT']);
+        var_dump(3,isDir($_SERVER['DOCUMENT_ROOT'] . '/templates'));
         include  TEMPLATE . $templateFileName;
         return ob_get_clean();
     }
