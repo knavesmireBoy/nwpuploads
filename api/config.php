@@ -1,8 +1,7 @@
 <?php
 function autoloader($className) {
     $fileName = str_replace('\\', '/', $className) . '.php';
-    var_dump($fileName);
-    $file = __DIR__  . $fileName;
+    $file = __DIR__  . "/$fileName";
     include $file;
 }
 
