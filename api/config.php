@@ -15,7 +15,7 @@ date_default_timezone_set( "Europe/London" );
 //define("FILESTORE", __DIR__ . '/filestore/');
 define("FILESTORE", '/tmp/');
 
-define("TEMPLATE", __DIR__ . '../../../templates/');
+define("TEMPLATE", __DIR__ . '../../templates/');
 define("BASE", __DIR__ . '../templates/base.html');
 
 define("INCLUDES", __DIR__ . '/includes/');
