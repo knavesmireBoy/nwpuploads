@@ -30,24 +30,25 @@ class PoloAfricaWebsite implements Website
     {
         $pwd = 'covid19krauq';
         $user = 'root';
-        $dbname = 'polafrica';
+        $dbname = 'uploads';
 
         include CONNECT;
         $this->pdo = $pdo;
-         /*
+        
         $this->userRoleTable = new DatabaseTable($this->pdo, 'userrole', 'userid');
         $this->userTable = new DatabaseTable($this->pdo, 'user', 'id', '\PoloAfrica\Entity\User', [&$this->userTable, $this->userRoleTable]);
         $this->authentication = new Authentication($this->userTable, 'email', 'password');
-       
+       /*
         $this->pagesTable = new DatabaseTable($this->pdo, 'pages', 'id', '\PoloAfrica\Entity\Page', [&$this->slotTable]);
         $this->slotTable = new DatabaseTable($this->pdo, $pp, 'id', '\PoloAfrica\Entity\Slot', [&$this->slotTable]);
         $this->assetTable = new DatabaseTable($this->pdo, 'assets', 'id', '\PoloAfrica\Entity\Asset', [&$this->assetTable, &$this->articleTable]);
         $this->articleTable = new DatabaseTable($this->pdo, 'articles', 'id', '\PoloAfrica\Entity\Article', [&$this->articleTable, $this->assetTable, $this->slotTable, 2]);
         $this->boxTable = new DatabaseTable($this->pdo, 'slot', 'id');
         $this->galleryTable = new DatabaseTable($this->pdo, 'gallery', 'id', '\PoloAfrica\Entity\Gallery', [$this->boxTable]);
-        */
+        
         $this->authentication = new \stdClass();
         $this->userTable = new \stdClass();
+        */
     }
 
     private function validate($key, $array)
