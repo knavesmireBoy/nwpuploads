@@ -6,6 +6,7 @@ use \Ninja\Website;
 use \Ninja\DatabaseTable;
 use \Ninja\Authentication;
 use \PoloAfrica\Controllers\Pages;
+use stdClass;
 
 class PoloAfricaWebsite implements Website
 {
@@ -29,14 +30,15 @@ class PoloAfricaWebsite implements Website
     {
         $pwd = 'covid19krauq';
         $user = 'root';
-        $dbname = 'uploads';
+        $dbname = 'polafrica';
 
         include CONNECT;
         $this->pdo = $pdo;
+         /*
         $this->userRoleTable = new DatabaseTable($this->pdo, 'userrole', 'userid');
-        $this->userTable = new DatabaseTable($this->pdo, 'usr', 'id', '\PoloAfrica\Entity\User', [&$this->userTable, $this->userRoleTable]);
+        $this->userTable = new DatabaseTable($this->pdo, 'user', 'id', '\PoloAfrica\Entity\User', [&$this->userTable, $this->userRoleTable]);
         $this->authentication = new Authentication($this->userTable, 'email', 'password');
-          /*
+       
         $this->pagesTable = new DatabaseTable($this->pdo, 'pages', 'id', '\PoloAfrica\Entity\Page', [&$this->slotTable]);
         $this->slotTable = new DatabaseTable($this->pdo, $pp, 'id', '\PoloAfrica\Entity\Slot', [&$this->slotTable]);
         $this->assetTable = new DatabaseTable($this->pdo, 'assets', 'id', '\PoloAfrica\Entity\Asset', [&$this->assetTable, &$this->articleTable]);
@@ -44,6 +46,7 @@ class PoloAfricaWebsite implements Website
         $this->boxTable = new DatabaseTable($this->pdo, 'slot', 'id');
         $this->galleryTable = new DatabaseTable($this->pdo, 'gallery', 'id', '\PoloAfrica\Entity\Gallery', [$this->boxTable]);
         */
+        $this->authentication = new \stdClass();
     }
 
     private function validate($key, $array)
