@@ -46,6 +46,8 @@ class EntryPoint
             $url = '';
             $output = '';
             $route = explode('/', $uri);
+            $name =  '';
+            $action = '';
             if(!empty($route)){
                 $name = array_shift($route);
                 $action = array_shift($route);

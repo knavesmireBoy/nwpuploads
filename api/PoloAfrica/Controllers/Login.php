@@ -15,12 +15,12 @@ class Login
         $user = $this->authentication->isLoggedIn();
         if (!$user) {
             return [
-                'template' => 'preregister.html.php',
+                'template' => 'login.html.php',
                 'title' => 'Admin',
                 'variables' => []
             ];
         } else {
-            reLocate(BADMINTON, '../'); //
+           // reLocate(BADMINTON, '../'); //
         }
     }
 
@@ -52,7 +52,7 @@ class Login
     public function logout()
     {
         $this->authentication->logout();
-        reLocate(BADMINTON, '../'); //
+      //  reLocate(BADMINTON, '../'); //
     }
 
     public function shout()
@@ -75,7 +75,7 @@ class Login
 
             if ($success) {
                 //chiefly to set $_SESSION['filestore'], but also for ajax
-                reLocate(BADMINTON . "/success");
+              //  reLocate(BADMINTON . "/success");
 
                 return [
                     'template' => 'actions.html.php',
