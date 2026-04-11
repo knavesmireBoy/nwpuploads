@@ -13,17 +13,6 @@
         $route = array_slice($route, $i + 1);
     }
 
-    $output = 'saturday';
-
-    include TEMPLATE . $layout;
-    exit();
-
-   // dump([isDir($_SERVER['DOCUMENT_ROOT'] . '/templates'), 888, isDir(__DIR__ . '../templates')]);
-
-
-
-    exit;
-
     $uri = empty($route) ? '' : implode('/', $route);
 
     $home = 'home';
