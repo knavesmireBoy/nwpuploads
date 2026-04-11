@@ -47,6 +47,7 @@ class PoloAfricaWebsite implements Website
         $this->galleryTable = new DatabaseTable($this->pdo, 'gallery', 'id', '\PoloAfrica\Entity\Gallery', [$this->boxTable]);
         */
         $this->authentication = new \stdClass();
+        $this->userTable = new \stdClass();
     }
 
     private function validate($key, $array)
