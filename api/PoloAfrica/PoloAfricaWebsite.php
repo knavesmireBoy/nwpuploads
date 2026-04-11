@@ -131,7 +131,7 @@ class PoloAfricaWebsite implements Website
 
     public function getLayoutVariables($key): array
     {
-       /*
+        /*
        $user = $this->authentication->isLoggedIn();
         if ($key === 'login') {
             return ['title' => 'Admin', 'loggedIn' => $user, 'user' => $user->name ?? ''];
@@ -173,7 +173,8 @@ class PoloAfricaWebsite implements Website
 
     public function checkLogin(string $uri): array
     {
-       /* $files = scandir(isDir(ASSETS));
+        /*
+       $files = scandir(isDir(ASSETS));
         $fs = preg_grep("/^\w+\.w+$/", $files);
         $dirs = arrayDiff($files, $fs);
         $dirs = array_values(preg_grep("/^[^\.]/", $dirs));
@@ -207,7 +208,7 @@ class PoloAfricaWebsite implements Website
             return $drive;
         }
        */
-       // $reroute = partial([$this, 'reroute'], $uri);
+        // $reroute = partial([$this, 'reroute'], $uri);
         $key = '';
         /*
         $browser = \PoloAfrica\Entity\User::BROWSER;
@@ -219,11 +220,11 @@ class PoloAfricaWebsite implements Website
 
         $user = new \stdClass;
 */
-       
 
-         $user = $this->authentication->isLoggedIn();
-         dump($user);
-         $permit = $user ? intval($user->permissions) : 0;
+
+        $user = $this->authentication->isLoggedIn();
+        dump($user);
+        $permit = $user ? intval($user->permissions) : 0;
 
         /*
         $tmp = ['user/edit' => $account,  'user/list' => $account, 'user/edit' => $account, 'gallery/manage' => $photo];
@@ -285,14 +286,14 @@ class PoloAfricaWebsite implements Website
             }
         } else {
             if (isset($actions[$uri]) /*&& !$user->hasPermission($actions[$uri])*/) {
-               // $reroute($actions[$uri], 'user');
+                // $reroute($actions[$uri], 'user');
                 exit;
             }
         }
-         $ret = $user ? [$user, $permit, $key] : [''];
+        $ret = $user ? [$user, $permit, $key] : [''];
         //don't send empty args
         //return [''];
-        var_dump(13,$ret);
+        var_dump(13, $ret);
         return array_filter($ret, 'identity');
     }
     //DDL
