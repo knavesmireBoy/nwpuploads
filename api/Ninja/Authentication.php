@@ -1,7 +1,8 @@
 <?php
 
 namespace Ninja;
-var_dump(file_exists(__DIR__ . '../config.php'), file_exists('../config.php'));
+
+var_dump(__DIR__);
 //include_once __DIR__ . '../config.php';
 //include_once FUNCTIONS;
 
@@ -23,10 +24,24 @@ class Authentication
 
     public function __construct(DatabaseTable $users, string $usr, string $pwd)
     {
-        //startSession();
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+
         $this->users = $users;
         $this->usernameColumn = $usr;
         $this->passwordColumn = $pwd;
+    }
+
+    private function databaseContainsUser($email, $password)
+    {
+        include CONNECT;
+        $sql = "SELECT password FROM usr INNER JOIN userrole ON usr.id=userrole.userid WHERE email=:email AND password=:pwd";
+        $st = $pdo->prepare($sql);
+        $st->bindValue(":email", $email);
+        $st->bindValue(":pwd", $password);
+        doPreparedQuery($st, "Error retrieving user:");
+        return $st->fetch(\PDO::FETCH_ASSOC);
     }
 
     public function login1(string $username, string $password): bool
