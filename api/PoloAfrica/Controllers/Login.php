@@ -5,8 +5,8 @@ namespace PoloAfrica\Controllers;
 class Login
 {
     private $authentication;
-    
-    public function __construct(/*\Ninja\Authentication*/ $authentication)
+
+    public function __construct(\Ninja\Authentication $authentication)
     {
         $this->authentication = $authentication;
     }

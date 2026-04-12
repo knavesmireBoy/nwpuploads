@@ -1,9 +1,9 @@
 <?php
 
 namespace Ninja;
-
-include_once '../config.php';
-include_once FUNCTIONS;
+var_dump(file_exists(__DIR__ . '../config.php'), file_exists('../config.php'));
+//include_once __DIR__ . '../config.php';
+//include_once FUNCTIONS;
 
 class Authentication
 {
@@ -21,7 +21,7 @@ class Authentication
         }
     }
 
-    public function __construct(/*DatabaseTable*/$users, string $usr, string $pwd)
+    public function __construct(DatabaseTable $users, string $usr, string $pwd)
     {
         //startSession();
         $this->users = $users;

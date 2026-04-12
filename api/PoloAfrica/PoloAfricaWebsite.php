@@ -37,7 +37,7 @@ class PoloAfricaWebsite implements Website
         $this->userRoleTable = new DatabaseTable($this->pdo, 'userrole', 'userid');
         $this->userTable = new DatabaseTable($this->pdo, 'usr', 'id', '\PoloAfrica\Entity\User', [&$this->userTable, $this->userRoleTable]);
         $this->authentication = new Authentication($this->userTable, 'email', 'password');
-         //$this->authentication = new \stdClass();
+        //$this->authentication = new \stdClass();
     }
 
     private function validate($key, $array)
