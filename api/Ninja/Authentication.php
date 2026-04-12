@@ -62,6 +62,9 @@ class Authentication
     public function login(string $username, string $password): bool
     {
         $user = $this->find($this->usernameColumn, $username);
+
+        dump($user[0]->{$this->passwordColumn});
+        $password = md5($password . 'uploads');
         if ($user) {
             $user = $user[0];
             if (!empty($user) && ($password == $user->{$this->passwordColumn})) {
