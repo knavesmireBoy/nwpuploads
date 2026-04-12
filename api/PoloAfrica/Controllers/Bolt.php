@@ -1,4 +1,5 @@
 <?php
+
 namespace PoloAfrica\Controllers;
 
 include_once __DIR__ . '/../config.php';
@@ -6,9 +7,7 @@ include_once FUNCTIONS;
 
 class Bolt
 {
-    public function __construct()
-    {
-    }
+    public function __construct() {}
     public function shout()
     {
         return [
@@ -20,7 +19,8 @@ class Bolt
             ]
         ];
     }
-    public function fartSubmit(){
-      reLocate(BBC);
+    public function fartSubmit()
+    {
+        reLocate(BBC);
     }
 }

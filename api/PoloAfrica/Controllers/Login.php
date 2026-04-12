@@ -14,12 +14,13 @@ class Login
     public function reg($arg = '')
     {
         $user = $this->authentication->isLoggedIn();
-        //$user = null;
         if (!$user) {
             return [
                 'template' => 'login.html.php',
                 'title' => 'Admin',
-                'variables' => []
+                'variables' => [
+                    'action' => '/bolt/fart'
+                ]
             ];
         } else {
             // reLocate(BADMINTON, '../'); //
@@ -31,7 +32,6 @@ class Login
         /* there is nothing to prevent people guessing a path to logging in
         logger/login/3/5/6 is_numeric check would at least suppress that kind of malarkey
         */
-        dump(555);
         $user = $this->authentication->isLoggedIn();
         if (!$user) {
             return [
