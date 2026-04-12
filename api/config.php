@@ -41,6 +41,7 @@ define("LOGOUT", '/logger/logout');
 define("LOGIN", '/logger/login');
 define("REG", '/logger/reg/');
 define("BBC", 'https://www.bbc.co.uk');
+define("DEZ", 'https://www.derekwinnert.com/');
 
 define("BADMINTON", '/user/admin');
 define("USER_EDIT", '/user/edit/');

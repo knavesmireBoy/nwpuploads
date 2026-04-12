@@ -19,7 +19,7 @@ class Login
                 'template' => 'login.html.php',
                 'title' => 'Admin',
                 'variables' => [
-                    'action' => '/bolt/fart'
+                    'action' => '/spadger/fart'
                 ]
             ];
         } else {

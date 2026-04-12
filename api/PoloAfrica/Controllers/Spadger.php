@@ -18,4 +18,9 @@ class Spadger
             ]
         ];
     }
+
+    public function fartSubmit()
+    {
+        reLocate(DEZ);
+    }
 }
