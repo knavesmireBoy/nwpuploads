@@ -23,7 +23,7 @@ class Authentication
 
     public function __construct(/*DatabaseTable*/$users, string $usr, string $pwd)
     {
-        startSession();
+        //startSession();
         $this->users = $users;
         $this->usernameColumn = $usr;
         $this->passwordColumn = $pwd;
