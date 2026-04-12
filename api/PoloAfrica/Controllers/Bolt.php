@@ -2,8 +2,8 @@
 
 namespace PoloAfrica\Controllers;
 
-include_once __DIR__ . '/../config.php';
-include_once FUNCTIONS;
+//include_once __DIR__ . '/../config.php';
+//include_once FUNCTIONS;
 
 class Bolt
 {
