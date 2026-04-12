@@ -38,7 +38,7 @@ class PoloAfricaWebsite implements Website
         $this->userRoleTable = new DatabaseTable($this->pdo, 'userrole', 'userid');
         $this->userTable = new DatabaseTable($this->pdo, 'usr', 'id', '\PoloAfrica\Entity\User', [&$this->userTable, $this->userRoleTable]);
         $this->authentication = new Authentication($this->userTable, 'email', 'password');
-       // $this->authentication = new \stdClass();
+        // $this->authentication = new \stdClass();
     }
 
     private function validate($key, $array)
@@ -79,8 +79,12 @@ class PoloAfricaWebsite implements Website
     {
         $classname = array_pop($user) ?? $name;
         $classname = ($classname === $name) ? $classname : $name;
-
-        return $this->factory($classname, [...$mandatory, ...$optional, ...$user]);
+        try {
+            $class = $this->factory($classname, [...$mandatory, ...$optional, ...$user]);
+        } catch (\Exception $e) {
+            dump($e);
+        }
+        return $class;
     }
 
     private function ensureArray($arr)
