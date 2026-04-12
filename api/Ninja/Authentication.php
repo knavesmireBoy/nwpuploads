@@ -2,7 +2,7 @@
 
 namespace Ninja;
 
-include_once 'config.php';
+//include_once 'config.php';
 include_once FUNCTIONS;
 
 class Authentication
