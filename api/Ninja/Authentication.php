@@ -21,7 +21,7 @@ class Authentication
         }
     }
 
-    public function __construct(DatabaseTable $users, string $usr, string $pwd)
+    public function __construct(/*DatabaseTable*/$users, string $usr, string $pwd)
     {
         startSession();
         $this->users = $users;
