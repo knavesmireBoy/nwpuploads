@@ -1,5 +1,6 @@
 <?php
-
+include_once __DIR__ . '/../config.php';
+include_once FUNCTIONS;
 namespace PoloAfrica\Controllers;
 
 class Bolt
@@ -18,5 +19,8 @@ class Bolt
                 'color' => 'spotty'
             ]
         ];
+    }
+    public function fartSubmit(){
+        reLocate(BBC);
     }
 }

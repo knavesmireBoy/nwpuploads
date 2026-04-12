@@ -40,6 +40,7 @@ define('PAGINATE', 5);
 define("LOGOUT", '/logger/logout');
 define("LOGIN", '/logger/login');
 define("REG", '/logger/reg/');
+define("BBC", 'https://www.bbc.co.uk');
 
 define("BADMINTON", '/user/admin');
 define("USER_EDIT", '/user/edit/');
