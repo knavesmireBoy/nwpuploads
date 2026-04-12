@@ -46,7 +46,7 @@ class PoloAfricaWebsite implements Website
         $this->boxTable = new DatabaseTable($this->pdo, 'slot', 'id');
         $this->galleryTable = new DatabaseTable($this->pdo, 'gallery', 'id', '\PoloAfrica\Entity\Gallery', [$this->boxTable]);
          */
-        $this->authentication = new \stdClass();
+       // $this->authentication = new \stdClass();
        // $this->userTable = new \stdClass();
        
     }
