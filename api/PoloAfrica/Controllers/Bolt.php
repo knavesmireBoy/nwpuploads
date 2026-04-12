@@ -21,6 +21,8 @@ class Bolt
     }
     public function fartSubmit()
     {
+        
+        dump($_POST);
         reLocate(BBC);
     }
 }
