@@ -31,14 +31,13 @@ class PoloAfricaWebsite implements Website
         $pwd = 'covid19krauq';
         $user = 'root';
         $dbname = 'uploads';
-        dump(9999);
         include CONNECT;
         $this->pdo = $pdo;
 
         $this->userRoleTable = new DatabaseTable($this->pdo, 'userrole', 'userid');
         $this->userTable = new DatabaseTable($this->pdo, 'usr', 'id', '\PoloAfrica\Entity\User', [&$this->userTable, $this->userRoleTable]);
-        //$this->authentication = new Authentication($this->userTable, 'email', 'password');
-         $this->authentication = new \stdClass();
+        $this->authentication = new Authentication($this->userTable, 'email', 'password');
+         //$this->authentication = new \stdClass();
     }
 
     private function validate($key, $array)
