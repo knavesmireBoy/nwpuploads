@@ -62,7 +62,7 @@ class EntryPoint
                 $action .= 'Submit';
             }
 
-            dump($action);
+            var_dump($action);
             // $action = $this->reroute($name, $action);
             $user = $this->website->checkLogin($url); //: array
             $userid = $user[0]->id ?? 0;
