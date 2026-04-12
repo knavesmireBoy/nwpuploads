@@ -1,8 +1,8 @@
 <?php
 namespace PoloAfrica\Controllers;
 
-//include_once __DIR__ . '/../config.php';
-//include_once FUNCTIONS;
+include_once __DIR__ . '/../config.php';
+include_once FUNCTIONS;
 
 class Bolt
 {
@@ -21,7 +21,6 @@ class Bolt
         ];
     }
     public function fartSubmit(){
-        var_dump('fart');
-      //  reLocate(BBC);
+      reLocate(BBC);
     }
 }
