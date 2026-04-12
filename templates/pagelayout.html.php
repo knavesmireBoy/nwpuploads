@@ -3,7 +3,7 @@
 include 'pagehead.html.php';
 ?>
 <body id="<?= $pageid ?? ''; ?>">
-<main ole="main" class="<?= $mainclass ?? ''; ?>">
+<main role="main" class="<?= $mainclass ?? ''; ?>">
 <?= $output; ?> 
 </main>
 </body>
