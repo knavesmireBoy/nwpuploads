@@ -16,6 +16,28 @@ function doWhen($predicate, $action)
     };
 }
 
+function beautify($txt)
+{
+    return ucwords(strtolower(str_replace('_', ' ', $txt)));
+}
+
+function isUpperCase($str, $flag = false)
+{
+    return  $str && ucwords($str) === $str ? ($flag ? strtolower($str) : true) : false;
+}
+
+function exclaim($msg, $char = '!')
+{
+    $msg = urldecode($msg);
+    if (substr($msg, 0, 1) === $char) {
+        //  $msg = ucfirst(substr($msg, 1));
+        $msg = substr($msg, 1);
+    } else {
+        $msg = '';
+    }
+    return is_numeric($msg) ? '' : $msg;
+}
+
 
 function startSession()
 {

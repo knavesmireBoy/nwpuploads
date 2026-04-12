@@ -37,7 +37,24 @@ define('SUPERUSER', 'files@northwolds.co.uk');
 define('MYIP', '86.160.57.166');
 define('PAGINATE', 5);
 
+define("LOGOUT", '/logger/logout');
+define("LOGIN", '/logger/login');
 define("REG", '/logger/reg/');
+
+define("BADMINTON", '/user/admin');
+define("USER_EDIT", '/user/edit/');
+define("USER_LIST", '/user/list');
+define("USER_REG", '/user/register/');
+define("USER_RECOVER", '/user/contact/');
+define("USER_DENIED", '/user/access');
+define("USER_PERMIT", '/user/permissions/');
+define("USER_D1", '/user/delete/');
+define("USER_D2", '/user/confirm/');
+define("USER_PWD", '/user/changepassword/');
+define("USER_MAIL", '/user/changeemail/');
+define("USER_OK", '/user/success');
+define("USER_RESET_PWD", '/user/resetpassword/');
+define("USER_RESET_EMAIL", '/user/resetemail/');
 
 spl_autoload_register('autoloader');
 session_start();
