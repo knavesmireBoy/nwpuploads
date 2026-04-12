@@ -29,7 +29,7 @@ define("ACCESS", __DIR__ . '/includes/access.inc.php');
 define("WEBSITE", '/nwp_uploads/api/');
 define('BASE_PATH', __DIR__);
 define('CONNECT', __DIR__  . '/includes/db.inc.php');
-define('DBSYSTEM', 'mysql');
+define('DBSYSTEM', 'postgres');
 define('SUPERUSER', 'files@northwolds.co.uk');
 //define('DBSYSTEM', 'mysql');
 //define('SUPERUSER', 'files@northwolds.co.uk');
