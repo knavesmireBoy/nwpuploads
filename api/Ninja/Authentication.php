@@ -2,9 +2,8 @@
 
 namespace Ninja;
 
-var_dump(file_exists(__DIR__ . '/../config.php'));
-//include_once __DIR__ . '/../config.php';
-//include_once FUNCTIONS;
+include_once __DIR__ . '/../config.php';
+include_once FUNCTIONS;
 
 class Authentication
 {
