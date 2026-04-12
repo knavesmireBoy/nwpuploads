@@ -1,10 +1,6 @@
 <?php
 
-function autoloader($className) {
-    $fileName = str_replace('\\', '/', $className) . '.php';
-    $file = __DIR__ .  "/$fileName";
-    include $file;
-}
+
 //ini_set( "display_errors", true);
 ini_set( "display_errors", false);
 ini_set('memory_limit', '1024M'); // or you could use 1G
@@ -33,6 +29,6 @@ define("LOGOUT", '/logger/logout');
 define("LOGIN", '/logger/login');
 define("REG", '/logger/reg/');
 
-
-spl_autoload_register('autoloader');
-session_start();
+include __DIR__ . '/includes/autoload.php';
+//spl_autoload_register('autoloader');
+//session_start();

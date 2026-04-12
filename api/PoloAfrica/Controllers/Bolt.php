@@ -1,12 +1,11 @@
 <?php
 namespace PoloAfrica\Controllers;
 
-include_once __DIR__ . '/../config.php';
-include_once FUNCTIONS;
+//include_once __DIR__ . '/../config.php';
+//include_once FUNCTIONS;
 
 class Bolt
 {
-
     public function __construct()
     {
     }
@@ -22,6 +21,7 @@ class Bolt
         ];
     }
     public function fartSubmit(){
-        reLocate(BBC);
+        var_dump('fart');
+      //  reLocate(BBC);
     }
 }
