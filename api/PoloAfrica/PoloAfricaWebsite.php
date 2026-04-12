@@ -34,21 +34,11 @@ class PoloAfricaWebsite implements Website
 
         include CONNECT;
         $this->pdo = $pdo;
-        
+
         $this->userRoleTable = new DatabaseTable($this->pdo, 'userrole', 'userid');
         $this->userTable = new DatabaseTable($this->pdo, 'usr', 'id', '\PoloAfrica\Entity\User', [&$this->userTable, $this->userRoleTable]);
-        $this->authentication = new Authentication($this->userTable, 'email', 'password');
-       /*
-        $this->pagesTable = new DatabaseTable($this->pdo, 'pages', 'id', '\PoloAfrica\Entity\Page', [&$this->slotTable]);
-        $this->slotTable = new DatabaseTable($this->pdo, $pp, 'id', '\PoloAfrica\Entity\Slot', [&$this->slotTable]);
-        $this->assetTable = new DatabaseTable($this->pdo, 'assets', 'id', '\PoloAfrica\Entity\Asset', [&$this->assetTable, &$this->articleTable]);
-        $this->articleTable = new DatabaseTable($this->pdo, 'articles', 'id', '\PoloAfrica\Entity\Article', [&$this->articleTable, $this->assetTable, $this->slotTable, 2]);
-        $this->boxTable = new DatabaseTable($this->pdo, 'slot', 'id');
-        $this->galleryTable = new DatabaseTable($this->pdo, 'gallery', 'id', '\PoloAfrica\Entity\Gallery', [$this->boxTable]);
-         */
-       // $this->authentication = new \stdClass();
-       // $this->userTable = new \stdClass();
-       
+        //$this->authentication = new Authentication($this->userTable, 'email', 'password');
+        $this->authentication = new \stdClass();
     }
 
     private function validate($key, $array)
@@ -69,7 +59,7 @@ class PoloAfricaWebsite implements Website
         return array_filter($arr, partial($eq, $f($uri)));
     }
 
-    private function factory(string $id, array $args)
+    private function factory(string $classname, array $args)
     {
         $controllers = [
             'user',
@@ -78,7 +68,7 @@ class PoloAfricaWebsite implements Website
             'spadger'
         ];
         //https://stackoverflow.com/questions/534159/instantiate-a-class-from-a-variable-in-php#:~:text=Put%20the%20classname%20into%20a,%24classname(%22xyz%22)%3B
-        $key = $this->validate($id, $controllers);
+        $key = $this->validate($classname, $controllers);
         if ($key) {
             $klas = "PoloAfrica\\Controllers\\" . ucwords($key);
             return new $klas(...$args);
@@ -87,10 +77,10 @@ class PoloAfricaWebsite implements Website
 
     private function build(string $name, array $mandatory, array $optional, array $user)
     {
-        $id = array_pop($user) ?? $name;
-        $id = ($id === $name) ? $id : $name;
+        $classname = array_pop($user) ?? $name;
+        $classname = ($classname === $name) ? $classname : $name;
 
-        return $this->factory($id, [...$mandatory, ...$optional, ...$user]);
+        return $this->factory($classname, [...$mandatory, ...$optional, ...$user]);
     }
 
     private function ensureArray($arr)
@@ -107,7 +97,6 @@ class PoloAfricaWebsite implements Website
     {
         $defaultArgs = [
             'logger' => [$this->authentication],
-            'login' => [$this->authentication],
             'user' => [$this->userTable],
             'bolt' => [],
             'spadger' => []
@@ -224,7 +213,7 @@ class PoloAfricaWebsite implements Website
         $account = \PoloAfrica\Entity\User::ACCOUNT_EDITOR;
         $super = \PoloAfrica\Entity\User::SUPERADMIN;
         */
-       // $user = $this->authentication->isLoggedIn();
+        // $user = $this->authentication->isLoggedIn();
         //$permit = $user ? intval($user->permissions) : 0;
         $permit = 0;
         $user = new \stdClass;
