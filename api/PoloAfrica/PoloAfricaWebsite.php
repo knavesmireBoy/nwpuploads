@@ -101,7 +101,7 @@ class PoloAfricaWebsite implements Website
         $defaultArgs = [
             'logger' => [$this->authentication],
             'user' => [$this->userTable],
-            'bolt' => [],
+            'bolt' => [$this->authentication],
             'spadger' => []
         ];
 

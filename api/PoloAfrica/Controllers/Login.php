@@ -69,19 +69,46 @@ class Login
         ];
     }
 
+    public function loginSubmit1()
+    {
+        if (!empty($_POST)) {
+            $user = $_POST['user'];
+            $success = $this->authentication->login($user['email'], $user['password']);
+
+            if ($success) {
+                //chiefly to set $_SESSION['filestore'], but also for ajax
+                //  reLocate(BADMINTON . "/success");
+                $user = $this->authentication->isLoggedIn();
+                return [
+                    'template' => 'actions.html.php',
+                    'title' => 'Log In Successful',
+                    'variables' => [
+                        'userid' => $user->id ?? '',
+                        'admin' => $user->hasPermission(\PoloAfrica\Entity\User::ACCOUNT_EDITOR),
+                        'username' => "you are logged in as $user->name",
+                        'user' => $user
+                    ]
+                ];
+            } else {
+                return $this->login(['Login Failed'], 'Unable to login, please check password and email address:');
+            }
+        } else {
+            retour();
+        }
+    }
+
     public function loginSubmit()
     {
         if (!empty($_POST)) {
             $user = $_POST['user'];
             $success = $this->authentication->login($user['email'], $user['password']);
-            $user = $this->authentication->isLoggedIn();
 
             if ($success) {
                 //chiefly to set $_SESSION['filestore'], but also for ajax
                 //  reLocate(BADMINTON . "/success");
-
+                $user = $this->authentication->isLoggedIn();
                 return [
-                    'template' => 'actions.html.php',
+                    'template' => 'files.html.php',
                     'title' => 'Log In Successful',
                     'variables' => [
                         'userid' => $user->id ?? '',

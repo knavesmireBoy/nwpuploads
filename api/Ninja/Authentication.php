@@ -85,6 +85,8 @@ class Authentication
         }
         $user = $this->find($this->usernameColumn, $_SESSION['username']);
         $user = $user[0] ?? null;
+
+        dump([$user, $user->{$this->passwordColumn}, $_SESSION['password']]);
         if ($user && $user->{$this->passwordColumn} === $_SESSION['password']) {
             return $user;
         }

@@ -7,7 +7,10 @@ namespace PoloAfrica\Controllers;
 
 class Bolt
 {
-    public function __construct() {}
+    public function __construct(private \Ninja\Authentication $authentication)
+    {
+        $this->authentication = $authentication;
+    }
     public function shout()
     {
         return [
@@ -21,8 +24,13 @@ class Bolt
     }
     public function fartSubmit()
     {
-        
-        dump($_POST);
-        reLocate(BBC);
+        $success = $this->authentication->login($_POST['email'], $_POST['password']);
+
+        if ($success) {
+            $user = $this->authentication->isLoggedIn();
+        }
+        dump($user);
+       // reLocate(BBC);
     }
+    
 }

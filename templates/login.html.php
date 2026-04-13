@@ -8,9 +8,9 @@ $e = $loginerror ?? $_GET['loginerror'] ?? '';
 <h4><?= $e; ?></h4>
 <form action="<?= $action; ?>" method="post" name="loginform" class="details">
 	<label for="email">Email</label>
-	<input id="email" type="email" name="email" autocomplete="off" />
+	<input id="email" type="email" name="email" autocomplete="off" required/>
 	<label for="password">Password</label>
-	<input id="password" type="password" name="password" autocomplete="off" />
+	<input id="password" type="password" name="password" autocomplete="off" required/>
 	<input type="hidden" name="action" value="login" /><input type="submit" value="Log in" />
 </form>
 
