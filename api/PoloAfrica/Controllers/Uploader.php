@@ -23,7 +23,7 @@ class Uploader
         $files = [];
         $all = $this->table->findAll();
         $total = count($all);
-        $pages = $this->setPages($priv, $total);
+        $pages = $this->setPages($total);
         if (isApproved($priv, 'ADMIN')) {
             foreach ($all as $file) {
                 $user = $this->usertable->find('id', $file->userid)[0];
@@ -41,7 +41,7 @@ class Uploader
 
         }
 
-        $pages = $this->setPages($priv, $total);
+        $pages = $this->setPages($total);
 
         return [
             'template' => 'files.html.php',
