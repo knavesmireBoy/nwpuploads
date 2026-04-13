@@ -32,12 +32,14 @@ class Uploader
                 unset($details['id']);
                 unset($details['role']);
                 unset($details['name']);
+                unset($details['client_id']);
                 $vars = array_merge(get_object_vars($file), $details, ['user' => $name]);
                 $vars['origin'] = substr($vars['file'], 11, 14);
                 $files[] = $vars;
             }
         } else if ($cid) {
-                dump($all);
+            $users = $this->usertable->find('client_id', $cid);
+                dump($users);
 
         }
 
