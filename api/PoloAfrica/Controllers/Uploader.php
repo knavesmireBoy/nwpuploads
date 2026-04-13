@@ -6,10 +6,10 @@ use \Ninja\DatabaseTable;
 
 class Uploader
 {
-    public function __construct(private DatabaseTable $table, private $userid) {}
+    public function __construct(private DatabaseTable $table) {}
 
-    public function git()
+    public function git(string $userid)
     {
-        dump($this->userid);
+        dump($userid);
     }
 }
