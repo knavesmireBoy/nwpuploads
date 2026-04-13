@@ -4,8 +4,6 @@ namespace PoloAfrica\Entity;
 
 class User
 {
-  //browser is simply a registered user who has access to privileged PUBLIC content
-  // so eg a user who is a content editor with access to privileged content needs a value of 3 in permissions column
   const BROWSER = 1; // 00000001
   const CONTENT_EDITOR = 2; // 00000010
   const PHOTO_EDITOR = 4; // 00000100
@@ -13,7 +11,6 @@ class User
   const ACCOUNT_EDITOR = 16; // 00010000; edit user permissions
   const ADMIN = 32; // 00100000; ; edit user permissions AND delete user (must ALSO be account_editor) ie 48
   const SUPERADMIN = 64; // 01000000 (use permissions : 80)
-  //to do everything 127
   private $table;
   private $roletable;
   private $roleid;
@@ -46,8 +43,7 @@ class User
   {
     // return $this->permissions >= 2;
   }
-
-
+  
   public function getPermission()
   {
     //return $this->permissions;
