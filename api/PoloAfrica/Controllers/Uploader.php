@@ -45,6 +45,8 @@ class Uploader
                 'pages' => $pages,
                 'uhead' => '',
                 'error' => '',
+                'start' => 0,
+                'display' => PAGINATE,
                 'predicates' => [partial('preg_match', '/^nwp/')]
             ]
         ];
