@@ -53,6 +53,6 @@ class User
   }
 
   public function getRole() {
-    return $this->userroletable->find('id', $this->id);
+    return $this->userroletable->find('userid', $this->id);
   }
 }
