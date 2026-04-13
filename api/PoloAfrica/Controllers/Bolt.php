@@ -29,7 +29,7 @@ class Bolt
         if ($success) {
             $user = $this->authentication->isLoggedIn();
         }
-        dump($user);
+        dump([22,$user]);
        // reLocate(BBC);
     }
     
