@@ -15,5 +15,9 @@ class Client
         $this->table = $table;
     }
 
-    public function getDetails() {}
+    public function getDetails($id) {
+
+        return $this->table->find('id', $id);
+
+    }
 }
