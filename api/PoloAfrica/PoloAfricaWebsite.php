@@ -109,7 +109,7 @@ class PoloAfricaWebsite implements Website
             'logger' => [$this->authentication],
             'user' => [$this->userTable],
             'bolt' => [$this->authentication],
-            'uploader' => [$this->uploadTable],
+            'uploader' => [$this->uploadTable, $this->userTable],
             'spadger' => []
         ];
 
