@@ -15,11 +15,12 @@ class User
   const SUPERADMIN = 64; // 01000000 (use permissions : 80)
 //to do everything 127
   private $table;
-  public $permissions;
+  //public $permissions;
   public $password;
   public $id;
   public $name;
   public $email;
+  public $client_id;
 
   public function __construct(\Ninja\DatabaseTable $table)
   {
@@ -28,22 +29,22 @@ class User
 
   public function hasPermission(int $permission)
   {
-    return $this->permissions & $permission;
+    //return $this->permissions & $permission;
   }
 
   public function checkPermission(int $permission)
   {
-    return $this->hasPermission($permission) && $this->permissions >= $permission;
+    //return $this->hasPermission($permission) && $this->permissions >= $permission;
   }
 
   public function canEdit()
   {
-    return $this->permissions >= 2;
+   // return $this->permissions >= 2;
   }
 
 
   public function getPermission()
   {
-    return $this->permissions;
+    //return $this->permissions;
   }
 }
