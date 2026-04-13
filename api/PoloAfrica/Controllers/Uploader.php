@@ -39,8 +39,8 @@ class Uploader
             }
         } else if ($cid) {
             $users = $this->usertable->find('client_id', $cid);
-                dump($users);
-
+            $userids = array_map(fn($o) => $o->id, $users);
+            dump($userids);
         }
 
         $pages = $this->setPages($total);
