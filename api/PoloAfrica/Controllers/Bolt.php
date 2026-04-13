@@ -27,8 +27,8 @@ class Bolt
         $success = $this->authentication->login($_POST['email'], $_POST['password']);
         if ($success) {
             $user = $this->authentication->isLoggedIn();
+            dump($user->getRole());
         }
-        dump($user);
        // reLocate(BBC);
     }
     

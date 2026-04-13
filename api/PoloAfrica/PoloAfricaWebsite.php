@@ -11,6 +11,7 @@ use stdClass;
 class PoloAfricaWebsite implements Website
 {
     private $userTable;
+    private $roleTable;
     private $userRoleTable;
     private $pdo;
     private $authentication;
@@ -35,7 +36,8 @@ class PoloAfricaWebsite implements Website
         $this->pdo = $pdo;
 
         $this->userRoleTable = new DatabaseTable($this->pdo, 'userrole', 'userid');
-        $this->userTable = new DatabaseTable($this->pdo, 'usr', 'id', '\PoloAfrica\Entity\User', [&$this->userTable, $this->userRoleTable]);
+        $this->roleTable = new DatabaseTable($this->pdo, 'role', 'id');
+        $this->userTable = new DatabaseTable($this->pdo, 'usr', 'id', '\PoloAfrica\Entity\User', [&$this->userTable, $this->userRoleTable, $this->roleTable]);
         $this->authentication = new Authentication($this->userTable, 'email', 'password');
         //$this->authentication = new \stdClass();
     }
