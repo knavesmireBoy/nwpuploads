@@ -62,10 +62,7 @@ class Authentication
     public function login(string $username, string $password): bool
     {
         $user = $this->find($this->usernameColumn, $username);
-
         $password = md5($password . 'uploads');
-
-        dump($password == $user[0]->{$this->passwordColumn});
         if ($user) {
             $user = $user[0];
             if (!empty($user) && ($password == $user->{$this->passwordColumn})) {
@@ -78,7 +75,6 @@ class Authentication
         return false;
     }
 
-
     public function isLoggedIn(): ?object
     {
         if (empty($_SESSION['username'])) {
@@ -87,7 +83,6 @@ class Authentication
         $user = $this->find($this->usernameColumn, $_SESSION['username']);
         $user = $user[0] ?? null;
 
-        dump([11,$user, $user->{$this->passwordColumn}, $_SESSION['password']]);
         if ($user && $user->{$this->passwordColumn} === $_SESSION['password']) {
             return $user;
         }

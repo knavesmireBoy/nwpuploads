@@ -25,11 +25,10 @@ class Bolt
     public function fartSubmit()
     {
         $success = $this->authentication->login($_POST['email'], $_POST['password']);
-
         if ($success) {
             $user = $this->authentication->isLoggedIn();
         }
-        dump([22,$user]);
+        dump($user);
        // reLocate(BBC);
     }
     
