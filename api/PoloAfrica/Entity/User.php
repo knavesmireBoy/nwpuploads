@@ -57,7 +57,7 @@ class User
   {
     $res = $this->userroletable->find('userid', $this->id);
     if (!empty($res)) {
-      return $res[0]->roleid;
+      return ['id' => $this->id, 'role' => $res[0]->roleid, 'client_id' => $this->client_id];
     }
     return null;
   }
