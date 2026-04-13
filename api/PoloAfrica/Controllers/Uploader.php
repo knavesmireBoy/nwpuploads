@@ -15,7 +15,7 @@ class Uploader
         $details = $user->getDetails();
         $ret = [];
 
-        if(isApproved($details['row'], 'ADMIN')){
+        if(isApproved($details['role'], 'ADMIN')){
             $files = $this->table->findAll();
             foreach($files as $file){
                 $user = $this->usertable->find('id', $file->userid)[0];
