@@ -13,9 +13,10 @@ class User
   const ACCOUNT_EDITOR = 16; // 00010000; edit user permissions
   const ADMIN = 32; // 00100000; ; edit user permissions AND delete user (must ALSO be account_editor) ie 48
   const SUPERADMIN = 64; // 01000000 (use permissions : 80)
-//to do everything 127
+  //to do everything 127
   private $table;
   private $roletable;
+  private $roleid;
   private $userroletable;
   //public $permissions;
   public $password;
@@ -43,7 +44,7 @@ class User
 
   public function canEdit()
   {
-   // return $this->permissions >= 2;
+    // return $this->permissions >= 2;
   }
 
 
@@ -52,7 +53,12 @@ class User
     //return $this->permissions;
   }
 
-  public function getRole() {
-    return $this->userroletable->find('userid', $this->id);
+  public function getRole()
+  {
+    $res = $this->userroletable->find('userid', $this->id);
+    if (!empty($res)) {
+      return $res[0]['roleid'];
+    }
+    return null;
   }
 }
