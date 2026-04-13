@@ -14,10 +14,18 @@ class Uploader
         $user = $user[0] ?? null;
         $details = $user->getDetails();
         $priv = $details['role'];
+        $name = $details['name'];
+        $cid = $details['client_id'];
+        unset($details['id']);
+        unset($details['role']);
+        unset($details['name']);
+        unset($details['client_id']);
         $files = [];
-        if(isApproved($priv, 'ADMIN')){
-            $all = $this->table->findAll();
-            foreach($all as $file){
+        $all = $this->table->findAll();
+        $total = count($all);
+        $pages = $this->setPages($priv, $total);
+        if (isApproved($priv, 'ADMIN')) {
+            foreach ($all as $file) {
                 $user = $this->usertable->find('id', $file->userid)[0];
                 $details = $user->getDetails();
                 $name = $details['name'];
@@ -28,13 +36,12 @@ class Uploader
                 $vars['origin'] = substr($vars['file'], 11, 14);
                 $files[] = $vars;
             }
+        } else if ($cid) {
+                dump($all);
 
         }
-        else {
-            
-        }
 
-        $pages = $this->setPages($priv);
+        $pages = $this->setPages($priv, $total);
 
         return [
             'template' => 'files.html.php',
@@ -52,27 +59,9 @@ class Uploader
         ];
     }
 
-    private function setPages($priv)
+    private function setPages($records)
     {
         $pages = 1;
-        include CONNECT;
-        $nwpsql = "SELECT COUNT(upload.id) as total from upload ";
-        if (preg_match("/client/i", $priv)) {
-            $nwptmp = " INNER JOIN usr ON upload.userid = usr.id WHERE usr.email=:email";
-        }
-    
-        if (isset($nwptmp)) {
-            $nwpsql .= $nwptmp;
-            $nwpst = $pdo->prepare($nwpsql);
-            $nwpst->bindValue(":email", $_SESSION['email']);
-        } else {
-            $nwpst = $pdo->prepare($nwpsql);
-        }
-        doPreparedQuery($nwpst, "Database error requesting the list of files:", false);
-        $nwprow = $nwpst->fetch(\PDO::FETCH_ASSOC);
-    
-
-        $records = $nwprow['total'];
         if ($records > PAGINATE) {
             $pages = ceil($records / PAGINATE);
         }
