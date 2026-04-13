@@ -30,8 +30,6 @@ class Uploader
         $cid = $details['client_id'];
         $files = [];
         $all = $this->table->findAll();
-        $total = count($all);
-        $pages = $this->setPages($total);
         if (isApproved($priv, 'ADMIN')) {
             foreach ($all as $file) {
                 $user = $this->usertable->find('id', $file->userid)[0];
@@ -45,8 +43,14 @@ class Uploader
                     $files[] = $this->prepfiles($file, $details);
                 }
             }
+        } else {
+            foreach ($all as $file) {
+                if ($file->userid == $userid) {
+                    $files[] = $this->prepfiles($file, $details);
+                }
+            }
         }
-
+        $total = count($files);
         $pages = $this->setPages($total);
 
         return [
