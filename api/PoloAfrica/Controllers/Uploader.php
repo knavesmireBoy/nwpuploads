@@ -39,7 +39,8 @@ class Uploader
             'title' => 'File Uploads',
             'variables' => [
                 'files' => $files,
-                'priv' => $priv
+                'priv' => $priv,
+                'predicates' => [partial('preg_match', '/^nwp/')]
             ]
         ];
     }

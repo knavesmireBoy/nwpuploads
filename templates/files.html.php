@@ -3,9 +3,8 @@
 //include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/includes/helpers.inc.php';
 //include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/config.php';
 
-include_once __DIR__ . '/../config.php';
-include_once FUNCTIONS;
-
+//include_once __DIR__ . '/../config.php';
+//include_once FUNCTIONS;
 
 foreach (get_defined_vars() as $k => $v) {
     $i = 0;
@@ -97,7 +96,6 @@ if (count($files) > 0): ?>
                 $tel = $f['tel'];
                 $tel = $client && $tel ? "$client | $tel" : $client;
                 $id = $f['id'];
-
                 $a = [$description];
                 $b = array_map('html', $a);
 
