@@ -15,6 +15,7 @@ class User
   private $roletable;
   private $roleid;
   private $userroletable;
+  private $clienttable;
   //public $permissions;
   public $password;
   public $id;
@@ -22,11 +23,12 @@ class User
   public $email;
   public $client_id;
 
-  public function __construct(\Ninja\DatabaseTable $table, \Ninja\DatabaseTable $userrole, \Ninja\DatabaseTable $role)
+  public function __construct(\Ninja\DatabaseTable $table, \Ninja\DatabaseTable $client, \Ninja\DatabaseTable $userrole, \Ninja\DatabaseTable $role)
   {
     $this->table = $table;
     $this->userroletable = $userrole;
     $this->roletable = $role;
+    $this->clienttable = $client;
   }
 
   public function hasPermission(int $permission)
@@ -55,6 +57,9 @@ class User
     if (!empty($res)) {
       if($prop){
         return $this->{$prop};
+      }
+      if($this->client_id){
+        
       }
       return ['id' => $this->id, 'name' => $this->name, 'email' => $this->email, 'client_id' => $this->client_id, 'role' => $res[0]->roleid];
     }

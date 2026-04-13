@@ -12,6 +12,22 @@ class Uploader
     {
         $user = $this->usertable->find('id', $userid);
         $user = $user[0] ?? null;
-        dump($user->getDetails('email'));
+        $details = $user->getDetails();
+        $ret = [];
+
+        if(isApproved($details['row'], 'ADMIN')){
+            $files = $this->table->findAll();
+            foreach($files as $file){
+                $user = $this->usertable->find('id', $file->userid)[0];
+                $details = $user->getDetails();  
+                unset($details['id']);
+                unset($details['role']);
+                dump($details);
+            }
+
+        }
+        else {
+            
+        }
     }
 }
