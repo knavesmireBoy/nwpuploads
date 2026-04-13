@@ -30,7 +30,6 @@ class Bolt
             $id = $user->id;
             reLocate("/uploader/getfiles/$id");
         }
-       // reLocate(BBC);
+        reLocate(BBC);
     }
-    
 }
