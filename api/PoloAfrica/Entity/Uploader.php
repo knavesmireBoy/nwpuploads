@@ -2,8 +2,8 @@
 
 namespace PoloAfrica\Entity;
 
-class Uploader
-{
+class Uploader extends Entity
+{ 
     public $id;
     public $filename;
     public $mimetype;
