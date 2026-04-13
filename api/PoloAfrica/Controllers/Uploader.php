@@ -22,9 +22,12 @@ class Uploader
                 $details = $user->getDetails();  
                 unset($details['id']);
                 unset($details['role']);
-                
-                dump(get_object_vars($file));
+                $vars = array_merge(get_object_vars($file), $details);
+                $vars['origin'] = substr($vars['file'], 11, 14);
+                $ret[] = $vars;
             }
+            dump($ret);
+            return $ret;
 
         }
         else {
