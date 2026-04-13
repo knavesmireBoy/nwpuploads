@@ -43,7 +43,7 @@ class Uploader
                     $files[] = $this->prepfiles($file, $details);
                 }
             }
-        } else {
+        } else if(empty($files)){
             foreach ($all as $file) {
                 if ($file->userid == $userid) {
                     $files[] = $this->prepfiles($file, $details);
