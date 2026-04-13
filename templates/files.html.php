@@ -43,7 +43,7 @@ $qlib = [
     'loginerror',
     'upload'
 ];
-$query = $_SERVER['QUERY_STRING'];
+$query = $_SERVER['QUERY_STRING'] ?? '';
 
 parse_str($query, $output);
 $result = array_keys($output);

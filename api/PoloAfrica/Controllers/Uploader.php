@@ -40,6 +40,9 @@ class Uploader
             'variables' => [
                 'files' => $files,
                 'priv' => $priv,
+                'pages' => 1,
+                'uhead' => '',
+                'error' => '',
                 'predicates' => [partial('preg_match', '/^nwp/')]
             ]
         ];
