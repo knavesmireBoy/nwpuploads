@@ -20,7 +20,6 @@ class Uploader
 
     public function getDetails() {
 
-        dump(get_object_vars($this));
 
     }
 }
