@@ -26,8 +26,8 @@ class Bolt
     {
         $success = $this->authentication->login($_POST['email'], $_POST['password']);
         if ($success) {
+            reLocate("/uploader/git/");
             $user = $this->authentication->isLoggedIn();
-            dump($user->getRole());
         }
        // reLocate(BBC);
     }

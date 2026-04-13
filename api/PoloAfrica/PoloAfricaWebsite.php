@@ -13,6 +13,7 @@ class PoloAfricaWebsite implements Website
     private $userTable;
     private $roleTable;
     private $userRoleTable;
+    private $clientTable;
     private $pdo;
     private $authentication;
     private $home = '';
@@ -37,6 +38,7 @@ class PoloAfricaWebsite implements Website
 
         $this->userRoleTable = new DatabaseTable($this->pdo, 'userrole', 'userid');
         $this->roleTable = new DatabaseTable($this->pdo, 'role', 'id');
+        $this->clientTable = new DatabaseTable($this->pdo, 'client', 'id');
         $this->userTable = new DatabaseTable($this->pdo, 'usr', 'id', '\PoloAfrica\Entity\User', [&$this->userTable, $this->userRoleTable, $this->roleTable]);
         $this->authentication = new Authentication($this->userTable, 'email', 'password');
         //$this->authentication = new \stdClass();
@@ -66,6 +68,7 @@ class PoloAfricaWebsite implements Website
             'user',
             'login',
             'bolt',
+            'uploader',
             'spadger'
         ];
         //https://stackoverflow.com/questions/534159/instantiate-a-class-from-a-variable-in-php#:~:text=Put%20the%20classname%20into%20a,%24classname(%22xyz%22)%3B
@@ -104,6 +107,7 @@ class PoloAfricaWebsite implements Website
             'logger' => [$this->authentication],
             'user' => [$this->userTable],
             'bolt' => [$this->authentication],
+            'uploader' => [],
             'spadger' => []
         ];
 

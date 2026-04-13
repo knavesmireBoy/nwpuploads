@@ -53,11 +53,11 @@ class User
     //return $this->permissions;
   }
 
-  public function getRole()
+  public function getDetails()
   {
     $res = $this->userroletable->find('userid', $this->id);
     if (!empty($res)) {
-      return ['id' => $this->id, 'role' => $res[0]->roleid, 'client_id' => $this->client_id];
+      return ['id' => $this->id, 'name' => $this->name, 'email' => $this->email, 'client_id' => $this->client_id, 'role' => $res[0]->roleid];
     }
     return null;
   }
