@@ -23,7 +23,7 @@ class Uploader
                 unset($details['id']);
                 unset($details['role']);
                 
-                dump($file);
+                $file->getDetails();
             }
 
         }

@@ -18,5 +18,10 @@ class Uploader
     {
     }
 
-    public function getDetails() {}
+    public function getDetails() {
+
+        $reflected = new \ReflectionClass('\PoloAfrica\Entity\Uploader');
+        dump($reflected->getProperties());
+
+    }
 }
