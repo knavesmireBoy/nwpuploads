@@ -9,7 +9,7 @@ $klas = $pages > 1 ? 'paginate' : '';
     if (isset($_GET['u'])) $user_id = $byuser;
     if (isset($_GET['u'])) $text = $bytext;
 
-    $sort = explode('sort=', $_SERVER["QUERY_STRING"]);
+    $sort = explode('sort=', $_SERVER["QUERY_STRING"] ?? '');
     $sort = isset($sort[1]) ? $sort[1] : '';
     $sort = $sort ? "&sort=$sort" : '';
     $sort = preg_replace("/&&/", "&", $sort);

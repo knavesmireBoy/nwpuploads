@@ -37,7 +37,6 @@ function setPages($priv, $display)
     if ($records > $display) {
         $pages = ceil($records / $display);
     }
-
     return $pages;
 }
 

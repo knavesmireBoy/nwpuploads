@@ -34,17 +34,46 @@ class Uploader
             
         }
 
+        $pages = $this->setPages($priv);
+
         return [
             'template' => 'files.html.php',
             'title' => 'File Uploads',
             'variables' => [
                 'files' => $files,
                 'priv' => $priv,
-                'pages' => 1,
+                'pages' => $pages,
                 'uhead' => '',
                 'error' => '',
                 'predicates' => [partial('preg_match', '/^nwp/')]
             ]
         ];
+    }
+
+    private function setPages($priv)
+    {
+        $pages = 1;
+        include CONNECT;
+        $nwpsql = "SELECT COUNT(upload.id) as total from upload ";
+        if (preg_match("/client/i", $priv)) {
+            $nwptmp = " INNER JOIN usr ON upload.userid = usr.id WHERE usr.email=:email";
+        }
+    
+        if (isset($nwptmp)) {
+            $nwpsql .= $nwptmp;
+            $nwpst = $pdo->prepare($nwpsql);
+            $nwpst->bindValue(":email", $_SESSION['email']);
+        } else {
+            $nwpst = $pdo->prepare($nwpsql);
+        }
+        doPreparedQuery($nwpst, "Database error requesting the list of files:", false);
+        $nwprow = $nwpst->fetch(\PDO::FETCH_ASSOC);
+    
+
+        $records = $nwprow['total'];
+        if ($records > PAGINATE) {
+            $pages = ceil($records / PAGINATE);
+        }
+        return $pages;
     }
 }
