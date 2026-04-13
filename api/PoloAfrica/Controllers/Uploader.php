@@ -13,25 +13,34 @@ class Uploader
         $user = $this->usertable->find('id', $userid);
         $user = $user[0] ?? null;
         $details = $user->getDetails();
-        $ret = [];
-
-        if(isApproved($details['role'], 'ADMIN')){
-            $files = $this->table->findAll();
-            foreach($files as $file){
+        $priv = $details['role'];
+        $files = [];
+        if(isApproved($priv, 'ADMIN')){
+            $all = $this->table->findAll();
+            foreach($all as $file){
                 $user = $this->usertable->find('id', $file->userid)[0];
-                $details = $user->getDetails();  
+                $details = $user->getDetails();
+                $name = $details['name'];
                 unset($details['id']);
                 unset($details['role']);
-                $vars = array_merge(get_object_vars($file), $details);
+                unset($details['name']);
+                $vars = array_merge(get_object_vars($file), $details, ['user' => $name]);
                 $vars['origin'] = substr($vars['file'], 11, 14);
-                $ret[] = $vars;
+                $files[] = $vars;
             }
-            dump($ret);
-            return $ret;
 
         }
         else {
             
         }
+
+        return [
+            'template' => 'files.html.php',
+            'title' => 'File Uploads',
+            'variables' => [
+                'files' => $files,
+                'priv' => $priv
+            ]
+        ];
     }
 }
