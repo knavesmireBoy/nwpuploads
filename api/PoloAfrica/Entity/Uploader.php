@@ -2,7 +2,7 @@
 
 namespace PoloAfrica\Entity;
 
-class Uploader extends Entity
+class Uploader
 { 
     public $id;
     public $filename;
