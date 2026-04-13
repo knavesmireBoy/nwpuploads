@@ -33,6 +33,7 @@ class Uploader
         if (isApproved($priv, 'ADMIN')) {
             foreach ($all as $file) {
                 $user = $this->usertable->find('id', $file->userid)[0];
+                $details = $user->getDetails();
                 $files[] = $this->prepfiles($file, $details);
             }
         } else if ($cid) {
@@ -40,6 +41,8 @@ class Uploader
             $userids = array_map(fn($o) => $o->id, $users);
             foreach ($all as $file) {
                 if (in_array($file->userid, $userids)) {
+                    $user = $this->usertable->find('id', $file->userid)[0];
+                    $details = $user->getDetails();
                     $files[] = $this->prepfiles($file, $details);
                 }
             }
