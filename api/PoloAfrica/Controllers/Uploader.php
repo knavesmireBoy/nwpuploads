@@ -12,6 +12,6 @@ class Uploader
     {
         $user = $this->usertable->find('id', $userid);
         $user = $user[0] ?? null;
-        dump($user);
+        dump($user->getDetails('email'));
     }
 }

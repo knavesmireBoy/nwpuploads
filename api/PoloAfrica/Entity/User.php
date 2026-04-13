@@ -43,16 +43,19 @@ class User
   {
     // return $this->permissions >= 2;
   }
-  
+
   public function getPermission()
   {
     //return $this->permissions;
   }
 
-  public function getDetails()
+  public function getDetails($prop = '')
   {
     $res = $this->userroletable->find('userid', $this->id);
     if (!empty($res)) {
+      if($prop){
+        return $this->{$prop};
+      }
       return ['id' => $this->id, 'name' => $this->name, 'email' => $this->email, 'client_id' => $this->client_id, 'role' => $res[0]->roleid];
     }
     return null;
