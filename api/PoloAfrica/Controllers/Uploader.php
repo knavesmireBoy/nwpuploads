@@ -9,8 +9,9 @@ class Uploader
     public function __construct(private DatabaseTable $table, private DatabaseTable $usertable) {}
 
 
-    private function prepfiles($file, $details)
+    private function prepfiles($file, $user)
     {
+        $details = $user->getDetails();
         $name = $details['name'];
         unset($details['id']);
         unset($details['role']);
@@ -21,20 +22,38 @@ class Uploader
         return $vars;
     }
 
+    private function validateFile($priv, $cid, $userid)
+    {
+        if (isApproved($priv, 'ADMIN')) {
+            return 'identity';
+        } else if ($cid) {
+            $users = $this->usertable->find('client_id', $cid);
+            $userids = array_map(fn($o) => $o->id, $users);
+            return curry2('in_array')($userids);
+        } else {
+            return curry2('equals')($userid);
+        }
+    }
+
     public function getfiles(string $userid)
     {
-        $user = $this->usertable->find('id', $userid);
-        $user = $user[0] ?? null;
+        $user = $this->usertable->find('id', $userid)[0];
         $details = $user->getDetails();
         $priv = $details['role'];
         $cid = $details['client_id'];
         $files = [];
         $all = $this->table->findAll();
+        $cb = $this->validateFile($priv, $cid, $userid);
+        /*
+
+
         if (isApproved($priv, 'ADMIN')) {
             foreach ($all as $file) {
                 $user = $this->usertable->find('id', $file->userid)[0];
-                $details = $user->getDetails();
-                $files[] = $this->prepfiles($file, $details);
+                if($cb($user)){
+                    $files[] = $this->prepfiles($file, $user);
+                }
+                
             }
         } else if ($cid) {
             $users = $this->usertable->find('client_id', $cid);
@@ -42,15 +61,21 @@ class Uploader
             foreach ($all as $file) {
                 if (in_array($file->userid, $userids)) {
                     $user = $this->usertable->find('id', $file->userid)[0];
-                    $details = $user->getDetails();
-                    $files[] = $this->prepfiles($file, $details);
+                    $files[] = $this->prepfiles($file, $user);
                 }
             }
         } else if(empty($files)){
             foreach ($all as $file) {
                 if ($file->userid == $userid) {
-                    $files[] = $this->prepfiles($file, $details);
+                    $files[] = $this->prepfiles($file, $user);
                 }
+            }
+        }
+*/
+        foreach ($all as $file) {
+            $user = $this->usertable->find('id', $file->userid)[0];
+            if ($cb($file->userid)) {
+                $files[] = $this->prepfiles($file, $user);
             }
         }
         $total = count($files);
