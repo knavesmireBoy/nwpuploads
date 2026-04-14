@@ -78,7 +78,8 @@ echo $error; ?>
 <?php
 if (isset($template)) {
     ob_end_clean();
-    include TEMPLATE . $template;
+    include $template;
+   // include TEMPLATE . $template;
 }
 
 if (count($files) > 0): ?>
