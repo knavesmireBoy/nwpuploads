@@ -76,6 +76,11 @@ class DatabaseTable
         $query = rtrim($query, ',');
         $query .= ' WHERE `' . $this->primaryKey . '` = :pk';
         $values['pk'] = $values[$k];
+
+        if(DBSYSTEM === 'postgres'){
+            $query = preg_replace('/`/', '', $query);
+        }
+
         $stmt = $this->pdo->prepare($query);
         $stmt->execute($values);
     }

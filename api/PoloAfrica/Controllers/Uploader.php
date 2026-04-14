@@ -71,7 +71,7 @@ class Uploader
         }
     }
 
-    public function load(string $userid = '', string $tmpl = '')
+    public function load(string $userid, string $tmpl = '')
     {
         $user = $this->usertable->find('id', $userid)[0];
         $details = $user->getDetails();
@@ -160,7 +160,7 @@ class Uploader
             include TEMPLATE . 'error.html.php';
             exit();
         } else {
-            $key = !empty($_POST['user']) ? $_POST['user'] : $_POST['key'];
+            $userid = !empty($_POST['user']) ? $_POST['user'] : $_POST['key'];
             $description = isset($_POST['desc']) ? $_POST['desc'] : '';
             $dofile = function ($arg) {
                 return $_FILES['upload'][$arg];
@@ -169,9 +169,10 @@ class Uploader
             $time = date('Y-m-d');
             $mimetype = $dofile('type');
 
-            $values = ['filename' => $realname, 'mimetype' => $mimetype, 'description' => $description, 'filepath' => FILESTORE, 'file' => $uploadname, 'size' => $size, 'userid' => $key, 'time' => $time];
+            $values = ['filename' => $realname, 'mimetype' => $mimetype, 'description' => $description, 'filepath' => FILESTORE, 'file' => $uploadname, 'size' => $size, 'userid' => $userid, 'time' => $time];
             $this->table->save($values, true);
-            reLocate('/upload/load/');
+            $key = $_POST['key'];
+            reLocate("/uploader/load/$key");
         }
     }
 
