@@ -149,7 +149,7 @@ class Uploader
         list($nwpuploadfile, $nwpuploadname, $nwpfilename, $nwprealname) = $this->getUploadedFile();
 
         // Copy the file (if it is deemed safe)
-        if (!copy($nwpuploadfile, $nwpfilename)) {
+        if (copy($nwpuploadfile, $nwpfilename)) {
             $error = "Could not save file as $nwpfilename!";
             include TEMPLATE . 'error.html.php';
             exit();
