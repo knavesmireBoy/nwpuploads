@@ -43,8 +43,6 @@ class DatabaseTable
             $query = preg_replace('/`/', '', $query);
         }
         $stmt = $this->pdo->prepare($query);
-
-        dump($query);
         $stmt->execute($values);
         // $res = doPreparedQuery($stmt, $values);
         return $this->pdo->lastInsertId();
