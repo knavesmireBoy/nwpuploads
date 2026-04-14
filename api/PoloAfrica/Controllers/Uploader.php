@@ -118,7 +118,8 @@ class Uploader
         $pages = $this->setPages($total);
         list($users, $client) = $this->presentList($priv);
         $text = '';
-
+        $suffix = '';
+        $error = '';
         return [
             'template' => 'files.html.php',
             'title' => 'File Uploads',
@@ -137,7 +138,9 @@ class Uploader
                 'users' => $users,
                 'client' => $client,
                 'predicates' => [partial('preg_match', '/^nwp/')],
-                'text' => $text
+                'text' => $text,
+                'suffix' => $suffix,
+                'error' => ''
             ]
         ];
     }
@@ -161,7 +164,7 @@ class Uploader
             $dofile = function ($arg) {
                 return $_FILES['upload'][$arg];
             };
-            $values = ['filename' => $realname, 'mimetype' => $dofile('type'), 'description' => $_POST['desc'] ?? '', 'filepath' => FILESTORE, 'file' => $nwpuploadname, 'size' => $dofile('size') / 1024, 'userid' => $key, 'time' => date('Y-m-d')];
+            $values = ['id' => 222, 'filename' => $realname, 'mimetype' => $dofile('type'), 'description' => $_POST['desc'] ?? '', 'filepath' => FILESTORE, 'file' => $nwpuploadname, 'size' => $dofile('size') / 1024, 'userid' => $key, 'time' => date('Y-m-d')];
             dump($this->table->save($values, true));
             reLocate('/upload/getfiles/');
         }
