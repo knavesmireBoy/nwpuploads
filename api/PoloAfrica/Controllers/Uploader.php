@@ -146,7 +146,7 @@ class Uploader
 
     public function uploadSubmit()
     {
-        list($nwpuploadfile, $nwpuploadname, $nwpfilename, $nwprealname) = getUploadedFile();
+        list($nwpuploadfile, $nwpuploadname, $nwpfilename, $nwprealname) = $this->getUploadedFile();
 
         // Copy the file (if it is deemed safe)
         if (!copy($nwpuploadfile, $nwpfilename)) {
