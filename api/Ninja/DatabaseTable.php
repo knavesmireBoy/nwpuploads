@@ -38,8 +38,13 @@ class DatabaseTable
         }
         $query = rtrim($query, ',');
         $query .= ')';
+
+        if(DBSYSTEM === 'postgres'){
+            $query = preg_replace('/`/', '', $query);
+        }
         $stmt = $this->pdo->prepare($query);
-        dump($values);
+
+        dump($query);
         $stmt->execute($values);
         // $res = doPreparedQuery($stmt, $values);
         return $this->pdo->lastInsertId();
