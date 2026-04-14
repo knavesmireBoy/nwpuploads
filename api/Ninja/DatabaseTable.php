@@ -24,7 +24,7 @@ class DatabaseTable
     {
         //make sure no spaces in table name: `user `
 
-        $query = 'INSERT INTO ' . $this->table . ' (';
+        $query = 'INSERT INTO `' . $this->table . '` (';
         //$query = "INSERT INTO $tbl (";
         foreach ($values as $key => $value) {
             $query .= '`' . $key . '`,';
@@ -39,8 +39,9 @@ class DatabaseTable
         $query = rtrim($query, ',');
         $query .= ')';
         $stmt = $this->pdo->prepare($query);
+        dump($query);
         $stmt->execute($values);
-        //$res = doPreparedQuery($stmt, $values);
+        // $res = doPreparedQuery($stmt, $values);
         return $this->pdo->lastInsertId();
     }
 
