@@ -92,9 +92,16 @@ class Uploader
                 'error' => '',
                 'start' => 0,
                 'display' => PAGINATE,
+                'upload' => ASSET_UPLOAD . $userid,
                 'predicates' => [partial('preg_match', '/^nwp/')]
             ]
         ];
+    }
+
+    public function upload(string $userid)
+    {
+        $template = 'upload.html.php';
+        return $this->getfiles($userid);
     }
 
     private function setPages($records)

@@ -58,5 +58,8 @@ define("USER_OK", '/user/success');
 define("USER_RESET_PWD", '/user/resetpassword/');
 define("USER_RESET_EMAIL", '/user/resetemail/');
 
+
+define("ASSET_UPLOAD",  '/uploader/upload/');
+
 spl_autoload_register('autoloader');
 session_start();

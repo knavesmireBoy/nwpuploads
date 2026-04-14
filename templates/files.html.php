@@ -73,7 +73,7 @@ if (isset($template)) {
 }
 echo $error; ?>
 
-<p><a href="./?upload">Upload A File</a></p>
+<p><a href="<?= $upload; ?>">Upload A File</a></p>
 
 <?php
 if (isset($template)) {
