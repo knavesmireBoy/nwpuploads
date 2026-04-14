@@ -32,9 +32,9 @@ class Uploader
 
             foreach ($all as $row) {
                 if (empty($user->client_id)) {
-                    $users[$row['id']] = $row['name'];
+                    $users[$row->id] = $row->name;
                 } else {
-                    $client[$row['id']] = $row['name'];
+                    $client[$row->id] = $row->name;
                 }
             }
             return [$users, $client];
