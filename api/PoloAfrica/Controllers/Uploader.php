@@ -149,12 +149,19 @@ class Uploader
         list($nwpuploadfile, $nwpuploadname, $nwpfilename, $nwprealname) = $this->getUploadedFile();
 
         // Copy the file (if it is deemed safe)
-        if (copy($nwpuploadfile, $nwpfilename)) {
+        if (!copy($nwpuploadfile, $nwpfilename)) {
             $error = "Could not save file as $nwpfilename!";
             include TEMPLATE . 'error.html.php';
             exit();
         } else {
-            dump('cool');
+            dump($_POST);
+            $key = 1;
+            $nwpuploaded = function ($arg) {
+                return $_FILES['upload'][$arg];
+            };
+            $values = ['filename' => $nwprealname, 'mimetype' => $nwpuploaded('type'), 'description' => $_POST['desc'] ?? '', 'filepath' => FILESTORE, 'file' => $nwpuploadname, 'size' => $nwpuploaded('size') / 1024, 'userid' => $key];
+            $this->table->save($values, true);
+            reLocate('/upload/getfiles/');
         }
     }
 
