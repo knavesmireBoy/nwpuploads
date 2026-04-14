@@ -124,6 +124,7 @@ class Uploader
             'variables' => [
                 'files' => $files,
                 'priv' => $priv,
+                'key' => $userid,
                 'pages' => $pages,
                 'uhead' => '',
                 'error' => '',
@@ -154,8 +155,8 @@ class Uploader
             include TEMPLATE . 'error.html.php';
             exit();
         } else {
-            dump($_POST);
-            $key = 1;
+            $key = $_POST['user'] ?? $_POST['key'];
+            dump($key);
             $nwpuploaded = function ($arg) {
                 return $_FILES['upload'][$arg];
             };

@@ -16,6 +16,6 @@
                         </select>
                 
         <?php endif; ?>
-        <input type="hidden" name="action" value="upload" />
+        <input type="hidden" name="key" value="<?= $key; ?>" />
         <input type="submit" value="Upload" />
 </form>
