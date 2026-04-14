@@ -22,6 +22,14 @@ class Uploader
         return $vars;
     }
 
+    private function presentList()
+    {
+        $users = [];
+        $client = [];
+        $all = $this->usertable->findAll();
+        return safeFilter($all, fn($o)=> empty($o['client_id']));
+    }
+
     private function validateFile($priv, $cid, $userid)
     {
         if (isApproved($priv, 'ADMIN')) {
@@ -95,7 +103,7 @@ class Uploader
                 'upload' => ASSET_UPLOAD . $userid,
                 'disabled' => $priv === 'Browser' ? 'disabled' : '',
                 'template' => $tmpl ? "$tmpl.html.php" : null,
-                'users' => [],
+                'users' => $this->presentList(),
                 'client' => [],
                 'predicates' => [partial('preg_match', '/^nwp/')]
             ]

@@ -11,11 +11,11 @@ class User
   const ACCOUNT_EDITOR = 16; // 00010000; edit user permissions
   const ADMIN = 32; // 00100000; ; edit user permissions AND delete user (must ALSO be account_editor) ie 48
   const SUPERADMIN = 64; // 01000000 (use permissions : 80)
-  private $table;
-  private $roletable;
   private $roleid;
-  private $userroletable;
-  private $clienttable;
+  protected $table;
+  protected $roletable;
+  protected $userroletable;
+  protected $clienttable;
   //public $permissions;
   public $password;
   public $id;
