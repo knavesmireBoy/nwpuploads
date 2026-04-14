@@ -93,7 +93,7 @@ class Uploader
                 'start' => 0,
                 'display' => PAGINATE,
                 'upload' => ASSET_UPLOAD . $userid,
-                'template' => $tmpl ? "$tmpl.html.php" : '',
+                'template' => $tmpl ? "$tmpl.html.php" : null,
                 'predicates' => [partial('preg_match', '/^nwp/')]
             ]
         ];
