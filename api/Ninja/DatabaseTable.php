@@ -39,7 +39,7 @@ class DatabaseTable
         $query = rtrim($query, ',');
         $query .= ')';
         $stmt = $this->pdo->prepare($query);
-
+        dump($query);
         $stmt->execute($values);
         // $res = doPreparedQuery($stmt, $values);
         return $this->pdo->lastInsertId();

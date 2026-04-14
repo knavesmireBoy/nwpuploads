@@ -152,11 +152,11 @@ class Uploader
 
     public function uploadSubmit()
     {
-        list($nwpuploadfile, $uploadname, $nwpfilename, $realname) = $this->getUploadedFile();
+        list($uploadfile, $uploadname, $filename, $realname) = $this->getUploadedFile();
 
         // Copy the file (if it is deemed safe)
-        if (!copy($nwpuploadfile, $nwpfilename)) {
-            $error = "Could not save file as $nwpfilename!";
+        if (!copy($uploadfile, $filename)) {
+            $error = "Could not save file as $filename!";
             include TEMPLATE . 'error.html.php';
             exit();
         } else {
@@ -167,9 +167,9 @@ class Uploader
             };
             $size = $dofile('size') / 1024;
             $time = date('Y-m-d');
+            $mimetype = $dofile('type');
 
-            dump($_FILES);
-            $values = ['filename' => $realname, 'mimetype' => $dofile('type'), 'description' => $description, 'filepath' => FILESTORE, 'file' => $uploadname, 'size' => $size, 'userid' => $key, 'time' => $time];
+            $values = ['filename' => $realname, 'mimetype' => $mimetype, 'description' => $description, 'filepath' => FILESTORE, 'file' => $uploadname, 'size' => $size, 'userid' => $key, 'time' => $time];
             dump($this->table->save($values, true));
             reLocate('/upload/getfiles/');
         }
