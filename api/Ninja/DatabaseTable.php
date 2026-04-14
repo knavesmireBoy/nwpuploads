@@ -24,7 +24,7 @@ class DatabaseTable
     {
         //make sure no spaces in table name: `user `
 
-        $query = 'INSERT INTO `uploads.' . $this->table . '` (';
+        $query = 'INSERT INTO ' . $this->table . ' (';
         //$query = "INSERT INTO $tbl (";
         foreach ($values as $key => $value) {
             $query .= '`' . $key . '`,';
