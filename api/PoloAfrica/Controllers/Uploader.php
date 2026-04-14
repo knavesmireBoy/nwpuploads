@@ -152,7 +152,7 @@ class Uploader
 
     public function uploadSubmit()
     {
-        list($nwpuploadfile, $nwpuploadname, $nwpfilename, $realname) = $this->getUploadedFile();
+        list($nwpuploadfile, $uploadname, $nwpfilename, $realname) = $this->getUploadedFile();
 
         // Copy the file (if it is deemed safe)
         if (!copy($nwpuploadfile, $nwpfilename)) {
@@ -160,11 +160,16 @@ class Uploader
             include TEMPLATE . 'error.html.php';
             exit();
         } else {
-            $key = $_POST['user'] ? $_POST['user'] : $_POST['key'];
+            $key = isset($_POST['user']) ? $_POST['user'] : $_POST['key'];
+            $description = isset($_POST['desc']) ? $_POST['desc'] : '';
             $dofile = function ($arg) {
                 return $_FILES['upload'][$arg];
             };
-            $values = ['id' => 222, 'filename' => $realname, 'mimetype' => $dofile('type'), 'description' => $_POST['desc'] ?? '', 'filepath' => FILESTORE, 'file' => $nwpuploadname, 'size' => $dofile('size') / 1024, 'userid' => $key, 'time' => date('Y-m-d')];
+            $size = $dofile('size') / 1024;
+            $time = date('Y-m-d');
+
+            dump($_FILES);
+            $values = ['filename' => $realname, 'mimetype' => $dofile('type'), 'description' => $description, 'filepath' => FILESTORE, 'file' => $uploadname, 'size' => $size, 'userid' => $key, 'time' => $time];
             dump($this->table->save($values, true));
             reLocate('/upload/getfiles/');
         }
