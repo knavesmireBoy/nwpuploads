@@ -22,12 +22,24 @@ class Uploader
         return $vars;
     }
 
-    private function presentList()
+    private function presentList($role)
     {
         $users = [];
         $client = [];
         $all = $this->usertable->findAll();
-        return safeFilter($all, fn($o)=> empty($o['client_id']));
+
+        if (isApproved($role, 'ADMIN')) {
+
+            foreach ($all as $row) {
+                if (empty($user->client_id)) {
+                    $users[$row['id']] = $row['name'];
+                } else {
+                    $client[$row['id']] = $row['name'];
+                }
+            }
+            return [$users, $client];
+        }
+        return [[], []];
     }
 
     private function validateFile($priv, $cid, $userid)
@@ -88,6 +100,7 @@ class Uploader
         }
         $total = count($files);
         $pages = $this->setPages($total);
+        list($users, $client) = $this->presentList($priv);
 
         return [
             'template' => 'files.html.php',
@@ -103,8 +116,8 @@ class Uploader
                 'upload' => ASSET_UPLOAD . $userid,
                 'disabled' => $priv === 'Browser' ? 'disabled' : '',
                 'template' => $tmpl ? "$tmpl.html.php" : null,
-                'users' => $this->presentList(),
-                'client' => [],
+                'users' => $users,
+                'client' => $client,
                 'predicates' => [partial('preg_match', '/^nwp/')]
             ]
         ];
