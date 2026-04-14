@@ -71,7 +71,7 @@ class Uploader
         }
     }
 
-    public function getfiles(string $userid, string $tmpl = '')
+    public function load(string $userid = '', string $tmpl = '')
     {
         $user = $this->usertable->find('id', $userid)[0];
         $details = $user->getDetails();
@@ -147,7 +147,7 @@ class Uploader
 
     public function upload(string $userid)
     {
-        return $this->getfiles($userid, 'upload');
+        return $this->load($userid, 'upload');
     }
 
     public function uploadSubmit()
@@ -171,7 +171,7 @@ class Uploader
 
             $values = ['filename' => $realname, 'mimetype' => $mimetype, 'description' => $description, 'filepath' => FILESTORE, 'file' => $uploadname, 'size' => $size, 'userid' => $key, 'time' => $time];
             $this->table->save($values, true);
-            reLocate('/upload/getfiles/');
+            reLocate('/upload/load/');
         }
     }
 
