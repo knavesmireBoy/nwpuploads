@@ -124,7 +124,7 @@ class Uploader
             'variables' => [
                 'files' => $files,
                 'priv' => $priv,
-                'key' => $userid,
+                'user_id' => $userid,
                 'pages' => $pages,
                 'uhead' => '',
                 'error' => '',
@@ -155,13 +155,13 @@ class Uploader
             include TEMPLATE . 'error.html.php';
             exit();
         } else {
-            $key = $_POST['user'] ?? $_POST['key'];
+            $key = $_POST['user'] ? $_POST['user'] : $_POST['key'];
             dump($key);
             $nwpuploaded = function ($arg) {
                 return $_FILES['upload'][$arg];
             };
             $values = ['filename' => $nwprealname, 'mimetype' => $nwpuploaded('type'), 'description' => $_POST['desc'] ?? '', 'filepath' => FILESTORE, 'file' => $nwpuploadname, 'size' => $nwpuploaded('size') / 1024, 'userid' => $key];
-            $this->table->save($values, true);
+            dump($this->table->save($values, true));
             reLocate('/upload/getfiles/');
         }
     }

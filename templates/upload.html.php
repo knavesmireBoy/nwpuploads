@@ -16,6 +16,6 @@
                         </select>
                 
         <?php endif; ?>
-        <input type="hidden" name="key" value="<?= $key; ?>" />
+        <input type="hidden" name="key" value="<?= $user_id; ?>" />
         <input type="submit" value="Upload" />
 </form>
