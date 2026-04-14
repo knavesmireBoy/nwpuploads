@@ -200,6 +200,7 @@ function myDomain($fileid)
     $st->bindValue(":id", $fileid);
     doPreparedQuery($st, 'Failed to obtain userid');
     list($userid, $name, $domain) = $st->fetch(PDO::FETCH_NUM);
+    
     return [$ownerid, $ownername, $domain, $multi, $editor];
 }
 
@@ -314,7 +315,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'upload') {
     $nwpst->bindValue(":userid", $key);
     $res = doPreparedQuery($nwpst, "<p>Database error storing file information!</p>");
     $nwpInsertId = lastInsert($pdo, DBSYSTEM, 'upload');
-    
+
     $nwpsql = "SELECT usr.email, usr.name, upload.id, upload.filename FROM usr INNER JOIN upload ON usr.id=upload.userid WHERE upload.id=:id";
     $nwpst = $pdo->prepare($nwpsql);
     $nwpst->bindValue(":id", $nwpInsertId);

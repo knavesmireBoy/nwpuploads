@@ -188,8 +188,9 @@ class Uploader
 
     public function delete()
     {
-        dump(get_defined_vars());
         $id = $_POST['id']; //id of file
+
+        dump($this->usertable->find('email', $_SESSION['email']));
         $title = "Prompt";
         $prompt = "Are you sure you want to delete this file?";
         $call = "confirm";
