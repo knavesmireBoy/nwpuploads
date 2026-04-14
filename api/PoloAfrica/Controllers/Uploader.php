@@ -35,7 +35,7 @@ class Uploader
         }
     }
 
-    public function getfiles(string $userid)
+    public function getfiles(string $userid, string $tmpl = '')
     {
         $user = $this->usertable->find('id', $userid)[0];
         $details = $user->getDetails();
@@ -93,6 +93,7 @@ class Uploader
                 'start' => 0,
                 'display' => PAGINATE,
                 'upload' => ASSET_UPLOAD . $userid,
+                'template' => $tmpl ? "$tmpl.html.php" : '',
                 'predicates' => [partial('preg_match', '/^nwp/')]
             ]
         ];
@@ -100,8 +101,7 @@ class Uploader
 
     public function upload(string $userid)
     {
-        $template = 'upload.html.php';
-        return $this->getfiles($userid);
+        return $this->getfiles($userid, 'upload');
     }
 
     private function setPages($records)
