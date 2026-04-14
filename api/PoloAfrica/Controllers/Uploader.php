@@ -190,7 +190,7 @@ class Uploader
     {
         $id = $_POST['id']; //id of file
 
-        dump($this->usertable->find('email', $_SESSION['email']));
+        dump($this->usertable->find('name', $_SESSION['username']));
         $title = "Prompt";
         $prompt = "Are you sure you want to delete this file?";
         $call = "confirm";
