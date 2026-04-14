@@ -71,15 +71,15 @@ class Uploader
         }
     }
 
-    public function load(string $userid, mixed $fileid = '', string $tmpl = '')
+    public function load(string $fileid = '', string $tmpl = '')
     {
-        $user = $this->usertable->find('id', $userid)[0];
+        $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
         $priv = $details['role'];
         $cid = $details['client_id'];
         $files = [];
         $all = $this->table->findAll();
-        $cb = $this->validateFile($priv, $cid, $userid);
+        $cb = $this->validateFile($priv, $cid, $user->id);
         /*
 
 
@@ -126,13 +126,13 @@ class Uploader
             'variables' => [
                 'files' => $files,
                 'priv' => $priv,
-                'user_id' => $userid,
+                'user_id' => $user->id,
                 'pages' => $pages,
                 'uhead' => '',
                 'error' => '',
                 'start' => 0,
                 'display' => PAGINATE,
-                'upload' => ASSET_UPLOAD . $userid,
+                'upload' => ASSET_UPLOAD,
                 'disabled' => $priv === 'Browser' ? 'disabled' : '',
                 'template' => $tmpl ? "$tmpl.html.php" : null,
                 'users' => $users,
@@ -189,9 +189,6 @@ class Uploader
     public function delete()
     {
         $id = $_POST['id']; //id of file
-
-        $userid = $this->usertable->find('email', $_SESSION['username'])[0]->id;
-        dump($userid);
         $title = "Prompt";
         $prompt = "Are you sure you want to delete this file?";
         $call = "confirm";

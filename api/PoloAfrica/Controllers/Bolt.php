@@ -28,7 +28,7 @@ class Bolt
         if ($success) {
             $user = $this->authentication->isLoggedIn();
             $id = $user->id;
-            reLocate("/uploader/load/$id");
+            reLocate("/uploader/load/");
         }
         reLocate(BBC);
     }
