@@ -117,6 +117,7 @@ class Uploader
         $total = count($files);
         $pages = $this->setPages($total);
         list($users, $client) = $this->presentList($priv);
+        $text = '';
 
         return [
             'template' => 'files.html.php',
@@ -135,7 +136,8 @@ class Uploader
                 'template' => $tmpl ? "$tmpl.html.php" : null,
                 'users' => $users,
                 'client' => $client,
-                'predicates' => [partial('preg_match', '/^nwp/')]
+                'predicates' => [partial('preg_match', '/^nwp/')],
+                'text' => $text
             ]
         ];
     }
@@ -147,7 +149,7 @@ class Uploader
 
     public function uploadSubmit()
     {
-        list($nwpuploadfile, $nwpuploadname, $nwpfilename, $nwprealname) = $this->getUploadedFile();
+        list($nwpuploadfile, $nwpuploadname, $nwpfilename, $realname) = $this->getUploadedFile();
 
         // Copy the file (if it is deemed safe)
         if (!copy($nwpuploadfile, $nwpfilename)) {
@@ -156,11 +158,10 @@ class Uploader
             exit();
         } else {
             $key = $_POST['user'] ? $_POST['user'] : $_POST['key'];
-            dump($key);
-            $nwpuploaded = function ($arg) {
+            $dofile = function ($arg) {
                 return $_FILES['upload'][$arg];
             };
-            $values = ['filename' => $nwprealname, 'mimetype' => $nwpuploaded('type'), 'description' => $_POST['desc'] ?? '', 'filepath' => FILESTORE, 'file' => $nwpuploadname, 'size' => $nwpuploaded('size') / 1024, 'userid' => $key];
+            $values = ['filename' => $realname, 'mimetype' => $dofile('type'), 'description' => $_POST['desc'] ?? '', 'filepath' => FILESTORE, 'file' => $nwpuploadname, 'size' => $dofile('size') / 1024, 'userid' => $key, 'time' => date('Y-m-d')];
             dump($this->table->save($values, true));
             reLocate('/upload/getfiles/');
         }
