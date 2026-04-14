@@ -127,7 +127,7 @@ if (count($files) > 0): ?>
                 <?php
                 if ($priv !== 'Browser') : ?>
                     <td title="delete">
-                        <form action="." method="post" name="<?= $id; ?>">
+                        <form action="/uploader/delete/" method="post" name="<?= $id; ?>">
                             <div><input type="hidden" name="action" value="delete" />
                                 <input type="hidden" name="id" value="<?= $id; ?>" />
                                 <input type="submit" value="Delete" title="delete or update"/>

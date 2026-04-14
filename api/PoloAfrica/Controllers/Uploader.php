@@ -71,7 +71,7 @@ class Uploader
         }
     }
 
-    public function load(string $userid, string $tmpl = '')
+    public function load(string $userid, mixed $fileid = '', string $tmpl = '')
     {
         $user = $this->usertable->find('id', $userid)[0];
         $details = $user->getDetails();
@@ -147,7 +147,7 @@ class Uploader
 
     public function upload(string $userid)
     {
-        return $this->load($userid, 'upload');
+        return $this->load($userid, '', 'upload');
     }
 
     public function uploadSubmit()
@@ -170,6 +170,7 @@ class Uploader
             $mimetype = $dofile('type');
 
             $values = ['filename' => $realname, 'mimetype' => $mimetype, 'description' => $description, 'filepath' => FILESTORE, 'file' => $uploadname, 'size' => $size, 'userid' => $userid, 'time' => $time];
+
             $this->table->save($values, true);
             $key = $_POST['key'];
             reLocate("/uploader/load/$key");
@@ -183,5 +184,19 @@ class Uploader
             $pages = ceil($records / PAGINATE);
         }
         return $pages;
+    }
+
+    public function delete()
+    {
+        $id = $_POST['id']; //id of file
+        $title = "Prompt";
+        $prompt = "Are you sure you want to delete this file?";
+        $call = "confirm";
+        $pos = "Yes";
+        $neg = "No";
+        $action = '';
+        list($ownerid, $ownername, $domain, $multi, $editor) = myDomain($id);
+       // $userid = $this->usertable->get
+      // return $this->load($userid, 'prompt');
     }
 }
