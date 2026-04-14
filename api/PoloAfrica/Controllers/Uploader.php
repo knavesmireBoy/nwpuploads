@@ -9,6 +9,22 @@ class Uploader
     public function __construct(private DatabaseTable $table, private DatabaseTable $usertable) {}
 
 
+    private function getUploadedFile()
+    {
+        $uploaded = function ($arg) {
+            return $_FILES['upload'][$arg];
+        };
+        $uploadfile = $uploaded('tmp_name');
+        $realname = $uploaded('name');
+        $ext = preg_replace('/(.*)(\.[^0-9.]+$)/i', '$2', $realname);
+        $time = time();
+        //$uploadname = $time . getRemoteAddr() . $ext;
+        $uploadname = $time . $ext;
+        $filename =  FILESTORE . $uploadname;
+        $filename =  "/tmp/$uploadname";
+        return [$uploadfile, $uploadname, $filename, $realname];
+    }
+
     private function prepfiles($file, $user)
     {
         $details = $user->getDetails();
@@ -128,8 +144,18 @@ class Uploader
         return $this->getfiles($userid, 'upload');
     }
 
-    public function uploadSubmit() {
-        dump($_FILES['upload']['tmp_name']);
+    public function uploadSubmit()
+    {
+        list($nwpuploadfile, $nwpuploadname, $nwpfilename, $nwprealname) = getUploadedFile();
+
+        // Copy the file (if it is deemed safe)
+        if (!copy($nwpuploadfile, $nwpfilename)) {
+            $error = "Could not save file as $nwpfilename!";
+            include TEMPLATE . 'error.html.php';
+            exit();
+        } else {
+            dump('cool');
+        }
     }
 
     private function setPages($records)
