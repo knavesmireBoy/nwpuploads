@@ -31,7 +31,7 @@ class Uploader
         if (isApproved($role, 'ADMIN')) {
 
             foreach ($all as $row) {
-                if (empty($user->client_id)) {
+                if (empty($row->client_id)) {
                     $users[$row->id] = $row->name;
                 } else {
                     $client[$row->id] = $row->name;
