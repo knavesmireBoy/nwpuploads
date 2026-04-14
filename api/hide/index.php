@@ -224,9 +224,6 @@ if ($roleplay = obtainUserRole()) {
 }
 
 
-if ($priv === 'Browser') {
-    $disabled = 'disabled';
-}
 
 //setExtent do this here
 setExtent(0);
@@ -240,7 +237,7 @@ $clientlist = null;
 $display = 5;
 $tel = '';
 $call = '';
-$disabled  = '';
+$disabled  = $priv === 'Browser' ? 'disabled' : '';
 $getuser = '';
 $bytext = '';
 $byuser = '';

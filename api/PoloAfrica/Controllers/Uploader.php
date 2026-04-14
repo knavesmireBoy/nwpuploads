@@ -93,7 +93,10 @@ class Uploader
                 'start' => 0,
                 'display' => PAGINATE,
                 'upload' => ASSET_UPLOAD . $userid,
+                'disabled' => $priv === 'Browser' ? 'disabled' : '',
                 'template' => $tmpl ? "$tmpl.html.php" : null,
+                'users' => [],
+                'client' => [],
                 'predicates' => [partial('preg_match', '/^nwp/')]
             ]
         ];
