@@ -128,6 +128,10 @@ class Uploader
         return $this->getfiles($userid, 'upload');
     }
 
+    public function uploadSubmit() {
+        dump($_FILES['upload']['tmp_name']);
+    }
+
     private function setPages($records)
     {
         $pages = 1;
