@@ -188,6 +188,7 @@ class Uploader
 
     public function delete()
     {
+        dump(get_defined_vars());
         $id = $_POST['id']; //id of file
         $title = "Prompt";
         $prompt = "Are you sure you want to delete this file?";
