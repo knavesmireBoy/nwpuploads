@@ -169,6 +169,7 @@ class Uploader
             $time = date('Y-m-d');
             $mimetype = $dofile('type');
 
+            dump($_POST);
             $values = ['filename' => $realname, 'mimetype' => $mimetype, 'description' => $description, 'filepath' => FILESTORE, 'file' => $uploadname, 'size' => $size, 'userid' => $key, 'time' => $time];
             dump($this->table->save($values, true));
             reLocate('/upload/getfiles/');
