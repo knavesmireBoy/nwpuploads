@@ -25,6 +25,16 @@ class Uploader
         return [$uploadfile, $uploadname, $filename, $realname];
     }
 
+    private function getCustomVars($key, $id = 0)
+    {
+        $lib = ['delete' => ['id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this file?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '']];
+
+        if (isset($lib[$key])) {
+            return $lib[$key];
+        }
+        return [];
+    }
+
     private function prepfiles($file, $user)
     {
         $details = $user->getDetails();
@@ -71,7 +81,7 @@ class Uploader
         }
     }
 
-    public function load(string $fileid = '', string $tmpl = '')
+    public function load(string $key = '', string $fileid = '')
     {
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
@@ -80,9 +90,8 @@ class Uploader
         $files = [];
         $all = $this->table->findAll();
         $cb = $this->validateFile($priv, $cid, $user->id);
+        $customVars = $this->getCustomVars($key, $fileid);
         /*
-
-
         if (isApproved($priv, 'ADMIN')) {
             foreach ($all as $file) {
                 $user = $this->usertable->find('id', $file->userid)[0];
@@ -120,28 +129,29 @@ class Uploader
         $text = '';
         $suffix = '';
         $error = '';
+        $defaultVars = [
+            'files' => $files,
+            'priv' => $priv,
+            'user_id' => $user->id,
+            'pages' => $pages,
+            'uhead' => '',
+            'error' => '',
+            'start' => 0,
+            'display' => PAGINATE,
+            'upload' => ASSET_UPLOAD,
+            'disabled' => $priv === 'Browser' ? 'disabled' : '',
+            'users' => $users,
+            'client' => $client,
+            'predicates' => [partial('preg_match', '/^nwp/')],
+            'text' => $text,
+            'suffix' => $suffix,
+            'error' => ''
+        ];
+        $vars = array_merge($defaultVars, $customVars);
         return [
             'template' => 'files.html.php',
             'title' => 'File Uploads',
-            'variables' => [
-                'files' => $files,
-                'priv' => $priv,
-                'user_id' => $user->id,
-                'pages' => $pages,
-                'uhead' => '',
-                'error' => '',
-                'start' => 0,
-                'display' => PAGINATE,
-                'upload' => ASSET_UPLOAD,
-                'disabled' => $priv === 'Browser' ? 'disabled' : '',
-                'template' => $tmpl ? "$tmpl.html.php" : null,
-                'users' => $users,
-                'client' => $client,
-                'predicates' => [partial('preg_match', '/^nwp/')],
-                'text' => $text,
-                'suffix' => $suffix,
-                'error' => ''
-            ]
+            'variables' => $vars
         ];
     }
 
@@ -188,15 +198,6 @@ class Uploader
 
     public function delete()
     {
-        $id = $_POST['id']; //id of file
-        $title = "Prompt";
-        $prompt = "Are you sure you want to delete this file?";
-        $call = "confirm";
-        $pos = "Yes";
-        $neg = "No";
-        $action = '';
-        list($ownerid, $ownername, $domain, $multi, $editor) = myDomain($id);
-       // $userid = $this->usertable->get
-      // return $this->load($userid, 'prompt');
+        return $this->load('delete', $_POST['id']);
     }
 }
