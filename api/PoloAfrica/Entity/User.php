@@ -70,7 +70,7 @@ class User
 
   public function getDetails($prop = '')
   {
-    $res = $this->fetch('userroletable', ' userid', $this->id);
+    $res = $this->fetch('userroletable', 'userid', $this->id);
     $role = $res->roleid ?? null;
     if (!empty($res)) {
       if ($prop) {
