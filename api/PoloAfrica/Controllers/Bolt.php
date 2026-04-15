@@ -26,7 +26,6 @@ class Bolt
     {
         $success = $this->authentication->login($_POST['email'], $_POST['password']);
 
-        dump([$success, $_POST]);
         if ($success) {
             $user = $this->authentication->isLoggedIn();
             $id = $user->id;
