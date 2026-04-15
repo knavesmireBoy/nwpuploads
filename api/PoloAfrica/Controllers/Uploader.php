@@ -81,7 +81,7 @@ class Uploader
         }
     }
 
-    public function load(string $key = '', array $data)
+    public function load(string $key = '', array $data = [])
     {
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
