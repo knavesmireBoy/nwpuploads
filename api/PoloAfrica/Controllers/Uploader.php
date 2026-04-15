@@ -216,8 +216,10 @@ class Uploader
 
     public function confirm()
     {
-        dump($_POST);
-        
-        return $this->load('confirm', $_POST);
+        if ($_POST['confirm'] === 'Yes') {
+            return $this->load('confirm', $_POST);
+        } else {
+            return $this->load();
+        }
     }
 }
