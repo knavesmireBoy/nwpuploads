@@ -59,8 +59,6 @@ class PoloAfricaWebsite implements Website
             return $a === $b;
         };
         $eq = fn($a, $b) => $a === $b;
-
-        dump($f(ASSET_LOAD));
         $arr = array_map($f, [ASSET_LOAD]);
         //if at least one matches
         return array_filter($arr, partial($eq, $f($uri)));
@@ -221,7 +219,6 @@ class PoloAfricaWebsite implements Website
         /*
         $browser = \PoloAfrica\Entity\User::BROWSER;
         $content = \PoloAfrica\Entity\User::CONTENT_EDITOR;
-        $photo = \PoloAfrica\Entity\User::PHOTO_EDITOR;
         $chief = \PoloAfrica\Entity\User::CHIEF_EDITOR;
         $account = \PoloAfrica\Entity\User::ACCOUNT_EDITOR;
         $super = \PoloAfrica\Entity\User::SUPERADMIN;
@@ -232,24 +229,24 @@ class PoloAfricaWebsite implements Website
         //$user = new \stdClass;
         $user = $this->authentication->isLoggedIn();
         /*
-        $tmp = ['user/edit' => $account,  'user/list' => $account, 'user/edit' => $account, 'gallery/manage' => $photo];
+        $tmp = ['user/edit' => $account,  'user/list' => $account, 'user/edit' => $account];
         $post_access = ['user/success' => $browser, 'user/haspermission' => $browser];
         //'user/register' => $browser,
         $actions = [
         
         ];
         */
-        $actions = [];
+        $default = ['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'];
+        $actions = ['upload/load' => $default];
 
         if (!$user) { //not logged in
             if ($this->baseAccess($uri) || isset($actions[$uri])) {
-
                 dump(111);
                 reLocate(REG . 'gebruiker');
             }
         } else {
             dump(2222);
-            if (isset($actions[$uri]) /*&& !$user->hasPermission($actions[$uri])*/) {
+            if (isset($actions[$uri]) && !$user->hasPermission($actions[$uri])) {
                 // $reroute($actions[$uri], 'user');
                 exit;
             }

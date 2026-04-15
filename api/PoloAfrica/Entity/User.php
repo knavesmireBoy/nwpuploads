@@ -33,21 +33,23 @@ class User
 
   protected function fetch($t, $prop, $val, ...$rest)
   {
-      $ret = [];
-      if ($val) { //safeguard against missing values
-          if (strtoupper($t) === $t) {
-              $t = strtolower($t);
-              $ret = $this->{$t}->find($prop, $val, null, 0, 0, \PDO::FETCH_ASSOC);
-          } else {
-              $ret = $this->{$t}->find($prop, $val, ...$rest);
-          }
+    $ret = [];
+    if ($val) { //safeguard against missing values
+      if (strtoupper($t) === $t) {
+        $t = strtolower($t);
+        $ret = $this->{$t}->find($prop, $val, null, 0, 0, \PDO::FETCH_ASSOC);
+      } else {
+        $ret = $this->{$t}->find($prop, $val, ...$rest);
       }
-      return empty($ret) ? null : $ret[0];
+    }
+    return empty($ret) ? null : $ret[0];
   }
 
-  public function hasPermission(int $permission)
+  public function hasPermission($allowed)
   {
-    //return $this->permissions & $permission;
+    $res = $this->fetch('userroletable', ' userid', $this->id);
+    $role = $res->roleid ?? null;
+    return in_array($role, $allowed);
   }
 
   public function checkPermission(int $permission)
@@ -67,14 +69,14 @@ class User
 
   public function getDetails($prop = '')
   {
-    $res = $this->fetch('userroletable',' userid', $this->id);
+    $res = $this->fetch('userroletable', ' userid', $this->id);
     $role = $res->roleid ?? null;
     if (!empty($res)) {
-      if($prop){
+      if ($prop) {
         return $this->{$prop};
       }
-      if($this->client_id){
-        $client = $this->fetch('clienttable',' id', $this->client_id);
+      if ($this->client_id) {
+        $client = $this->fetch('clienttable', ' id', $this->client_id);
       }
       return ['id' => $this->id, 'name' => $this->name, 'email' => $this->email, 'role' => $role, 'client' => $client->name ?? '', 'tel' => $client->tel ?? '', 'client_id' => $this->client_id];
     }
