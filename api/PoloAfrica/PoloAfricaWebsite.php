@@ -59,7 +59,7 @@ class PoloAfricaWebsite implements Website
             return $a === $b;
         };
         $eq = fn($a, $b) => $a === $b;
-        $arr = array_map($f, ['', '']);
+        $arr = array_map($f, [ASSET_LOAD]);
         //if at least one matches
         return array_filter($arr, partial($eq, $f($uri)));
     }
@@ -227,65 +227,26 @@ class PoloAfricaWebsite implements Website
         // $user = $this->authentication->isLoggedIn();
         //$permit = $user ? intval($user->permissions) : 0;
         $permit = 0;
-        $user = new \stdClass;
+        //$user = new \stdClass;
+        $user = $this->authentication->isLoggedIn();
         /*
         $tmp = ['user/edit' => $account,  'user/list' => $account, 'user/edit' => $account, 'gallery/manage' => $photo];
         $post_access = ['user/success' => $browser, 'user/haspermission' => $browser];
         //'user/register' => $browser,
         $actions = [
-            'user/confirm' => $account,
-            'user/permissions' => $account,
-            'user/changepassword' => $browser,
-            'user/changeemail' => $browser,
-            'user/forgot' =>  $browser,
-            'article/list' => $content,
-            'article/edit' => $content,
-            'article/confirm' => $content,
-            'article/delete' => $content,
-            'article/move' => $content,
-            'article/restore' => $content,
-            'article/assets' => $content,
-            'asset/upload' => $content,
-            'asset/delete' => $content,
-            'asset/edit' => $content,
-            'asset/confirm' => $content,
-            'asset/assign' => $content,
-            'asset/reload' => $content,
-            'asset/add' => $super,
-
-            'pages/list' => $content,
-            'pages/edit' => $content,
-            'gallery/review' => $photo,
-            'gallery/add' => $photo,
-            'gallery/upload' => $photo,
-            'gallery/edit' => $photo,
-            'gallery/destroy' => $photo,
-            'gallery/reload' => $photo,
-            'gallery/assign' => $photo,
-            'pages/add' => $content,
-            'pages/delete' => $chief,
-            'pages/confirm' => $chief,
-            'pages/approve' => $chief,
-
-            'asset/manage' => $super,
-            'asset/retrieve' => $super,
-            'asset/getuntracked' => $super,
-            'gallery/retrieve' => $super,
-            'gallery/getuntracked' => $super,
-            'gallery/manage' => $super,
+        
         ];
         */
         $actions = [];
 
         if (!$user) { //not logged in
-            reLocate(REG . 'gebruiker');
-            //@ baseAccess
-            //a non-browser has to be able to register user/admin
-            //a "BROWSER" is allowed to change details at the very least user/list
             if ($this->baseAccess($uri) || isset($actions[$uri])) {
+
+                dump(111);
                 reLocate(REG . 'gebruiker');
             }
         } else {
+            dump(2222)
             if (isset($actions[$uri]) /*&& !$user->hasPermission($actions[$uri])*/) {
                 // $reroute($actions[$uri], 'user');
                 exit;
@@ -293,7 +254,6 @@ class PoloAfricaWebsite implements Website
         }
         $ret = $user ? [$user, $permit, $key] : [''];
         //don't send empty args
-        return [''];
         return array_filter($ret, 'identity');
     }
     //DDL

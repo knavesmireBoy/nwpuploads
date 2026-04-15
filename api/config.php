@@ -60,6 +60,7 @@ define("USER_RESET_EMAIL", '/user/resetemail/');
 
 
 define("ASSET_UPLOAD",  '/uploader/upload/');
+define("ASSET_LOAD",  '/uploader/load/');
 
 spl_autoload_register('autoloader');
 session_start();
