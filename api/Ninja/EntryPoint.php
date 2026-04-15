@@ -64,7 +64,7 @@ class EntryPoint
             //$action = $this->reroute($name, $action);
             $user = $this->website->checkLogin($url); //: array
 
-            dump($user);
+            dump([1, $user]);
             $userid = $user[0]->id ?? 0;
             $userpermissions = $user[1] ?? 0;
 
