@@ -27,7 +27,7 @@ class Uploader
 
     private function getCustomVars($key, $data)
     {
-        $lib = ['delete' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this file?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/uploader/confirm/'], 'confirm' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Select the extent of deletions", 'delete' => 'proceed', 'ownerid' => $data['ownerid'] ?? '', 'ownername' => $data['ownername'] ?? '', 'domain' => $data['domain'] ?? '', 'multi' => $data['multi'] ?? '', 'editor' => $data['editor'] ?? '']];
+        $lib = ['delete' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this file?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/uploader/confirm/'], 'confirm' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Select the extent of deletions", 'delete' => 'proceed', 'ownerid' => $data['ownerid'] ?? '', 'ownername' => $data['ownername'] ?? '', 'domain' => $data['domain'] ?? '', 'multi' => $data['multi'] ?? '', 'editor' => $data['editor'] ?? '', 'action' => '/uploader/destroy/']];
 
         if (isset($lib[$key])) {
             return $lib[$key];
@@ -216,10 +216,15 @@ class Uploader
 
     public function confirm()
     {
-        if ($_POST['confirm'] === 'Yes') {
+        if (isset($_POST['confirm']) &&  $_POST['confirm'] === 'Yes') {
             return $this->load('confirm', $_POST);
         } else {
-            return $this->load();
+            reLocate("/uploader/load/");
         }
+    }
+
+    public function destroySubmit()
+    {
+        dump($_POST);
     }
 }
