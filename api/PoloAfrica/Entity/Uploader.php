@@ -34,6 +34,8 @@ class Uploader
     public function getDetails($prop = '')
     {
         $res = $this->table->find('userid', $this->userid);
+
+        dump([$res, $this->userid]);
         $multi = count($res) > 1;
         $res = $res[0];
         if (!empty($res)) {
