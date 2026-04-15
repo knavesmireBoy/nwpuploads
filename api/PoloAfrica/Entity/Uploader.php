@@ -2,7 +2,7 @@
 
 namespace PoloAfrica\Entity;
 
-class Uploader
+class Uploader extends Entity
 {
     public $id;
     public $filename;
@@ -14,22 +14,7 @@ class Uploader
     public $userid;
     public $time;
 
-    public function __construct(private \Ninja\DatabaseTable $table, private \Ninja\DatabaseTable $usertable) {}
-
-    protected function fetch($t, $prop, $val, ...$rest)
-    {
-        $ret = [];
-        if ($val) { //safeguard against missing values
-            if (strtoupper($t) === $t) {
-                $t = strtolower($t);
-                $ret = $this->{$t}->find($prop, $val, null, 0, 0, \PDO::FETCH_ASSOC);
-            } else {
-                $ret = $this->{$t}->find($prop, $val, ...$rest);
-            }
-        }
-        return empty($ret) ? null : $ret[0];
-    }
-
+    public function __construct(protected \Ninja\DatabaseTable $table, protected \Ninja\DatabaseTable $usertable) {}
 
     public function getDetails($prop = '')
     {
@@ -49,10 +34,12 @@ class Uploader
     public function getUserFileCount($prop = '')
     {
         $res = $this->table->find('userid', $this->userid);
-        $res = $this->fetch('usertable', 'id', $this->userid);
+        
+        $multi = count($res) > 1;
+        $res = $this->fetch('USERTABLE', 'id', $this->userid);
 
         dump(get_object_vars($res));
-        [$res, count($res) > 1];
+        return [$res, $multi];
         if (!empty($res)) {
             if ($prop) {
                 return $this->{$prop};
