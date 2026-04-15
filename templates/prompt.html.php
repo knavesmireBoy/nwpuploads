@@ -59,6 +59,7 @@
             <?php endif; ?>
             <input type="radio" id="cancel" name="extent" /><label for="cancel">cancel</label>
             <input type="hidden" name="id" value="<?= $id; ?>" />
+            <input type="hidden" name="ownerid" value="<?= $owner['id'] ?? ''; ?>" />
             <input type="hidden" name="<?= $delete; ?>" value="destroy" />
             <input type="submit" />
         </form>

@@ -81,6 +81,21 @@ class Uploader
         }
     }
 
+    private function validateFile2($priv, $cid, $userid)
+    {
+        if ('f') {
+            curry2('equals')('fileid');
+        }
+        if('u'){
+            curry2('equals')('userid');
+        }
+        if('c'){
+            $users = $this->usertable->find('client_id', $cid);
+            $userids = array_map(fn($o) => $o->id, $users);
+            return curry2('in_array')($userids);
+        }
+    }
+
     public function load(string $key = '', array $data = [])
     {
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
@@ -225,14 +240,27 @@ class Uploader
 
     public function destroySubmit()
     {
+        
+
+
+
         /*
-        if (isset($lib[$_extent])) {
-            $nwpsql = $lib[$_extent];
+        F
+        delete id from $_POST['id']
+        U
+        find userid in uploads
+        C
+        obtain list of userids and assoc fileIds
+
+        */
+        
+        if (isset($_POST['extent'])) {
+           $k = $_POST['extent'];
+
         } else {
             header('Location: .');
             exit();
         }
-        */
         dump($_POST);
     }
 }
