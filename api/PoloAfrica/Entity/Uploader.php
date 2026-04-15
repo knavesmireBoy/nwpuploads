@@ -34,12 +34,10 @@ class Uploader extends Entity
     public function getUserFileCount($prop = '')
     {
         $res = $this->table->find('userid', $this->userid);
-        
-        $multi = count($res) > 1;
+        $multi = ['multi' => count($res) > 1];
         $res = $this->fetch('USERTABLE', 'id', $this->userid);
-
-        dump($res);
-        return [$res, $multi];
+        return [...$res, ...$multi];
+        return array_merge($this->fetch('USERTABLE', 'id', $this->userid), ['multi' => count($res) > 1]);
         if (!empty($res)) {
             if ($prop) {
                 return $this->{$prop};
