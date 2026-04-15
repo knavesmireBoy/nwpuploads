@@ -56,6 +56,8 @@ class EntryPoint
                 $url = $name . '/' . $action;
             }
 
+          
+
             $controller = new \stdClass();
             $args = $this->website->getControllerArgs($name, $controller);
             if ($method === 'POST' && in_array($action, $this->posts)) {
@@ -67,7 +69,11 @@ class EntryPoint
             $userid = $user[0]->id ?? 0;
             $userpermissions = $user[1] ?? 0;
 
+            dump([$uri, $name, $action]);
+
             $controller = $this->website->getController($name, $args, [$userid, $userpermissions]);
+
+
             if (is_callable([$controller, $action])) {
                 //$this->website->create($name);
                 $page = $controller->$action(...$route);
