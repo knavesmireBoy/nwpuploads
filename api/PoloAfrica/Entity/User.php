@@ -72,6 +72,7 @@ class User
   {
     $res = $this->fetch('userroletable', 'userid', $this->id);
     $role = $res->roleid ?? null;
+    $client = null;
     if (!empty($res)) {
       if ($prop) {
         return $this->{$prop};
@@ -79,7 +80,7 @@ class User
       if ($this->client_id) {
         $client = $this->fetch('clienttable', ' id', $this->client_id);
       }
-      return ['id' => $this->id, 'name' => $this->name, 'email' => $this->email, 'role' => $role, 'client' => $client->name ?? '', 'tel' => $client->tel ?? '', 'client_id' => $this->client_id];
+      return ['id' => $this->id, 'name' => $this->name, 'email' => $this->email, 'role' => $role, 'client' => $client->name ?? '', 'tel' => $client->tel ?? '', 'domain' => $client->domain ?? '', 'client_id' => $this->client_id];
     }
     return null;
   }

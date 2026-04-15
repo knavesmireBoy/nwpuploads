@@ -93,7 +93,11 @@ class Uploader
         $customVars = $this->getCustomVars($key, $fileid);
         if($fileid){
             $file = $this->table->find('id', $fileid)[0];
-            dump($file->getData($_SESSION['username']));
+            $data = $file->getData($_SESSION['username']);
+            $client = $this->usertable->find('client_id', $data['client_id'])[0];
+            $clientdata = $client->getDetails();
+            dump([...$data, ...$clientdata]);
+
         }
        
 
