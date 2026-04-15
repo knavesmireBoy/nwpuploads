@@ -246,7 +246,6 @@ class PoloAfricaWebsite implements Website
             }
         } else {
             $permit = $user->hasPermission($actions[$uri]);
-            dump([$permit, isset($actions[$uri])]);
             if (isset($actions[$uri]) && !$permit) {
                 //$reroute($actions[$uri], 'user');
                 exit;
