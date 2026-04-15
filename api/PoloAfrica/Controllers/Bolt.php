@@ -25,7 +25,6 @@ class Bolt
     public function fartSubmit()
     {
         $success = $this->authentication->login($_POST['email'], $_POST['password']);
-        dump($success);
         if ($success) {
             reLocate("/uploader/load/");
             exit();
