@@ -93,7 +93,7 @@ class Uploader
         $customVars = $this->getCustomVars($key, $fileid);
         if($fileid){
             $file = $this->table->find('id', $fileid)[0];
-            dump($file->getUserFileCount());
+            dump($file->getData($_SESSION['username']));
         }
        
 
