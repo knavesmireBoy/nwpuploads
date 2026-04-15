@@ -35,7 +35,7 @@ class EntryPoint
         return empty($action) ? $name : $action;
     }
 
-    public function run($uri, $method, $defaultKlas = '', $home = 'home')
+    public function run($uri, $method, $defaultKlas = '', $home = '')
     {
         try {
             $this->checkUri($uri);

@@ -14,7 +14,7 @@ if (is_int($i)) {
 }
 
 $uri = empty($route) ? '' : implode('/', $route);
-$home = 'home';
+$home = '/uploader/load/';
 //array of "actions" which need submit adding to string for processing forms; eg assignSubmit
 $posts = ['assign', 'create', 'contact', 'edit', 'login', 'manage', 'permissions', 'register', 'retrieve', 'retire', 'unarchive', 'relocate', 'swap', 'fart', 'upload'];
 $pp = $pages[$route[0]] ?? '';
