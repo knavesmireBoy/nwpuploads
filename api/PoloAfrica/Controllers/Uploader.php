@@ -88,6 +88,7 @@ class Uploader
         $priv = $details['role'];
         $cid = $details['client_id'];
         $files = [];
+        $owner = [];
         $all = $this->table->findAll();
         $cb = $this->validateFile($priv, $cid, $user->id);
         $customVars = $this->getCustomVars($key, $fileid);
@@ -95,9 +96,10 @@ class Uploader
             $file = $this->table->find('id', $fileid)[0];
             $data = $file->getData($_SESSION['username']);
             $client = $this->usertable->find('client_id', $data['client_id'])[0];
-            $clientdata = $client->getDetails();
-            dump([...$data, ...$clientdata]);
-
+            $owner = [...$data, ...$client->getDetails()];
+            /*
+            $owner = ['id' => $data['id'], 'name' => $data['name'],'domain' => $data['domain'], 'multi' => $data['multi'], 'editor' => $data['editor']];
+            */
         }
        
 
@@ -155,7 +157,8 @@ class Uploader
             'predicates' => [partial('preg_match', '/^nwp/')],
             'text' => $text,
             'suffix' => $suffix,
-            'error' => ''
+            'error' => '',
+            'owner' => $owner
         ];
         $vars = array_merge($defaultVars, $customVars);
         return [

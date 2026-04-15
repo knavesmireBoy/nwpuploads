@@ -18,11 +18,11 @@
     //confirm used by several controllers
     ?>
         <form action="<?= $action; ?>" method="post" name="choice" class="prompt" id="yesno">
-            <input type="hidden" name="ownerid" value="<?= $ownerid ?? $id; ?>" />
-            <input type="hidden" name="ownername" value="<?= $ownername ?? ''; ?>" />
-            <input type="hidden" name="multi" value="<?= $multi ?? false; ?>" />
-            <input type="hidden" name="domain" value="<?= $domain ?? ''; ?>" />
-            <input type="hidden" name="editor" value="<?= $editor ?? false; ?>" />
+            <input type="hidden" name="ownerid" value="<?= $owner['id'] ?? $id; ?>" />
+            <input type="hidden" name="ownername" value="<?= $owner['name'] ?? ''; ?>" />
+            <input type="hidden" name="multi" value="<?= $owner['multi'] ?? '' ?>" />
+            <input type="hidden" name="domain" value="<?= $owner['domain'] ?? ''; ?>" />
+            <input type="hidden" name="editor" value="<?= $owner['editor'] ?? false; ?>" />
             <?php
             include '_confirm.html.php';
             ?>
@@ -30,8 +30,10 @@
     <?php endif;  ?>
 
     <?php if (isset($delete)):
-        //We need to determine the logic of what messages to display
-        $n = $ownername ?? null;
+        //We need to determine the logic of which messages to display
+        $domain = $domain ?? $owner['domain'] ?? '';
+        $multi = $multi ?? $owner['multi'] ?? null;
+        $n = $owner['name'] ?? null;
         $c = $client[$domain] ?? null;
         $k = 'prompt';
         if ($c || $multi) {
