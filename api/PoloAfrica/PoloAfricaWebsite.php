@@ -59,6 +59,8 @@ class PoloAfricaWebsite implements Website
             return $a === $b;
         };
         $eq = fn($a, $b) => $a === $b;
+
+        dump($f(ASSET_LOAD));
         $arr = array_map($f, [ASSET_LOAD]);
         //if at least one matches
         return array_filter($arr, partial($eq, $f($uri)));
@@ -246,7 +248,7 @@ class PoloAfricaWebsite implements Website
                 reLocate(REG . 'gebruiker');
             }
         } else {
-            dump(2222)
+            dump(2222);
             if (isset($actions[$uri]) /*&& !$user->hasPermission($actions[$uri])*/) {
                 // $reroute($actions[$uri], 'user');
                 exit;
