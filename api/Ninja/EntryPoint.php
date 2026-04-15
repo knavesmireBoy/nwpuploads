@@ -69,7 +69,7 @@ class EntryPoint
             $userid = $user[0]->id ?? 0;
             $userpermissions = $user[1] ?? 0;
 
-            dump([$uri, $name, $action]);
+          //  dump([$uri, $name, $action]);
 
             $controller = $this->website->getController($name, $args, [$userid, $userpermissions]);
 
