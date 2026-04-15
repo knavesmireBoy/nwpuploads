@@ -91,9 +91,11 @@ class Uploader
         $all = $this->table->findAll();
         $cb = $this->validateFile($priv, $cid, $user->id);
         $customVars = $this->getCustomVars($key, $fileid);
-
-        $file = $this->table->find('id', $fileid)[0];
-        dump($file->getDetails());
+        if($fileid){
+            $file = $this->table->find('id', $fileid)[0];
+            dump($file->getDetails());
+        }
+       
 
         /*
         if (isApproved($priv, 'ADMIN')) {
