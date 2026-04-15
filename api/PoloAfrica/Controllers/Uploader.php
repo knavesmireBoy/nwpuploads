@@ -91,6 +91,10 @@ class Uploader
         $all = $this->table->findAll();
         $cb = $this->validateFile($priv, $cid, $user->id);
         $customVars = $this->getCustomVars($key, $fileid);
+
+        $file = $this->table->find('id', $fileid)[0];
+        dump($file->getDetails());
+
         /*
         if (isApproved($priv, 'ADMIN')) {
             foreach ($all as $file) {
@@ -198,7 +202,6 @@ class Uploader
 
     public function delete()
     {
-          dump($this->table->find('id', $_POST['id']));
         return $this->load('delete', $_POST['id']);
     }
 }
