@@ -49,7 +49,8 @@ class User
   {
     $res = $this->fetch('userroletable', ' userid', $this->id);
     $role = $res->roleid ?? null;
-    return in_array($role, $allowed);
+    $found = array_search($role, $allowed);
+    return is_numeric($found);
   }
 
   public function checkPermission(int $permission)

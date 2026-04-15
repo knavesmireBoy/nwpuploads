@@ -237,17 +237,17 @@ class PoloAfricaWebsite implements Website
         ];
         */
         $default = ['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'];
+       //$default = ['Admin', 'Client Admin', 'Client', 'Manager', 'Browser'];
         $actions = ['upload/load' => $default];
 
         if (!$user) { //not logged in
             if ($this->baseAccess($uri) || isset($actions[$uri])) {
-                dump(111);
                 reLocate(REG . 'gebruiker');
             }
         } else {
-            dump(2222);
-            if (isset($actions[$uri]) && !$user->hasPermission($actions[$uri])) {
-                // $reroute($actions[$uri], 'user');
+            $permit = $user->hasPermission($actions[$uri]);
+            if (isset($actions[$uri]) && !$permit) {
+                //$reroute($actions[$uri], 'user');
                 exit;
             }
         }
