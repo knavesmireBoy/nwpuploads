@@ -1,6 +1,5 @@
-<section id=prompt>
-    <?php include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/includes/helpers.inc.php';
-
+<section id=prompt> 
+    <?php
     if (isset($clientlist)): ?>
         <form action="." method="post" name="clientform" class="prompt">
             <div><label for="employer">If existing client:</label>
@@ -22,7 +21,7 @@
             <input type="hidden" name="ownername" value="<?= $owner['name'] ?? ''; ?>" />
             <input type="hidden" name="multi" value="<?= $owner['multi'] ?? '' ?>" />
             <input type="hidden" name="domain" value="<?= $owner['domain'] ?? ''; ?>" />
-            <input type="hidden" name="editor" value="<?= $owner['editor'] ?? false; ?>" />
+            <input type="hidden" name="editor" value="<?= $owner['editor'] ?? ''; ?>" />
             <?php
             include '_confirm.html.php';
             ?>

@@ -27,7 +27,7 @@ class Uploader
 
     private function getCustomVars($key, $id = 0)
     {
-        $lib = ['delete' => ['fileid' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this file?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '']];
+         $lib = ['delete' => ['id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this file?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/uploader/confirm/'], 'confirm' => ['id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt'=> "Select the extent of deletions", 'delete' => 'proceed', 'ownerid' => $_POST['ownerid'], 'ownername' => $_POST['ownername'], 'domain' => $_POST['domain'], 'multi' => $_POST['multi'], 'editor' => $_POST['editor']]];
 
         if (isset($lib[$key])) {
             return $lib[$key];
@@ -212,5 +212,10 @@ class Uploader
     public function delete()
     {
         return $this->load('delete', $_POST['id']);
+    }
+
+    public function confirm() {
+
+        
     }
 }
