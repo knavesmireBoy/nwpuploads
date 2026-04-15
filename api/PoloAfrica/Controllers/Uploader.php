@@ -25,9 +25,9 @@ class Uploader
         return [$uploadfile, $uploadname, $filename, $realname];
     }
 
-    private function getCustomVars($key, $id = 0)
+    private function getCustomVars($key, $data)
     {
-         $lib = ['delete' => ['id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this file?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/uploader/confirm/'], 'confirm' => ['id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt'=> "Select the extent of deletions", 'delete' => 'proceed', 'ownerid' => $_POST['ownerid'], 'ownername' => $_POST['ownername'], 'domain' => $_POST['domain'], 'multi' => $_POST['multi'], 'editor' => $_POST['editor']]];
+        $lib = ['delete' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this file?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/uploader/confirm/'], 'confirm' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Select the extent of deletions", 'delete' => 'proceed', 'ownerid' => $_POST['ownerid'], 'ownername' => $data['ownername'] ?? '', 'domain' => $data['domain'] ?? '', 'multi' => $data['multi'] ?? '', 'editor' => $data['editor'] ?? '']];
 
         if (isset($lib[$key])) {
             return $lib[$key];
@@ -81,7 +81,7 @@ class Uploader
         }
     }
 
-    public function load(string $key = '', string $fileid = '')
+    public function load(string $key = '', array $data)
     {
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
@@ -91,9 +91,9 @@ class Uploader
         $owner = [];
         $all = $this->table->findAll();
         $cb = $this->validateFile($priv, $cid, $user->id);
-        $customVars = $this->getCustomVars($key, $fileid);
-        if($fileid){
-            $file = $this->table->find('id', $fileid)[0];
+        $customVars = $this->getCustomVars($key, $data);
+        if (isset($data['id'])) {
+            $file = $this->table->find('id', $data['id'])[0];
             $data = $file->getData($_SESSION['username']);
             $client = $this->usertable->find('client_id', $data['client_id'])[0];
             $owner = [...$data, ...$client->getDetails()];
@@ -101,7 +101,7 @@ class Uploader
             $owner = ['id' => $data['id'], 'name' => $data['name'],'domain' => $data['domain'], 'multi' => $data['multi'], 'editor' => $data['editor']];
             */
         }
-       
+
 
         /*
         if (isApproved($priv, 'ADMIN')) {
@@ -170,7 +170,7 @@ class Uploader
 
     public function upload(string $userid)
     {
-        return $this->load($userid, '', 'upload');
+        return $this->load('upload', []);
     }
 
     public function uploadSubmit()
@@ -211,11 +211,11 @@ class Uploader
 
     public function delete()
     {
-        return $this->load('delete', $_POST['id']);
+        return $this->load('delete', $_POST);
     }
 
-    public function confirm() {
-
-        
+    public function confirm()
+    {
+        return $this->load('confirm', $_POST);
     }
 }
