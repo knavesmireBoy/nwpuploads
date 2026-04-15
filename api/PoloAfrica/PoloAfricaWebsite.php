@@ -238,7 +238,7 @@ class PoloAfricaWebsite implements Website
         */
         $default = ['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'];
        //$default = ['Admin', 'Client Admin', 'Client', 'Manager', 'Browser'];
-        $actions = ['uploader/load' => $default, 'uploader/delete' => array_slice($default, 1), 'uploader/confirm' => array_slice($default, 1)];
+        $actions = ['uploader/load' => $default, 'uploader/delete' => array_slice($default, 1), 'uploader/confirm' => array_slice($default, 1), 'uploader/destroy' => array_slice($default, 1)];
 
         if (!$user) { //not logged in
             if ($this->baseAccess($uri) || isset($actions[$uri])) {
