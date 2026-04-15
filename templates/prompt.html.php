@@ -49,7 +49,7 @@
             $dl = $editor ? "delete file" : "delete file for <span>$n</span>";
         }
     ?>
-        <form action="." method="post" name="deletions" class="<?= $k; ?>">
+        <form action="<?= $action; ?>" method="post" name="deletions" class="<?= $k; ?>">
             <input type="radio" id="ext_nwf" name="extent" value="f" /><label for="ext_nwf"><?= $dl; ?></label>
             <?php if ($multi) { ?>
                 <input type="radio" id="ext_nwu" name="extent" value="u" /><label for="ext_nwu"><?= $dlu; ?></label>

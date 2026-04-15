@@ -225,6 +225,14 @@ class Uploader
 
     public function destroySubmit()
     {
+        /*
+        if (isset($lib[$_extent])) {
+            $nwpsql = $lib[$_extent];
+        } else {
+            header('Location: .');
+            exit();
+        }
+        */
         dump($_POST);
     }
 }
