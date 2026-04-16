@@ -262,38 +262,12 @@ class Uploader
 
     public function destroySubmit()
     {
-        $k = $_POST['extent'];
-        $file = $this->table->find('id', $_POST['id']);
-        $files = $this->table->find('userid', $_POST['ownerid']);
-
-        $user = $this->usertable->find('id', $_POST['ownerid'])[0];
-        $users = $this->usertable->find('client_id', $user->client_id);
-        $userids = array_map(fn($o) => $o->id, $users);
-        $cb = curry2('in_array')($userids);
-        $all = $this->table->findAll();
-        $files = [];
-
-        foreach ($all as $file) {
-            if ($cb($file->userid)) {
-                $files[] = $file;
-            }
-        }
 
 
-        /*
-        F
-        delete id from $_POST['id']
-        U
-        find userid in uploads
-        C
-        obtain list of userids and assoc fileIds
-
-        */
-        $files = [];
         $lib = ['f' => $this->table->find('id', $_POST['id']), 'u' => $this->table->find('userid', $_POST['ownerid']), 'c' => $this->getClientFiles($_POST['ownerid'])];
         if (isset($_POST['extent'])) {
+            $k = $_POST['extent'];
             $files = $lib[$k];
-            dump($files);
             foreach ($files as $file) {
                 $this->remove(FILESTORE . $file->file);
             }
