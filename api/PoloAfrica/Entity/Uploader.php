@@ -60,7 +60,7 @@ class Uploader extends Entity
             $client = $user->fetch('clienttable', 'id', $res['client_id']);
             $client = ['domain' => $client->domain, 'clientname' => $client->name];
             $tmp = $this->getClientFiles($this->userid, true);
-            $tmp = count($tmp) > $max ? 2 : 0;
+            $tmp = $tmp > $max ? 2 : 0;
             $max += $tmp;
         }
         $multi = ['multi' => $max];
