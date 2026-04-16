@@ -8,7 +8,28 @@ class Uploader
 {
     public function __construct(private DatabaseTable $table, private DatabaseTable $usertable) {}
 
+    private function remove($path)
+    {
+        if (file_exists($path)) {
+            unlink($path);
+        }
+    }
 
+    private function getClientFiles($ownerid)
+    {
+        $files = [];
+        $user = $this->usertable->find('id', $ownerid)[0];
+        $users = $this->usertable->find('client_id', $user->client_id);
+        $userids = array_map(fn($o) => $o->id, $users);
+        $cb = curry2('in_array')($userids);
+        $all = $this->table->findAll();
+        foreach ($all as $file) {
+            if ($cb($file->userid)) {
+                $files[] = $file;
+            }
+        }
+        return $files;
+    }
     private function getUploadedFile()
     {
         $uploaded = function ($arg) {
@@ -35,7 +56,7 @@ class Uploader
         return [];
     }
 
-    private function prepfiles($file, $user)
+    private function prepFileForDisplay($file, $user)
     {
         $details = $user->getDetails();
         $name = $details['name'];
@@ -124,7 +145,7 @@ class Uploader
             foreach ($all as $file) {
                 $user = $this->usertable->find('id', $file->userid)[0];
                 if($cb($user)){
-                    $files[] = $this->prepfiles($file, $user);
+                    $files[] = $this->prepFileForDisplay($file, $user);
                 }
                 
             }
@@ -134,13 +155,13 @@ class Uploader
             foreach ($all as $file) {
                 if (in_array($file->userid, $userids)) {
                     $user = $this->usertable->find('id', $file->userid)[0];
-                    $files[] = $this->prepfiles($file, $user);
+                    $files[] = $this->prepFileForDisplay($file, $user);
                 }
             }
         } else if(empty($files)){
             foreach ($all as $file) {
                 if ($file->userid == $userid) {
-                    $files[] = $this->prepfiles($file, $user);
+                    $files[] = $this->prepFileForDisplay($file, $user);
                 }
             }
         }
@@ -148,7 +169,7 @@ class Uploader
         foreach ($all as $file) {
             $user = $this->usertable->find('id', $file->userid)[0];
             if ($cb($file->userid)) {
-                $files[] = $this->prepfiles($file, $user);
+                $files[] = $this->prepFileForDisplay($file, $user);
             }
         }
         $total = count($files);
@@ -242,12 +263,10 @@ class Uploader
     public function destroySubmit()
     {
         $k = $_POST['extent'];
-
-        
         $file = $this->table->find('id', $_POST['id']);
         $files = $this->table->find('userid', $_POST['ownerid']);
 
-        $user = $this->usertable->find('id', $_POST['ownerid'])[0];        
+        $user = $this->usertable->find('id', $_POST['ownerid'])[0];
         $users = $this->usertable->find('client_id', $user->client_id);
         $userids = array_map(fn($o) => $o->id, $users);
         $cb = curry2('in_array')($userids);
@@ -270,11 +289,14 @@ class Uploader
         obtain list of userids and assoc fileIds
 
         */
-
+        $files = [];
+        $lib = ['f' => $this->table->find('id', $_POST['id']), 'u' => $this->table->find('userid', $_POST['ownerid']), 'c' => $this->getClientFiles($_POST['ownerid'])];
         if (isset($_POST['extent'])) {
-            $k = $_POST['extent'];
-            $file = $this->table->find('id', $_POST['id']);
-            dump($file);
+            $files = $lib[$k];
+            dump($files);
+            foreach ($files as $file) {
+                $this->remove(FILESTORE . $file->file);
+            }
         } else {
             header('Location: .');
             exit();
