@@ -52,7 +52,7 @@ class Uploader
     private function getCustomVars($key, $data)
     {
 
-        //if(!empty($data)) dump($data);
+        if(!empty($data)) dump($data);
         $lib = ['delete' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this file?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/uploader/confirm/'], 'confirm' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Select the extent of deletions", 'delete' => 'proceed', 'ownerid' => $data['ownerid'] ?? '', 'ownername' => $data['ownername'] ?? '', 'domain' => $data['domain'] ?? '', 'multi' => $data['multi'] ?? '', 'editor' => $data['editor'] ?? '', 'action' => '/uploader/destroy/']];
 
         if ($key && isset($lib[$key])) {
@@ -259,16 +259,18 @@ class Uploader
 
     public function destroySubmit()
     {
-
+        $userfiles = [];
+        $clientfiles = [];
         $ownerid = $_POST['ownerid'] ?? '';
-        dump([264,$_POST]);
-        dump($this->table->find('userid', $ownerid));
-        
-        $lib = ['f' => $this->table->find('id', $_POST['id']), 'u' => $this->table->find('userid', $ownerid), 'c' => $this->getClientFiles($ownerid)];
+        if ($ownerid) {
+            $userfiles = $this->table->find('userid', $ownerid);
+            $clientfiles = $this->getClientFiles($ownerid);
+        }
+
+        $lib = ['f' => $this->table->find('id', $_POST['id']), 'u' => $userfiles, 'c' => $clientfiles];
         $k = $_POST['extent'];
         if (isset($lib[$k])) {
             $files = $lib[$k];
-
             foreach ($files as $file) {
                 $this->table->delete('id', $file->id);
                 $this->remove(FILESTORE . $file->file);
