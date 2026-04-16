@@ -244,10 +244,10 @@ class PoloAfricaWebsite implements Website
 
         if (!$user) { //not logged in
             if ($this->baseAccess($uri) || isset($actions[$uri])) {
-                reLocate(REG . 'gebruiker');
+                reLocate(REG);
             }
         } else {
-            $permit = $user->hasPermission($actions[$uri]);
+            $permit = isset($actions[$uri]) && $user->hasPermission($actions[$uri]);
             if (isset($actions[$uri]) && !$permit) {
                 //$reroute($actions[$uri], 'user');
                 exit;
