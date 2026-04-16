@@ -51,9 +51,11 @@ class Uploader
 
     private function getCustomVars($key, $data)
     {
+        
+        dump($data);
         $lib = ['delete' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this file?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/uploader/confirm/'], 'confirm' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Select the extent of deletions", 'delete' => 'proceed', 'ownerid' => $data['ownerid'] ?? '', 'ownername' => $data['ownername'] ?? '', 'domain' => $data['domain'] ?? '', 'multi' => $data['multi'] ?? '', 'editor' => $data['editor'] ?? '', 'action' => '/uploader/destroy/']];
 
-        if (isset($lib[$key])) {
+        if ($key && isset($lib[$key])) {
             return $lib[$key];
         }
         return [];
@@ -105,22 +107,6 @@ class Uploader
         }
     }
 
-    private function validateFile2($fileid, $ownerid)
-    {
-        if ('f') {
-            //curry2('equals')($fileid);
-            $this->table->find('id', $fileid);
-        }
-        if ('u') {
-            curry2('equals')($ownerid);
-        }
-        if ('c') {
-            $users = $this->table->find('userid', $ownerid);
-            $userids = array_map(fn($o) => $o->id, $users);
-            return curry2('in_array')($userids);
-        }
-    }
-
     public function load(string $key = '', array $data = [])
     {
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
@@ -132,6 +118,8 @@ class Uploader
         $all = $this->table->findAll();
         $cb = $this->validateFile($priv, $cid, $user->id);
         $customVars = $this->getCustomVars($key, $data);
+
+       
         if (isset($data['id'])) {
             $file = $this->table->find('id', $data['id'])[0];
             $data = $file->getData($_SESSION['username']);
@@ -141,7 +129,6 @@ class Uploader
             $owner = ['id' => $data['id'], 'name' => $data['name'],'domain' => $data['domain'], 'multi' => $data['multi'], 'editor' => $data['editor']];
             */
         }
-
 
         /*
         if (isApproved($priv, 'ADMIN')) {

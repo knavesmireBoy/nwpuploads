@@ -39,7 +39,7 @@ class DatabaseTable
         $query = rtrim($query, ',');
         $query .= ')';
 
-        if(DBSYSTEM === 'postgres'){
+        if (DBSYSTEM === 'postgres') {
             $query = preg_replace('/`/', '', $query);
         }
         $stmt = $this->pdo->prepare($query);
@@ -77,7 +77,7 @@ class DatabaseTable
         $query .= ' WHERE `' . $this->primaryKey . '` = :pk';
         $values['pk'] = $values[$k];
 
-        if(DBSYSTEM === 'postgres'){
+        if (DBSYSTEM === 'postgres') {
             $query = preg_replace('/`/', '', $query);
         }
 
@@ -117,6 +117,11 @@ class DatabaseTable
         if ($offset > 0) {
             $query .= ' OFFSET ' . $offset;
         }
+
+        if (DBSYSTEM === 'postgres') {
+            $query = preg_replace('/`/', '', $query);
+        }
+
         $stmt = $this->pdo->prepare($query);
         $stmt->execute();
         if ($mode === \PDO::FETCH_CLASS) {
@@ -180,31 +185,31 @@ class DatabaseTable
 
     public function save(array $record, mixed $arg = null)
     {
-            $entity = new $this->className(...$this->constructorArgs);
-            //force insert
-            if ($arg && is_bool($arg)) {
-                return $this->insert($record);
-            }
-            if ($arg && is_numeric($arg)) {
-                return $this->updatejoin($record, $arg);
-            }
+        $entity = new $this->className(...$this->constructorArgs);
+        //force insert
+        if ($arg && is_bool($arg)) {
+            return $this->insert($record);
+        }
+        if ($arg && is_numeric($arg)) {
+            return $this->updatejoin($record, $arg);
+        }
 
-            if (empty($record[$this->primaryKey])) {
-                unset($record[$this->primaryKey]);
-                $insertId = $this->insert($record);
-                $entity->{$this->primaryKey} = $insertId;
-            } else {
-                $this->update($record);
-            }
-            foreach ($record as $key => $value) {
-                if (!empty($value)) {
-                    if ($value instanceof \DateTime) {
-                        $value = $value->format('Y-m-d H:i:s');
-                    }
-                    $entity->$key = $value;
+        if (empty($record[$this->primaryKey])) {
+            unset($record[$this->primaryKey]);
+            $insertId = $this->insert($record);
+            $entity->{$this->primaryKey} = $insertId;
+        } else {
+            $this->update($record);
+        }
+        foreach ($record as $key => $value) {
+            if (!empty($value)) {
+                if ($value instanceof \DateTime) {
+                    $value = $value->format('Y-m-d H:i:s');
                 }
+                $entity->$key = $value;
             }
-            return $entity;
+        }
+        return $entity;
     }
 
     public function getEntity()
