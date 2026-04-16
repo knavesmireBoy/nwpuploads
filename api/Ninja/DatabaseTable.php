@@ -95,7 +95,12 @@ class DatabaseTable
 
     public function delete($field, $v)
     {
-        $stmt = $this->pdo->prepare('DELETE FROM `' . $this->table . '` WHERE `' . $field . '` = :value');
+
+        $query = 'DELETE FROM `' . $this->table . '` WHERE `' . $field . '` = :value';
+        if (DBSYSTEM === 'postgres') {
+            $query = preg_replace('/`/', '', $query);
+        }
+        $stmt = $this->pdo->prepare($query);
 
         $values = [
             ':value' => $v
@@ -121,6 +126,8 @@ class DatabaseTable
         if (DBSYSTEM === 'postgres') {
             $query = preg_replace('/`/', '', $query);
         }
+
+
 
         $stmt = $this->pdo->prepare($query);
         $stmt->execute();

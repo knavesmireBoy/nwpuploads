@@ -51,7 +51,7 @@ class Uploader
 
     private function getCustomVars($key, $data)
     {
-        
+
         //if(!empty($data)) dump($data);
         $lib = ['delete' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this file?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/uploader/confirm/'], 'confirm' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Select the extent of deletions", 'delete' => 'proceed', 'ownerid' => $data['ownerid'] ?? '', 'ownername' => $data['ownername'] ?? '', 'domain' => $data['domain'] ?? '', 'multi' => $data['multi'] ?? '', 'editor' => $data['editor'] ?? '', 'action' => '/uploader/destroy/']];
 
@@ -107,7 +107,7 @@ class Uploader
         }
     }
 
-    public function load(string $key = '', array $data = [])
+    public function load(string $key = '', array $vars = [])
     {
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
@@ -117,14 +117,20 @@ class Uploader
         $owner = [];
         $all = $this->table->findAll();
         $cb = $this->validateFile($priv, $cid, $user->id);
-        $customVars = $this->getCustomVars($key, $data);
+        //$customVars: vars for prompts
+        $customVars = $this->getCustomVars($key, $vars);
 
-       
-        if (isset($data['id'])) {
-            $file = $this->table->find('id', $data['id'])[0];
-            $data = $file->getData($_SESSION['username']);
-            $client = $this->usertable->find('client_id', $data['client_id'])[0];
-            $owner = [...$data, ...$client->getDetails()];
+        if (isset($vars['id'])) {
+            $file = $this->table->find('id', $vars['id']);
+            $file = !empty($file) ? $file[0] : null;
+            if ($file) {
+                $data = $file->getData($_SESSION['username']);
+                $client = $this->usertable->find('client_id', $data['client_id']);
+                $client = !empty($client) ? $client[0] : null;
+                if ($client) {
+                    $owner = [...$data, ...$client->getDetails()];
+                }
+            }
             /*
             $owner = ['id' => $data['id'], 'name' => $data['name'],'domain' => $data['domain'], 'multi' => $data['multi'], 'editor' => $data['editor']];
             */
@@ -185,6 +191,7 @@ class Uploader
             'text' => $text,
             'suffix' => $suffix,
             'error' => '',
+            'myip' => '',
             'owner' => $owner
         ];
         $vars = array_merge($defaultVars, $customVars);
