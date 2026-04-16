@@ -53,14 +53,15 @@ class Uploader extends Entity
     {
         $res = $this->table->find('userid', $this->userid);
         $tmp = 0;
-        $max = count($res);
+        $max = count($res) > 1 ? 1 : 0;
         $res = $this->fetch('USERTABLE', 'id', $this->userid);
         if ($res['client_id']) {
             $user = $this->fetch('usertable', 'id', $this->userid);
             $client = $user->fetch('clienttable', 'id', $res['client_id']);
             $client = ['domain' => $client->domain, 'clientname' => $client->name];
             $tmp = $this->getClientFiles($this->userid, true);
-            $max .= $tmp;
+            $tmp = count($tmp) > $max ? 2 : 0;
+            $max += $tmp;
         }
         $multi = ['multi' => $max];
         $multi['editor'] = $res['email'] === $loggedin;

@@ -16,6 +16,7 @@ function doWhen($predicate, $action)
     };
 }
 
+
 function beautify($txt)
 {
     return ucwords(strtolower(str_replace('_', ' ', $txt)));

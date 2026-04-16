@@ -1,13 +1,14 @@
 <section id=prompt> 
     <?php
+    //$clientlist from admin not upload
     if (isset($clientlist)): ?>
         <form action="." method="post" name="clientform" class="prompt">
             <div><label for="employer">If existing client:</label>
                 <select name="employer" id="employer">
                     <option value="">Set email domain</option>
-                    <?php foreach ($clientlist as $i => $client): ?>
+                    <?php foreach ($clientlist as $i => $theclient): ?>
                         <option value="<?= $i; ?>">
-                            <?= $client; ?></option>
+                            <?= $theclient; ?></option>
                     <?php endforeach; ?>
                 </select>
                 <input type="submit" name="action" value="continue" />
@@ -31,22 +32,21 @@
 
     <?php if (isset($delete)):
         //We need to determine the logic of which messages to display
-
-        dump([9,$owner]);
+        
+        
         $domain = $owner['domain'] ?? '';
         $client_name = $owner['clientname'] ?? '';
         $multi = $owner['multi'] ?? null;
 
-        $lib = [ '10' => 'u', '01' => 'c', '11' => 'uc'];
 
-        dump($client_name);
-        if(intval($multi)){
-
-        }
+        $lib = [ '1' => 'u', '10' => 'c', '11' => 'uc'];
+        
 
         $n = $owner['name'] ?? null;
-        $c = $client[$domain] ?? null;
+        $c = $client[$owner['id']] ?? null;
         $k = 'prompt';
+
+        dump([$c, $multi, $multi && 3, $multi % 2]);
         if ($c || $multi) {
             $k .= ' span';
         }
