@@ -35,11 +35,14 @@ class Uploader extends Entity
     {
         $res = $this->table->find('userid', $this->userid);
         $multi = ['multi' => count($res) > 1];
-        $user = $this->fetch('USERTABLE', 'id', $this->userid);
+        $res = $this->fetch('USERTABLE', 'id', $this->userid);
         
-        if($user['client_id']){
+        if($res['client_id']){
+            $user = $this->fetch('usertable', 'id', $this->userid);
             $client = $user->fetch('CLIENTTABLE', 'id', 'client_id');
             unset($client['id']);
+            unset($client['name']);
+            unset($client['tel']);
         }
         $multi['editor'] = $res['email'] === $loggedin;
         return [...$res, ...$client, ...$multi];
