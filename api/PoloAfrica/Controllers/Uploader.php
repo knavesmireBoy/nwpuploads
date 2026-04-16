@@ -81,16 +81,17 @@ class Uploader
         }
     }
 
-    private function validateFile2($priv, $cid, $userid)
+    private function validateFile2($fileid, $ownerid)
     {
         if ('f') {
-            curry2('equals')('fileid');
+            //curry2('equals')($fileid);
+            $this->table->find('id', $fileid);
         }
-        if('u'){
-            curry2('equals')('userid');
+        if ('u') {
+            curry2('equals')($ownerid);
         }
-        if('c'){
-            $users = $this->usertable->find('client_id', $cid);
+        if ('c') {
+            $users = $this->table->find('userid', $ownerid);
             $userids = array_map(fn($o) => $o->id, $users);
             return curry2('in_array')($userids);
         }
@@ -240,8 +241,24 @@ class Uploader
 
     public function destroySubmit()
     {
-        
+        $k = $_POST['extent'];
 
+        
+        $file = $this->table->find('id', $_POST['id']);
+        $files = $this->table->find('userid', $_POST['ownerid']);
+
+        $user = $this->usertable->find('id', $_POST['ownerid'])[0];        
+        $users = $this->usertable->find('client_id', $user->client_id);
+        $userids = array_map(fn($o) => $o->id, $users);
+        $cb = curry2('in_array')($userids);
+        $all = $this->table->findAll();
+        $files = [];
+
+        foreach ($all as $file) {
+            if ($cb($file->userid)) {
+                $files[] = $file;
+            }
+        }
 
 
         /*
@@ -253,10 +270,11 @@ class Uploader
         obtain list of userids and assoc fileIds
 
         */
-        
-        if (isset($_POST['extent'])) {
-           $k = $_POST['extent'];
 
+        if (isset($_POST['extent'])) {
+            $k = $_POST['extent'];
+            $file = $this->table->find('id', $_POST['id']);
+            dump($file);
         } else {
             header('Location: .');
             exit();
