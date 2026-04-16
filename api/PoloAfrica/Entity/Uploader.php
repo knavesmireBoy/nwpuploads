@@ -58,7 +58,7 @@ class Uploader extends Entity
         if ($res['client_id']) {
             $user = $this->fetch('usertable', 'id', $this->userid);
             $client = $user->fetch('clienttable', 'id', $res['client_id']);
-            $client = ['domain' => $client->domain];
+            $client = ['dom' => $client->id];
             $tmp = $this->getClientFiles($this->userid, true);
             if($this->getClientFiles($this->userid, true) > 1){
                 $tmp = '1';

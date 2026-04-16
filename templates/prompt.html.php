@@ -20,7 +20,7 @@
             <input type="hidden" name="ownerid" value="<?= $owner['id'] ?? $id; ?>" />
             <input type="hidden" name="ownername" value="<?= $owner['name'] ?? ''; ?>" />
             <input type="hidden" name="multi" value="<?= $owner['multi'] ?? '' ?>" />
-            <input type="hidden" name="domain" value="<?= $owner['domain'] ?? ''; ?>" />
+            <input type="hidden" name="domain" value="<?= $owner['dom'] ?? ''; ?>" />
             <input type="hidden" name="editor" value="<?= $owner['editor'] ?? ''; ?>" />
             <?php
             include '_confirm.html.php';
@@ -30,8 +30,16 @@
 
     <?php if (isset($delete)):
         //We need to determine the logic of which messages to display
-        $domain = $domain ?? $owner['domain'] ?? '';
-        $multi = $multi ?? $owner['multi'] ?? null;
+        $domain = $domain ?? $owner['dom'] ?? '';
+        $multi = $owner['multi'] ?? null;
+
+        $lib = [ '10' => 'u', '01' => 'c', '11' => 'uc'];
+
+        dump($client, $domain);
+        if(intval($multi)){
+
+        }
+
         $n = $owner['name'] ?? null;
         $c = $client[$domain] ?? null;
         $k = 'prompt';
