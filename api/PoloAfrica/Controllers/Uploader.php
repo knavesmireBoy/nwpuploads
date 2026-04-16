@@ -260,7 +260,11 @@ class Uploader
     public function destroySubmit()
     {
 
-        $lib = ['f' => $this->table->find('id', $_POST['id']), 'u' => $this->table->find('userid', $_POST['ownerid']), 'c' => $this->getClientFiles($_POST['ownerid'])];
+        $ownerid = $_POST['ownerid'] ?? 0;
+
+        dump($this->table->find('userid', $ownerid));
+        
+        $lib = ['f' => $this->table->find('id', $_POST['id']), 'u' => $this->table->find('userid', $ownerid), 'c' => $this->getClientFiles($ownerid)];
         $k = $_POST['extent'];
         if (isset($lib[$k])) {
             $files = $lib[$k];
@@ -273,6 +277,5 @@ class Uploader
             header('Location: .');
             exit();
         }
-        dump($_POST);
     }
 }
