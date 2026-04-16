@@ -40,7 +40,6 @@ class Uploader extends Entity
         $res = $this->table->find('userid', $this->userid);
         $multi = count($res) > 1;
         $res = $this->fetch('usertable', 'id', $this->userid);
-        dump([$multi, $res]);
         if (!empty($res)) {
             if ($prop) {
                 return $this->{$prop};
