@@ -34,16 +34,16 @@ class Uploader extends Entity
     public function getData($loggedin)
     {
         $res = $this->table->find('userid', $this->userid);
-        $multi = ['multi' => count($res) > 1];
+        $max = count($res);
         $res = $this->fetch('USERTABLE', 'id', $this->userid);
-        
-        if($res['client_id']){
+        if ($res['client_id']) {
             $user = $this->fetch('usertable', 'id', $this->userid);
-            $client = $user->fetch('CLIENTTABLE', 'id', $res['client_id']);
-            unset($client['id']);
-            unset($client['name']);
-            unset($client['tel']);
+            $client = $user->fetch('clienttable', 'id', $res['client_id']);
+            $users = $this->fetch('USERTABLE', 'client_id', $client->id);
+            $max = max($max, count($users));
+            $client = ['domain' => $client->domain];
         }
+        $multi = ['multi' => count($max) > 1];
         $multi['editor'] = $res['email'] === $loggedin;
         return [...$res, ...$client, ...$multi];
     }
