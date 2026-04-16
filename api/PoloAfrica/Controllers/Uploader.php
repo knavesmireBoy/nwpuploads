@@ -260,7 +260,7 @@ class Uploader
     public function destroySubmit()
     {
 
-        $ownerid = $_POST['ownerid'] ?? 0;
+        $ownerid = $_POST['ownerid'] ?? '';
 
         dump($this->table->find('userid', $ownerid));
         
