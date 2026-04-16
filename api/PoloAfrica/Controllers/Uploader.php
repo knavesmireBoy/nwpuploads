@@ -19,6 +19,9 @@ class Uploader
     {
         $files = [];
         $user = $this->usertable->find('id', $ownerid)[0];
+        if (!$user->client_id) {
+            return $files;
+        }
         $users = $this->usertable->find('client_id', $user->client_id);
         $userids = array_map(fn($o) => $o->id, $users);
         $cb = curry2('in_array')($userids);
@@ -263,12 +266,13 @@ class Uploader
     public function destroySubmit()
     {
 
-
         $lib = ['f' => $this->table->find('id', $_POST['id']), 'u' => $this->table->find('userid', $_POST['ownerid']), 'c' => $this->getClientFiles($_POST['ownerid'])];
-        if (isset($_POST['extent'])) {
-            $k = $_POST['extent'];
+        $k = $_POST['extent'];
+        if (isset($lib[$k])) {
             $files = $lib[$k];
+
             foreach ($files as $file) {
+                $this->table->delete('id', $file->id);
                 $this->remove(FILESTORE . $file->file);
             }
         } else {
