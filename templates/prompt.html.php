@@ -46,7 +46,7 @@
         $c = $client[$owner['id']] ?? null;
         $k = 'prompt';
 
-        dump([$c, $multi, $multi && 3, $multi % 2]);
+        dump([$multi && 1, $multi % 2]);
         if ($c || $multi) {
             $k .= ' span';
         }
