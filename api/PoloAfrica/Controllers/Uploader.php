@@ -261,7 +261,7 @@ class Uploader
     {
 
         $ownerid = $_POST['ownerid'] ?? '';
-
+        dump([264,$_POST]);
         dump($this->table->find('userid', $ownerid));
         
         $lib = ['f' => $this->table->find('id', $_POST['id']), 'u' => $this->table->find('userid', $ownerid), 'c' => $this->getClientFiles($ownerid)];
