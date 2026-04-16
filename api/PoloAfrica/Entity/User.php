@@ -2,7 +2,7 @@
 
 namespace PoloAfrica\Entity;
 
-class User
+class User extends Entity
 {
   const BROWSER = 1; // 00000001
   const CONTENT_EDITOR = 2; // 00000010
@@ -29,20 +29,6 @@ class User
     $this->userroletable = $userrole;
     $this->roletable = $role;
     $this->clienttable = $client;
-  }
-
-  protected function fetch($t, $prop, $val, ...$rest)
-  {
-    $ret = [];
-    if ($val) { //safeguard against missing values
-      if (strtoupper($t) === $t) {
-        $t = strtolower($t);
-        $ret = $this->{$t}->find($prop, $val, null, 0, 0, \PDO::FETCH_ASSOC);
-      } else {
-        $ret = $this->{$t}->find($prop, $val, ...$rest);
-      }
-    }
-    return empty($ret) ? null : $ret[0];
   }
 
   public function hasPermission($allowed)
@@ -80,7 +66,7 @@ class User
       if ($this->client_id) {
         $client = $this->fetch('clienttable', ' id', $this->client_id);
       }
-      return ['id' => $this->id, 'name' => $this->name, 'email' => $this->email, 'role' => $role, 'client' => $client->name ?? '', 'tel' => $client->tel ?? '', 'domain' => $client->domain ?? '', 'client_id' => $this->client_id];
+      return ['id' => $this->id, 'name' => $this->name, 'email' => $this->email, 'role' => $role,  'client_id' => $this->client_id, 'client' => $client->name ?? '', 'tel' => $client->tel ?? '', 'domain' => $client->domain ?? ''];
     }
     return null;
   }
