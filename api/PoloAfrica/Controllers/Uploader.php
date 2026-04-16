@@ -132,37 +132,8 @@ class Uploader
                 }
                 $owner = $data;
             }
-            /*
-            $owner = ['id' => $data['id'], 'name' => $data['name'],'domain' => $data['domain'], 'multi' => $data['multi'], 'editor' => $data['editor']];
-            */
         }
 
-        /*
-        if (isApproved($priv, 'ADMIN')) {
-            foreach ($all as $file) {
-                $user = $this->usertable->find('id', $file->userid)[0];
-                if($cb($user)){
-                    $files[] = $this->prepFileForDisplay($file, $user);
-                }
-                
-            }
-        } else if ($cid) {
-            $users = $this->usertable->find('client_id', $cid);
-            $userids = array_map(fn($o) => $o->id, $users);
-            foreach ($all as $file) {
-                if (in_array($file->userid, $userids)) {
-                    $user = $this->usertable->find('id', $file->userid)[0];
-                    $files[] = $this->prepFileForDisplay($file, $user);
-                }
-            }
-        } else if(empty($files)){
-            foreach ($all as $file) {
-                if ($file->userid == $userid) {
-                    $files[] = $this->prepFileForDisplay($file, $user);
-                }
-            }
-        }
-*/
         foreach ($all as $file) {
             $user = $this->usertable->find('id', $file->userid)[0];
             if ($cb($file->userid)) {
