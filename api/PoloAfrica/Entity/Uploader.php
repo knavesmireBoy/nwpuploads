@@ -59,9 +59,7 @@ class Uploader extends Entity
             $user = $this->fetch('usertable', 'id', $this->userid);
             $client = $user->fetch('clienttable', 'id', $res['client_id']);
             $client = ['domain' => $client->domain];
-            $max = $this->getClientFiles($this->userid, true);
-            dump($max);
-            $max = max($max, count($users));
+            $max = max($max, $this->getClientFiles($this->userid, true));
         }
         $multi = ['multi' => $max > 1];
         $multi['editor'] = $res['email'] === $loggedin;
