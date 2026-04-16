@@ -35,7 +35,7 @@
 
         $lib = [ '10' => 'u', '01' => 'c', '11' => 'uc'];
 
-        dump($client, $domain);
+        dump([$users, $client, $domain]);
         if(intval($multi)){
 
         }
