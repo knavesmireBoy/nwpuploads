@@ -39,7 +39,7 @@ class Uploader extends Entity
         
         if($res['client_id']){
             $user = $this->fetch('usertable', 'id', $this->userid);
-            $client = $user->fetch('CLIENTTABLE', 'id', 'client_id');
+            $client = $user->fetch('CLIENTTABLE', 'id', $res['client_id']);
             unset($client['id']);
             unset($client['name']);
             unset($client['tel']);
