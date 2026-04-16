@@ -40,6 +40,7 @@ class Uploader extends Entity
             $user = $this->fetch('usertable', 'id', $this->userid);
             $client = $user->fetch('clienttable', 'id', $res['client_id']);
             $users = $this->fetch('USERTABLE', 'client_id', $client->id);
+            dump([$max, count($users)]);
             $max = max($max, count($users));
             $client = ['domain' => $client->domain];
         }
