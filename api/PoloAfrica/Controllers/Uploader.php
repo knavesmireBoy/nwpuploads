@@ -125,6 +125,7 @@ class Uploader
             $file = !empty($file) ? $file[0] : null;
             if ($file) {
                 $data = $file->getData($_SESSION['username']);
+                dump([128, $data]);
                 $client = $this->usertable->find('client_id', $data['client_id']);
                 $client = !empty($client) ? $client[0] : null;
                 if ($client) {
