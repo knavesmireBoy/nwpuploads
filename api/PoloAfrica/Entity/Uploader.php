@@ -16,6 +16,25 @@ class Uploader extends Entity
 
     public function __construct(protected \Ninja\DatabaseTable $table, protected \Ninja\DatabaseTable $usertable) {}
 
+
+    private function getClientFiles($ownerid, $flag = false)
+    {
+        $user = $this->usertable->find('id', $ownerid)[0];
+        $files = [];
+        if ($user) {
+            $users = $this->usertable->find('client_id', $user->client_id);
+            $userids = array_map(fn($o) => $o->id, $users);
+            $cb = curry2('in_array')($userids);
+            $all = $this->table->findAll();
+            foreach ($all as $file) {
+                if ($cb($file->userid)) {
+                    $files[] = $file;
+                }
+            }
+        }
+        return $flag ? count($files) : $files;
+    }
+
     public function getDetails($prop = '')
     {
         $res = $this->table->find('userid', $this->userid);
@@ -39,10 +58,10 @@ class Uploader extends Entity
         if ($res['client_id']) {
             $user = $this->fetch('usertable', 'id', $this->userid);
             $client = $user->fetch('clienttable', 'id', $res['client_id']);
-            $users = $user->fetch('TABLE', 'client_id', $client->id);
-            dump([$max, count($users)]);
-            $max = max($max, count($users));
             $client = ['domain' => $client->domain];
+            $max = $this->getClientFiles($this->userid, true);
+            dump($max);
+            $max = max($max, count($users));
         }
         $multi = ['multi' => $max > 1];
         $multi['editor'] = $res['email'] === $loggedin;
