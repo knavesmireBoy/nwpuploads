@@ -52,7 +52,7 @@ class Uploader
     private function getCustomVars($key, $data)
     {
 
-       // if($key === 'confirm') dump($data);
+        if($key === 'confirm') dump($data);
         $lib = ['delete' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this file?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/uploader/confirm/'], 'confirm' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Select the extent of deletions", 'delete' => 'proceed', 'ownerid' => $data['ownerid'] ?? '', 'ownername' => $data['ownername'] ?? '', 'domain' => $data['domain'] ?? '', 'multi' => $data['multi'] ?? '', 'editor' => $data['editor'] ?? '', 'action' => '/uploader/destroy/'], 'upload' => ['template' => 'upload.html.php']];
 
         if ($key && isset($lib[$key])) {
@@ -240,7 +240,7 @@ class Uploader
         }
 
         $lib = ['f' => $this->table->find('id', $_POST['id']), 'u' => $userfiles, 'c' => $clientfiles];
-        $k = $_POST['extent'];
+        $k = $_POST['extent'] ?? '';
         if (isset($lib[$k])) {
             $files = $lib[$k];
             foreach ($files as $file) {
