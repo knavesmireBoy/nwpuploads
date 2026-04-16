@@ -43,7 +43,7 @@ class Uploader extends Entity
             $max = max($max, count($users));
             $client = ['domain' => $client->domain];
         }
-        $multi = ['multi' => count($max) > 1];
+        $multi = ['multi' => $max > 1];
         $multi['editor'] = $res['email'] === $loggedin;
         return [...$res, ...$client, ...$multi];
     }
