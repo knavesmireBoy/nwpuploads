@@ -114,6 +114,7 @@ class Uploader
             include TEMPLATE . 'error.html.php';
             exit();
         }
+        dump($file);
         $filename = $file['filename'];
         $mimetype = $file['mimetype'];
         $filepath = $file['filepath'];
