@@ -297,7 +297,6 @@ class Uploader
         }
         $payload = ['users' => $all, 'swap' => 'No', 'answer' => 'No', 'button' => 'Update', 'filename' => $file->filename, 'description' => $file->description];
 
-        dump($payload);
         return $this->load('update', [...$_POST, ...$payload]);
     }
     public function updateSubmit(){
