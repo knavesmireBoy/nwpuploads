@@ -114,6 +114,8 @@ class Uploader
     {
 
         $disposition = $id ? 'inline' : 'attachment';
+
+        dump([$id, $_POST]);
         $id = $id ?? $_POST['id'];
         $file = $this->table->find('id', $id);
         $file = $file[0] ?? null;
