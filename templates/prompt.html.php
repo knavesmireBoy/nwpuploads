@@ -60,7 +60,7 @@
             $dlf .= " only";
             $dlu = $editor ? "delete all your files" : $dlu;
         } else {
-            $dl = $editor ? "delete this file" : "delete file for <span>$n</span>";
+            $dlf = $editor ? "delete this file" : "delete file for <span>$n</span>";
         }
     ?>
         <form action="<?= $action; ?>" method="post" name="deletions" class="<?= $klas; ?>">
