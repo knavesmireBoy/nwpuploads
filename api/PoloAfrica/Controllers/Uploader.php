@@ -60,9 +60,16 @@ class Uploader
     private function getCustomVars($key, $data)
     {
         //if($key === 'confirm') dump($data);
-        $lib = ['delete' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this file?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/uploader/confirm/'], 'confirm' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Select the extent of deletions", 'delete' => 'proceed', 'ownerid' => $data['ownerid'] ?? '', 'ownername' => $data['ownername'] ?? '', 'domain' => $data['domain'] ?? '', 'multi' => $data['multi'] ?? '', 'editor' => $data['editor'] ?? '', 'clientname' => $data['clientname'] ?? '', 'action' => '/uploader/destroy/'], 'upload' => ['template' => 'upload.html.php']];
+        $ret = [];
+        $owner = ['ownerid' => $data['ownerid'] ?? '', 'ownername' => $data['ownername'] ?? '', 'domain' => $data['domain'] ?? '', 'multi' => $data['multi'] ?? '', 'editor' => $data['editor'] ?? '', 'clientname' => $data['clientname'] ?? ''];
+
+        $lib = ['delete' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this file?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/uploader/confirm/'], 'confirm' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Select the extent of deletions", 'delete' => 'proceed',  'action' => '/uploader/destroy/'], 'upload' => ['template' => 'upload.html.php'], 'edit' => ['id' => $data['id'] ?? '', 'pos' => 'Yes', 'neg' => 'No', 'call' => 'update', 'prompt' => !empty($data['multi']) ? "Change ownership on ALL files?" : "Proceed to Update", 'template' => 'prompt.html.php']];
+
         if ($key && isset($lib[$key])) {
-            return $lib[$key];
+            $ret = $lib[$key];
+        }
+        if ($key !== 'delete') {
+            return [...$ret, ...$owner];
         }
         return [];
     }
@@ -115,7 +122,6 @@ class Uploader
 
     public function read($id = '')
     {
-
         $disposition = $id ? 'inline' : 'attachment';
         $id = $id ? $id : (isset($_POST['id']) ? $_POST['id'] : null);
         $file = $this->table->find('id', $id);
@@ -268,6 +274,11 @@ class Uploader
         return $this->load('upload', []);
     }
 
+    public function update(string $userid)
+    {
+        dump(99);
+    }
+
     public function uploadSubmit()
     {
         list($uploadfile, $uploadname, $filename, $realname) = $this->getUploadedFile();
@@ -313,10 +324,10 @@ class Uploader
 
     public function confirm()
     {
-        if (isset($_POST['confirm']) &&  $_POST['confirm'] === 'Yes') {
+        if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
             return $this->load('confirm', $_POST);
         } else {
-            reLocate("/uploader/load/");
+            return $this->load('edit', $_POST);
         }
     }
 

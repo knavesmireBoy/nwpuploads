@@ -40,7 +40,6 @@
         themselves doesn't have multiple files associated with it
         3 means that the current user has multiple files in addition to files owned by colleagues
         */
-
         $name = $name ?? 'this user';
         $domain = $owner['domain'] ?? '';
         $multi = $owner['multi'] ?? null;
