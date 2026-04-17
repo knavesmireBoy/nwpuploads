@@ -141,7 +141,6 @@ class Uploader
     public function load(string $key = '', array $vars = [])
     {
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
-        $k = $user->id;
         $details = $user->getDetails();
         $priv = $details['role'];
         $cid = $details['client_id'];
@@ -201,10 +200,9 @@ class Uploader
             'error' => '',
             'myip' => '',
             'owner' => $owner,
-            'key' => $k
+            'key' => $user->id
         ];
         $vars = array_merge($defaultVars, $customVars);
-        dump($vars);
         return [
             'template' => 'files.html.php',
             'title' => 'File Uploads',
