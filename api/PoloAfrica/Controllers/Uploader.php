@@ -108,7 +108,8 @@ class Uploader
     public function read($id = null) {
 
         $disposition = $id ? 'inline' : 'attachment';
-        $id = $id ?? $_POST['id'];
+       // $id = $id ?? $_POST['id'];
+        dump($id, $_POST);
         $file = $this->table->find('id', $id);
         $file = $file[0] ?? null;
         if (!$file) {
