@@ -44,7 +44,7 @@
         $name = $name ?? 'this user';
         $domain = $owner['domain'] ?? '';
         $multi = $owner['multi'] ?? null;
-        $clientname = $owner['clientname'] && ($multi & 2) ? $owner['clientname'] : '';
+        $clientname = isset($owner['clientname']) && ($multi & 2) ? $owner['clientname'] : '';
         $name = $owner['name'] ?? null;
         $klas = 'prompt';
         if ($clientname || $multi) {
