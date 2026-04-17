@@ -114,11 +114,11 @@ class Uploader
             include TEMPLATE . 'error.html.php';
             exit();
         }
-        $filename = $file['filename'];
-        $mimetype = $file['mimetype'];
-        $filepath = $file['filepath'];
-        $uploadfile = $file['file'];
-        $size = $file['size'];
+        $filename = $file->filename;
+        $mimetype = $file->mimetype;
+        $filepath = $file->filepath;
+        $uploadfile = $file->file;
+        $size = $file->size;
         $filepath .= $uploadfile;
         if (!file_exists($filepath)) {
             reLocate(BBC);

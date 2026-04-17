@@ -51,7 +51,7 @@
             $klas .= ' span';
         }
         $dlf = "delete this file";
-        $dlu = "delete all files for <span>$n</span>";
+        $dlu = "delete all files for <span>$name</span>";
         $dlc = "delete all files for <span>$clientname</span>";
 
         if ($multi) {
