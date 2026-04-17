@@ -16,8 +16,10 @@ class Uploader
     }
 
     private function getErrors($key)
+
     {
-        return '';
+        $lib = ['missing' => 'File could not be found'];
+        return $lib[$key] ?? '';
     }
 
     private function getClientFiles($ownerid)
@@ -114,7 +116,7 @@ class Uploader
     {
 
         $disposition = $id ? 'inline' : 'attachment';
-        $id = $id ? $id : $_POST['id'];
+        $id = $id ? $id : (isset($_POST['id']) ? $_POST['id'] : null);
         $file = $this->table->find('id', $id);
         $file = $file[0] ?? null;
         if (!$file) {
@@ -129,7 +131,7 @@ class Uploader
         $size = $file->size;
         $filepath .= $uploadfile;
         if (!file_exists($filepath)) {
-            reLocate('/uploader/load/');
+            reLocate('/uploader/load/missing');
             // reLocate(BBC);
         }
         $filedata = file_get_contents($filepath);
