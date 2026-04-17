@@ -31,8 +31,15 @@
     <?php endif;  ?>
 
     <?php if (isset($delete)):
-        //We need to determine the logic of which messages to display
-
+        /*
+        We need to determine the logic of which messages to display
+        $multi is one of 0 1 2 3; we can use the & bitwise operator
+        to determine the message(s) to display 
+        1 means that ONE user/client has more than one file
+        2 means that a client has multiple files but the current user (ie the owner of the file you clicked the trash can on)
+        themselves doesn't have multiple files associated with it
+        3 means that the current user has multiple files in addition to files owned by colleagues
+        */
 
         $domain = $owner['domain'] ?? '';
         $clientname = $owner['clientname'] && ($multi & 2) ? $owner['clientname'] : '';
@@ -45,10 +52,9 @@
             $klas .= ' span';
         }
         $n = $n ?? 'this user';
-
         $dlf = "delete this file";
         $dlu = "delete all files for <span>$n</span>";
-        $dlc = "delete all files for <span>$c</span>";
+        $dlc = "delete all files for <span>$clientname</span>";
 
         if ($multi) {
             $dlf .= " only";
