@@ -98,7 +98,6 @@ if (count($files) > 0): ?>
                 $id = $f['id'];
                 $a = [$description];
                 $b = array_map('html', $a);
-
                 ?>
                 <td><a title="<?= $fsize; ?>" href="/uploader/read/<?= $id; ?>">
                         <?= $f['filename']; ?></a></td>
@@ -116,7 +115,7 @@ if (count($files) > 0): ?>
                     //$d = "j-n-Y";
                     echo date("j-n-Y", strtotime($f["time"])); ?></td>
                 <td title="download">
-                    <form action="." method="get" name="downloads">
+                    <form action="/uploader/read/" method="get" name="downloads">
                         <div><input type="hidden" name="action" value="download" />
                             <input type="hidden" name="id" value="<?= $id; ?>" />
                             <input type="submit" value="Download" />

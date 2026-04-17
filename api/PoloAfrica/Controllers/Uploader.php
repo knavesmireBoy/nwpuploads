@@ -105,8 +105,11 @@ class Uploader
         }
     }
 
-    public function read($id) {
+    public function read($id = null) {
 
+        
+        $disposition = $id ? 'inline' : 'attachment';
+        $id = $id ?? $_POST['id'];
         $file = $this->table->find('id', $id);
         $file = $file[0] ?? null;
         if (!$file) {
@@ -125,7 +128,6 @@ class Uploader
         }
         $filedata = file_get_contents($filepath);
        // $disposition = $_GET['action'] == 'download' ? 'attachment' : 'inline';
-        $disposition = 'inline';
         //$mimetype = 'application/x-unknown'; application/octet-stream
         //Content-type must come before Content-disposition
         header("Content-type: $mimetype");
@@ -140,6 +142,7 @@ class Uploader
     public function load(string $key = '', array $vars = [])
     {
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
+        $key = $user->id;
         $details = $user->getDetails();
         $priv = $details['role'];
         $cid = $details['client_id'];
@@ -167,21 +170,22 @@ class Uploader
      //   if (!empty($owner)) dump($owner);
 
         foreach ($all as $file) {
-            $user = $this->usertable->find('id', $file->userid)[0];
+            $o = $this->usertable->find('id', $file->userid)[0];
             if ($cb($file->userid)) {
-                $files[] = $this->prepFileForDisplay($file, $user);
+                $files[] = $this->prepFileForDisplay($file, $o);
             }
         }
         $total = count($files);
         $pages = $this->setPages($total);
         list($users, $clients) = $this->presentList($priv);
+        //vars used by search/pagination
         $text = '';
         $suffix = '';
+        $user_id = '';
         $error = '';
         $defaultVars = [
             'files' => $files,
             'priv' => $priv,
-            'user_id' => $user->id,
             'pages' => $pages,
             'uhead' => '',
             'error' => '',
@@ -192,11 +196,13 @@ class Uploader
             'users' => $users,
             'clients' => $clients,
             'predicates' => [partial('preg_match', '/^nwp/')],
+            'user_id' => $user_id,
             'text' => $text,
             'suffix' => $suffix,
             'error' => '',
             'myip' => '',
-            'owner' => $owner
+            'owner' => $owner,
+            'key' => $key
         ];
         $vars = array_merge($defaultVars, $customVars);
         return [
