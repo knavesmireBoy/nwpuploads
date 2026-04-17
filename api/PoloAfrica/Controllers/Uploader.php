@@ -277,17 +277,19 @@ class Uploader
 
     public function update()
     {
+        
+        dump($_POST);
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
         $priv = $details['role'];
-        $all_users = [];
+        $all = [];
         if ($priv === 'Admin') {
             $users = $this->usertable->findAll();
             foreach ($users as $u) {
-                $all_users[$u->id] = $u->name;
+                $all[$u->id] = $u->name;
             }
         }
-        dump($all_users);
+        return $this->load('update', ['all_users' => $all, 'swap' => 'No']);
     }
 
     public function uploadSubmit()
@@ -300,7 +302,6 @@ class Uploader
             include TEMPLATE . 'error.html.php';
             exit();
         } else {
-
             $userid = !empty($_POST['user']) ? $_POST['user'] : $_POST['key'];
             $description = isset($_POST['desc']) ? $_POST['desc'] : '';
             $dofile = function ($arg) {
