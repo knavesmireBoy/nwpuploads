@@ -1,4 +1,4 @@
-<section id=prompt> 
+<section id=prompt>
     <?php
     //$clientlist from admin not upload
     if (isset($clientlist)): ?>
@@ -15,7 +15,7 @@
             </div>
         </form>
     <?php elseif (!isset($clientlist) && !isset($delete)):
-    //confirm used by several controllers
+        //confirm used by several controllers
     ?>
         <form action="<?= $action; ?>" method="post" name="choice" class="prompt" id="yesno">
             <input type="hidden" name="ownerid" value="<?= $owner['id'] ?? $id; ?>" />
@@ -32,46 +32,38 @@
 
     <?php if (isset($delete)):
         //We need to determine the logic of which messages to display
-        
-        
+
+
         $domain = $owner['domain'] ?? '';
-        $client_name = $owner['clientname'] ?? '';
+        $clientname = $owner['clientname'] && ($multi & 2) ? $owner['clientname'] : '';
         $multi = $owner['multi'] ?? null;
-
-
-        $lib = [ '1' => 'u', '10' => 'c', '11' => 'uc'];
-        
-
         $n = $owner['name'] ?? null;
-        $c = isset($client[$owner['id']]) ? $client_name : '';
-        $k = 'prompt';
+        //  $c = isset($client[$owner['id']]) ? $client_name : '';
+        $klas = 'prompt';
 
-        if($multi){
-            
+        if ($clientname || $multi) {
+            $klas .= ' span';
         }
-
-        dump([$c, $client, $multi & 1, $multi & 2]);
-        if ($c || $multi) {
-            $k .= ' span';
-        }
-        $c = $c ? $c : 'this client';
         $n = $n ?? 'this user';
-        $dl = "delete file";
+
+        $dlf = "delete this file";
         $dlu = "delete all files for <span>$n</span>";
+        $dlc = "delete all files for <span>$c</span>";
+
         if ($multi) {
-            $dl = "delete this file only";
+            $dlf .= " only";
             $dlu = $editor ? "delete all your files" : $dlu;
         } else {
-            $dl = $editor ? "delete file" : "delete file for <span>$n</span>";
+            $dl = $editor ? "delete this file" : "delete file for <span>$n</span>";
         }
     ?>
-        <form action="<?= $action; ?>" method="post" name="deletions" class="<?= $k; ?>">
-            <input type="radio" id="ext_nwf" name="extent" value="f" /><label for="ext_nwf"><?= $dl; ?></label>
-            <?php if ($multi) { ?>
+        <form action="<?= $action; ?>" method="post" name="deletions" class="<?= $klas; ?>">
+            <input type="radio" id="ext_nwf" name="extent" value="f" /><label for="ext_nwf"><?= $dlf; ?></label>
+            <?php if ($multi & 1) { ?>
                 <input type="radio" id="ext_nwu" name="extent" value="u" /><label for="ext_nwu"><?= $dlu; ?></label>
             <?php }
-            if (($c !== 'this client') && $multi): ?>
-                <input type="radio" id="ext_nwc" name="extent" value="c" /><label for="ext_nwc">delete all files for <span><?= $c; ?></span></label>
+            if ($clientname): ?>
+                <input type="radio" id="ext_nwc" name="extent" value="c" /><label for="ext_nwc"><?= $dlc; ?></label>
             <?php endif; ?>
             <input type="radio" id="cancel" name="extent" /><label for="cancel">cancel</label>
             <input type="hidden" name="id" value="<?= $id; ?>" />
