@@ -20,6 +20,6 @@
 	<?php } ?>
 	<input type="hidden" name="fileid" value="<?= $id; ?>" />
 	<input type="hidden" name="answer" value="<?= $answer; ?>" />
-	<input type="hidden" name="original" value="<?= $userid; ?>" />
+	<input type="hidden" name="original" value="<?= $owner['id']; ?>" />
 	<input type="submit" value="<?= $button; ?>" />
 </form>

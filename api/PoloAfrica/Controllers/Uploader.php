@@ -64,12 +64,18 @@ class Uploader
         $ismulti = !empty($data['multi']);
         $owner = ['ownerid' => $data['ownerid'] ?? '', 'ownername' => $data['ownername'] ?? '', 'domain' => $data['domain'] ?? '', 'multi' => $data['multi'] ?? '', 'editor' => $data['editor'] ?? '', 'clientname' => $data['clientname'] ?? ''];
 
-        $lib = ['delete' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this file?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/uploader/confirm/'], 'confirm' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Select the extent of deletions", 'delete' => 'proceed',  'action' => '/uploader/destroy/'], 'upload' => ['template' => 'upload.html.php'], 'edit' => ['id' => $data['id'] ?? '', 'pos' => $ismulti ? 'Yeah' : 'Yes', 'neg' => $ismulti ? 'Nope' : 'No', 'action' => '/uploader/update/', 'call' => 'update', 'prompt' => $ismulti ? "Change ownership on ALL files?" : "Proceed to Update", 'template' => 'prompt.html.php']];
+        $lib = [
+            'delete' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this file?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/uploader/confirm/'],
+            'confirm' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Select the extent of deletions", 'delete' => 'proceed',  'action' => '/uploader/destroy/'],
+            'upload' => ['template' => 'upload.html.php'],
+            'edit' => ['id' => $data['id'] ?? '', 'pos' => $ismulti ? 'Yeah' : 'Yes', 'neg' => $ismulti ? 'Nope' : 'No', 'action' => '/uploader/update/', 'call' => 'update', 'prompt' => $ismulti ? "Change ownership on ALL files?" : "Proceed to Update", 'template' => 'prompt.html.php'],
+            'update' => ['id' => $data['id'] ?? '', 'button' =>  $data['button'] ?? '', 'all_users' => $data['users'] ?? [], 'answer' => $data['answer'] ?? '', 'swap' => $data['swap'] ?? '', 'action' => '/uploader/update/']
+        ];
 
         if ($key && isset($lib[$key])) {
             $ret = $lib[$key];
         }
-        if ($key === 'confirm' || $key === 'edit') {
+        if ($key !== 'delete' || $key !== 'upload') {
             return [...$ret, ...$owner];
         }
         return $ret;
@@ -277,8 +283,6 @@ class Uploader
 
     public function update()
     {
-        
-        dump($_POST);
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
         $priv = $details['role'];
@@ -289,7 +293,10 @@ class Uploader
                 $all[$u->id] = $u->name;
             }
         }
-        return $this->load('update', ['all_users' => $all, 'swap' => 'No']);
+        $payload = ['users' => $all, 'swap' => 'No', 'answer' => 'No', 'button' => 'Update'];
+
+
+        return $this->load('update', [...$_POST, ...$payload]);
     }
 
     public function uploadSubmit()
