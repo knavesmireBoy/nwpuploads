@@ -108,13 +108,12 @@ class Uploader
     public function read($id) {
 
         $file = $this->table->find('id', $id);
-
+        $file = $file[0] ?? null;
         if (!$file) {
             $error = 'File with specified ID not found in the database!';
             include TEMPLATE . 'error.html.php';
             exit();
         }
-        dump($file);
         $filename = $file['filename'];
         $mimetype = $file['mimetype'];
         $filepath = $file['filepath'];
@@ -122,7 +121,7 @@ class Uploader
         $size = $file['size'];
         $filepath .= $uploadfile;
         if (!file_exists($filepath)) {
-            reLocate('/upload/load/');
+            reLocate(BBC);
         }
         $filedata = file_get_contents($filepath);
        // $disposition = $_GET['action'] == 'download' ? 'attachment' : 'inline';
