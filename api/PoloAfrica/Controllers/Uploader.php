@@ -68,10 +68,10 @@ class Uploader
         if ($key && isset($lib[$key])) {
             $ret = $lib[$key];
         }
-        if ($key !== 'delete') {
+        if ($key === 'confirm' || $key === 'edit') {
             return [...$ret, ...$owner];
         }
-        return [];
+        return $ret;
     }
 
     private function prepFileForDisplay($file, $user)
