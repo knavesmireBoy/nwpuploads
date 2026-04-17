@@ -117,6 +117,7 @@ class Uploader
         $cb = $this->validateFile($priv, $cid, $user->id);
         //$customVars: vars for prompts
         $customVars = $this->getCustomVars($key, $vars);
+        dump(scandir(FILESTORE));
 
 
         if (isset($vars['id'])) {
@@ -204,7 +205,6 @@ class Uploader
 
             $this->table->save($values, true);
             $key = $_POST['key'];
-            dump(scandir(FILESTORE));
             reLocate("/uploader/load/");
         }
     }
