@@ -107,7 +107,6 @@ class Uploader
 
     public function read($id = null) {
 
-        
         $disposition = $id ? 'inline' : 'attachment';
         $id = $id ?? $_POST['id'];
         $file = $this->table->find('id', $id);
@@ -142,7 +141,7 @@ class Uploader
     public function load(string $key = '', array $vars = [])
     {
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
-        $key = $user->id;
+        $k = $user->id;
         $details = $user->getDetails();
         $priv = $details['role'];
         $cid = $details['client_id'];
@@ -202,9 +201,10 @@ class Uploader
             'error' => '',
             'myip' => '',
             'owner' => $owner,
-            'key' => $key
+            'key' => $k
         ];
         $vars = array_merge($defaultVars, $customVars);
+        dump($vars);
         return [
             'template' => 'files.html.php',
             'title' => 'File Uploads',
