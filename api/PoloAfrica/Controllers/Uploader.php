@@ -105,6 +105,38 @@ class Uploader
         }
     }
 
+    public function read($id) {
+
+        $file = $this->table->find('id', $id);
+
+        if (!$file) {
+            $error = 'File with specified ID not found in the database!';
+            include TEMPLATE . 'error.html.php';
+            exit();
+        }
+        $filename = $file['filename'];
+        $mimetype = $file['mimetype'];
+        $filepath = $file['filepath'];
+        $uploadfile = $file['file'];
+        $size = $file['size'];
+        $filepath .= $uploadfile;
+        if (!file_exists($filepath)) {
+            reLocate('/upload/load/');
+        }
+        $filedata = file_get_contents($filepath);
+       // $disposition = $_GET['action'] == 'download' ? 'attachment' : 'inline';
+        $disposition = 'inline';
+        //$mimetype = 'application/x-unknown'; application/octet-stream
+        //Content-type must come before Content-disposition
+        header("Content-type: $mimetype");
+        //this works..
+        header('Content-disposition: ' . $disposition . '; filename=' . '"' . $filename . '"');
+        //header("Content-Transfer-Encoding: binary");
+        header('Content-length:' . strlen($filedata));
+        echo $filedata;
+        exit();
+    }
+
     public function load(string $key = '', array $vars = [])
     {
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
@@ -117,8 +149,6 @@ class Uploader
         $cb = $this->validateFile($priv, $cid, $user->id);
         //$customVars: vars for prompts
         $customVars = $this->getCustomVars($key, $vars);
-        dump(scandir(FILESTORE));
-
 
         if (isset($vars['id'])) {
             $file = $this->table->find('id', $vars['id']);

@@ -100,7 +100,7 @@ if (count($files) > 0): ?>
                 $b = array_map('html', $a);
 
                 ?>
-                <td><a title="<?= $fsize; ?>" href="<?= '?action=get&id=' . $id; ?>">
+                <td><a title="<?= $fsize; ?>" href="/uploader/read/<?= $id; ?>">
                         <?= $f['filename']; ?></a></td>
                 <?php if ($priv != 'Admin') : ?>
                     <td><?= $f['description']; ?></td>
