@@ -131,7 +131,7 @@ class Uploader
                 $owner = $data;
             }
         }
-        dump($owner);
+        if(!empty($owner)) dump($owner);
         foreach ($all as $file) {
             $user = $this->usertable->find('id', $file->userid)[0];
             if ($cb($file->userid)) {
