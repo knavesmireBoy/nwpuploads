@@ -118,7 +118,7 @@ class Uploader
         //$customVars: vars for prompts
         $customVars = $this->getCustomVars($key, $vars);
 
-        dump(file_exists(FILESTORE . 'playing-in-the-sand.jpg'));
+        dump(file_exists(FILESTORE . '1776412174.jpg'));
 
         if (isset($vars['id'])) {
             $file = $this->table->find('id', $vars['id']);
