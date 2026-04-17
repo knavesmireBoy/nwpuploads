@@ -41,17 +41,15 @@
         3 means that the current user has multiple files in addition to files owned by colleagues
         */
 
+        $name = $name ?? 'this user';
         $domain = $owner['domain'] ?? '';
-        $clientname = $owner['clientname'] && ($multi & 2) ? $owner['clientname'] : '';
         $multi = $owner['multi'] ?? null;
-        $n = $owner['name'] ?? null;
-        //$c = isset($client[$owner['id']]) ? $client_name : '';
+        $clientname = $owner['clientname'] && ($multi & 2) ? $owner['clientname'] : '';
+        $name = $owner['name'] ?? null;
         $klas = 'prompt';
-
         if ($clientname || $multi) {
             $klas .= ' span';
         }
-        $n = $n ?? 'this user';
         $dlf = "delete this file";
         $dlu = "delete all files for <span>$n</span>";
         $dlc = "delete all files for <span>$clientname</span>";
@@ -60,7 +58,7 @@
             $dlf .= " only";
             $dlu = $editor ? "delete all your files" : $dlu;
         } else {
-            $dlf = $editor ? "delete this file" : "delete file for <span>$n</span>";
+            $dlf = $editor ? "delete this file" : "delete file for <span>$name</span>";
         }
     ?>
         <form action="<?= $action; ?>" method="post" name="deletions" class="<?= $klas; ?>">
