@@ -305,4 +305,9 @@ class Uploader
             exit();
         }
     }
+
+    public function nav()
+    {
+        dump($_GET['QUERY_STRING']);
+    }
 }
