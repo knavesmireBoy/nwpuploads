@@ -6,7 +6,9 @@ use \Ninja\DatabaseTable;
 
 class Uploader
 {
-    public function __construct(private DatabaseTable $table, private DatabaseTable $usertable) {}
+    
+    
+    public function __construct(private DatabaseTable $table, private DatabaseTable $usertable, private int $pages, private int $start = 1) {}
 
     private function remove($path)
     {
@@ -157,6 +159,8 @@ class Uploader
         $owner = [];
         $all = $this->table->findAll();
         $cb = $this->validateFile($priv, $cid, $user->id);
+
+        dump($this->pages);
         $customVars = [];
         //$customVars: vars for prompts
         $error = $this->getErrors($key);
@@ -312,8 +316,10 @@ class Uploader
         }
     }
 
-    public function nav()
+    public function nav($s, $p, $search, $sort)
     {
-        dump(func_get_args());
+        $this->start = $s;
+        $this->pages = $p;
+    
     }
 }
