@@ -191,6 +191,9 @@ class Uploader
         $text = '';
         $suffix = '';
         $user_id = '';
+        $ext = '';
+        $byuser = '';
+        $bytext = '';
 
         $defaultVars = [
             'files' => $files,
@@ -208,6 +211,9 @@ class Uploader
             'user_id' => $user_id,
             'text' => $text,
             'suffix' => $suffix,
+            'ext' => $ext,
+            'bytext' => $bytext,
+            'byuser' => $byuser,
             'error' => '',
             'myip' => '',
             'owner' => $owner,

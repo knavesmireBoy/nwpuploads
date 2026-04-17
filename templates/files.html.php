@@ -151,4 +151,4 @@ if (!isset($_GET['find']) && count($files) > 0) { ?>
 } ?>
 <p><a href="admin/">Admin Pages</a></p>
 <?php
-include "_footer.html.php";
+include "footer.html.php";
