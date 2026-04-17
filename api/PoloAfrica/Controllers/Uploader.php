@@ -7,10 +7,7 @@ use \Ninja\DatabaseTable;
 class Uploader
 {
 
-    public function __construct(private DatabaseTable $table, private DatabaseTable $usertable, private int $display, private int $start, private int $pages)
-    {
-
-    }
+    public function __construct(private DatabaseTable $table, private DatabaseTable $usertable, private int $display, private int $start, private int $pages) {}
 
     private function remove($path)
     {
@@ -356,5 +353,6 @@ class Uploader
     {
         $this->start = $s;
         $this->pages = $p;
+        return $this->load();
     }
 }
