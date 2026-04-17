@@ -118,7 +118,7 @@ class Uploader
         //$customVars: vars for prompts
         $customVars = $this->getCustomVars($key, $vars);
 
-        dump(file_exists(FILESTORE . '1776412174.jpg'));
+        dump(scandir(FILESTORE));
 
         if (isset($vars['id'])) {
             $file = $this->table->find('id', $vars['id']);
@@ -204,7 +204,7 @@ class Uploader
 
             $this->table->save($values, true);
             $key = $_POST['key'];
-            reLocate("/uploader/load/$key");
+            reLocate("/uploader/load/");
         }
     }
 
