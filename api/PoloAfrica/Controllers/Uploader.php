@@ -11,7 +11,7 @@ class Uploader
     public function __construct(private DatabaseTable $table, private DatabaseTable $usertable, private int $display, private int $offset, private int $pages)
     {
 
-        $this->start = 1;
+        $this->start = 0;
     }
 
     private function remove($path)
