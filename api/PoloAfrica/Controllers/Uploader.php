@@ -189,7 +189,8 @@ class Uploader
         $cid = $details['client_id'];
         $files = [];
         $owner = [];
-        $all = $this->table->findAll(null, $this->display, $this->offset);
+        $total = count($this->table->findAll());
+        $displayFiles = $this->table->findAll(null, $this->display, $this->offset);
         $cb = $this->validateFile($priv, $cid, $user->id);
 
         $customVars = [];
@@ -213,15 +214,13 @@ class Uploader
                 }
             }
         }
-        foreach ($all as $file) {
+        foreach ($displayFiles as $file) {
             $o = $this->usertable->find('id', $file->userid)[0];
             if ($cb($file->userid)) {
                 $files[] = $this->prepFileForDisplay($file, $o);
             }
         }
-        $total = count($files);
         $pages = $this->setPages($total);
-        dump([$pages, $total]);
         list($users, $clients) = $this->presentList($priv);
         //vars used by search/pagination
         $text = '';
