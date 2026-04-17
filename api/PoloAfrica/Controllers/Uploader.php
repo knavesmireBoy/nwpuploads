@@ -118,7 +118,6 @@ class Uploader
         //$customVars: vars for prompts
         $customVars = $this->getCustomVars($key, $vars);
 
-        dump(scandir(FILESTORE));
 
         if (isset($vars['id'])) {
             $file = $this->table->find('id', $vars['id']);
@@ -191,6 +190,7 @@ class Uploader
             include TEMPLATE . 'error.html.php';
             exit();
         } else {
+
             $userid = !empty($_POST['user']) ? $_POST['user'] : $_POST['key'];
             $description = isset($_POST['desc']) ? $_POST['desc'] : '';
             $dofile = function ($arg) {
@@ -204,6 +204,7 @@ class Uploader
 
             $this->table->save($values, true);
             $key = $_POST['key'];
+            dump(scandir(FILESTORE));
             reLocate("/uploader/load/");
         }
     }
