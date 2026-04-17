@@ -314,6 +314,6 @@ class Uploader
 
     public function nav()
     {
-        dump($_SERVER['QUERY_STRING']);
+        dump(func_get_args());
     }
 }
