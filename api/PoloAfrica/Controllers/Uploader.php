@@ -221,6 +221,7 @@ class Uploader
         }
         $total = count($files);
         $pages = $this->setPages($total);
+        dump([$pages, $total]);
         list($users, $clients) = $this->presentList($priv);
         //vars used by search/pagination
         $text = '';
@@ -229,15 +230,20 @@ class Uploader
         $ext = '';
         $byuser = '';
         $bytext = '';
+        $thead = '';
+        $fhead = '';
+        $uhead = '';
 
         $defaultVars = [
             'files' => $files,
             'priv' => $priv,
             'pages' => $pages,
-            'uhead' => '',
+            'fhead' => $fhead,
+            'thead' => $thead,
+            'uhead' => $uhead,
             'error' => $error,
             'start' => $this->start,
-            'display' => PAGINATE,
+            'display' => $this->display,
             'upload' => ASSET_UPLOAD,
             'disabled' => $priv === 'Browser' ? 'disabled' : '',
             'users' => $users,
@@ -251,6 +257,7 @@ class Uploader
             'byuser' => $byuser,
             'error' => '',
             'myip' => '',
+            'goto' => '',
             'owner' => $owner,
             'key' => $user->id
         ];
