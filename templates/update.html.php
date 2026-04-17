@@ -1,5 +1,5 @@
 <form action="<?= $action; ?>" method="post" name="updatefileinfo" class="details">
-<a href="." class="cancel">X</a>
+<a href="/uploader/load/" class="cancel">X</a>
 	<?php
 	if ($swap === 'No') {
 	?>

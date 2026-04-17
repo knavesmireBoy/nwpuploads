@@ -283,6 +283,8 @@ class Uploader
 
     public function update()
     {
+        $file = $this->table->find('id', $_POST['id']);
+        $file = $file[0] ?? null;
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
         $priv = $details['role'];
@@ -293,10 +295,12 @@ class Uploader
                 $all[$u->id] = $u->name;
             }
         }
-        $payload = ['users' => $all, 'swap' => 'No', 'answer' => 'No', 'button' => 'Update'];
-
-
+        $payload = ['users' => $all, 'swap' => 'No', 'answer' => 'No', 'button' => 'Update', 'filename' => $file->filename, 'description' => $file->description];
         return $this->load('update', [...$_POST, ...$payload]);
+    }
+    public function updateSubmit(){
+
+        dump($_POST);
     }
 
     public function uploadSubmit()
