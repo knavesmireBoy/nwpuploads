@@ -125,15 +125,13 @@ class Uploader
                 $data = $file->getData($_SESSION['username']);
                 $client = $this->usertable->find('client_id', $data['client_id'] ?? 0);
                 $client = !empty($client) ? $client[0] : null;
-
-                dump([$data, $client->getDetails()]);
                 if ($client) {
                     $owner = [...$data, ...$client->getDetails()];
                 }
                 $owner = $data;
             }
         }
-
+        dump($owner);
         foreach ($all as $file) {
             $user = $this->usertable->find('id', $file->userid)[0];
             if ($cb($file->userid)) {
