@@ -152,7 +152,7 @@ class Uploader
         $cb = $this->validateFile($priv, $cid, $user->id);
         //$customVars: vars for prompts
         $customVars = $this->getCustomVars($key, $vars);
-        dump([$_SESSION['username'], $user]);
+
         if (isset($vars['id'])) {
             $file = $this->table->find('id', $vars['id']);
             $file = !empty($file) ? $file[0] : null;
