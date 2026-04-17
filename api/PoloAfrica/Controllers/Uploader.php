@@ -118,6 +118,8 @@ class Uploader
         //$customVars: vars for prompts
         $customVars = $this->getCustomVars($key, $vars);
 
+        dump(file_exists(FILESTORE . 'playing-in-the-sand.jpg'));
+
         if (isset($vars['id'])) {
             $file = $this->table->find('id', $vars['id']);
             $file = !empty($file) ? $file[0] : null;
@@ -133,7 +135,7 @@ class Uploader
             }
         }
      //   if (!empty($owner)) dump($owner);
-     
+
         foreach ($all as $file) {
             $user = $this->usertable->find('id', $file->userid)[0];
             if ($cb($file->userid)) {
