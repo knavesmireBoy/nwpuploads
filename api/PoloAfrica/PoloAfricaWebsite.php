@@ -131,7 +131,7 @@ class PoloAfricaWebsite implements Website
         $gallery_map = [[14, 0], [14, 14], [14, 28], [12, 42], [12, 54], [12, 66], [14, 78]];
         $accept_asset = 'accept="image/*, video/*,application/pdf"';
         $gallery_accept = 'accept="image/*"';
-        $lib = ['uploader' => [PAGINATE, 1]];
+        $lib = ['uploader' => [PAGINATE, 1, 2]];
         return $lib[$k] ?? [];
     }
 

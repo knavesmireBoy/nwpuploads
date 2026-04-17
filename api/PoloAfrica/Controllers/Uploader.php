@@ -6,9 +6,9 @@ use \Ninja\DatabaseTable;
 
 class Uploader
 {
-    
-    
-    public function __construct(private DatabaseTable $table, private DatabaseTable $usertable, private int $pages, private int $start = 1) {}
+
+
+    public function __construct(private DatabaseTable $table, private DatabaseTable $usertable, private int $display, private int $pages, private int $start = 1) {}
 
     private function remove($path)
     {
@@ -149,6 +149,34 @@ class Uploader
         exit();
     }
 
+    private function sorter()
+    {
+        $sorter = array('f' => 'filename ASC', 'ff' => 'filename DESC', 'u' => 'name ASC', 'uu' => 'name DESC', 'uf' => 'name ASC, filename ASC', 'uuf' => 'name DESC, filename ASC',  'uff' => 'name ASC, filename DESC',  'uuff' => 'name DESC, filename DESC', 'ut' => 'name ASC, time ASC', 'utt' => 'name ASC, time DESC', 'uut' => 'name DESC, time ASC', 'uutt' => 'name DESC, time DESC', 't' => 'time ASC', 'tt' => 'time DESC');
+
+        $mainclass = $this->pages === 1 ? '' : 'paginate';
+
+        if (isset($_GET['s']) && is_numeric($_GET['s'])) {
+            $start = $_GET['s'];
+        } else {
+            $start = 0;
+        }
+
+        $sort = $_GET['sort'] ?? '1';
+
+        foreach ($sorter as $k => $v) {
+            if ($k == $sort) break;
+        }
+        switch ($sort) {
+            case $k:
+                $order_by = $sorter[$k];
+                break;
+            default:
+                $order_by = 'time DESC';
+                $sort = 'tt';
+                break;
+        }
+    }
+
     public function load(string $key = '', array $vars = [])
     {
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
@@ -157,10 +185,9 @@ class Uploader
         $cid = $details['client_id'];
         $files = [];
         $owner = [];
-        $all = $this->table->findAll();
+        $all = $this->table->findAll(null, $this->display, $this->start);
         $cb = $this->validateFile($priv, $cid, $user->id);
 
-        dump($this->pages);
         $customVars = [];
         //$customVars: vars for prompts
         $error = $this->getErrors($key);
@@ -267,9 +294,10 @@ class Uploader
     private function setPages($records)
     {
         $pages = 1;
-        if ($records > PAGINATE) {
-            $pages = ceil($records / PAGINATE);
+        if ($records > $this->display) {
+            $pages = ceil($records / $this->display);
         }
+        $this->pages = $pages;
         return $pages;
     }
 
@@ -320,6 +348,5 @@ class Uploader
     {
         $this->start = $s;
         $this->pages = $p;
-    
     }
 }

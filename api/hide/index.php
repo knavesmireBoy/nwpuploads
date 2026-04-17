@@ -33,7 +33,9 @@ function setPages($priv, $display)
         //  header("Location: ./?file_list");
         //  exit();
     }
+    
     $records = $nwprow['total'];
+
     if ($records > $display) {
         $pages = ceil($records / $display);
     }
