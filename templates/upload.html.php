@@ -8,7 +8,7 @@
                                 <option value="">Select One</option>
                                 <?php
                                 $optgroup = 'clients';
-                                $group = $client;
+                                $group = $clients;
                                 include '_optgroup.html.php';
                                 $optgroup = 'users';
                                 $group = $users;

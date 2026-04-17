@@ -141,7 +141,7 @@ class Uploader
         }
         $total = count($files);
         $pages = $this->setPages($total);
-        list($users, $client) = $this->presentList($priv);
+        list($users, $clients) = $this->presentList($priv);
         $text = '';
         $suffix = '';
         $error = '';
@@ -157,7 +157,7 @@ class Uploader
             'upload' => ASSET_UPLOAD,
             'disabled' => $priv === 'Browser' ? 'disabled' : '',
             'users' => $users,
-            'client' => $client,
+            'clients' => $clients,
             'predicates' => [partial('preg_match', '/^nwp/')],
             'text' => $text,
             'suffix' => $suffix,
