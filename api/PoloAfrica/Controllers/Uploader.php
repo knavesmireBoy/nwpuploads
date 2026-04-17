@@ -15,6 +15,11 @@ class Uploader
         }
     }
 
+    private function getErrors($key)
+    {
+        return '';
+    }
+
     private function getClientFiles($ownerid)
     {
         $files = [];
@@ -105,7 +110,8 @@ class Uploader
         }
     }
 
-    public function read($id = null) {
+    public function read($id = null)
+    {
 
         $disposition = $id ? 'inline' : 'attachment';
         $id = $id ?? $_POST['id'];
@@ -123,10 +129,11 @@ class Uploader
         $size = $file->size;
         $filepath .= $uploadfile;
         if (!file_exists($filepath)) {
-            reLocate(BBC);
+            reLocate('/uploader/load/');
+            // reLocate(BBC);
         }
         $filedata = file_get_contents($filepath);
-       // $disposition = $_GET['action'] == 'download' ? 'attachment' : 'inline';
+        // $disposition = $_GET['action'] == 'download' ? 'attachment' : 'inline';
         //$mimetype = 'application/x-unknown'; application/octet-stream
         //Content-type must come before Content-disposition
         header("Content-type: $mimetype");
@@ -148,8 +155,12 @@ class Uploader
         $owner = [];
         $all = $this->table->findAll();
         $cb = $this->validateFile($priv, $cid, $user->id);
+        $customVars = [];
         //$customVars: vars for prompts
-        $customVars = $this->getCustomVars($key, $vars);
+        $error = $this->getErrors($key);
+        if (!$error) {
+            $customVars = $this->getCustomVars($key, $vars);
+        }
 
         if (isset($vars['id'])) {
             $file = $this->table->find('id', $vars['id']);
@@ -165,8 +176,6 @@ class Uploader
                 }
             }
         }
-     //   if (!empty($owner)) dump($owner);
-
         foreach ($all as $file) {
             $o = $this->usertable->find('id', $file->userid)[0];
             if ($cb($file->userid)) {
@@ -180,13 +189,13 @@ class Uploader
         $text = '';
         $suffix = '';
         $user_id = '';
-        $error = '';
+
         $defaultVars = [
             'files' => $files,
             'priv' => $priv,
             'pages' => $pages,
             'uhead' => '',
-            'error' => '',
+            'error' => $error,
             'start' => 0,
             'display' => PAGINATE,
             'upload' => ASSET_UPLOAD,
