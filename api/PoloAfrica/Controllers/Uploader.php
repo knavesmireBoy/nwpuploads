@@ -7,11 +7,9 @@ use \Ninja\DatabaseTable;
 class Uploader
 {
 
-    private $start;
-    public function __construct(private DatabaseTable $table, private DatabaseTable $usertable, private int $display, private int $offset, private int $pages)
+    public function __construct(private DatabaseTable $table, private DatabaseTable $usertable, private int $display, private int $start, private int $pages)
     {
 
-        $this->start = 0;
     }
 
     private function remove($path)
@@ -190,7 +188,7 @@ class Uploader
         $files = [];
         $owner = [];
         $total = count($this->table->findAll());
-        $displayFiles = $this->table->findAll(null, $this->display, $this->offset);
+        $displayFiles = $this->table->findAll(null, $this->display, $this->start);
         $cb = $this->validateFile($priv, $cid, $user->id);
 
         $customVars = [];
