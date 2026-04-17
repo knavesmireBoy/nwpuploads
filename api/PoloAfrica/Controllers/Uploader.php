@@ -7,8 +7,12 @@ use \Ninja\DatabaseTable;
 class Uploader
 {
 
+    private $start;
+    public function __construct(private DatabaseTable $table, private DatabaseTable $usertable, private int $display, private int $offset, private int $pages)
+    {
 
-    public function __construct(private DatabaseTable $table, private DatabaseTable $usertable, private int $display, private int $pages, private int $start = 1) {}
+        $this->start = 1;
+    }
 
     private function remove($path)
     {
@@ -185,7 +189,7 @@ class Uploader
         $cid = $details['client_id'];
         $files = [];
         $owner = [];
-        $all = $this->table->findAll(null, $this->display, $this->start);
+        $all = $this->table->findAll(null, $this->display, $this->offset);
         $cb = $this->validateFile($priv, $cid, $user->id);
 
         $customVars = [];
@@ -232,7 +236,7 @@ class Uploader
             'pages' => $pages,
             'uhead' => '',
             'error' => $error,
-            'start' => 0,
+            'start' => $this->start,
             'display' => PAGINATE,
             'upload' => ASSET_UPLOAD,
             'disabled' => $priv === 'Browser' ? 'disabled' : '',
