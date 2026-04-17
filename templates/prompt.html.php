@@ -15,7 +15,7 @@
             </div>
         </form>
     <?php elseif (!isset($clientlist) && !isset($delete)):
-        //confirm used by several controllers
+        //confirm used by several controllers; review
     ?>
         <form action="<?= $action; ?>" method="post" name="choice" class="prompt" id="yesno">
             <input type="hidden" name="ownerid" value="<?= $owner['id'] ?? $id; ?>" />
@@ -45,7 +45,7 @@
         $clientname = $owner['clientname'] && ($multi & 2) ? $owner['clientname'] : '';
         $multi = $owner['multi'] ?? null;
         $n = $owner['name'] ?? null;
-        //  $c = isset($client[$owner['id']]) ? $client_name : '';
+        //$c = isset($client[$owner['id']]) ? $client_name : '';
         $klas = 'prompt';
 
         if ($clientname || $multi) {
