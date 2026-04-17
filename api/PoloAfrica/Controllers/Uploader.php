@@ -277,13 +277,18 @@ class Uploader
 
     public function update()
     {
+        dump($_POST);
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
         $priv = $details['role'];
-
+        $all_users = [];
         if ($priv === 'Admin') {
-            $all_users = $this->usertable->findAll();
+            $users = $this->usertable->findAll();
+            foreach ($users as $u) {
+                $all_users[$u->id] = $u->name;
+            }
         }
+        dump($all_users);
     }
 
     public function uploadSubmit()
