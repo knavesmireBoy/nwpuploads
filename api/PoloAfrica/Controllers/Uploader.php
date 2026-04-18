@@ -16,6 +16,28 @@ class Uploader
         }
     }
 
+    private function sortSwap($data) {
+
+        if(isset($data['no']) && $data['no'] === 'No'){
+            reLocate('/uploader/load');
+        }
+        
+        $a = isset($data['yes']) && $data['yes'] === 'Yes';
+        $b = isset($data['no']) && $data['no'] === 'Nope';
+
+        if($a || $b){
+            return 'No';
+        }
+        $c = isset($data['yes']) && $data['yes'] === 'Yeah';
+        if($c){
+            return 'Yes';
+        }
+        else {
+            reLocate('/uploader/load');
+        }
+
+    }
+
     private function getErrors($key)
 
     {
@@ -283,7 +305,10 @@ class Uploader
 
     public function update()
     {
-        $file = $this->table->find('id', $_POST['id']);
+        $swap = $this->sortSwap($_POST);
+
+        dump($swap);
+        $file = $this->table->find('id', $_POST['id'] ?? 0);
         $file = $file[0] ?? null;
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
