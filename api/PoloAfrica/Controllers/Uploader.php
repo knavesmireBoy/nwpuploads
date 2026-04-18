@@ -25,10 +25,11 @@ class Uploader
 
         if ($answer === 'No') {
             $record = $this->table->find('id', $data['id'], null, 0, 0, \PDO::FETCH_ASSOC);
-            if (isset($data['user'])) {
+            $record = $record[0] ?? [];
+            if (!empty($record) && isset($data['user'])) {
                 $record['userid'] = $data['user'];
                 unset($data['user']);
-                dump([$record, $data]);
+                dump([...$record, ...$data]);
                 $this->table->save($record);
             } else {
                 $all = $this->table->findAll();
