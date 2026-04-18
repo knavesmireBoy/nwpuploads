@@ -16,6 +16,12 @@ class Uploader
         }
     }
 
+    private function doUpdate($data){
+
+        dump($_POST['answer']);
+
+    }
+
     private function sortSwap($data)
     {
         if (isset($data['update']) && $data['update'] === 'No') {
@@ -316,6 +322,11 @@ class Uploader
 
     public function swap()
     {
+        
+    }
+
+    public function swapSubmit()
+    {
         return $this->update($_POST['update']);
     }
     public function updateSubmit()
@@ -323,7 +334,7 @@ class Uploader
         if (isset($_POST['update']) && $_POST['update'] === 'No') {
             reLocate('/uploader/load');
         } else {
-            dump($_POST['answer']);
+            return $this->doUpdate($_POST);
         }
     }
 
