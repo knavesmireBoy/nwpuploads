@@ -18,7 +18,28 @@ class Uploader
 
     private function doUpdate($data){
 
-        dump($_POST['answer']);
+        dump('answer: ' . $_POST['answer']);
+
+    }
+
+    private function prepUpdate($data) {
+        $file = $this->table->find('id', $data['id'] ?? 0);
+        $file = $file[0] ?? null;
+        $user = $this->usertable->find('email', $_SESSION['username'])[0];
+        $details = $user->getDetails();
+        $priv = $details['role'];
+        $all = [];
+        if ($priv === 'Admin') {
+            $users = $this->usertable->findAll();
+            foreach ($users as $u) {
+                $all[$u->id] = $u->name;
+            }
+        }
+        $swap = $data['answer'] ?? 'No';
+        $payload = ['users' => $all, 'answer' => $swap, 'button' => 'Update', 'filename' => $file->filename, 'description' => $file->description];
+
+        return $this->load('update', [...$_POST, ...$payload]);
+
 
     }
 
@@ -300,23 +321,9 @@ class Uploader
         return $this->load('upload', []);
     }
 
-    public function update($swap = 'No')
+    public function update()
     {
-        $file = $this->table->find('id', $_POST['id'] ?? 0);
-        $file = $file[0] ?? null;
-        $user = $this->usertable->find('email', $_SESSION['username'])[0];
-        $details = $user->getDetails();
-        $priv = $details['role'];
-        $all = [];
-        if ($priv === 'Admin') {
-            $users = $this->usertable->findAll();
-            foreach ($users as $u) {
-                $all[$u->id] = $u->name;
-            }
-        }
-        $payload = ['users' => $all, 'answer' => $swap, 'button' => 'Update', 'filename' => $file->filename, 'description' => $file->description];
-
-        return $this->load('update', [...$_POST, ...$payload]);
+        return $this->prepUpdate($_POST);
     }
 
 
@@ -327,7 +334,20 @@ class Uploader
 
     public function swapSubmit()
     {
-        return $this->update($_POST['update']);
+        $data = [];
+        $lib = ['Nope' => 'No', 'Yeah' => 'Yes'];
+
+        foreach($_POST as $k => $v){
+            if($k === 'update'){
+                $v = $lib[$v];
+            }
+            $data[$k] = $v;
+        }
+
+        $data['answer'] = $data['update'];
+        unset($data['update']);
+
+        return $this->prepUpdate($data);
     }
     public function updateSubmit()
     {
