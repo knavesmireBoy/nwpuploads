@@ -20,10 +20,24 @@ class Uploader
     {
         $owner = $data['original'];
         $answer = $data['answer'];
-        unset($data['fileid']);
         unset($data['answer']);
         unset($data['original']);
-        dump($data);
+
+        if ($answer === 'No') {
+            $record = $this->table->find('id', $data['id'], null, 0, 0, \PDO::FETCH_ASSOC);
+            if (isset($data['user'])) {
+                $record['userid'] = $data['user'];
+                unset($data['user']);
+                dump([...$record, ...$data]);
+                $this->table->save($record);
+            } else {
+                $all = $this->table->findAll();
+                foreach ($all as $file) {
+                    if ($file->userid === $owner) {
+                    }
+                }
+            }
+        }
     }
 
     private function prepUpdate($data)
@@ -332,12 +346,12 @@ class Uploader
 
     public function swapSubmit()
     {
-         $data = [];
+        $data = [];
         $lib = ['Nope' => 'No', 'Yeah' => 'Yes'];
 
-        foreach($_POST as $k => $v){
-            if($k === 'update'){
-              //  $v = $lib[$v];
+        foreach ($_POST as $k => $v) {
+            if ($k === 'update') {
+                //  $v = $lib[$v];
             }
             $data[$k] = $v;
         }
