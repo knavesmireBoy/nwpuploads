@@ -16,26 +16,17 @@ class Uploader
         }
     }
 
-    private function sortSwap($data) {
-
-        if(isset($data['no']) && $data['no'] === 'No'){
+    private function sortSwap($data)
+    {
+        if (isset($data['update']) && $data['update'] === 'No') {
             reLocate('/uploader/load');
         }
-        
-        $a = isset($data['yes']) && $data['yes'] === 'Yes';
-        $b = isset($data['no']) && $data['no'] === 'Nope';
 
-        if($a || $b){
-            return 'No';
-        }
-        $c = isset($data['yes']) && $data['yes'] === 'Yeah';
-        if($c){
+        if (isset($data['update']) && $data['update'] === 'Yes') {
             return 'Yes';
-        }
-        else {
+        } else {
             reLocate('/uploader/load');
         }
-
     }
 
     private function getErrors($key)
@@ -90,8 +81,8 @@ class Uploader
             'delete' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this file?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/uploader/confirm/'],
             'confirm' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Select the extent of deletions", 'delete' => 'proceed',  'action' => '/uploader/destroy/'],
             'upload' => ['template' => 'upload.html.php'],
-            'edit' => ['id' => $data['id'] ?? '', 'pos' => $ismulti ? 'Yeah' : 'Yes', 'neg' => $ismulti ? 'Nope' : 'No', 'action' => '/uploader/update/', 'call' => 'update', 'prompt' => $ismulti ? "Change ownership on ALL files?" : "Proceed to Update", 'template' => 'prompt.html.php'],
-            'update' => ['id' => $data['id'] ?? '', 'button' =>  $data['button'] ?? '', 'all_users' => $data['users'] ?? [], 'answer' => $data['answer'] ?? '', 'swap' => $data['swap'] ?? '', 'action' => '/uploader/update/', 'template' => 'update.html.php', 'title' => 'Update', 'filename' => $data['filename'] ?? '' , 'description' => $data['description'] ?? '']
+            'edit' => ['id' => $data['id'] ?? '', 'pos' => $ismulti ? 'Yeah' : 'Yes', 'neg' => $ismulti ? 'Nope' : 'No', 'action' => $ismulti ? '/uploader/swap/' : '/uploader/update/', 'call' => 'update', 'prompt' => $ismulti ? "Change ownership on ALL files?" : "Proceed to Update", 'template' => 'prompt.html.php'],
+            'update' => ['id' => $data['id'] ?? '', 'button' =>  $data['button'] ?? '', 'all_users' => $data['users'] ?? [], 'colleagues' => $data['colleagues'] ?? [], 'answer' => $data['answer'] ?? '', 'action' => '/uploader/update/', 'template' => 'update.html.php', 'title' => 'Update', 'filename' => $data['filename'] ?? '', 'description' => $data['description'] ?? '']
         ];
 
         if ($key && isset($lib[$key])) {
@@ -303,11 +294,8 @@ class Uploader
         return $this->load('upload', []);
     }
 
-    public function update()
+    public function update($swap = 'No')
     {
-        $swap = $this->sortSwap($_POST);
-
-        dump($swap);
         $file = $this->table->find('id', $_POST['id'] ?? 0);
         $file = $file[0] ?? null;
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
@@ -320,11 +308,18 @@ class Uploader
                 $all[$u->id] = $u->name;
             }
         }
-        $payload = ['users' => $all, 'swap' => 'No', 'answer' => 'No', 'button' => 'Update', 'filename' => $file->filename, 'description' => $file->description];
+        $payload = ['users' => $all, 'answer' => $swap, 'button' => 'Update', 'filename' => $file->filename, 'description' => $file->description];
 
         return $this->load('update', [...$_POST, ...$payload]);
     }
-    public function updateSubmit(){
+
+
+    public function swap()
+    {
+        return $this->update($_POST['update']);
+    }
+    public function updateSubmit()
+    {
 
         dump($_POST);
     }
