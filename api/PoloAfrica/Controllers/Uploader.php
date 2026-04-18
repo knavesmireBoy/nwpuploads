@@ -69,7 +69,7 @@ class Uploader
             'confirm' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Select the extent of deletions", 'delete' => 'proceed',  'action' => '/uploader/destroy/'],
             'upload' => ['template' => 'upload.html.php'],
             'edit' => ['id' => $data['id'] ?? '', 'pos' => $ismulti ? 'Yeah' : 'Yes', 'neg' => $ismulti ? 'Nope' : 'No', 'action' => '/uploader/update/', 'call' => 'update', 'prompt' => $ismulti ? "Change ownership on ALL files?" : "Proceed to Update", 'template' => 'prompt.html.php'],
-            'update' => ['id' => $data['id'] ?? '', 'button' =>  $data['button'] ?? '', 'all_users' => $data['users'] ?? [], 'answer' => $data['answer'] ?? '', 'swap' => $data['swap'] ?? '', 'action' => '/uploader/update/', 'template' => 'update.html.php', 'title' => 'Update']
+            'update' => ['id' => $data['id'] ?? '', 'button' =>  $data['button'] ?? '', 'all_users' => $data['users'] ?? [], 'answer' => $data['answer'] ?? '', 'swap' => $data['swap'] ?? '', 'action' => '/uploader/update/', 'template' => 'update.html.php', 'title' => 'Update', 'filename' => $data['filename'] ?? '' , 'description' => $data['description'] ?? '']
         ];
 
         if ($key && isset($lib[$key])) {
