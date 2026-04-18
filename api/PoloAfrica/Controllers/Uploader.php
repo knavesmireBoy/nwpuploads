@@ -35,10 +35,7 @@ class Uploader
         } else {
             $records = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
             foreach ($records as $record) {
-
-
-                dump($record);
-                if ($record['userid'] === $owner && isset($data['user'])) {
+                if ($record['userid'] == $owner && isset($data['user'])) {
                     $record['userid'] = $data['user'];
                     $this->table->save($record);
                 }
