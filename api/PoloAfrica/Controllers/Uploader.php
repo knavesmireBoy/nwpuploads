@@ -28,7 +28,7 @@ class Uploader
             if (isset($data['user'])) {
                 $record['userid'] = $data['user'];
                 unset($data['user']);
-                dump(array_merge($record,$data));
+                dump([$record, $data]);
                 $this->table->save($record);
             } else {
                 $all = $this->table->findAll();
