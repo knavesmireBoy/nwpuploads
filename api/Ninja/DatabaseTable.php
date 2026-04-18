@@ -80,7 +80,6 @@ class DatabaseTable
         if (DBSYSTEM === 'postgres') {
             $query = preg_replace('/`/', '', $query);
         }
-
         $stmt = $this->pdo->prepare($query);
         $stmt->execute($values);
     }
@@ -126,8 +125,6 @@ class DatabaseTable
         if (DBSYSTEM === 'postgres') {
             $query = preg_replace('/`/', '', $query);
         }
-
-
 
         $stmt = $this->pdo->prepare($query);
         $stmt->execute();

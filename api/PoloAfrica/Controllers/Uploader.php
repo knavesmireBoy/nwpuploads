@@ -16,13 +16,18 @@ class Uploader
         }
     }
 
-    private function doUpdate($data){
-
-        dump('answer: ' . $data['answer'] ?? 'yikes');
-
+    private function doUpdate($data)
+    {
+        $owner = $data['original'];
+        $answer = $data['answer'];
+        unset($data['fileid']);
+        unset($data['answer']);
+        unset($data['original']);
+        dump($data);
     }
 
-    private function prepUpdate($data) {
+    private function prepUpdate($data)
+    {
 
         $file = $this->table->find('id', $data['id'] ?? 0);
         $file = $file[0] ?? null;
@@ -40,8 +45,6 @@ class Uploader
         $payload = ['users' => $all, 'answer' => $swap, 'button' => 'Update', 'filename' => $file->filename, 'description' => $file->description];
 
         return $this->load('update', [...$_POST, ...$payload]);
-
-
     }
 
     private function sortSwap($data)
@@ -109,7 +112,7 @@ class Uploader
             'delete' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this file?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/uploader/confirm/'],
             'confirm' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Select the extent of deletions", 'delete' => 'proceed',  'action' => '/uploader/destroy/'],
             'upload' => ['template' => 'upload.html.php'],
-            'edit' => ['id' => $data['id'] ?? '', 'pos' => $ismulti ? 'Yeah' : 'Yes', 'neg' => $ismulti ? 'Nope' : 'No', 'action' => $ismulti ? '/uploader/swap/' : '/uploader/edit/', 'call' => 'update', 'prompt' => $ismulti ? "Change ownership on ALL files?" : "Proceed to Update", 'template' => 'prompt.html.php'],
+            'edit' => ['id' => $data['id'] ?? '', 'pos' => 'Yes', 'neg' => 'No', 'action' => $ismulti ? '/uploader/swap/' : '/uploader/edit/', 'call' => 'update', 'prompt' => $ismulti ? "Change ownership on ALL files?" : "Proceed to Update", 'template' => 'prompt.html.php'],
             'update' => ['id' => $data['id'] ?? '', 'button' =>  $data['button'] ?? '', 'all_users' => $data['users'] ?? [], 'colleagues' => $data['colleagues'] ?? [], 'answer' => $data['answer'] ?? '', 'action' => '/uploader/update/', 'template' => 'update.html.php', 'title' => 'Update', 'filename' => $data['filename'] ?? '', 'description' => $data['description'] ?? '']
         ];
 
@@ -322,14 +325,14 @@ class Uploader
         return $this->load('upload', []);
     }
 
-    public function update()
+    public function updateSubmit()
     {
-     //   return $this->prepUpdate($_POST);
+        return $this->doUpdate($_POST);
     }
 
     public function swapSubmit()
     {
-        $data = [];
+        /* $data = [];
         $lib = ['Nope' => 'No', 'Yeah' => 'Yes'];
 
         foreach($_POST as $k => $v){
@@ -338,8 +341,8 @@ class Uploader
             }
             $data[$k] = $v;
         }
-        $data['answer'] = $data['update'];
-        unset($data['update']);
+            */
+        $data['answer'] = $_POST['update'];
         return $this->prepUpdate($data);
     }
     public function editSubmit()
