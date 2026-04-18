@@ -23,6 +23,7 @@ class Uploader
     }
 
     private function prepUpdate($data) {
+        
         $file = $this->table->find('id', $data['id'] ?? 0);
         $file = $file[0] ?? null;
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
@@ -109,7 +110,7 @@ class Uploader
             'delete' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this file?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/uploader/confirm/'],
             'confirm' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Select the extent of deletions", 'delete' => 'proceed',  'action' => '/uploader/destroy/'],
             'upload' => ['template' => 'upload.html.php'],
-            'edit' => ['id' => $data['id'] ?? '', 'pos' => $ismulti ? 'Yeah' : 'Yes', 'neg' => $ismulti ? 'Nope' : 'No', 'action' => $ismulti ? '/uploader/swap/' : '/uploader/update/', 'call' => 'update', 'prompt' => $ismulti ? "Change ownership on ALL files?" : "Proceed to Update", 'template' => 'prompt.html.php'],
+            'edit' => ['id' => $data['id'] ?? '', 'pos' => $ismulti ? 'Yeah' : 'Yes', 'neg' => $ismulti ? 'Nope' : 'No', 'action' => $ismulti ? '/uploader/swap/' : '/uploader/edit/', 'call' => 'update', 'prompt' => $ismulti ? "Change ownership on ALL files?" : "Proceed to Update", 'template' => 'prompt.html.php'],
             'update' => ['id' => $data['id'] ?? '', 'button' =>  $data['button'] ?? '', 'all_users' => $data['users'] ?? [], 'colleagues' => $data['colleagues'] ?? [], 'answer' => $data['answer'] ?? '', 'action' => '/uploader/update/', 'template' => 'update.html.php', 'title' => 'Update', 'filename' => $data['filename'] ?? '', 'description' => $data['description'] ?? '']
         ];
 
@@ -324,7 +325,7 @@ class Uploader
 
     public function update()
     {
-        return $this->prepUpdate($_POST);
+     //   return $this->prepUpdate($_POST);
     }
 
     public function swapSubmit()
@@ -338,18 +339,17 @@ class Uploader
             }
             $data[$k] = $v;
         }
-
         $data['answer'] = $data['update'];
         unset($data['update']);
-
         return $this->prepUpdate($data);
     }
-    public function updateSubmit()
+    public function editSubmit()
     {
+        //proceed to update
         if (isset($_POST['update']) && $_POST['update'] === 'No') {
             reLocate('/uploader/load');
         } else {
-            return $this->doUpdate($_POST);
+            return $this->prepUpdate($_POST);
         }
     }
 
