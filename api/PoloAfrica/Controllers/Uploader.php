@@ -23,7 +23,7 @@ class Uploader
     }
 
     private function prepUpdate($data) {
-        
+
         $file = $this->table->find('id', $data['id'] ?? 0);
         $file = $file[0] ?? null;
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
@@ -36,7 +36,6 @@ class Uploader
                 $all[$u->id] = $u->name;
             }
         }
-        dump($all);
         $swap = $data['answer'] ?? 'No';
         $payload = ['users' => $all, 'answer' => $swap, 'button' => 'Update', 'filename' => $file->filename, 'description' => $file->description];
 
