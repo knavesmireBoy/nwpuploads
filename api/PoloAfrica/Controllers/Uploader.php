@@ -320,8 +320,11 @@ class Uploader
     }
     public function updateSubmit()
     {
-
-        dump($_POST);
+        if (isset($_POST['update']) && $_POST['update'] === 'No') {
+            reLocate('/uploader/load');
+        } else {
+            dump($_POST['answer']);
+        }
     }
 
     public function uploadSubmit()
