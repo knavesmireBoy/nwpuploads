@@ -22,7 +22,7 @@ class Uploader
         $answer = $data['answer'];
         unset($data['answer']);
         unset($data['original']);
-
+        dump($answer);
 
         if ($answer === 'No') {
             $record = $this->table->find('id', $data['id'], null, 0, 0, \PDO::FETCH_ASSOC);
@@ -32,23 +32,29 @@ class Uploader
                 $record['userid'] = $data['user'];
                 unset($data['user']);
             }
-                $this->table->save([...$record, ...$data]);
-            } else {
-                $records = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
-                foreach ($records as $record) {
-                    if ($record['userid'] === $owner && isset($data['user'])) {
-                        $record['userid'] = $data['user'];
-                        $this->table->save($record);
-                    }
+            $this->table->save([...$record, ...$data]);
+        } else {
+            $records = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
+            foreach ($records as $record) {
+
+
+                dump($record);
+                if ($record['userid'] === $owner && isset($data['user'])) {
+                    $record['userid'] = $data['user'];
+                    $this->table->save($record);
                 }
             }
         }
+    }
 
     private function prepUpdate($data)
     {
 
         $file = $this->table->find('id', $data['id'] ?? 0);
         $file = $file[0] ?? null;
+        if (!isset($_SESSION['username'])) {
+            reLocate("/uploader/load");
+        }
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
         $priv = $details['role'];
