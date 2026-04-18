@@ -23,23 +23,26 @@ class Uploader
         unset($data['answer']);
         unset($data['original']);
 
+
         if ($answer === 'No') {
             $record = $this->table->find('id', $data['id'], null, 0, 0, \PDO::FETCH_ASSOC);
             $record = $record[0] ?? [];
-            if (!empty($record) && isset($data['user'])) {
+            $record['userid'] = $data['user'];
+            if (isset($data['user'])) {
                 $record['userid'] = $data['user'];
                 unset($data['user']);
-                dump([...$record, ...$data]);
-                $this->table->save($record);
+            }
+                $this->table->save([...$record, ...$data]);
             } else {
-                $all = $this->table->findAll();
-                foreach ($all as $file) {
-                    if ($file->userid === $owner) {
+                $records = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
+                foreach ($records as $record) {
+                    if ($record['userid'] === $owner && isset($data['user'])) {
+                        $record['userid'] = $data['user'];
+                        $this->table->save($record);
                     }
                 }
             }
         }
-    }
 
     private function prepUpdate($data)
     {
