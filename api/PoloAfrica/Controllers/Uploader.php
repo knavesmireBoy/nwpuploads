@@ -22,7 +22,6 @@ class Uploader
         $answer = $data['answer'];
         unset($data['answer']);
         unset($data['original']);
-        dump($answer);
 
         if ($answer === 'No') {
             $record = $this->table->find('id', $data['id'], null, 0, 0, \PDO::FETCH_ASSOC);
