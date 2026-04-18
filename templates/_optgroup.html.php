@@ -1,5 +1,4 @@
 <?php
-dump(9);
 if (isset($optgroup)) { ?>
     <optgroup label="<?= $optgroup; ?>">
         <?php foreach ($group as $k => $v): ?>

@@ -12,7 +12,7 @@
 			<option value="">Select One</option>
 			<?php
 			$group = $all_users;
-			include '_opgtroup.html.php'; ?>
+			include '_optgroup.html.php'; ?>
 		</select>
 	<?php }
 	if (!empty($colleagues)) { ?>
