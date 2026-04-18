@@ -18,7 +18,7 @@ class Uploader
 
     private function doUpdate($data){
 
-        dump('answer: ' . $_POST['answer']);
+        dump('answer: ' . $data['answer'] ?? 'yikes');
 
     }
 
@@ -35,6 +35,7 @@ class Uploader
                 $all[$u->id] = $u->name;
             }
         }
+        dump($all);
         $swap = $data['answer'] ?? 'No';
         $payload = ['users' => $all, 'answer' => $swap, 'button' => 'Update', 'filename' => $file->filename, 'description' => $file->description];
 
@@ -324,12 +325,6 @@ class Uploader
     public function update()
     {
         return $this->prepUpdate($_POST);
-    }
-
-
-    public function swap()
-    {
-        
     }
 
     public function swapSubmit()
