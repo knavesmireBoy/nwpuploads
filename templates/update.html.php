@@ -1,7 +1,7 @@
 <form action="<?= $action; ?>" method="post" name="updatefileinfo" class="details">
 	<a href="/uploader/load/" class="cancel">X</a>
 	<?php
-	dump([$answer, $all_users]);
+	dump(empty($colleagues));
 	//if no allow filename and description to be updated, otherwise assume we are only interested in changing file ownership
 	if ($answer === 'No') {
 	?>
