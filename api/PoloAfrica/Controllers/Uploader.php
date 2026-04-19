@@ -467,25 +467,33 @@ class Uploader
     {
         include CONNECT;
         $tel = '';
-        $from .= " INNER JOIN userrole ON usr.id=userrole.userid";
-        $user_id =  $_GET['user'] ?? ''; //either a user id (int) or a client domain (str)
-        dump([isset($_GET['user']),isset($_GET['text']),isset($_GET['suffix'])]);
+      //  $from .= " INNER JOIN userrole ON usr.id=userrole.userid";
+        $user_id =  $_GET['user'] ?? ''; 
+        
         $text = $_GET['text'];
         $suffix = $_GET['suffix'];
         $check = NULL;
         $where = NULL;
-        //do not think group is required here
         $group = " GROUP BY upload.id ";
         $domainstr = fromStrPos(DBSYSTEM);
 
         if ($priv == 'Admin') {
+            $user = $this->usertable->find('id', $user_id);
+            $user = $user[0] ?? null;
+            if($user){
+                $details = $user->getDetails();
+            }
+            dump($details);
             //will either return empty set(no error) or produce count. Test to see if a client has been selected.
+
             $sql = "SELECT domain FROM client WHERE domain=:id";
             $st = $pdo->prepare($sql);
             $st->bindValue(":id", $user_id);
             doPreparedQuery($st, "Unable to find domain");
             $row = $st->fetch(\PDO::FETCH_ASSOC);
             //user_id is text(domain) for Clients
+
+
             if ($row) {
                 $dom = $row['domain'];
                 $from .= " INNER JOIN client ON $domainstr = client.domain ";
@@ -514,13 +522,12 @@ class Uploader
             $where .= " AND upload.filename LIKE '%$text%'";
         }
        
-        if (isset($suffix)) {
+        if (!empty($suffix)) {
             $group = every($group, '');
             if ($suffix == 'owt') {
                 $where .= " AND (upload.filename NOT LIKE '%pdf' AND upload.filename NOT LIKE '%zip')";
             } elseif ($suffix == 'pdf' || $suffix == 'zip') {
                 $where .= " AND upload.filename LIKE '%$suffix'";
-                //$where .= sprintf(" AND upload.filename LIKE %s", GetSQLValueString('%'.$suffix, "text"));//Tricky percent symbol
             }
         }
         $sql =  $select . $from . $where . $order;
