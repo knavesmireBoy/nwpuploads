@@ -128,7 +128,7 @@ class PoloAfricaWebsite implements Website
 
     public function getControllerArgs($k): array
     {
-        $lib = ['uploader' => [PAGINATE, 0, 1]];
+        $lib = ['uploader' => [PAGINATE, 0, 1, '/uploader/load/']];
         return $lib[$k] ?? [];
     }
 

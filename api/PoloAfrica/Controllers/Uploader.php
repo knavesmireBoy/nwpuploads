@@ -7,7 +7,8 @@ use \Ninja\DatabaseTable;
 class Uploader
 {
 
-    public function __construct(private DatabaseTable $table, private DatabaseTable $usertable, private int $display, private int $start, private int $pages) {}
+
+    public function __construct(private DatabaseTable $table, private DatabaseTable $usertable, private int $display, private int $start, private int $pages, private string $home) {}
 
     private function remove($path)
     {
@@ -51,7 +52,7 @@ class Uploader
         $file = $this->table->find('id', $data['id'] ?? 0);
         $file = $file[0] ?? null;
         if (!isset($_SESSION['username'])) {
-            reLocate("/uploader/load");
+            reLocate($this->home);
         }
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
@@ -132,12 +133,15 @@ class Uploader
 
         $lib = [
             'search' => ['template' => '_search.html.php', 'zero' => null, 'action' => '/uploader/find/'],
+
             'upload' => ['template' => 'upload.html.php'],
+
             'delete' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this file?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/uploader/confirm/'],
 
             'confirm' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Select the extent of deletions", 'delete' => 'proceed',  'action' => '/uploader/destroy/'],
-            
+
             'edit' => ['id' => $data['id'] ?? '', 'pos' => 'Yes', 'neg' => 'No', 'action' => $ismulti ? '/uploader/swap/' : '/uploader/edit/', 'call' => 'update', 'prompt' => $ismulti ? "Change ownership on ALL files?" : "Proceed to Update", 'template' => 'prompt.html.php'],
+
             'update' => ['id' => $data['id'] ?? '', 'button' =>  $data['button'] ?? '', 'all_users' => $data['users'] ?? [], 'colleagues' => $data['colleagues'] ?? [], 'answer' => $data['answer'] ?? '', 'action' => '/uploader/update/', 'template' => 'update.html.php', 'title' => 'Update', 'filename' => $data['filename'] ?? '', 'description' => $data['description'] ?? '']
         ];
 
@@ -260,16 +264,19 @@ class Uploader
 
     public function load(string $key = '', array $vars = [])
     {
+        if (!isset($_SESSION['username'])) {
+            reLocate(REG);
+        }
+
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
         $priv = $details['role'];
         $cid = $details['client_id'];
-        $files = [];
-        $owner = [];
+        $cb = $this->validateFile($priv, $cid, $user->id);
         $total = count($this->table->findAll());
         $displayFiles = $this->table->findAll(null, $this->display, $this->start);
-        $cb = $this->validateFile($priv, $cid, $user->id);
-
+        $files = [];
+        $owner = [];
         $customVars = [];
         //$customVars: vars for prompts
         $error = $this->getErrors($key);
