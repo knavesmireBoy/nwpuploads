@@ -1,5 +1,5 @@
 <form action="?" method="get" name="search" class="details">
-    <a href="." class="cancel">X</a>
+    <a href="/uploader/load/" class="cancel">X</a>
     <p>View files satisfying the following criteria</p>
     <?php if (!isset($zero)) : ?>
         <label for="user">By user</label><select id="user" name="user">
