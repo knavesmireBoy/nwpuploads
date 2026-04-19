@@ -481,7 +481,6 @@ class Uploader
         $group = " GROUP BY upload.id ";
         $domainstr = fromStrPos(DBSYSTEM);
         $user = $this->usertable->find('id', intval($user_id));
-        dump($user);
 
         $user = $user[0] ?? null;
         if($user){
