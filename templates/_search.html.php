@@ -22,7 +22,5 @@
         <option value="zip">zip</option>
         <option value="owt">other</option>
     </select>
-    <input type="hidden" name="action" value="search" />
-    <input type="hidden" name="flag" />
     <input type="submit" value="Search" />
 </form>
