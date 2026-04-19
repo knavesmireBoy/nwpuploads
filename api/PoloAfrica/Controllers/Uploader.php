@@ -473,14 +473,14 @@ class Uploader
         $priv = $details['role'];
       //  $from .= " INNER JOIN userrole ON usr.id=userrole.userid";
         $user_id =  $_GET['user'] ?? ''; 
-        
+        dump($user_id);
+
         $text = $_GET['text'];
         $suffix = $_GET['suffix'];
         $check = NULL;
         $where = NULL;
         $group = " GROUP BY upload.id ";
         $domainstr = fromStrPos(DBSYSTEM);
-
         $user = $this->usertable->find('id', $user_id);
         $user = $user[0] ?? null;
         if($user){
