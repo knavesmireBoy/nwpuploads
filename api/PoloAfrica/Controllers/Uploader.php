@@ -18,7 +18,7 @@ class Uploader
 
     private function doUpdate($data)
     {
-        $owner = $data['original'];
+        $owner = intval($data['original']);
         $answer = $data['answer'];
         unset($data['answer']);
         unset($data['original']);
