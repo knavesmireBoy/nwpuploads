@@ -462,4 +462,15 @@ class Uploader
         $this->pages = $p;
         return $this->load();
     }
+
+    public function find()
+    {
+
+        return $this->load('search', ['template' => '_search.html.php', 'zero' => null, 'action' => '/uploader/find/']);
+    }
+
+    public function findSubmit()
+    {
+        dump($_POST);
+    }
 }

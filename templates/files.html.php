@@ -143,12 +143,16 @@ if (count($files) > 0): ?>
         </a></h2>
 <?php
 endif;
+/*
 $wither = seek();
 $lnk = ($wither !== '.' ? 'Search files' : 'Clear search results');
 if (!isset($_GET['find']) && count($files) > 0) { ?>
     <p><a href="<?= $wither; ?>"><?= $lnk; ?></a></p>
 <?php
 } ?>
-<p><a href="admin/">Admin Pages</a></p>
+*/
+?>
+<p><a href="/uploader/find/">Admin Pages</a></p>
+<p><a href="/admin/load">Admin Pages</a></p>
 <?php
 include "footer.html.php";

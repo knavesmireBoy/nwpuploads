@@ -7,7 +7,7 @@
 			<?php if ($priv === "Admin") { ?>
 				<optgroup label="clients">
 				<?php }
-			foreach ($client as $k => $v): ?>
+			foreach ($clients as $k => $v): ?>
 					<option value="<?= $k; ?>"><?= $v; ?>
 					</option><?php endforeach; ?>
 				</optgroup>
