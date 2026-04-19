@@ -152,7 +152,7 @@ if (!isset($_GET['find']) && count($files) > 0) { ?>
 } ?>
 */
 ?>
-<p><a href="/uploader/find/">Admin Pages</a></p>
-<p><a href="/admin/load">Admin Pages</a></p>
+<p><a href="/uploader/find/">Search Files</a></p>
+<p><a href="/admin/load/">Admin Pages</a></p>
 <?php
 include "footer.html.php";
