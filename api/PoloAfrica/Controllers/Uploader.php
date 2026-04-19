@@ -48,11 +48,10 @@ class Uploader
 
     private function prepUpdate($data)
     {
-
         $file = $this->table->find('id', $data['id'] ?? 0);
         $file = $file[0] ?? null;
         if (!isset($_SESSION['username'])) {
-            reLocate($this->home);
+            reLocate(REG);
         }
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
@@ -66,25 +65,10 @@ class Uploader
         }
         $swap = $data['answer'] ?? 'No';
         $payload = ['users' => $all, 'answer' => $swap, 'button' => 'Update', 'filename' => $file->filename, 'description' => $file->description];
-
         return $this->load('update', [...$_POST, ...$payload]);
     }
 
-    private function sortSwap($data)
-    {
-        if (isset($data['update']) && $data['update'] === 'No') {
-            reLocate('/uploader/load');
-        }
-
-        if (isset($data['update']) && $data['update'] === 'Yes') {
-            return 'Yes';
-        } else {
-            reLocate('/uploader/load');
-        }
-    }
-
     private function getErrors($key)
-
     {
         $lib = ['missing' => 'File could not be found'];
         return $lib[$key] ?? '';
@@ -132,7 +116,7 @@ class Uploader
         $owner = ['ownerid' => $data['ownerid'] ?? '', 'ownername' => $data['ownername'] ?? '', 'domain' => $data['domain'] ?? '', 'multi' => $data['multi'] ?? '', 'editor' => $data['editor'] ?? '', 'clientname' => $data['clientname'] ?? ''];
 
         $lib = [
-            'search' => ['template' => '_search.html.php', 'zero' => null, 'action' => '/uploader/find/'],
+            'search' => ['template' => '_search.html.php', 'zero' => null, 'action' => '/uploader/found/'],
 
             'upload' => ['template' => 'upload.html.php'],
 
@@ -479,8 +463,8 @@ class Uploader
         return $this->load('search');
     }
 
-    public function findSubmit()
+    public function found()
     {
-        dump($_POST);
+        dump($_GET);
     }
 }
