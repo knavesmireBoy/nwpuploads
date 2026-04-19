@@ -23,10 +23,11 @@ class Uploader
         unset($data['answer']);
         unset($data['original']);
         if ($answer === 'No') {
-            //$data['id']
-            $record = $this->table->find('id', 6666, null, 0, 0, \PDO::FETCH_ASSOC);
-            dump($record);
+            $record = $this->table->find('id', $data['id'], null, 0, 0, \PDO::FETCH_ASSOC);
             $record = $record[0] ?? [];
+            if (!$record === []) {
+                reLocate('/uploader/load/');
+            }
             $record['userid'] = $data['user'];
             if (isset($data['user'])) {
                 $record['userid'] = $data['user'];
