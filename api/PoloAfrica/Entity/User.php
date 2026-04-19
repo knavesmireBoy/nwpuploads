@@ -76,7 +76,8 @@ class User extends Entity
     $details = $this->getDetails();
     if ($details['client_id']) {
       $users = $this->fetch('TABLE', 'client_id', $this->client_id);
-      return array_map(fn($o) => $o->id, $users);
+      
+      return array_map(fn($o) => $o['id'], $users);
     }
     else {
       return [];
