@@ -486,25 +486,12 @@ class Uploader
         if($user){
             $details = $user->getDetails();
         }
-        dump($details);
 
         if ($priv == 'Admin') {
-          
-            //will either return empty set(no error) or produce count. Test to see if a client has been selected.
 
-            $sql = "SELECT domain FROM client WHERE domain=:id";
-            $st = $pdo->prepare($sql);
-            $st->bindValue(":id", $user_id);
-            doPreparedQuery($st, "Unable to find domain");
-            $row = $st->fetch(\PDO::FETCH_ASSOC);
-            //user_id is text(domain) for Clients
+            if (isset($details['client_id'])) {
+               dump($user->foo());
 
-
-            if ($row) {
-                $dom = $row['domain'];
-                $from .= " INNER JOIN client ON $domainstr = client.domain ";
-                $where = " WHERE domain='$dom'";
-                $check = count($row);
             } else {
                 if ($user_id !== '') {
                     $where = " WHERE usr.id=$user_id";

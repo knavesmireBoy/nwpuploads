@@ -70,4 +70,16 @@ class User extends Entity
     }
     return null;
   }
+
+  public function foo()
+  {
+    $details = $this->getDetails();
+    if ($details['client_id']) {
+      $users = $this->fetch('table', ' client_id', $this->client_id);
+      return array_map(fn($o) => $o->id, $users);
+    }
+    else {
+      return [];
+    }
+  }
 }
