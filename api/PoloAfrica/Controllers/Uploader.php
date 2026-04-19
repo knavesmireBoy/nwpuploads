@@ -467,6 +467,10 @@ class Uploader
     {
         include CONNECT;
         $tel = '';
+
+        $user = $this->usertable->find('email', $_SESSION['username'])[0];
+        $details = $user->getDetails();
+        $priv = $details['role'];
       //  $from .= " INNER JOIN userrole ON usr.id=userrole.userid";
         $user_id =  $_GET['user'] ?? ''; 
         
@@ -477,13 +481,15 @@ class Uploader
         $group = " GROUP BY upload.id ";
         $domainstr = fromStrPos(DBSYSTEM);
 
+        $user = $this->usertable->find('id', $user_id);
+        $user = $user[0] ?? null;
+        if($user){
+            $details = $user->getDetails();
+        }
+        dump($details);
+
         if ($priv == 'Admin') {
-            $user = $this->usertable->find('id', $user_id);
-            $user = $user[0] ?? null;
-            if($user){
-                $details = $user->getDetails();
-            }
-            dump($details);
+          
             //will either return empty set(no error) or produce count. Test to see if a client has been selected.
 
             $sql = "SELECT domain FROM client WHERE domain=:id";
