@@ -22,7 +22,6 @@ class Uploader
         $answer = $data['answer'];
         unset($data['answer']);
         unset($data['original']);
-
         if ($answer === 'No') {
             $record = $this->table->find('id', $data['id'], null, 0, 0, \PDO::FETCH_ASSOC);
             $record = $record[0] ?? [];
@@ -35,6 +34,7 @@ class Uploader
         } else {
             $records = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
             foreach ($records as $record) {
+                dump([is_int($record['userid']), is_int($owner)]);
                 if ($record['userid'] == $owner && isset($data['user'])) {
                     $record['userid'] = $data['user'];
                     $this->table->save($record);
