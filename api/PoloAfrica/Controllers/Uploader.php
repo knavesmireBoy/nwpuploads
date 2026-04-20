@@ -473,12 +473,9 @@ class Uploader
         $check = NULL;
         $file = $this->table->getEntity();
         $byText = curry2('getter')('filename');
-        $pos = curry2('strpos')('nn');
-
-        $foo = composer(curry2('getter')('filename'), $pos, 'is_numeric');
-        $bar = composer('is_numeric', $pos, curry2('getter')('filename'));
-       // $foo = composer('strpos', curry2('getter')('filename'), 'strpos');
-        dump($bar(['filename' => 'johnny']));
+        $pos = curry2('strpos')('jo');
+        $byText = composer('is_numeric', $pos, curry2('getter')('filename'));
+        var_dump($byText(['filename' => 'johnny']));
         if ($user_id) {
             if ($priv == 'Admin') {
                 if (isset($details['client_id'])) {
@@ -496,8 +493,10 @@ class Uploader
         }
 
         if ($text != '') { // Some search text was specified 
-          // $files = safeFilter($files);
+           $files = safeFilter($files, $byText);
         }
+
+        dump($files);
 
         if (!empty($suffix)) {
             $group = every($group, '');
