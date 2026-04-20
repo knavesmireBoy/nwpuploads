@@ -467,37 +467,26 @@ class Uploader
     {
         include CONNECT;
         $tel = '';
-
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
         $priv = $details['role'];
-        $user_id =  $_GET['user'] ?? ''; 
+        $user_id =  $_GET['user'] ?? '';
         $text = $_GET['text'];
         $suffix = $_GET['suffix'];
         $check = NULL;
-
-        $user = $this->usertable->find('id', intval($user_id));
         $file = $this->table->getEntity();
-        dump(toObject($file->getClientFiles($user_id), true));
-
-        $user = $user[0] ?? null;
-        if($user){
-            $details = $user->getDetails();
-        }
-
         if ($priv == 'Admin') {
-
             if (isset($details['client_id'])) {
-               $userids = $user->getUserIds();
-
+                $files = toObject($file->getClientFiles($user_id), true);
             } else {
                 if ($user_id !== '') {
-                    $where = " WHERE usr.id=$user_id";
-                    $group = every($group, '');
+                    $files = $this->table->find('userid', $user_id, null, 0, 0, \PDO::FETCH_ASSOC);
                 } else {
-                    $where = ' WHERE TRUE';
+                    $files = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
                 }
             }
+            dump($files);
+
         } //admin
         else { //multi client
             if ($user_id != '') { // A user is selected 
@@ -512,7 +501,7 @@ class Uploader
         if ($text != '') { // Some search text was specified 
             $where .= " AND upload.filename LIKE '%$text%'";
         }
-       
+
         if (!empty($suffix)) {
             $group = every($group, '');
             if ($suffix == 'owt') {
