@@ -143,6 +143,7 @@ if (count($files) > 0): ?>
         </a></h2>
 <?php
 endif;
+var_dump($searchform);
 if (!isset($searchform) || empty($searchtext)) { ?>
     <p><a href="/uploader/find/">Search Files</a></p>
 <?php }
