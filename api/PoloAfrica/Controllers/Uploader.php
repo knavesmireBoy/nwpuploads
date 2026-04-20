@@ -475,23 +475,25 @@ class Uploader
         $suffix = $_GET['suffix'];
         $check = NULL;
         $file = $this->table->getEntity();
+
+        dump($user_id);
         if ($priv == 'Admin') {
             if (isset($details['client_id'])) {
                 $files = toObject($file->getClientFiles($user_id), true);
             } else {
                 if ($user_id !== '') {
                     $files = $this->table->find('userid', $user_id, null, 0, 0, \PDO::FETCH_ASSOC);
+                    $files = $files[0] ?? [];
                 } else {
                     $files = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
                 }
             }
-            dump($files);
-
         } //admin
         else { //multi client
             if ($user_id != '') { // A user is selected 
-                $where = " WHERE usr.id=$user_id";
-                $group = every($group, '');
+                $files = toObject($file->getClientFiles($user_id), true);
+
+                dump($files);
             } else {
                 $email = $_SESSION['email'];
                 $where = " WHERE usr.email='$email'";
