@@ -500,7 +500,7 @@ class Uploader
 
         if (!empty($suffix)) {
             $pos = curry2('strrchr');
-            $sub = partial('substr', 1);
+            $sub = curry2('substr')(1);
             $eq = partial('equals', $suffix);
             $byExt = composer($eq, $sub, $pos($suffix), curry2('getter')('filename'));
             $files = safeFilter($files, $byExt);
