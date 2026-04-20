@@ -19,7 +19,7 @@ $home = 'uploader/load';//for the purposes of interrogating the $uri leave off t
 $posts = ['assign', 'create', 'contact', 'edit', 'login', 'manage', 'permissions', 'register', 'retrieve', 'retire', 'unarchive', 'relocate', 'swap', 'fart', 'upload', 'destroy', 'update', 'swap', 'find'];
 $pp = $pages[$route[0]] ?? '';
 
-$website = new \PoloAfrica\PoloAfricaWebsite($pp);
+$website = new \NorthWolds\NorthWoldsWebsite($pp);
 $entryPoint = new \Ninja\EntryPoint($website, $posts);
 $layoutVariables = $entryPoint->run($uri, $_SERVER['REQUEST_METHOD'], 'public', $home);
 echo $entryPoint->loadTemplate($layout, $layoutVariables);

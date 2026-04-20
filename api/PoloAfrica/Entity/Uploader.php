@@ -1,6 +1,6 @@
 <?php
 
-namespace PoloAfrica\Entity;
+namespace NorthWolds\Entity;
 
 class Uploader extends Entity
 {

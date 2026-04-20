@@ -1,6 +1,6 @@
 <?php
 
-namespace PoloAfrica\Controllers;
+namespace NorthWolds\Controllers;
 
 class Logout
 {
@@ -82,7 +82,7 @@ class Logout
                     'title' => 'Log In Successful',
                     'variables' => [
                         'userid' => $user->id ?? '',
-                        'admin' => $user->hasPermission(\PoloAfrica\Entity\User::ACCOUNT_EDITOR),
+                        'admin' => $user->hasPermission(\NorthWolds\Entity\User::ACCOUNT_EDITOR),
                         'username' => "you are logged in as $user->name",
                         'user' => $user
                     ]

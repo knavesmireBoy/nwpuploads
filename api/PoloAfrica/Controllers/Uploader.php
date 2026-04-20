@@ -1,6 +1,6 @@
 <?php
 
-namespace PoloAfrica\Controllers;
+namespace NorthWolds\Controllers;
 
 use \Ninja\DatabaseTable;
 
@@ -136,7 +136,7 @@ class Uploader
         return $ret;
     }
 
-    private function prepFileForDisplay($file, $user)
+    private function prepFileForDisplay(array $file, \NorthWolds\Entity\User $user)
     {
         $details = $user->getDetails();
         $name = $details['name'];
@@ -144,7 +144,7 @@ class Uploader
         unset($details['role']);
         unset($details['name']);
         unset($details['client_id']);
-        $vars = array_merge(get_object_vars($file), $details, ['user' => $name]);
+        $vars = array_merge($file, $details, ['user' => $name]);
         $vars['origin'] = substr($vars['file'], 11, 14);
         return $vars;
     }
@@ -337,7 +337,7 @@ class Uploader
         foreach ($displayFiles as $file) {
             $o = $this->usertable->find('id', $file->userid)[0];
             if ($cb($file->userid)) {
-                $files[] = $this->prepFileForDisplay($file, $o);
+                $files[] = $this->prepFileForDisplay(get_object_vars($file), $o);
             }
         }
         return $this->display($user->id, $priv, $pages, $files, $owner, $customVars);

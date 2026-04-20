@@ -1,6 +1,6 @@
 <?php
 
-namespace PoloAfrica\Controllers;
+namespace NorthWolds\Controllers;
 
 use \Ninja\DatabaseTable;
 
@@ -17,7 +17,7 @@ class User
         if (isset($_SESSION['username'])) {
             $subject = $subject ?? $this->table->find('email', $_SESSION['username'])[0];
         }
-        $location = empty($subject) ? REG : ($subject->hasPermission(\PoloAfrica\Entity\User::ACCOUNT_EDITOR) ? USER_LIST : BADMINTON);
+        $location = empty($subject) ? REG : ($subject->hasPermission(\NorthWolds\Entity\User::ACCOUNT_EDITOR) ? USER_LIST : BADMINTON);
         reLocate($location . $info, '../../');
     }
 
@@ -208,7 +208,7 @@ class User
         $cookies = array_filter(['page', 'altmode', 'error'], partial('getProp', $_COOKIE));
         array_map(doSetCookie(false), $cookies);
         $editor = $this->fetch('table', 'id', $this->userid);
-        $admin = $editor->hasPermission(\PoloAfrica\Entity\User::ACCOUNT_EDITOR);
+        $admin = $editor->hasPermission(\NorthWolds\Entity\User::ACCOUNT_EDITOR);
         $name = $editor->name;
         $username = "user you are logged in as $name";
 
@@ -238,7 +238,7 @@ class User
             return [
                 'template' => 'actions.html.php',
                 'variables' => [
-                    'permissions' => $editor->hasPermission(\PoloAfrica\Entity\User::ACCOUNT_EDITOR),
+                    'permissions' => $editor->hasPermission(\NorthWolds\Entity\User::ACCOUNT_EDITOR),
                     'msg' => $msg,
                     'username' => $editor->name ?? ''
                 ]
@@ -265,8 +265,8 @@ class User
         $action = empty($subject) ? USER_REG : USER_EDIT;
         $submit = empty($subject) ? 'Register' : 'Edit';
         if (isset($editor)) {
-            $owner = $this->authorise($editor->checkPermission(\PoloAfrica\Entity\User::ADMIN), $editor->id, $subject->id);
-            $permissions =  $editor->hasPermission(\PoloAfrica\Entity\User::ACCOUNT_EDITOR);
+            $owner = $this->authorise($editor->checkPermission(\NorthWolds\Entity\User::ADMIN), $editor->id, $subject->id);
+            $permissions =  $editor->hasPermission(\NorthWolds\Entity\User::ACCOUNT_EDITOR);
         }
 
         return [
@@ -330,7 +330,7 @@ class User
             $userid = $_POST['pk'] ?? 0;
             $owner = $this->fetch('table', 'id', $this->userid);
             $candidate = $this->fetch('table', 'id', $userid);
-            $admin = $this->getPeer(\PoloAfrica\Entity\User::ADMIN);
+            $admin = $this->getPeer(\NorthWolds\Entity\User::ADMIN);
             if ($owner && $candidate) {
                 $current = $this->getPeer($candidate->permissions);
                 if ($this->authorise($admin > $current, $owner->id, $userid)) {
@@ -371,7 +371,7 @@ class User
         if (isset($_SESSION['username'])) {
             $editor = $this->table->find('email', $_SESSION['username'])[0] ?? null;
         }
-        if (isset($editor) && $editor->hasPermission(\PoloAfrica\Entity\User::ACCOUNT_EDITOR)) {
+        if (isset($editor) && $editor->hasPermission(\NorthWolds\Entity\User::ACCOUNT_EDITOR)) {
             $list = $this->listByAccess($editor);
         }
 
@@ -419,7 +419,7 @@ class User
             $this->exit($subject);
         }
         $subject = $subject[0];
-        $reflected = new \ReflectionClass('\PoloAfrica\Entity\User');
+        $reflected = new \ReflectionClass('\NorthWolds\Entity\User');
         $constants = $reflected->getConstants();
         $pretty = [];
         $tmp = '';

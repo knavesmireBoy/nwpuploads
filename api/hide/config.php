@@ -16,8 +16,8 @@ ini_set('pcre.jit', false);
 date_default_timezone_set( "Europe/London" );
 
 define("NINJA", 'Ninja/');
-define("CONTROLLERS", 'PoloAfrica/controllers/');
-define("ENTITY", 'PoloAfrica/entity/');
+define("CONTROLLERS", 'NorthWolds/controllers/');
+define("ENTITY", 'NorthWolds/entity/');
 define("INCLUDES", 'includes/');
 define("MARKDOWN", 'Ninja/Markdown');
 define("MICHELF", '../Michelf/MarkdownExtra.php');

@@ -1,14 +1,14 @@
 <?php
 
-namespace PoloAfrica;
+namespace NorthWolds;
 
 use \Ninja\Website;
 use \Ninja\DatabaseTable;
 use \Ninja\Authentication;
-use \PoloAfrica\Controllers\Pages;
+use \NorthWolds\Controllers\Pages;
 use stdClass;
 
-class PoloAfricaWebsite implements Website
+class NorthWoldsWebsite implements Website
 {
     private $userTable;
     private $roleTable;
@@ -40,8 +40,8 @@ class PoloAfricaWebsite implements Website
         $this->userRoleTable = new DatabaseTable($this->pdo, 'userrole', 'userid');
         $this->roleTable = new DatabaseTable($this->pdo, 'role', 'id');
         $this->clientTable = new DatabaseTable($this->pdo, 'client', 'id');
-        $this->userTable = new DatabaseTable($this->pdo, 'usr', 'id', '\PoloAfrica\Entity\User', [&$this->userTable, $this->clientTable, $this->userRoleTable, $this->roleTable]);
-        $this->uploadTable = new DatabaseTable($this->pdo, 'upload', 'id', '\PoloAfrica\Entity\Uploader', [&$this->uploadTable, $this->userTable]);
+        $this->userTable = new DatabaseTable($this->pdo, 'usr', 'id', '\NorthWolds\Entity\User', [&$this->userTable, $this->clientTable, $this->userRoleTable, $this->roleTable]);
+        $this->uploadTable = new DatabaseTable($this->pdo, 'upload', 'id', '\NorthWolds\Entity\Uploader', [&$this->uploadTable, $this->userTable]);
         $this->authentication = new Authentication($this->userTable, 'email', 'password');
         //$this->authentication = new \stdClass();
     }
@@ -76,7 +76,7 @@ class PoloAfricaWebsite implements Website
         //https://stackoverflow.com/questions/534159/instantiate-a-class-from-a-variable-in-php#:~:text=Put%20the%20classname%20into%20a,%24classname(%22xyz%22)%3B
         $key = $this->validate($classname, $controllers);
         if ($key) {
-            $klas = "PoloAfrica\\Controllers\\" . ucwords($key);
+            $klas = "NorthWolds\\Controllers\\" . ucwords($key);
             return new $klas(...$args);
         }
     }
@@ -214,11 +214,11 @@ class PoloAfricaWebsite implements Website
         // $reroute = partial([$this, 'reroute'], $uri);
         $key = '';
         /*
-        $browser = \PoloAfrica\Entity\User::BROWSER;
-        $content = \PoloAfrica\Entity\User::CONTENT_EDITOR;
-        $chief = \PoloAfrica\Entity\User::CHIEF_EDITOR;
-        $account = \PoloAfrica\Entity\User::ACCOUNT_EDITOR;
-        $super = \PoloAfrica\Entity\User::SUPERADMIN;
+        $browser = \NorthWolds\Entity\User::BROWSER;
+        $content = \NorthWolds\Entity\User::CONTENT_EDITOR;
+        $chief = \NorthWolds\Entity\User::CHIEF_EDITOR;
+        $account = \NorthWolds\Entity\User::ACCOUNT_EDITOR;
+        $super = \NorthWolds\Entity\User::SUPERADMIN;
         */
         // $user = $this->authentication->isLoggedIn();
         //$permit = $user ? intval($user->permissions) : 0;

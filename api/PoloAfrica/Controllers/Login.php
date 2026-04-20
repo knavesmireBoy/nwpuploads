@@ -1,6 +1,6 @@
 <?php
 
-namespace PoloAfrica\Controllers;
+namespace NorthWolds\Controllers;
 
 class Login
 {
@@ -84,7 +84,7 @@ class Login
                     'title' => 'Log In Successful',
                     'variables' => [
                         'userid' => $user->id ?? '',
-                        'admin' => $user->hasPermission(\PoloAfrica\Entity\User::ACCOUNT_EDITOR),
+                        'admin' => $user->hasPermission(\NorthWolds\Entity\User::ACCOUNT_EDITOR),
                         'username' => "you are logged in as $user->name",
                         'user' => $user
                     ]
@@ -112,7 +112,7 @@ class Login
                     'title' => 'Log In Successful',
                     'variables' => [
                         'userid' => $user->id ?? '',
-                        'admin' => $user->hasPermission(\PoloAfrica\Entity\User::ACCOUNT_EDITOR),
+                        'admin' => $user->hasPermission(\NorthWolds\Entity\User::ACCOUNT_EDITOR),
                         'username' => "you are logged in as $user->name",
                         'user' => $user
                     ]

@@ -1,6 +1,6 @@
 <?php
 
-namespace PoloAfrica\Controllers;
+namespace NorthWolds\Controllers;
 
 class Spadger
 {
