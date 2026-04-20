@@ -476,7 +476,7 @@ class Uploader
         $check = NULL;
         $file = $this->table->getEntity();
         $pos = curry2('strpos');
-        $files = [];
+        $files = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
         if ($user_id) {
             if ($priv == 'Admin') {
                 if (isset($details['client_id'])) {
@@ -495,22 +495,18 @@ class Uploader
 
         if ($text != '') { // Some search text was specified 
             $byText = composer('is_numeric', $pos($text), curry2('getter')('filename'));
-            $files = isset($files[0]) ? $files : $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
             $files = safeFilter($files, $byText);
         }
 
         if (!empty($suffix)) {
-            $directory = new \DirectoryIterator(FILESTORE);
-            foreach ($directory as $fileinfo) {
-
-                if ($fileinfo->isFile()) {
-
-                    dump($fileinfo->getBasename($suffix));
-
-                  //  $fileinfo->getExtension();
-                }
-            }
+            $pos = curry2('strrchr');
+            $sub = partial('substr', 1);
+            $eq = partial('equals', $suffix);
+            $byExt = composer($eq, $sub, $pos($suffix), curry2('getter')('filename'));
+            $files = safeFilter($files, $byExt);
         }
+
+        dump($files);
  /*
         if ($records > $display) {
             $pages = ceil($records / $display);
