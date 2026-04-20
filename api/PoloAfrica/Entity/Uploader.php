@@ -17,7 +17,7 @@ class Uploader extends Entity
     public function __construct(protected \Ninja\DatabaseTable $table, protected \Ninja\DatabaseTable $usertable) {}
 
 
-    private function getClientFiles($ownerid, $flag = false)
+    public function getClientFiles($ownerid)
     {
         $user = $this->usertable->find('id', $ownerid)[0];
         $files = [];
@@ -32,7 +32,7 @@ class Uploader extends Entity
                 }
             }
         }
-        return $flag ? count($files) : $files;
+        return $files;
     }
 
     public function getDetails($prop = '')
@@ -57,7 +57,7 @@ class Uploader extends Entity
         $ret = $count > 1 ? 1 : 0;
         $res = $this->fetch('USERTABLE', 'id', $this->userid);
         if ($res['client_id']) {
-            $tmp = $this->getClientFiles($this->userid, true) > $count ? 2 : 0;
+            $tmp = count($this->getClientFiles($this->userid)) > $count ? 2 : 0;
             $ret += $tmp;
         }
         $multi = ['multi' => $ret];

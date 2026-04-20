@@ -471,23 +471,14 @@ class Uploader
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
         $priv = $details['role'];
-      //  $from .= " INNER JOIN userrole ON usr.id=userrole.userid";
         $user_id =  $_GET['user'] ?? ''; 
-
         $text = $_GET['text'];
         $suffix = $_GET['suffix'];
         $check = NULL;
-        $where = NULL;
-        $group = " GROUP BY upload.id ";
-        $domainstr = fromStrPos(DBSYSTEM);
-
 
         $user = $this->usertable->find('id', intval($user_id));
         $file = $this->table->getEntity();
-
         dump($file->getClientFiles($user_id));
-
-       
 
         $user = $user[0] ?? null;
         if($user){
