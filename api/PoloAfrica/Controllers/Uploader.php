@@ -478,7 +478,7 @@ class Uploader
 
         $user = $this->usertable->find('id', intval($user_id));
         $file = $this->table->getEntity();
-        dump($file->getClientFiles($user_id));
+        dump(toObject($file->getClientFiles($user_id), true));
 
         $user = $user[0] ?? null;
         if($user){
