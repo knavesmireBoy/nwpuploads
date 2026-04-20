@@ -493,11 +493,12 @@ class Uploader
         }
 
         if ($text != '') { // Some search text was specified 
-           $files = isset($files[0]) ? $files : $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC)[0];
+           $files = isset($files[0]) ? $files : $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
+
            $files = safeFilter($files, $byText);
         }
 
-        dump($files);
+     
 
         if (!empty($suffix)) {
             $group = every($group, '');
