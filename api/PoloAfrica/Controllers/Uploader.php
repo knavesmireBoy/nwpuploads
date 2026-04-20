@@ -505,17 +505,10 @@ class Uploader
             $find = composer($sub, $pos($suffix), curry2('getter')('filename'));
             if ($suffix === 'owt') {
             } else {
-
-
-
-
-                $bar = curry2('strrchr')('.');
                 $sub = curry2('substr')(1);
-                $foo = $pos($suffix);
                 $eq = partial('equals', $suffix);
-              $byExt = composer($pos($suffix), curry2('getter')('filename'));
-                dump([$files[6], $bar($files[6])]);
-              // $files = safeFilter($files, $byExt);
+                $byExt = composer($eq, $sub, curry2('strrchr')('.'), curry2('getter')('filename'));
+                $files = safeFilter($files, $byExt);
             }
         }
 
