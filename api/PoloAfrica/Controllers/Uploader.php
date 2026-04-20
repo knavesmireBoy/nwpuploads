@@ -502,19 +502,23 @@ class Uploader
         if (!empty($suffix)) {
             $directory = new \DirectoryIterator(FILESTORE);
             foreach ($directory as $fileinfo) {
+
                 if ($fileinfo->isFile()) {
-                    echo $fileinfo->getExtension() . "\n";
+
+                    dump($fileinfo->getExtension($suffix));
+
+                  //  $fileinfo->getExtension();
                 }
             }
         }
-
+ /*
         if ($records > $display) {
             $pages = ceil($records / $display);
         } else {
             $pages = 1;
         }
 
-        /*
+       
         $files = array();
         foreach ($rows as $row) {
             $files[] = array(
