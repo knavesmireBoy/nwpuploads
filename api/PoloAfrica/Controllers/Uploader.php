@@ -513,8 +513,8 @@ class Uploader
                 $sub = curry2('substr')(1);
                 $foo = $pos($suffix);
                 $eq = partial('equals', $suffix);
-                $byExt = composer($sub, $pos($suffix)/*, curry2('getter')('filename')*/);
-                dump([$suffix, $files[6], $foo($files[6])]);
+              //  $byExt = composer($sub, $pos($suffix)/*, curry2('getter')('filename')*/);
+                dump([$suffix, strrchr($files[6], '.')]);
               // $files = safeFilter($files, $byExt);
             }
         }
