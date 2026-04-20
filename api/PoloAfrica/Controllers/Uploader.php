@@ -507,7 +507,8 @@ class Uploader
             } else {
                 $pos = curry2('strrchr')('.');
                 $eq = partial('equals', $suffix);
-                $byExt = composer($eq, $sub, $pos($suffix), curry2('getter')('filename'));
+                $byExt = composer($sub, $pos($suffix), curry2('getter')('filename'));
+                dump($byExt($files[0]));
                 $files = safeFilter($files, $byExt);
             }
         }
