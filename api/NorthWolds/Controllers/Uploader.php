@@ -56,7 +56,6 @@ class Uploader
             'goto' => '',
             'owner' => $owner,
             'key' => $userId,
-            'searchform' => [],
             'searchtext' => $searchText ? $searchText : ''
         ];
         $vars = array_merge($defaultVars, $customVars);
@@ -167,7 +166,7 @@ class Uploader
         $owner = ['ownerid' => $data['ownerid'] ?? '', 'ownername' => $data['ownername'] ?? '', 'domain' => $data['domain'] ?? '', 'multi' => $data['multi'] ?? '', 'editor' => $data['editor'] ?? '', 'clientname' => $data['clientname'] ?? ''];
 
         $lib = [
-            'search' => ['template' => '_search.html.php', 'zero' => null, 'action' => '/uploader/found/', 'searchform'],
+            'search' => ['template' => '_search.html.php', 'zero' => null, 'action' => '/uploader/found/', 'searchform' => true],
 
             'upload' => ['template' => 'upload.html.php'],
 
