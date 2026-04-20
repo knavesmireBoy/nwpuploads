@@ -497,7 +497,9 @@ class Uploader
 
         if ($text != '') { // Some search text was specified 
             $files = isset($files[0]) ? $files : $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
+            dump($files[0]);
             $files = safeFilter($files, $byText);
+
         }
 
         dump($files);
