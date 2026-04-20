@@ -480,7 +480,14 @@ class Uploader
         $where = NULL;
         $group = " GROUP BY upload.id ";
         $domainstr = fromStrPos(DBSYSTEM);
+
+
         $user = $this->usertable->find('id', intval($user_id));
+        $file = $this->table->getEntity();
+
+        dump($file->getClientFiles($user_id));
+
+       
 
         $user = $user[0] ?? null;
         if($user){
@@ -490,7 +497,7 @@ class Uploader
         if ($priv == 'Admin') {
 
             if (isset($details['client_id'])) {
-               dump($user->foo());
+               $userids = $user->getUserIds();
 
             } else {
                 if ($user_id !== '') {
