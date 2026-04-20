@@ -6,8 +6,6 @@ use \Ninja\DatabaseTable;
 
 class Uploader
 {
-
-
     public function __construct(private DatabaseTable $table, private DatabaseTable $usertable, private int $display, private int $start, private int $pages, private string $home) {}
 
     private function remove($path)
@@ -116,7 +114,7 @@ class Uploader
         $owner = ['ownerid' => $data['ownerid'] ?? '', 'ownername' => $data['ownername'] ?? '', 'domain' => $data['domain'] ?? '', 'multi' => $data['multi'] ?? '', 'editor' => $data['editor'] ?? '', 'clientname' => $data['clientname'] ?? ''];
 
         $lib = [
-            'search' => ['template' => '_search.html.php', 'zero' => null, 'action' => '/uploader/found/'],
+            'search' => ['template' => '_search.html.php', 'zero' => null, 'action' => '/uploader/found/', 'searchform'],
 
             'upload' => ['template' => 'upload.html.php'],
 
@@ -459,7 +457,6 @@ class Uploader
 
     public function find()
     {
-
         return $this->load('search');
     }
 
@@ -475,33 +472,30 @@ class Uploader
         $suffix = $_GET['suffix'];
         $check = NULL;
         $file = $this->table->getEntity();
+        $byText = curry2('getter')('filename');
+        $pos = curry2('strpos')('nn');
 
-        dump($user_id);
-        if ($priv == 'Admin') {
-            if (isset($details['client_id'])) {
-                $files = toObject($file->getClientFiles($user_id), true);
-            } else {
-                if ($user_id !== '') {
+        $foo = composer(curry2('getter')('filename'), $pos, 'is_numeric');
+       // $foo = composer('strpos', curry2('getter')('filename'), 'strpos');
+        dump($foo(['filename' => 'johnny']));
+        if ($user_id) {
+            if ($priv == 'Admin') {
+                if (isset($details['client_id'])) {
+                    $files = toObject($file->getClientFiles($user_id), true);
+                } else {
                     $files = $this->table->find('userid', $user_id, null, 0, 0, \PDO::FETCH_ASSOC);
                     $files = $files[0] ?? [];
-                } else {
-                    $files = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
+                }
+            } else { //multi client
+                $files = toObject($file->getClientFiles($user_id), true);
+                if (empty($files)) {
+                    $files = $this->table->find('userid', $user_id, null, 0, 0, \PDO::FETCH_ASSOC);
                 }
             }
-        } //admin
-        else { //multi client
-            if ($user_id != '') { // A user is selected 
-                $files = toObject($file->getClientFiles($user_id), true);
-
-                dump($files);
-            } else {
-                $email = $_SESSION['email'];
-                $where = " WHERE usr.email='$email'";
-                $group = every($group, '');
-            }
         }
+
         if ($text != '') { // Some search text was specified 
-            $where .= " AND upload.filename LIKE '%$text%'";
+          // $files = safeFilter($files);
         }
 
         if (!empty($suffix)) {

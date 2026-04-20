@@ -11,18 +11,18 @@ foreach (get_defined_vars() as $k => $v) {
     $fail = false;
     $L = count($predicates);
     for ($i; $i < $L; $i++) {
-      $fail = $predicates[$i]($k);
-      if ($fail) {
-        unset($$k);
-        break;
-      }
+        $fail = $predicates[$i]($k);
+        if ($fail) {
+            unset($$k);
+            break;
+        }
     }
-  }
-  unset($k);
-  unset($v);
-  unset($i);
-  unset($L);
-  unset($fail);
+}
+unset($k);
+unset($v);
+unset($i);
+unset($L);
+unset($fail);
 
 
 $klas = $pages > 1 ? 'paginate' : '';
@@ -128,7 +128,7 @@ if (count($files) > 0): ?>
                         <form action="/uploader/delete/" method="post" name="<?= $id; ?>">
                             <div><input type="hidden" name="action" value="delete" />
                                 <input type="hidden" name="id" value="<?= $id; ?>" />
-                                <input type="submit" value="Delete" title="delete or update"/>
+                                <input type="submit" value="Delete" title="delete or update" />
                             </div>
                         </form>
                     </td>
@@ -151,8 +151,11 @@ if (!isset($_GET['find']) && count($files) > 0) { ?>
 <?php
 } ?>
 */
+if (!isset($searchform)) { ?>
+    <p><a href="/uploader/find/">Search Files</a></p>
+<?php }
 ?>
-<p><a href="/uploader/find/">Search Files</a></p>
+
 <p><a href="/admin/load/">Admin Pages</a></p>
 <?php
 include "footer.html.php";
