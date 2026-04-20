@@ -341,7 +341,7 @@ class Uploader
                 $files[] = $this->prepFileForDisplay(get_object_vars($file), $o);
             }
         }
-        return $this->display($user->id, $priv, $pages, $files, $owner, $customVars);
+        return $this->display($user->id, $priv, $pages, $files, '', $owner, $customVars);
     }
 
     public function upload(string $userid)
