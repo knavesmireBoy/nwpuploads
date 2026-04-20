@@ -499,15 +499,21 @@ class Uploader
         }
 
         if (!empty($suffix)) {
-            $pos = curry2('strrchr');
+            $lib = ['pdf', 'zip'];
             $sub = curry2('substr')(1);
-            $eq = partial('equals', $suffix);
-            $byExt = composer($eq, $sub, $pos($suffix), curry2('getter')('filename'));
-            $files = safeFilter($files, $byExt);
+            $contains = curry2('in_array')($suffix);
+            $find = composer($sub, $pos($suffix), curry2('getter')('filename'));
+            if ($suffix === 'owt') {
+            } else {
+                $pos = curry2('strrchr');
+                $eq = partial('equals', $suffix);
+                $byExt = composer($sub, $pos($suffix), curry2('getter')('filename'));
+                dump($byExt($files[0]));
+            }
         }
 
         dump($files);
- /*
+        /*
         if ($records > $display) {
             $pages = ceil($records / $display);
         } else {
