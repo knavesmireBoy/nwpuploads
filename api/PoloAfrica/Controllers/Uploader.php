@@ -244,49 +244,9 @@ class Uploader
         }
     }
 
-    public function load(string $key = '', array $vars = [])
+    private function display($userId, $priv, $pages, $files, $owner = [], $customVars = [], $error = '')
     {
-        if (!isset($_SESSION['username'])) {
-            reLocate(REG);
-        }
 
-        $user = $this->usertable->find('email', $_SESSION['username'])[0];
-        $details = $user->getDetails();
-        $priv = $details['role'];
-        $cid = $details['client_id'];
-        $cb = $this->validateFile($priv, $cid, $user->id);
-        $total = count($this->table->findAll());
-        $displayFiles = $this->table->findAll(null, $this->display, $this->start);
-        $files = [];
-        $owner = [];
-        $customVars = [];
-        //$customVars: vars for prompts
-        $error = $this->getErrors($key);
-        if (!$error) {
-            $customVars = $this->getCustomVars($key, $vars);
-        }
-
-        if (isset($vars['id'])) {
-            $file = $this->table->find('id', $vars['id']);
-            $file = !empty($file) ? $file[0] : null;
-            if ($file) {
-                $data = $file->getData($_SESSION['username']);
-                $client = $this->usertable->find('client_id', $data['client_id'] ?? 0);
-                $client = !empty($client) ? $client[0] : null;
-                if ($client) {
-                    $owner = [...$data, ...$client->getDetails()];
-                } else {
-                    $owner = $data;
-                }
-            }
-        }
-        foreach ($displayFiles as $file) {
-            $o = $this->usertable->find('id', $file->userid)[0];
-            if ($cb($file->userid)) {
-                $files[] = $this->prepFileForDisplay($file, $o);
-            }
-        }
-        $pages = $this->setPages($total);
         list($users, $clients) = $this->presentList($priv);
         //vars used by search/pagination
         $text = '';
@@ -324,7 +284,7 @@ class Uploader
             'myip' => '',
             'goto' => '',
             'owner' => $owner,
-            'key' => $user->id
+            'key' => $userId
         ];
         $vars = array_merge($defaultVars, $customVars);
         return [
@@ -332,6 +292,55 @@ class Uploader
             'title' => 'File Uploads',
             'variables' => $vars
         ];
+    }
+
+
+
+    public function load(string $key = '', array $vars = [])
+    {
+        if (!isset($_SESSION['username'])) {
+            reLocate(REG);
+        }
+
+        $user = $this->usertable->find('email', $_SESSION['username'])[0];
+        $details = $user->getDetails();
+        $priv = $details['role'];
+        $cid = $details['client_id'];
+        $cb = $this->validateFile($priv, $cid, $user->id);
+        $total = count($this->table->findAll());
+        $displayFiles = $this->table->findAll(null, $this->display, $this->start);
+        $pages = $this->setPages($total);
+        $files = [];
+        $owner = [];
+        $customVars = [];
+        //$customVars: vars for prompts
+        $error = $this->getErrors($key);
+
+        if (!$error) {
+            $customVars = $this->getCustomVars($key, $vars);
+        }
+
+        if (isset($vars['id'])) {
+            $file = $this->table->find('id', $vars['id']);
+            $file = !empty($file) ? $file[0] : null;
+            if ($file) {
+                $data = $file->getData($_SESSION['username']);
+                $client = $this->usertable->find('client_id', $data['client_id'] ?? 0);
+                $client = !empty($client) ? $client[0] : null;
+                if ($client) {
+                    $owner = [...$data, ...$client->getDetails()];
+                } else {
+                    $owner = $data;
+                }
+            }
+        }
+        foreach ($displayFiles as $file) {
+            $o = $this->usertable->find('id', $file->userid)[0];
+            if ($cb($file->userid)) {
+                $files[] = $this->prepFileForDisplay($file, $o);
+            }
+        }
+       return $this->display($user->id, $priv, $pages, $files, $owner, $customVars);
     }
 
     public function upload(string $userid)
@@ -512,9 +521,11 @@ class Uploader
             }
         }
 
-        dump($files);
+        $pages = $this->setPages(count($files));
+
+
         /*
-        if ($records > $display) {
+        if (count($files > $display) {
             $pages = ceil($records / $display);
         } else {
             $pages = 1;
