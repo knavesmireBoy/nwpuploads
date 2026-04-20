@@ -59,6 +59,8 @@ class Uploader
             'searchtext' => $searchText ? $searchText : ''
         ];
         $vars = array_merge($defaultVars, $customVars);
+
+        dump($vars);
         return [
             'template' => 'files.html.php',
             'title' => 'File Uploads',
