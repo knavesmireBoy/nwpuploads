@@ -151,8 +151,11 @@ if (!isset($_GET['find']) && count($files) > 0) { ?>
 <?php
 } ?>
 */
-if (!isset($searchform)) { ?>
+if (empty($searchform)) { ?>
     <p><a href="/uploader/find/">Search Files</a></p>
+<?php }
+if (!empty($searchtext)) { ?>
+    <p><a href="/uploader/load/">Clear Search Results</a></p>
 <?php }
 ?>
 

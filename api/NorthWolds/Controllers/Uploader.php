@@ -15,6 +15,59 @@ class Uploader
         }
     }
 
+    private function display($userId, $priv, $pages, $files, $searchText, $owner = [], $customVars = [], $error = '')
+    {
+
+        list($users, $clients) = $this->presentList($priv);
+        //vars used by search/pagination
+        $text = '';
+        $suffix = '';
+        $user_id = '';
+        $ext = '';
+        $byuser = '';
+        $bytext = '';
+        $thead = '';
+        $fhead = '';
+        $uhead = '';
+
+        $defaultVars = [
+            'files' => $files,
+            'priv' => $priv,
+            'pages' => $pages,
+            'fhead' => $fhead,
+            'thead' => $thead,
+            'uhead' => $uhead,
+            'error' => $error,
+            'start' => $this->start,
+            'display' => $this->display,
+            'upload' => ASSET_UPLOAD,
+            'disabled' => $priv === 'Browser' ? 'disabled' : '',
+            'users' => $users,
+            'clients' => $clients,
+            'predicates' => [partial('preg_match', '/^nwp/')],
+            'user_id' => $user_id,
+            'text' => $text,
+            'suffix' => $suffix,
+            'ext' => $ext,
+            'bytext' => $bytext,
+            'byuser' => $byuser,
+            'error' => '',
+            'myip' => '',
+            'goto' => '',
+            'owner' => $owner,
+            'key' => $userId,
+            'searchform' => [],
+            'searchtext' => $searchText ? $searchText : ''
+        ];
+        $vars = array_merge($defaultVars, $customVars);
+        return [
+            'template' => 'files.html.php',
+            'title' => 'File Uploads',
+            'variables' => $vars
+        ];
+    }
+
+
     private function doUpdate($data)
     {
         $owner = intval($data['original']);
@@ -244,64 +297,11 @@ class Uploader
         }
     }
 
-    private function display($userId, $priv, $pages, $files, $owner = [], $customVars = [], $error = '')
-    {
-
-        list($users, $clients) = $this->presentList($priv);
-        //vars used by search/pagination
-        $text = '';
-        $suffix = '';
-        $user_id = '';
-        $ext = '';
-        $byuser = '';
-        $bytext = '';
-        $thead = '';
-        $fhead = '';
-        $uhead = '';
-
-        $defaultVars = [
-            'files' => $files,
-            'priv' => $priv,
-            'pages' => $pages,
-            'fhead' => $fhead,
-            'thead' => $thead,
-            'uhead' => $uhead,
-            'error' => $error,
-            'start' => $this->start,
-            'display' => $this->display,
-            'upload' => ASSET_UPLOAD,
-            'disabled' => $priv === 'Browser' ? 'disabled' : '',
-            'users' => $users,
-            'clients' => $clients,
-            'predicates' => [partial('preg_match', '/^nwp/')],
-            'user_id' => $user_id,
-            'text' => $text,
-            'suffix' => $suffix,
-            'ext' => $ext,
-            'bytext' => $bytext,
-            'byuser' => $byuser,
-            'error' => '',
-            'myip' => '',
-            'goto' => '',
-            'owner' => $owner,
-            'key' => $userId
-        ];
-        $vars = array_merge($defaultVars, $customVars);
-        return [
-            'template' => 'files.html.php',
-            'title' => 'File Uploads',
-            'variables' => $vars
-        ];
-    }
-
-
-
     public function load(string $key = '', array $vars = [])
     {
         if (!isset($_SESSION['username'])) {
             reLocate(REG);
         }
-
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
         $priv = $details['role'];
@@ -524,6 +524,6 @@ class Uploader
             $files[] = $this->prepFileForDisplay($file, $o);
         }
         $pages = $this->setPages(count($files));
-        return $this->display($user->id, $priv, $pages, $files);
+        return $this->display($user->id, $priv, $pages, $files, 'Clear Search Results');
     }
 }
