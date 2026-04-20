@@ -514,7 +514,7 @@ class Uploader
                 $foo = $pos($suffix);
                 $eq = partial('equals', $suffix);
               $byExt = composer($pos($suffix), curry2('getter')('filename'));
-                dump($bar($files[6]));
+                dump([$files[6], $bar($files[6])]);
               // $files = safeFilter($files, $byExt);
             }
         }
