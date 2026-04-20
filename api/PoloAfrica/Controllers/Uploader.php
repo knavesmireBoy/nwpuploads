@@ -505,7 +505,7 @@ class Uploader
 
                 if ($fileinfo->isFile()) {
 
-                    dump($fileinfo->getExtension($suffix));
+                    dump($fileinfo->getBasename($suffix));
 
                   //  $fileinfo->getExtension();
                 }
