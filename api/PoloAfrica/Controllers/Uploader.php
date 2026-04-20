@@ -476,8 +476,9 @@ class Uploader
         $pos = curry2('strpos')('nn');
 
         $foo = composer(curry2('getter')('filename'), $pos, 'is_numeric');
+        $bar = composer('is_numeric', $pos, curry2('getter')('filename'));
        // $foo = composer('strpos', curry2('getter')('filename'), 'strpos');
-        dump($foo(['filename' => 'johnny']));
+        dump($bar(['filename' => 'johnny']));
         if ($user_id) {
             if ($priv == 'Admin') {
                 if (isset($details['client_id'])) {
