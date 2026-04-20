@@ -143,15 +143,7 @@ if (count($files) > 0): ?>
         </a></h2>
 <?php
 endif;
-/*
-$wither = seek();
-$lnk = ($wither !== '.' ? 'Search files' : 'Clear search results');
-if (!isset($_GET['find']) && count($files) > 0) { ?>
-    <p><a href="<?= $wither; ?>"><?= $lnk; ?></a></p>
-<?php
-} ?>
-*/
-if (!isset($searchform)) { ?>
+if (!isset($searchform) || empty($searchtext)) { ?>
     <p><a href="/uploader/find/">Search Files</a></p>
 <?php }
 if (!empty($searchtext)) { ?>
