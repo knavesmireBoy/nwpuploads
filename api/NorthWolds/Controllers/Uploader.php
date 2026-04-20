@@ -59,14 +59,15 @@ class Uploader
             'searchtext' => $searchText ? $searchText : ''
         ];
         $vars = array_merge($defaultVars, $customVars);
-
+        if ($vars['searchtext']) {
+            $vars['searchform'] = true;
+        }
         return [
             'template' => 'files.html.php',
             'title' => 'File Uploads',
             'variables' => $vars
         ];
     }
-
 
     private function doUpdate($data)
     {
