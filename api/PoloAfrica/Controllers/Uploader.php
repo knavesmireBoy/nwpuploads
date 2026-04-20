@@ -520,7 +520,7 @@ class Uploader
             }
         }
         foreach ($records as $file) {
-            $o = $this->usertable->find('id', $file->userid)[0];
+            $o = $this->usertable->find('id', $file['userid'])[0];
             $files[] = $this->prepFileForDisplay($file, $o);
         }
         $pages = $this->setPages(count($files));
