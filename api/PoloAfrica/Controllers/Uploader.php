@@ -475,7 +475,7 @@ class Uploader
         $byText = curry2('getter')('filename');
         $pos = curry2('strpos')('jo');
         $byText = composer('is_numeric', $pos, curry2('getter')('filename'));
-        var_dump($byText(['filename' => 'johnny']));
+        $files = [];
         if ($user_id) {
             if ($priv == 'Admin') {
                 if (isset($details['client_id'])) {
@@ -493,6 +493,7 @@ class Uploader
         }
 
         if ($text != '') { // Some search text was specified 
+           $files = isset($files[0]) ? $files : $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC)[0];
            $files = safeFilter($files, $byText);
         }
 
