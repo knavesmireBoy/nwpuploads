@@ -497,12 +497,15 @@ class Uploader
             $byText = composer('is_numeric', $pos($text), curry2('getter')('filename'));
             $files = isset($files[0]) ? $files : $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
             $files = safeFilter($files, $byText);
-
         }
 
-        dump($files);
-
         if (!empty($suffix)) {
+            $directory = new \DirectoryIterator(FILESTORE);
+            foreach ($directory as $fileinfo) {
+                if ($fileinfo->isFile()) {
+                    echo $fileinfo->getExtension() . "\n";
+                }
+            }
         }
 
         if ($records > $display) {
