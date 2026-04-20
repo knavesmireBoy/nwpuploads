@@ -340,7 +340,7 @@ class Uploader
                 $files[] = $this->prepFileForDisplay($file, $o);
             }
         }
-       return $this->display($user->id, $priv, $pages, $files, $owner, $customVars);
+        return $this->display($user->id, $priv, $pages, $files, $owner, $customVars);
     }
 
     public function upload(string $userid)
@@ -471,8 +471,6 @@ class Uploader
 
     public function found()
     {
-        include CONNECT;
-        $tel = '';
         if (!isset($_SESSION['username'])) {
             reLocate(REG);
         }
@@ -482,29 +480,30 @@ class Uploader
         $user_id =  $_GET['user'] ?? '';
         $text = $_GET['text'];
         $suffix = $_GET['suffix'] ?? '';
-        $check = NULL;
         $file = $this->table->getEntity();
         $pos = curry2('strpos');
-        $files = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
+        $files = [];
+        $records = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
+
         if ($user_id) {
             if ($priv == 'Admin') {
                 if (isset($details['client_id'])) {
-                    $files = toObject($file->getClientFiles($user_id), true);
+                    $records = toObject($file->getClientFiles($user_id), true);
                 } else {
-                    $files = $this->table->find('userid', $user_id, null, 0, 0, \PDO::FETCH_ASSOC);
-                    $files = $files[0] ?? [];
+                    $records = $this->table->find('userid', $user_id, null, 0, 0, \PDO::FETCH_ASSOC);
+                    $records = $records[0] ?? [];
                 }
             } else { //multi client
-                $files = toObject($file->getClientFiles($user_id), true);
-                if (empty($files)) {
-                    $files = $this->table->find('userid', $user_id, null, 0, 0, \PDO::FETCH_ASSOC);
+                $records = toObject($file->getClientFiles($user_id), true);
+                if (empty($records)) {
+                    $records = $this->table->find('userid', $user_id, null, 0, 0, \PDO::FETCH_ASSOC);
                 }
             }
         }
 
         if ($text != '') { // Some search text was specified 
             $byText = composer('is_numeric', $pos($text), curry2('getter')('filename'));
-            $files = safeFilter($files, $byText);
+            $records = safeFilter($records, $byText);
         }
 
         if (!empty($suffix)) {
@@ -517,37 +516,14 @@ class Uploader
                 $sub = curry2('substr')(1);
                 $eq = partial('equals', $suffix);
                 $byExt = composer($eq, $sub, curry2('strrchr')('.'), curry2('getter')('filename'));
-                $files = safeFilter($files, $byExt);
+                $records = safeFilter($records, $byExt);
             }
         }
-
-        $pages = $this->setPages(count($files));
-
-
-        /*
-        if (count($files > $display) {
-            $pages = ceil($records / $display);
-        } else {
-            $pages = 1;
+        foreach ($records as $file) {
+            $o = $this->usertable->find('id', $file->userid)[0];
+            $files[] = $this->prepFileForDisplay($file, $o);
         }
-
-       
-        $files = array();
-        foreach ($rows as $row) {
-            $files[] = array(
-                'id' => $row['id'],
-                'user' => $row['name'],
-                'email' => $row['email'],
-                'filename' => $row['filename'],
-                'mimetype' => $row['mimetype'],
-                'description' => $row['description'],
-                'filepath' => $row['filepath'],
-                'file' => $row['file'],
-                'origin' => $row['origin'],
-                'time' => $row['time'],
-                'size' => $row['size'],
-                'tel' => $row['tel'] ?? ''
-            );
-        } */
+        $pages = $this->setPages(count($files));
+        return $this->display($user->id, $priv, $pages, $files);
     }
 }
