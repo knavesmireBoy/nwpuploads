@@ -464,6 +464,9 @@ class Uploader
     {
         include CONNECT;
         $tel = '';
+        if (!isset($_SESSION['username'])) {
+            reLocate(REG);
+        }
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
         $priv = $details['role'];
@@ -493,39 +496,22 @@ class Uploader
         }
 
         if ($text != '') { // Some search text was specified 
-           $files = isset($files[0]) ? $files : $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
-
-           $files = safeFilter($files, $byText);
+            $files = isset($files[0]) ? $files : $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
+            $files = safeFilter($files, $byText);
         }
 
-     
+        dump($files);
 
         if (!empty($suffix)) {
-            $group = every($group, '');
-            if ($suffix == 'owt') {
-                $where .= " AND (upload.filename NOT LIKE '%pdf' AND upload.filename NOT LIKE '%zip')";
-            } elseif ($suffix == 'pdf' || $suffix == 'zip') {
-                $where .= " AND upload.filename LIKE '%$suffix'";
-            }
         }
-        $sql =  $select . $from . $where . $order;
-        $st = doQuery($pdo, $sql, 'Error fetching file details!');
-        $res = $st->fetch();
-        if ($group) {
-            $select .= ', COUNT(upload.id) as total ';
-            $where .= $group;
-        }
-        $sql = $select . $from . $where . $order;
 
-        $st =  doQuery($pdo, $sql, 'Error getting file count, innit');
-        $rows = $st->fetchAll(\PDO::FETCH_ASSOC);
-        $records = empty($rows) ? 0 : $rows[0]['total'];
         if ($records > $display) {
             $pages = ceil($records / $display);
         } else {
             $pages = 1;
         }
 
+        /*
         $files = array();
         foreach ($rows as $row) {
             $files[] = array(
@@ -542,6 +528,6 @@ class Uploader
                 'size' => $row['size'],
                 'tel' => $row['tel'] ?? ''
             );
-        }
+        } */
     }
 }
