@@ -475,9 +475,7 @@ class Uploader
         $suffix = $_GET['suffix'];
         $check = NULL;
         $file = $this->table->getEntity();
-        $byText = curry2('getter')('filename');
-        $pos = curry2('strpos')('jo');
-        $byText = composer('is_numeric', $pos, curry2('getter')('filename'));
+        $pos = curry2('strpos');
         $files = [];
         if ($user_id) {
             if ($priv == 'Admin') {
@@ -496,8 +494,8 @@ class Uploader
         }
 
         if ($text != '') { // Some search text was specified 
+            $byText = composer('is_numeric', $pos($text), curry2('getter')('filename'));
             $files = isset($files[0]) ? $files : $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
-            dump($files[0]);
             $files = safeFilter($files, $byText);
 
         }
