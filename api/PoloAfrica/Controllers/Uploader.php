@@ -472,7 +472,7 @@ class Uploader
         $priv = $details['role'];
         $user_id =  $_GET['user'] ?? '';
         $text = $_GET['text'];
-        $suffix = $_GET['suffix'];
+        $suffix = $_GET['suffix'] ?? '';
         $check = NULL;
         $file = $this->table->getEntity();
         $pos = curry2('strpos');
@@ -509,12 +509,12 @@ class Uploader
 
 
 
-                $pos = curry2('strrchr')('.');
+                $bar = curry2('strrchr')('.');
                 $sub = curry2('substr')(1);
                 $foo = $pos($suffix);
                 $eq = partial('equals', $suffix);
-              //  $byExt = composer($sub, $pos($suffix)/*, curry2('getter')('filename')*/);
-                dump([$suffix, strrchr($files[6]['filename'], '.')]);
+              $byExt = composer($pos($suffix), curry2('getter')('filename'));
+                dump($bar($files[6]));
               // $files = safeFilter($files, $byExt);
             }
         }
