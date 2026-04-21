@@ -458,11 +458,11 @@ class Uploader
 
         $this->start = intval($s);
         $this->pages = intval($p);
-
-        if ($search) {
-            $u = $search & 1 ? $u : null;
-            $t = $search & 2 ? $t : null;
-            $x = $search & 4 ? $x : null;
+        $srch = intval($search);
+        if ($srch) {
+            $u = $srch & 1 ? $u : null;
+            $t = $srch & 2 ? $t : null;
+            $x = $srch & 4 ? $x : null;
             //$args = safeFilter([$u,$t,$x], 'identity');
             return $this->found($u, $t, $x);
         }
