@@ -447,7 +447,7 @@ class Uploader
             $tt = ($srch & 2) ? $t : '';
             $xx = ($srch & 4) ? $x : '';
 
-            dump([$srch, $x, $xx]);
+            dump($u);
             return $this->found($uu, $tt, $xx);
         }
         return $this->load();
