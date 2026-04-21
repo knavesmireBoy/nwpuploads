@@ -348,7 +348,6 @@ class Uploader
                 $files[] = $this->prepFileForDisplay(get_object_vars($file), $o);
             }
         }
-        $pages = $this->setPages(count($files));
 
         return $this->display($user->id, $priv, $files, $this->pages, '', $owner, $customVars);
     }
