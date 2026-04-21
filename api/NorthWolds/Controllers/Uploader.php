@@ -476,7 +476,7 @@ class Uploader
         return $this->load('search');
     }
 
-    public function found($u = '', $t = '', $x = '')
+    public function found($u = null, $t = null, $x = null)
     {
         if (!isset($_SESSION['username'])) {
             reLocate(REG);
@@ -529,7 +529,6 @@ class Uploader
                 $records = safeFilter($records, $byExt);
             }
         }
-        dump([$ext, $records]);
         foreach ($records as $file) {
             $o = $this->usertable->find('id', $file['userid'])[0];
             $files[] = $this->prepFileForDisplay($file, $o);
