@@ -147,7 +147,7 @@ if (!isset($searchform)) { ?>
     <p><a href="/uploader/find/">Search Files</a></p>
 <?php }
 if (!empty($searchtext)) { ?>
-    <p><a href="/uploader/load/">Clear Search Results</a></p>
+    <p><a href="/uploader/load/clear">Clear Search Results</a></p>
 <?php }
 ?>
 

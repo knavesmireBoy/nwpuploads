@@ -6,6 +6,7 @@ use \Ninja\DatabaseTable;
 
 class Uploader
 {
+    private $files = [];
     public function __construct(private DatabaseTable $table, private DatabaseTable $usertable, private int $display, private int $start, private int $pages, private string $home) {}
 
     private function remove($path)
@@ -15,7 +16,7 @@ class Uploader
         }
     }
 
-    private function display($userId, $priv, $pages, $files, $searchText, $owner = [], $customVars = [], $error = '')
+    private function display($userId, $priv, $searchText, $owner = [], $customVars = [], $error = '')
     {
 
         list($users, $clients) = $this->presentList($priv);
@@ -31,9 +32,9 @@ class Uploader
         $uhead = '';
 
         $defaultVars = [
-            'files' => $files,
+            'files' => $this->files,
             'priv' => $priv,
-            'pages' => $pages,
+            'pages' => $this->pages,
             'fhead' => $fhead,
             'thead' => $thead,
             'uhead' => $uhead,
@@ -308,9 +309,15 @@ class Uploader
         $priv = $details['role'];
         $cid = $details['client_id'];
         $cb = $this->validateFile($priv, $cid, $user->id);
-        $total = count($this->table->findAll());
-        $displayFiles = $this->table->findAll(null, $this->display, $this->start);
-        $pages = $this->setPages($total);
+
+        if (empty($this->files) || $key === 'clear') {
+            $this->files = $this->table->findAll();
+            $total = count($this->files);
+            $this->pages = $this->setPages($total);
+            $displayFiles = $this->table->findAll(null, $this->display, $this->start);
+        }
+
+
         $files = [];
         $owner = [];
         $customVars = [];
@@ -341,7 +348,7 @@ class Uploader
                 $files[] = $this->prepFileForDisplay(get_object_vars($file), $o);
             }
         }
-        return $this->display($user->id, $priv, $pages, $files, '', $owner, $customVars);
+        return $this->display($user->id, $priv, '', $owner, $customVars);
     }
 
     public function upload(string $userid)
@@ -526,6 +533,8 @@ class Uploader
             $files[] = $this->prepFileForDisplay($file, $o);
         }
         $pages = $this->setPages(count($files));
-        return $this->display($user->id, $priv, $pages, $files, 'Clear Search Results');
+        $this->files = $files;
+        $this->pages = $pages;
+        return $this->display($user->id, $priv, 'Clear Search Results');
     }
 }
