@@ -360,20 +360,6 @@ class Uploader
         return $this->doUpdate($_POST);
     }
 
-    public function swapSubmit()
-    {
-        $data = [];
-        $lib = ['Nope' => 'No', 'Yeah' => 'Yes'];
-
-        foreach ($_POST as $k => $v) {
-            if ($k === 'update') {
-                //  $v = $lib[$v];
-            }
-            $data[$k] = $v;
-        }
-        $data['answer'] = $_POST['update'];
-        return $this->prepUpdate($data);
-    }
     public function editSubmit()
     {
         //proceed to update
