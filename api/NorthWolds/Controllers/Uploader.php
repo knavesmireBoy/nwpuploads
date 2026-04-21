@@ -458,10 +458,9 @@ class Uploader
         }
     }
 
-    public function nav($s, $p, $search, $u = '', $t = '', $x = '', $sort = '')
+    public function nav($s, $search, $u = '', $t = '', $x = '', $sort = '')
     {
         $this->start = intval($s);
-        $this->pages = intval($p);
         $srch = intval($search);
         if ($srch) {
             $u = $srch & 1 ? $u : null;
