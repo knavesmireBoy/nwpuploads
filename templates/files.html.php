@@ -153,4 +153,4 @@ if (!empty($searchtext)) { ?>
 
 <p><a href="/admin/load/">Admin Pages</a></p>
 <?php
-include "footer.html.php";
+include "_footer.html.php";

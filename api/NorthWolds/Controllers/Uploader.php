@@ -20,12 +20,17 @@ class Uploader
     {
         list($users, $clients) = $this->presentList($priv);
         //vars used by search/pagination
-        $text = '';
-        $suffix = '';
-        $user_id = '';
+        $text = $_GET['txt'] ?? '';
+        $suffix = $_GET['ext'] ?? '';
+        $user_id = $_GET['usr'] ?? '';
+        /*
         $ext = '';
         $byuser = '';
         $bytext = '';
+        'ext' => $ext,
+        'bytext' => $bytext,
+        'byuser' => $byuser,
+        */
         $thead = '';
         $fhead = '';
         $uhead = '';
@@ -48,9 +53,6 @@ class Uploader
             'user_id' => $user_id,
             'text' => $text,
             'suffix' => $suffix,
-            'ext' => $ext,
-            'bytext' => $bytext,
-            'byuser' => $byuser,
             'error' => '',
             'myip' => '',
             'goto' => '',
@@ -346,7 +348,7 @@ class Uploader
                 $files[] = $this->prepFileForDisplay(get_object_vars($file), $o);
             }
         }
-       // dump($files);
+        // dump($files);
         return $this->display($user->id, $priv, $files, '', $owner, $customVars);
     }
 
