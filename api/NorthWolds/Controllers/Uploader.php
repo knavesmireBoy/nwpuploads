@@ -314,8 +314,7 @@ class Uploader
 
         if (empty($this->files) || $key === 'clear') {
             $this->files = $this->table->findAll();
-            $total = count($this->files);
-            $this->pages = $this->setPages($total);
+            $this->pages = $this->setPages(count($this->files));
             $displayFiles = $this->table->findAll(null, $this->display, $this->start);
         }
 
@@ -351,8 +350,7 @@ class Uploader
         }
         $pages = $this->setPages(count($files));
 
-        dump([$pages, count($files)]);
-        return $this->display($user->id, $priv, $files, $pages, '', $owner, $customVars);
+        return $this->display($user->id, $priv, $files, $this->pages, '', $owner, $customVars);
     }
 
     public function upload(string $userid)
