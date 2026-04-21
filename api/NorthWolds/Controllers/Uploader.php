@@ -453,10 +453,10 @@ class Uploader
         }
     }
 
-    public function nav($s, $p, $search, $sort)
+    public function nav($s, $p)
     {
-        $this->start = $_GET['s'];
-        $this->pages = $_GET['p'];
+        $this->start = $s;
+        $this->pages = $p;
         return $this->load();
     }
 
