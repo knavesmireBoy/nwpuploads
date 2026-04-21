@@ -16,9 +16,8 @@ class Uploader
         }
     }
 
-    private function display($userId, $priv, $searchText, $owner = [], $customVars = [], $error = '')
+    private function display($userId, $priv, $displayfiles, $searchText, $owner = [], $customVars = [], $error = '')
     {
-
         list($users, $clients) = $this->presentList($priv);
         //vars used by search/pagination
         $text = '';
@@ -32,7 +31,7 @@ class Uploader
         $uhead = '';
 
         $defaultVars = [
-            'files' => $this->files,
+            'files' => $searchText ? $displayfiles : $this->files,
             'priv' => $priv,
             'pages' => $this->pages,
             'fhead' => $fhead,
@@ -317,7 +316,6 @@ class Uploader
             $displayFiles = $this->table->findAll(null, $this->display, $this->start);
         }
 
-
         $files = [];
         $owner = [];
         $customVars = [];
@@ -348,7 +346,7 @@ class Uploader
                 $files[] = $this->prepFileForDisplay(get_object_vars($file), $o);
             }
         }
-        return $this->display($user->id, $priv, '', $owner, $customVars);
+        return $this->display($user->id, $priv, $files, '', $owner, $customVars);
     }
 
     public function upload(string $userid)
