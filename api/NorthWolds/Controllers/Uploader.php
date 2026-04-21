@@ -20,22 +20,24 @@ class Uploader
     {
         list($users, $clients) = $this->presentList($priv);
         //vars used by search/pagination
+
+        /*
         $text = $_GET['txt'] ?? '';
         $suffix = $_GET['ext'] ?? '';
         $user_id = $_GET['usr'] ?? '';
-        /*
         $ext = '';
         $byuser = '';
         $bytext = '';
         'ext' => $ext,
         'bytext' => $bytext,
         'byuser' => $byuser,
+                    'user_id' => $user_id,
+            'text' => $text,
+            'suffix' => $suffix,
         */
         $thead = '';
         $fhead = '';
         $uhead = '';
-
-        dump($text);
         $defaultVars = [
             'files' => $displayfiles,
             'priv' => $priv,
@@ -51,9 +53,6 @@ class Uploader
             'users' => $users,
             'clients' => $clients,
             'predicates' => [partial('preg_match', '/^nwp/')],
-            'user_id' => $user_id,
-            'text' => $text,
-            'suffix' => $suffix,
             'error' => '',
             'myip' => '',
             'goto' => '',
