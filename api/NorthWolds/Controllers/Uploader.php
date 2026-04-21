@@ -536,6 +536,6 @@ class Uploader
         $pages = $this->setPages(count($files));
         $this->files = $files;
         $this->pages = $pages;
-        return $this->display($user->id, $priv, $this->files, $pages, 'Clear Search Results');
+        return $this->display($user->id, $priv, $this->files, $pages, 'Clear Search Results', ['user_id' => $user_id, 'text' => $text, 'ext' => $ext]);
     }
 }
