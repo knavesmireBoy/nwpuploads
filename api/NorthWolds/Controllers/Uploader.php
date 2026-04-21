@@ -443,11 +443,11 @@ class Uploader
         $this->start = intval($s);
         $srch = intval($search);
         if ($srch) {
-            $uu = $srch & 1 ? $u : null;
-            $tt = $srch & 2 ? $t : null;
-            $xx = $srch & 4 ? $x : null;
+            $uu = ($srch & 1) ? $u : '';
+            $tt = ($srch & 2) ? $t : '';
+            $xx = ($srch & 4) ? $x : '';
 
-            dump([$u, $x, $xx]);
+            dump([$srch, $x, $xx]);
             return $this->found($uu, $tt, $xx);
         }
         return $this->load();
