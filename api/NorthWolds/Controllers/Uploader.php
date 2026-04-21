@@ -509,13 +509,14 @@ class Uploader
 
         if (!empty($suffix)) {
             $sub = curry2('substr')(1);
+            $pos = curry2('strrchr')('.');
             $contains = curry2('in_array')(['pdf', 'zip']);
-            $find = composer(negate('identity'), $sub, $pos($suffix), curry2('getter')('filename'));
+            $find = composer(negate('identity'), $contains, $sub, $pos, curry2('getter')('filename'));
             if ($suffix === 'owt') {
-                
+                $records = safeFilter($records, $find);
             } else {
                 $eq = partial('equals', $suffix);
-                $byExt = composer($eq, $sub, curry2('strrchr')('.'), curry2('getter')('filename'));
+                $byExt = composer($eq, $sub, $pos, curry2('getter')('filename'));
                 $records = safeFilter($records, $byExt);
             }
         }
