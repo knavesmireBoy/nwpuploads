@@ -455,8 +455,8 @@ class Uploader
 
     public function nav($s, $p)
     {
-        $this->start = $s;
-        $this->pages = $p;
+        $this->start = intval($s);
+        $this->pages = intval($p);
         return $this->load();
     }
 
