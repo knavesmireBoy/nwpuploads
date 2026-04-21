@@ -21,12 +21,12 @@ $klas = $pages > 1 ? 'paginate' : '';
     if ($pages > 1) {
         $current_page = ($start / $display) + 1;
         if ($current_page != 1) { ?>
-            <a href="/uploader/nav/?s=<?= $start - $display; ?>&p=<?= $pages; ?>&usr=<?= $user_id; ?>&txt=<?= $text; ?>&ext=<?= $suffix; ?><?= $sort; ?>">Previous</a>
+            <a href="/uploader/nav/<?= $start - $display; ?>/<?= $pages; ?>?usr=<?= $user_id; ?>&txt=<?= $text; ?>&ext=<?= $suffix; ?><?= $sort; ?>">Previous</a>
             <?php
         }
         for ($i = 1; $i <= $pages; $i++) {
             if ($i != $current_page) { ?>
-                <a href="/uploader/nav/?s=<?= $display * ($i - 1); ?>&p=<?= $pages; ?>&usr=<?= $user_id; ?>&txt=<?= $text; ?>&ext=<?= $suffix; ?><?= $sort; ?>"><?= $i ?></a>
+                <a href="/uploader/nav/<?= $display * ($i - 1); ?>/<?= $pages; ?>?usr=<?= $user_id; ?>&txt=<?= $text; ?>&ext=<?= $suffix; ?><?= $sort; ?>"><?= $i ?></a>
             <?php
             } else {  ?>
                 <span class="current"><?= $i; ?></span>
@@ -34,7 +34,7 @@ $klas = $pages > 1 ? 'paginate' : '';
             }
         }
         if ($current_page <> $pages) { ?>
-            <a href="/uploader/nav/?s=<?= $start + $display; ?>&p=<?= $pages; ?>&usr=<?= $user_id; ?>&txt=<?= $text; ?>&ext=<?= $suffix; ?><?= $sort; ?>">Next</a>
+            <a href="/uploader/nav/<?= $start + $display; ?>/<?= $pages; ?>?usr=<?= $user_id; ?>&txt=<?= $text; ?>&ext=<?= $suffix; ?><?= $sort; ?>">Next</a>
     <?php
         }
     }
