@@ -16,10 +16,10 @@ class Uploader
         }
     }
 
-    private function foo($files){
+    private function foo($files)
+    {
 
         $displayFiles = array_slice($files, $this->start, $this->display);
-
     }
 
     private function display($userId, $priv, $files, $pages, $searchText, $owner = [], $customVars = [], $error = '')
@@ -27,11 +27,11 @@ class Uploader
         list($users, $clients) = $this->presentList($priv);
         //vars used by search/pagination
 
-   
+
         $text = $_GET['txt'] ?? '';
         $ext = $_GET['ext'] ?? '';
         $user_id = $_GET['usr'] ?? '';
-     /*
+        /*
         $ext = '';
         $byuser = '';
         $bytext = '';
@@ -177,7 +177,7 @@ class Uploader
         $owner = ['ownerid' => $data['ownerid'] ?? '', 'ownername' => $data['ownername'] ?? '', 'domain' => $data['domain'] ?? '', 'multi' => $data['multi'] ?? '', 'editor' => $data['editor'] ?? '', 'clientname' => $data['clientname'] ?? ''];
 
         $lib = [
-            'search' => ['template' => '_search.html.php', 'zero' => null, 'action' => '/uploader/found/', 'searchform' => true],
+            'search' => ['template' => '_search.html.php', 'zero' => null, 'action' => '/uploader/find/', 'searchform' => true],
 
             'upload' => ['template' => 'upload.html.php'],
 
@@ -463,11 +463,11 @@ class Uploader
         $this->start = intval($s);
         $srch = intval($search);
         if ($srch) {
-            $u = $srch & 1 ? $u : null;
-            $t = $srch & 2 ? $t : null;
-            $x = $srch & 4 ? $x : null;
+            $uu = $srch & 1 ? $u : null;
+            $tt = $srch & 2 ? $t : null;
+            $xx = $srch & 4 ? $x : null;
             //$args = safeFilter([$u,$t,$x], 'identity');
-            return $this->found($u, $t, $x);
+            return $this->found($uu, $tt, $xx);
         }
 
 
@@ -479,7 +479,17 @@ class Uploader
         return $this->load('search');
     }
 
-    public function found($u = null, $t = null, $x = null)
+    public function findSubmit()
+    {
+
+        $u = $_GET['user'] ?? '';
+        $t = $_GET['text'] ?? '';
+        $x = $_GET['ext'] ?? '';
+
+        return $this->found($u, $t, $x);
+    }
+
+    private function found($user_id, $text, $ext)
     {
         if (!isset($_SESSION['username'])) {
             reLocate(REG);
@@ -487,10 +497,6 @@ class Uploader
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
         $priv = $details['role'];
-
-        $user_id = $u ?? $_GET['user'] ?? '';
-        $text = $t ?? $_GET['text'] ?? '';
-        $ext = $x ?? $_GET['ext'] ?? '';
 
         $file = $this->table->getEntity();
         $pos = curry2('strpos');
@@ -514,12 +520,12 @@ class Uploader
             }
         }
 
-        if ($text != '') { // Some search text was specified 
+        if ($text) { // Some search text was specified 
             $byText = composer('is_numeric', $pos($text), curry2('getter')('filename'));
             $records = safeFilter($records, $byText);
         }
 
-        if (!empty($ext)) {
+        if ($ext) {
             $sub = curry2('substr')(1);
             $pos = curry2('strrchr')('.');
             $contains = curry2('in_array')(['pdf', 'zip', 'jpg']);
