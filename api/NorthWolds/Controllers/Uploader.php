@@ -31,7 +31,7 @@ class Uploader
         $uhead = '';
 
         $defaultVars = [
-            'files' => $searchText ? $displayfiles : $this->files,
+            'files' => $displayfiles,
             'priv' => $priv,
             'pages' => $this->pages,
             'fhead' => $fhead,
@@ -346,6 +346,7 @@ class Uploader
                 $files[] = $this->prepFileForDisplay(get_object_vars($file), $o);
             }
         }
+       // dump($files);
         return $this->display($user->id, $priv, $files, '', $owner, $customVars);
     }
 
