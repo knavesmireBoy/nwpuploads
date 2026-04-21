@@ -1,4 +1,4 @@
-<form action="<?= $action; ?>?" method="get" name="search" class="details">
+<form action="<?= $action; ?>" method="get" name="search" class="details">
     <a href="/uploader/load/" class="cancel">X</a>
     <p>View files satisfying the following criteria</p>
     <?php if (!isset($zero)) : ?>

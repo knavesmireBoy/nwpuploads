@@ -16,29 +16,9 @@ class Uploader
         }
     }
 
-    private function foo($files)
-    {
-
-        $displayFiles = array_slice($files, $this->start, $this->display);
-    }
-
     private function display($userId, $priv, $files, $pages, $searchText, $owner = [], $customVars = [], $error = '')
     {
         list($users, $clients) = $this->presentList($priv);
-        //vars used by search/pagination
-
-
-        $text = $_GET['txt'] ?? '';
-        $ext = $_GET['ext'] ?? '';
-        $user_id = $_GET['usr'] ?? '';
-        /*
-        $ext = '';
-        $byuser = '';
-        $bytext = '';
-        'ext' => $ext,
-        'bytext' => $bytext,
-        'byuser' => $byuser,      
-        */
         $thead = '';
         $fhead = '';
         $uhead = '';
@@ -62,10 +42,7 @@ class Uploader
             'goto' => '',
             'owner' => $owner,
             'key' => $userId,
-            'searchtext' => $searchText ? $searchText : '',
-            'user_id' => $user_id,
-            'text' => $text,
-            'ext' => $ext
+            'searchtext' => $searchText ? $searchText : ''
         ];
         $vars = array_merge($defaultVars, $customVars);
         if ($vars['searchtext']) {
