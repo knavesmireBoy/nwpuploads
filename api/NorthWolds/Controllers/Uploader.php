@@ -23,7 +23,7 @@ class Uploader
         $fhead = '';
         $uhead = '';
         $defaultVars = [
-            'files' => array_slice($this->files, $this->start, $this->display),
+            'files' => array_slice(toObject($this->files, true), $this->start, $this->display),
             'priv' => $priv,
             'pages' => $this->pages,
             'fhead' => $fhead,
