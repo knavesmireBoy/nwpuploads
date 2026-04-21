@@ -16,7 +16,13 @@ class Uploader
         }
     }
 
-    private function display($userId, $priv, $displayfiles, $pages, $searchText, $owner = [], $customVars = [], $error = '')
+    private function foo($files){
+
+        $displayFiles = array_slice($files, $this->start, $this->display);
+
+    }
+
+    private function display($userId, $priv, $files, $pages, $searchText, $owner = [], $customVars = [], $error = '')
     {
         list($users, $clients) = $this->presentList($priv);
         //vars used by search/pagination
@@ -37,7 +43,7 @@ class Uploader
         $fhead = '';
         $uhead = '';
         $defaultVars = [
-            'files' => $displayfiles,
+            'files' => array_slice($files, $this->start, $this->display),
             'priv' => $priv,
             'pages' => $pages,
             'fhead' => $fhead,
@@ -454,8 +460,6 @@ class Uploader
 
     public function nav($s, $p, $search, $u = '', $t = '', $x = '', $sort = '')
     {
-
-
         $this->start = intval($s);
         $this->pages = intval($p);
         $srch = intval($search);
