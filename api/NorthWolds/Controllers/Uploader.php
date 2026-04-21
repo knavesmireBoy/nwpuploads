@@ -334,8 +334,7 @@ class Uploader
                 $files[] = $this->prepFileForDisplay(get_object_vars($file), $o);
             }
         }
-       // $this->files = $files;
-
+        $this->files = $files;
         return $this->displayer($user->id, $priv, '', $owner, $customVars);
     }
 
@@ -458,7 +457,7 @@ class Uploader
     {
         return $this->load('search');
     }
-//form submission
+    //form submission
     public function finder()
     {
         return $this->found($_GET['user'], $_GET['text'], $_GET['ext']);
@@ -519,7 +518,7 @@ class Uploader
         }
         $this->pages = $this->setPages(count($files));
         $this->files = $files;
-      //  $this->pages = $pages;
+        //  $this->pages = $pages;
         return $this->displayer($user->id, $priv, 'Clear Search Results', [], ['user_id' => $user_id, 'text' => $text, 'ext' => $ext]);
     }
 }
