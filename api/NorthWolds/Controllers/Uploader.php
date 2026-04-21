@@ -520,7 +520,7 @@ class Uploader
             $sub = curry2('substr')(1);
             $pos = curry2('strrchr')('.');
             $contains = curry2('in_array')(['pdf', 'zip', 'jpg']);
-            $find = composer(negate('identity'), $contains, $getExt, curry2('getter')('filename'));
+            $find = composer(negate('identity'), $contains, 'strtolower', curry2('substr')(1), curry2('strrchr')('.'), curry2('getter')('filename'));
             if ($ext === 'owt') {
                 $records = safeFilter($records, $find);
             } else {
@@ -529,6 +529,7 @@ class Uploader
                 $records = safeFilter($records, $byExt);
             }
         }
+        dump($records);
         foreach ($records as $file) {
             $o = $this->usertable->find('id', $file['userid'])[0];
             $files[] = $this->prepFileForDisplay($file, $o);
