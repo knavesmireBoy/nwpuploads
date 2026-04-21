@@ -16,16 +16,16 @@ class Uploader
         }
     }
 
-    private function display($userId, $priv, $files, $pages, $searchText, $owner = [], $customVars = [], $error = '')
+    private function displayer($userId, $priv, $searchText, $owner = [], $customVars = [], $error = '')
     {
         list($users, $clients) = $this->presentList($priv);
         $thead = '';
         $fhead = '';
         $uhead = '';
         $defaultVars = [
-            'files' => array_slice($files, $this->start, $this->display),
+            'files' => array_slice($this->files, $this->start, $this->display),
             'priv' => $priv,
-            'pages' => $pages,
+            'pages' => $this->pages,
             'fhead' => $fhead,
             'thead' => $thead,
             'uhead' => $uhead,
@@ -334,8 +334,9 @@ class Uploader
                 $files[] = $this->prepFileForDisplay(get_object_vars($file), $o);
             }
         }
+       // $this->files = $files;
 
-        return $this->display($user->id, $priv, $files, $this->pages, '', $owner, $customVars);
+        return $this->displayer($user->id, $priv, '', $owner, $customVars);
     }
 
     public function upload(string $userid)
@@ -446,6 +447,8 @@ class Uploader
             $uu = $srch & 1 ? $u : null;
             $tt = $srch & 2 ? $t : null;
             $xx = $srch & 4 ? $x : null;
+
+            dump([$u, $x, $xx]);
             return $this->found($uu, $tt, $xx);
         }
         return $this->load();
@@ -514,9 +517,9 @@ class Uploader
             $o = $this->usertable->find('id', $file['userid'])[0];
             $files[] = $this->prepFileForDisplay($file, $o);
         }
-        $pages = $this->setPages(count($files));
+        $this->pages = $this->setPages(count($files));
         $this->files = $files;
-        $this->pages = $pages;
-        return $this->display($user->id, $priv, $this->files, $pages, 'Clear Search Results', [], ['user_id' => $user_id, 'text' => $text, 'ext' => $ext]);
+      //  $this->pages = $pages;
+        return $this->displayer($user->id, $priv, 'Clear Search Results', [], ['user_id' => $user_id, 'text' => $text, 'ext' => $ext]);
     }
 }
