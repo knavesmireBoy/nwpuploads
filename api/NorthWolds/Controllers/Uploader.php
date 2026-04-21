@@ -21,19 +21,17 @@ class Uploader
         list($users, $clients) = $this->presentList($priv);
         //vars used by search/pagination
 
-        /*
+        
         $text = $_GET['txt'] ?? '';
         $suffix = $_GET['ext'] ?? '';
         $user_id = $_GET['usr'] ?? '';
+        /*
         $ext = '';
         $byuser = '';
         $bytext = '';
         'ext' => $ext,
         'bytext' => $bytext,
-        'byuser' => $byuser,
-                    'user_id' => $user_id,
-            'text' => $text,
-            'suffix' => $suffix,
+        'byuser' => $byuser,      
         */
         $thead = '';
         $fhead = '';
@@ -58,7 +56,10 @@ class Uploader
             'goto' => '',
             'owner' => $owner,
             'key' => $userId,
-            'searchtext' => $searchText ? $searchText : ''
+            'searchtext' => $searchText ? $searchText : '',
+            'user_id' => $user_id,
+            'text' => $text,
+            'suffix' => $suffix
         ];
         $vars = array_merge($defaultVars, $customVars);
         if ($vars['searchtext']) {
