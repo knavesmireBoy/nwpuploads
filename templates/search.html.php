@@ -22,7 +22,7 @@
 
 	<?php endif; ?>
 	<label for="text">Containing text</label><input id="text" type="search" name="text" />
-	<label for="suffix">Suffix</label><select id="suffix" name="suffix">
+	<label for="ext">Suffix</label><select id="ext" name="ext">
 		<option value="">Search files</option>
 		<option value="pdf">pdf</option>
 		<option value="zip">zip</option>

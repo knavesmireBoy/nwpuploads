@@ -21,7 +21,7 @@ class Uploader
         list($users, $clients) = $this->presentList($priv);
         //vars used by search/pagination
 
-        
+
         $text = $_GET['txt'] ?? '';
         $suffix = $_GET['ext'] ?? '';
         $user_id = $_GET['usr'] ?? '';
@@ -453,8 +453,9 @@ class Uploader
         }
     }
 
-    public function nav($s, $p)
+    public function nav($s, $p, $u = '', $t = '', $x = '', $sort = '')
     {
+        dump($x);
         $this->start = intval($s);
         $this->pages = intval($p);
         return $this->load();
