@@ -5,10 +5,11 @@ $klas = $pages > 1 ? 'paginate' : '';
 <footer class="<?= $klas; ?>">
     <?php
     include '_logout.html.php';
-
+/*
     $suffix = isset($_GET['ext']) ? $_GET['ext'] : '';
     $user_id = isset($_GET['usr']) ? $_GET['usr'] : '';
     $text = isset($_GET['txt']) ? $_GET['txt'] : '';
+    */
     $sort = '';
 
     if (isset($_SERVER["QUERY_STRING"])) {
