@@ -35,6 +35,7 @@ class Uploader
         $fhead = '';
         $uhead = '';
 
+        dump($text);
         $defaultVars = [
             'files' => $displayfiles,
             'priv' => $priv,
