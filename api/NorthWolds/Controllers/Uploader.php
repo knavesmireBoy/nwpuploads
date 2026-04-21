@@ -455,14 +455,10 @@ class Uploader
     {
         return $this->load('search');
     }
-
+//form submission
     public function finder()
     {
-        $u = $_GET['user'] ?? '';
-        $t = $_GET['text'] ?? '';
-        $x = $_GET['ext'] ?? '';
-        dump([$u, $x, $_GET]);
-        return $this->found($u, $t, $x);
+        return $this->found($_GET['user'], $_GET['text'], $_GET['ext']);
     }
 
     private function found($user_id, $text, $ext)

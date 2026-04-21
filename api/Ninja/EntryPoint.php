@@ -58,6 +58,7 @@ class EntryPoint
 
             $controller = new \stdClass();
             $args = $this->website->getControllerArgs($name, $controller);
+            //NOTE some forms may use get as method
             if ($method === 'POST' && in_array($action, $this->posts)) {
                 $action .= 'Submit';
             }
