@@ -42,7 +42,10 @@ class Uploader
             'goto' => '',
             'owner' => $owner,
             'key' => $userId,
-            'searchtext' => $searchText ? $searchText : ''
+            'searchtext' => $searchText ? $searchText : '',
+            'user_id' => '',
+            'text' => '',
+            'ext' => ''
         ];
         $vars = array_merge($defaultVars, $customVars);
         if ($vars['searchtext']) {
@@ -154,7 +157,7 @@ class Uploader
         $owner = ['ownerid' => $data['ownerid'] ?? '', 'ownername' => $data['ownername'] ?? '', 'domain' => $data['domain'] ?? '', 'multi' => $data['multi'] ?? '', 'editor' => $data['editor'] ?? '', 'clientname' => $data['clientname'] ?? ''];
 
         $lib = [
-            'search' => ['template' => '_search.html.php', 'zero' => null, 'action' => '/uploader/find/', 'searchform' => true],
+            'search' => ['template' => '_search.html.php', 'zero' => null, 'action' => '/uploader/finder/', 'searchform' => true],
 
             'upload' => ['template' => 'upload.html.php'],
 
@@ -453,7 +456,7 @@ class Uploader
         return $this->load('search');
     }
 
-    public function findSubmit()
+    public function finder()
     {
         $u = $_GET['user'] ?? '';
         $t = $_GET['text'] ?? '';
