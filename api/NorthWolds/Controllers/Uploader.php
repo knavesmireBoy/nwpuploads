@@ -21,11 +21,11 @@ class Uploader
         list($users, $clients) = $this->presentList($priv);
         //vars used by search/pagination
 
-
+   
         $text = $_GET['txt'] ?? '';
         $ext = $_GET['ext'] ?? '';
         $user_id = $_GET['usr'] ?? '';
-        /*
+     /*
         $ext = '';
         $byuser = '';
         $bytext = '';
@@ -350,6 +350,8 @@ class Uploader
             }
         }
         $pages = $this->setPages(count($files));
+
+        dump([$pages, count($files)]);
         return $this->display($user->id, $priv, $files, $pages, '', $owner, $customVars);
     }
 
