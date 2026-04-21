@@ -26,7 +26,6 @@ $klas = $pages > 1 ? 'paginate' : '';
         $sort = preg_replace("/&&/", "&", $sort);
     }
 
-    dump($pages);
 
     if ($pages > 1) {
         $current_page = ($start / $display) + 1;
