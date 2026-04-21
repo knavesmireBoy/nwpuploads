@@ -11,6 +11,7 @@ $klas = $pages > 1 ? 'paginate' : '';
     $text = isset($_GET['txt']) ? $_GET['txt'] : '';
     */
     $sort = '';
+    var_dump([$_GET, $_SERVER]);
 
     if (isset($_SERVER["QUERY_STRING"])) {
         $sort = explode('sort=', $_SERVER["QUERY_STRING"] ?? '');
