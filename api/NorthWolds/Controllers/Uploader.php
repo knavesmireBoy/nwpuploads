@@ -23,7 +23,7 @@ class Uploader
 
 
         $text = $_GET['txt'] ?? '';
-        $suffix = $_GET['ext'] ?? '';
+        $ext = $_GET['ext'] ?? '';
         $user_id = $_GET['usr'] ?? '';
         /*
         $ext = '';
@@ -59,7 +59,7 @@ class Uploader
             'searchtext' => $searchText ? $searchText : '',
             'user_id' => $user_id,
             'text' => $text,
-            'suffix' => $suffix
+            'ext' => $ext
         ];
         $vars = array_merge($defaultVars, $customVars);
         if ($vars['searchtext']) {
@@ -453,11 +453,22 @@ class Uploader
         }
     }
 
-    public function nav($s, $p, $u = '', $t = '', $x = '', $sort = '')
+    public function nav($s, $p, $search, $u = '', $t = '', $x = '', $sort = '')
     {
-        dump($x);
+
+
         $this->start = intval($s);
         $this->pages = intval($p);
+
+        if ($search) {
+            $u = $search & 1 ? $u : null;
+            $t = $search & 2 ? $t : null;
+            $x = $search & 4 ? $x : null;
+            //$args = safeFilter([$u,$t,$x], 'identity');
+            return $this->found($u, $t, $x);
+        }
+
+
         return $this->load();
     }
 
@@ -466,7 +477,7 @@ class Uploader
         return $this->load('search');
     }
 
-    public function found()
+    public function found($u = '', $t = '', $x = '')
     {
         if (!isset($_SESSION['username'])) {
             reLocate(REG);
@@ -474,9 +485,12 @@ class Uploader
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
         $priv = $details['role'];
-        $user_id =  $_GET['user'] ?? '';
-        $text = $_GET['text'] ?? '';
-        $suffix = $_GET['suffix'] ?? '';
+
+        $user_id = $u ?? $_GET['user'] ?? '';
+        $text = $t ?? $_GET['text'] ?? '';
+        $ext = $x ?? $_GET['ext'] ?? '';
+
+
         $file = $this->table->getEntity();
         $pos = curry2('strpos');
         $files = [];
@@ -504,15 +518,15 @@ class Uploader
             $records = safeFilter($records, $byText);
         }
 
-        if (!empty($suffix)) {
+        if (!empty($ext)) {
             $sub = curry2('substr')(1);
             $pos = curry2('strrchr')('.');
             $contains = curry2('in_array')(['pdf', 'zip', 'jpg']);
             $find = composer(negate('identity'), $contains, $getExt, curry2('getter')('filename'));
-            if ($suffix === 'owt') {
+            if ($ext === 'owt') {
                 $records = safeFilter($records, $find);
             } else {
-                $eq = partial('equals', $suffix);
+                $eq = partial('equals', $ext);
                 $byExt = composer($eq, $sub, $pos, curry2('getter')('filename'));
                 $records = safeFilter($records, $byExt);
             }

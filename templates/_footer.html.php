@@ -5,11 +5,18 @@ $klas = $pages > 1 ? 'paginate' : '';
 <footer class="<?= $klas; ?>">
     <?php
     include '_logout.html.php';
-/*
-    $suffix = isset($_GET['ext']) ? $_GET['ext'] : '';
-    $user_id = isset($_GET['usr']) ? $_GET['usr'] : '';
-    $text = isset($_GET['txt']) ? $_GET['txt'] : '';
-    */
+
+    $srch = 0;
+    if ($user_id) {
+        $srch += 1;
+    }
+    if ($text) {
+        $srch += 2;
+    }
+    if ($ext) {
+        $srch += 4;
+    }
+
     $sort = '';
 
     if (isset($_SERVER["QUERY_STRING"])) {
@@ -22,12 +29,12 @@ $klas = $pages > 1 ? 'paginate' : '';
     if ($pages > 1) {
         $current_page = ($start / $display) + 1;
         if ($current_page != 1) { ?>
-            <a href="/uploader/nav/<?= $start - $display; ?>/<?= $pages; ?>/<?= $user_id; ?>/<?= $text; ?>/<?= $suffix; ?>/<?= $sort; ?>">Previous</a>
+            <a href="/uploader/nav/<?= $start - $display; ?>/<?= $srch; ?>/<?= $user_id; ?>/<?= $text; ?>/<?= $suffix; ?>/<?= $sort; ?>">Previous</a>
             <?php
         }
         for ($i = 1; $i <= $pages; $i++) {
             if ($i != $current_page) { ?>
-                <a href="/uploader/nav/<?= $display * ($i - 1); ?>/<?= $pages; ?>/<?= $user_id; ?>/<?= $text; ?>/<?= $suffix; ?>/<?= $sort; ?>"><?= $i ?></a>
+                <a href="/uploader/nav/<?= $display * ($i - 1); ?>/<?= $srch; ?>/<?= $user_id; ?>/<?= $text; ?>/<?= $suffix; ?>/<?= $sort; ?>"><?= $i ?></a>
             <?php
             } else {  ?>
                 <span class="current"><?= $i; ?></span>
@@ -35,7 +42,7 @@ $klas = $pages > 1 ? 'paginate' : '';
             }
         }
         if ($current_page <> $pages) { ?>
-            <a href="/uploader/nav/<?= $start + $display; ?>/<?= $pages; ?>/<?= $user_id; ?>/<?= $text; ?>/<?= $suffix; ?>/<?= $sort; ?>">Next</a>
+            <a href="/uploader/nav/<?= $start + $display; ?>/<?= $srch; ?>/<?= $user_id; ?>/<?= $text; ?>/<?= $suffix; ?>/<?= $sort; ?>">Next</a>
     <?php
         }
     }
