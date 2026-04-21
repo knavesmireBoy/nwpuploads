@@ -466,11 +466,8 @@ class Uploader
             $uu = $srch & 1 ? $u : null;
             $tt = $srch & 2 ? $t : null;
             $xx = $srch & 4 ? $x : null;
-            //$args = safeFilter([$u,$t,$x], 'identity');
             return $this->found($uu, $tt, $xx);
         }
-
-
         return $this->load();
     }
 
@@ -481,11 +478,10 @@ class Uploader
 
     public function findSubmit()
     {
-
         $u = $_GET['user'] ?? '';
         $t = $_GET['text'] ?? '';
         $x = $_GET['ext'] ?? '';
-
+        dump([$u, $x, $_GET]);
         return $this->found($u, $t, $x);
     }
 
