@@ -508,13 +508,12 @@ class Uploader
         }
 
         if (!empty($suffix)) {
-            $lib = ['pdf', 'zip'];
             $sub = curry2('substr')(1);
-            $contains = curry2('in_array')($suffix);
-            $find = composer($sub, $pos($suffix), curry2('getter')('filename'));
+            $contains = curry2('in_array')(['pdf', 'zip']);
+            $find = composer(negate('identity'), $sub, $pos($suffix), curry2('getter')('filename'));
             if ($suffix === 'owt') {
+                
             } else {
-                $sub = curry2('substr')(1);
                 $eq = partial('equals', $suffix);
                 $byExt = composer($eq, $sub, curry2('strrchr')('.'), curry2('getter')('filename'));
                 $records = safeFilter($records, $byExt);
