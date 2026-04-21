@@ -510,7 +510,7 @@ class Uploader
         if (!empty($suffix)) {
             $sub = curry2('substr')(1);
             $pos = curry2('strrchr')('.');
-            $contains = curry2('in_array')(['pdf', 'zip']);
+            $contains = curry2('in_array')(['pdf', 'zip', 'jpg']);
             $find = composer(negate('identity'), $contains, $sub, $pos, curry2('getter')('filename'));
             if ($suffix === 'owt') {
                 $records = safeFilter($records, $find);
