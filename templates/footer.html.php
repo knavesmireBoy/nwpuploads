@@ -19,11 +19,13 @@ $klas = $pages > 1 ? 'paginate' : '';
         $srch += 4;
     }
     //0 1 2 3 4 5 6 7
-
-    $sort = explode('sort=', $_SERVER["QUERY_STRING"]);
-    $sort = isset($sort[1]) ? $sort[1] : '';
-    $sort = $sort ? "&sort=$sort" : '';
-    $sort = preg_replace("/&&/", "&", $sort);
+    $sort = '';
+    if (isset($_SERVER["QUERY_STRING"])) {
+        $sort = explode('sort=', $_SERVER["QUERY_STRING"]);
+        $sort = isset($sort[1]) ? $sort[1] : '';
+        $sort = $sort ? "&sort=$sort" : '';
+        $sort = preg_replace("/&&/", "&", $sort);
+    }
 
     if ($pages > 1) {
         $current_page = ($start / $display) + 1;
