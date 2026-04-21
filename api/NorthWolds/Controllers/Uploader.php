@@ -484,6 +484,7 @@ class Uploader
         $file = $this->table->getEntity();
         $pos = curry2('strpos');
         $files = [];
+        $getExt = composer(curry2('substr')(1), curry2('strrchr')('.'));
         $records = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
 
         if ($user_id) {
@@ -513,6 +514,7 @@ class Uploader
             $contains = curry2('in_array')(['pdf', 'zip', 'jpg']);
             $find = composer(negate('identity'), $contains, $sub, $pos, curry2('getter')('filename'));
             if ($suffix === 'owt') {
+                var_dump('owt');
                 $records = safeFilter($records, $find);
             } else {
                 $eq = partial('equals', $suffix);
@@ -524,6 +526,7 @@ class Uploader
             $o = $this->usertable->find('id', $file['userid'])[0];
             $files[] = $this->prepFileForDisplay($file, $o);
         }
+        dump($files);
         $pages = $this->setPages(count($files));
         return $this->display($user->id, $priv, $pages, $files, 'Clear Search Results');
     }
