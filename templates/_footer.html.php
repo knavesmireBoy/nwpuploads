@@ -7,7 +7,7 @@ $klas = $pages > 1 ? 'paginate' : '';
     include '_logout.html.php';
     if (isset($_GET['ext'])) $suffix = $ext;
     if (isset($_GET['u'])) $user_id = $byuser;
-    if (isset($_GET['u'])) $text = $bytext;
+    if (isset($_GET['t'])) $text = $bytext;
 
     $sort = explode('sort=', $_SERVER["QUERY_STRING"] ?? '');
     $sort = isset($sort[1]) ? $sort[1] : '';

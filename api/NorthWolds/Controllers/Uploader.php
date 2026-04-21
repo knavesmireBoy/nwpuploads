@@ -471,7 +471,7 @@ class Uploader
         $details = $user->getDetails();
         $priv = $details['role'];
         $user_id =  $_GET['user'] ?? '';
-        $text = $_GET['text'];
+        $text = $_GET['text'] ?? '';
         $suffix = $_GET['suffix'] ?? '';
         $file = $this->table->getEntity();
         $pos = curry2('strpos');
