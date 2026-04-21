@@ -69,8 +69,6 @@ class EntryPoint
             $controller = $this->website->getController($name, $args, [$userid, $userpermissions]);
             if (is_callable([$controller, $action])) {
                 //$this->website->create($name);
-
-                var_dump($_GET);
                 $page = $controller->$action(...$route);
                 //one could type for example editsubmit/1 in browser address bar
                 if ($page && is_array($page)) {
