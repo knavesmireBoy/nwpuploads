@@ -476,7 +476,7 @@ class Uploader
         $foo = function ($int, $arg) use ($srch, &$args, &$hire) {
             if ($srch & $int) {
                 if (isset($hire[0])) {
-                    $args[] = array_shift($hire);
+                    array_push($args, array_shift($hire));
                     $hire[] = $arg;
                 } else {
                     $args[] = $arg;
