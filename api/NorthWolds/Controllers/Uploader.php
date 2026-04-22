@@ -443,7 +443,7 @@ class Uploader
         return function ($int, $arg) use ($srch, &$args, &$hire) {
             if ($srch & $int) {
                 if (isset($hire[0])) {
-                    if(!is_array($args)){
+                    if (!is_array($args)) {
                         dump($hire);
                     }
                     $args[] = array_shift($hire);
@@ -468,13 +468,31 @@ class Uploader
         $hire = [];
         $aux = [];
         $default = [$s, $p];
+
+        $foo = function ($int, $arg) use ($srch, &$args, &$hire) {
+            if ($srch & $int) {
+                if (isset($hire[0])) {
+                    if (!is_array($args)) {
+                        dump($hire);
+                    }
+                    $args[] = array_shift($hire);
+                    $hire[] = $arg;
+                } else {
+                    $args[] = $arg;
+                }
+            } else {
+                $hire[] = $arg;
+                $args = '';
+            }
+        };
+
         if ($srch) {
-            $func = $this->foobar($srch, $args, $hire);
+            // $func = $this->foobar($srch, $args, $hire);
             $payload = [[1, $u], [2, $t], [4, $x], [8, $sort]];
             foreach ($payload as $data) {
-                $func(...$data);
+                $foo(...$data);
             }
-            
+
             $aux = array_slice($args, 0);
             return $this->found(...$default, ...$aux);
         }
