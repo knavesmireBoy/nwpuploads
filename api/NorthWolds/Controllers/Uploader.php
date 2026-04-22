@@ -19,9 +19,9 @@ class Uploader
     private function displayer($userId, $priv, $displayfiles, $searchText, $owner = [], $customVars = [], $error = '')
     {
         list($users, $clients) = $this->presentList($priv);
-        $thead = '';
-        $fhead = '';
-        $uhead = '';
+        $thead = 't';
+        $fhead = 'f';
+        $uhead = 'u';
         $defaultVars = [
             'files' => $displayfiles,
             'priv' => $priv,
@@ -257,6 +257,36 @@ class Uploader
         header('Content-length:' . strlen($filedata));
         echo $filedata;
         exit();
+    }
+
+    private function tablehead1()
+    {
+        list($qs, $state) = qsort('sort=');
+        $ufn = qUserHead('u');
+        $tfn = qHead('t');
+        $ffn = qHead('f', 'u');
+        $tmp = $qs ? "&sort=" : "?sort=";
+        $qs = $qs ? "?$qs" : '';
+        $qs = $qs . $tmp;
+        $qs = preg_replace("/&&/", "&", $qs);
+        $fhead = $qs . $ffn($state);
+        $uhead = $qs . $ufn($state);
+        $thead = $qs . $tfn($state);
+    }
+
+    private function tablehead()
+    {
+        list($qs, $state) = qsort('sort=');
+        $ufn = qUserHead('u');
+        $tfn = qHead('t');
+        $ffn = qHead('f', 'u');
+        $tmp = $qs ? "&sort=" : "?sort=";
+        $qs = $qs ? "?$qs" : '';
+        $qs = $qs . $tmp;
+        $qs = preg_replace("/&&/", "&", $qs);
+        $fhead = $qs . $ffn($state);
+        $uhead = $qs . $ufn($state);
+        $thead = $qs . $tfn($state);
     }
 
     private function sorter()

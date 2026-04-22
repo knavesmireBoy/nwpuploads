@@ -541,7 +541,6 @@ function getRemoteAddr()
     return $ipAddress;
 }
 
-
 function qsort($q)
 {
     $res = explode($q, $_SERVER['QUERY_STRING']);
