@@ -454,6 +454,7 @@ class Uploader
             if ($srch & 2) {
                 if (isset($hire[0])) {
                     $args[] = array_shift($hire);
+                    $hire[] = $t;
                 } else {
                     $args[] = $t;
                 }
@@ -464,6 +465,7 @@ class Uploader
             if ($srch & 4) {
                 if (isset($hire[0])) {
                     $args[] = array_shift($hire);
+                    $hire[] = $x;
                 } else {
                     $args[] = $x;
                 }
