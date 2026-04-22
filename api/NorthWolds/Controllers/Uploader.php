@@ -445,11 +445,10 @@ class Uploader
         $srch = intval($search);
         $args = [];
         $hire = [];
-        $default = [$s, $p];
         $foo = function ($int, $arg) use ($srch, &$args, &$hire) {
             if ($srch & $int) {
                 if (isset($hire[0])) {
-                    array_push($args, array_shift($hire));
+                    $args[] = array_shift($hire);
                     $hire[] = $arg;
                 } else {
                     $args[] = $arg;
@@ -465,7 +464,7 @@ class Uploader
             foreach ($payload as $data) {
                 $foo(...$data);
             }
-            return $this->found(...$default, ...$args);
+            return $this->found(...$args);
         }
         return $this->load();
     }
