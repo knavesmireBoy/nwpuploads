@@ -39,7 +39,10 @@ class Uploader
             'searchtext' => $searchText ? $searchText : '',
             'user_id' => '',
             'text' => '',
-            'ext' => ''
+            'ext' => '',
+            'fhead' => 'f',
+            'uhead' => 'u',
+            'thead' => 't'
         ];
         $vars = array_merge($defaultVars, $customVars);
         if ($vars['searchtext']) {
@@ -155,7 +158,7 @@ class Uploader
 
             'upload' => ['template' => 'upload.html.php'],
 
-            'sort' => ['template' => 'upload.html/php',
+            'sort' => ['template' => 'upload.html.php',
             'fhead' => $data['fhead'] ?? '',
             'uhead' => $data['uhead'] ?? '',
             'thead' => $data['thead'] ?? ''],
