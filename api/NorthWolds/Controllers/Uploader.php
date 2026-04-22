@@ -438,14 +438,31 @@ class Uploader
         }
     }
 
-    public function nav($s, $p, $search, $u = '', $t = '', $x = '', $sort = '')
+    public function nav($s, $p, $search, $first = '', $second = '', $third = '', $fourth = '')
     {
         $this->start = intval($s);
         $this->pages = intval($p);
         $srch = intval($search);
         $args = [];
         $hire = [];
-        $foo = function ($int, $arg) use ($srch, &$args, &$hire) {
+
+        /* DOOZY
+        the alternative to persistence in the QUERY_STRING (which can get ugly) is to pass data via function params
+        $empty = ''; $int = 47;
+        but php will skip any empty params ie /$empty/$int php treats this as //$int
+        so if only 2 params are defined they will be $first and $second; even though the values sent may be $third and $fourth
+        function($empty, $int){
+        $empty doesn't get passed instead the $empty binding is set to $int (47) the first non empty value
+        we have REINSTATE the empty values in the correct order for sending on to the next function
+        KEY to this is the $search param crucially converted to an int
+        the value assigned to $search (an integer between 0 and 15 in this case) is interrogated by the bitwise operator (&)mto determine
+        the position of empty and defined values
+        if $srch = 1 only the the first param is defined; $srch = 2 only the second; 3 first and second;
+        00000001 = 1 00000010 = 2 00000011 = 3
+        }
+        */
+
+        $sortargs = function ($int, $arg) use ($srch, &$args, &$hire) {
             if ($srch & $int) {
                 if (isset($hire[0])) {
                     $args[] = array_shift($hire);
@@ -460,9 +477,9 @@ class Uploader
         };
 
         if ($srch) {
-            $payload = [[1, $u], [2, $t], [4, $x], [8, $sort]];
+            $payload = [[1, $first], [2, $second], [4, $third], [8, $fourth]];
             foreach ($payload as $data) {
-                $foo(...$data);
+                $sortargs(...$data);
             }
             return $this->found(...$args);
         }
