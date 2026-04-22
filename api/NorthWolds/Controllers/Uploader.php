@@ -297,17 +297,14 @@ class Uploader
         $priv = $details['role'];
         $cid = $details['client_id'];
         $cb = $this->validateFile($priv, $cid, $user->id);
-        if($key === 'clear'){
-            dump($this->files);
-        }
-        if (empty($this->files) || $key === 'clear') {
-            $this->files = $this->table->findAll();
-            $this->pages = $this->setPages(count($this->files));
-            $displayFiles = $this->table->findAll(null, $this->display, $this->start, \PDO::FETCH_ASSOC);
-            $this->files = $displayFiles;
-        }
 
-        $files = [];
+        $this->files = $this->table->findAll();
+        $this->pages = $this->setPages(count($this->files));
+        $all = $this->table->findAll(null, $this->display, $this->start, \PDO::FETCH_ASSOC);
+        $this->files = $all; //all files need this??
+
+
+        $displayfiles = [];
         $owner = [];
         $customVars = [];
         //$customVars: vars for prompts
@@ -332,13 +329,13 @@ class Uploader
             }
         }
 
-        foreach ($displayFiles as $file) {
+        foreach ($all as $file) {
             $o = $this->usertable->find('id', $file['userid'])[0];
             if ($cb($file['userid'])) {
-                $files[] = $this->prepFileForDisplay($file, $o);
+                $displayfiles[] = $this->prepFileForDisplay($file, $o);
             }
         }
-        return $this->displayer($user->id, $priv, $files, '', $owner, $customVars);
+        return $this->displayer($user->id, $priv, $displayfiles, '', $owner, $customVars);
     }
 
     public function upload(string $userid)
@@ -441,18 +438,23 @@ class Uploader
         }
     }
 
-    private function foobar($srch, &$args, &$hire)
+    private function foobar($srch, $args, $hire)
     {
         return function ($int, $arg) use ($srch, &$args, &$hire) {
             if ($srch & $int) {
                 if (isset($hire[0])) {
+
                     $args[] = array_shift($hire);
+
                     $hire[] = $arg;
+
                 } else {
                     $args[] = $arg;
+
                 }
             } else {
                 $hire[] = $arg;
+                
                 $args = '';
             }
         };
