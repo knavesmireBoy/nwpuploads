@@ -503,12 +503,17 @@ class Uploader
         $files = [];
         $getExt = composer('strtolower', curry2('substr')(1), curry2('strrchr')('.'));
         $records = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
-        dump([$user_id, $priv, $details]);
+
+        dump([$file, $user_id, $priv, $details]);
 
         if ($user_id) {
+            $user = $this->usertable->find('id', $user_id)[0];
+            $details = $user->getDetails();
             if ($priv == 'Admin') {
                 if (isset($details['client_id'])) {
+                   
                     $records = toObject($file->getClientFiles($user_id), true);
+                    dump([$file, $this->table->find('userid', $user_id), $records]);
                 } else {
                     $records = $this->table->find('userid', $user_id, null, 0, 0, \PDO::FETCH_ASSOC);
                     $records = $records[0] ?? [];
