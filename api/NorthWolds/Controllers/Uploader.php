@@ -302,6 +302,7 @@ class Uploader
             $this->files = $this->table->findAll();
             $this->pages = $this->setPages(count($this->files));
             $displayFiles = $this->table->findAll(null, $this->display, $this->start, \PDO::FETCH_ASSOC);
+            $this->files = $displayFiles;
         }
 
         $files = [];
@@ -338,8 +339,7 @@ class Uploader
                 $files[] = $this->prepFileForDisplay($file, $o);
             }
         }
-        $this->files = $files;
-        return $this->displayer($user->id, $priv, $displayFiles, '', $owner, $customVars);
+        return $this->displayer($user->id, $priv, $files, '', $owner, $customVars);
     }
 
     public function upload(string $userid)
