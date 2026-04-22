@@ -438,13 +438,13 @@ class Uploader
         }
     }
 
-    private function foobar($srch, $args, $hire)
+    private function foobar($srch, &$args, &$hire)
     {
         return function ($int, $arg) use ($srch, &$args, &$hire) {
             if ($srch & $int) {
                 if (isset($hire[0])) {
                     if(!is_array($args)){
-                        dump($args);
+                        dump($hire);
                     }
                     $args[] = array_shift($hire);
                     $hire[] = $arg;
@@ -458,6 +458,7 @@ class Uploader
         };
     }
 
+
     public function nav($s, $p, $search, $u = '', $t = '', $x = '', $sort = '')
     {
         $this->start = intval($s);
@@ -465,6 +466,7 @@ class Uploader
         $srch = intval($search);
         $args = [];
         $hire = [];
+        $aux = [];
         $default = [$s, $p];
         if ($srch) {
             $func = $this->foobar($srch, $args, $hire);
@@ -472,6 +474,7 @@ class Uploader
             foreach ($payload as $data) {
                 $func(...$data);
             }
+            
             $aux = array_slice($args, 0);
             return $this->found(...$default, ...$aux);
         }
