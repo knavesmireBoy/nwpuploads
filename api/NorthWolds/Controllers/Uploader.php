@@ -159,6 +159,11 @@ class Uploader
 
             'upload' => ['template' => 'upload.html.php'],
 
+            'sort' => ['template' => 'upload.html/php'],
+            'fhead' => $data['fhead'],
+            'uhead' => $data['uhead'],
+            'thead' => $data['thead'],
+
             'delete' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this file?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/uploader/confirm/'],
 
             'confirm' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Select the extent of deletions", 'delete' => 'proceed',  'action' => '/uploader/destroy/'],
@@ -274,7 +279,7 @@ class Uploader
 
     public function sort($state = '')
     {
-       // list($qs, $state) = qsort('sort=');
+        // list($qs, $state) = qsort('sort=');
         $ufn = qUserHead('u');
         $tfn = qHead('t');
         $ffn = qHead('f', 'u');
@@ -288,7 +293,7 @@ class Uploader
         $fhead =  $ffn($state);
         $uhead =  $ufn($state);
         $thead =  $tfn($state);
-        return [$fhead, $uhead, $thead];
+        return $this->load('sort', ['fhead' => $fhead, 'uhead' => $uhead, 'thead' => $thead]);
     }
 
     private function sorter()
