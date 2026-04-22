@@ -342,12 +342,10 @@ class Uploader
             }
         }
 
-        dump($displayfiles);
-
         if(!$order){
             usort($displayfiles, function($a, $b) {
             
-                return $a['name'] <=> $b['name']; 
+                return $a['user'] <=> $b['user']; 
             });
         }
 
