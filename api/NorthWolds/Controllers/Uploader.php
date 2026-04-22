@@ -442,13 +442,37 @@ class Uploader
     {
         $this->start = intval($s);
         $srch = intval($search);
+        $hire = [];
+        $args = [];
         if ($srch) {
-            $uu = ($srch & 1) ? $u : '';
-            $tt = ($srch & 2) ? $t : '';
-            $xx = ($srch & 4) ? $x : '';
-
-            dump($u);
-            return $this->found($uu, $tt, $xx);
+            if ($srch & 1) {
+                $args[] = $u;
+            } else {
+                $hire[] = $u;
+                $args[] = '';
+            }
+            if ($srch & 2) {
+                if (isset($hire[0])) {
+                    $args[] = array_shift($hire);
+                } else {
+                    $args[] = $t;
+                }
+            } else {
+                $hire[] = $t;
+                $args[] = '';
+            }
+            if ($srch & 4) {
+                if (isset($hire[0])) {
+                    $args[] = array_shift($hire);
+                } else {
+                    $args[] = $x;
+                }
+            } else {
+                $hire[] = $x;
+                $args[] = '';
+            }
+            dump($args);
+            return $this->found(...$args);
         }
         return $this->load();
     }
