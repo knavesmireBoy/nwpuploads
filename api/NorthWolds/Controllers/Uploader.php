@@ -438,12 +438,32 @@ class Uploader
         }
     }
 
-    public function nav($s, $search, $u = '', $t = '', $x = '', $sort = '')
+
+    private function foobar($srch, $args, $hire)
+    {
+        return function ($int, $arg) use ($srch, $args, $hire) {
+            if ($srch & $int) {
+                if (isset($hire[0])) {
+                    $args[] = array_shift($hire);
+                    $hire[] = $arg;
+                } else {
+                    $args[] = $arg;
+                }
+            } else {
+                $hire[] = $arg;
+                $args = '';
+            }
+        };
+    }
+
+    public function nav($s, $p, $search, $u = '', $t = '', $x = '', $sort = '')
     {
         $this->start = intval($s);
+        $this->pages = intval($p);
         $srch = intval($search);
         $hire = [];
         $args = [];
+
         if ($srch) {
             if ($srch & 1) {
                 $args[] = $u;
@@ -473,7 +493,15 @@ class Uploader
                 $hire[] = $x;
                 $args[] = '';
             }
-            dump($args);
+
+            if ($srch & 8) {
+                if (isset($hire[0])) {
+                    $args[] = array_shift($hire);
+                    $hire[] = $sort;
+                } else {
+                    $args[] = $sort;
+                }
+            }
             return $this->found(...$args);
         }
         return $this->load();
