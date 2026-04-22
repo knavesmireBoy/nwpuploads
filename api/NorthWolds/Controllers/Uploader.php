@@ -19,14 +19,10 @@ class Uploader
     private function displayer($userId, $priv, $displayfiles, $searchText, $owner = [], $customVars = [], $error = '')
     {
         list($users, $clients) = $this->presentList($priv);
-        list($fhead, $uhead, $thead) = $this->sort();
         $defaultVars = [
             'files' => $displayfiles,
             'priv' => $priv,
             'pages' => $this->pages,
-            'fhead' => $fhead,
-            'thead' => $thead,
-            'uhead' => $uhead,
             'error' => $error,
             'start' => $this->start,
             'display' => $this->display,
