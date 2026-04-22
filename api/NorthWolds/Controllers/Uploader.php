@@ -472,7 +472,8 @@ class Uploader
             foreach ($payload as $data) {
                 $func(...$data);
             }
-            return $this->found(...$default, ...$args);
+            $aux = $args;
+            return $this->found(...$default, ...$aux);
         }
         return $this->load();
     }
