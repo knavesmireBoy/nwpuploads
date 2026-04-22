@@ -301,7 +301,7 @@ class Uploader
         if (empty($this->files) || $key === 'clear') {
             $this->files = $this->table->findAll();
             $this->pages = $this->setPages(count($this->files));
-            $displayFiles = $this->table->findAll(null, $this->display, $this->start);
+            $displayFiles = $this->table->findAll(null, $this->display, $this->start, \PDO::FETCH_ASSOC);
         }
 
         $files = [];
@@ -442,7 +442,6 @@ class Uploader
         }
     }
 
-
     private function foobar($srch, &$args, &$hire)
     {
         return function ($int, $arg) use ($srch, $args, $hire) {
@@ -459,7 +458,6 @@ class Uploader
             }
         };
     }
-
 
     public function nav2($s, $p, $search, $u = '', $t = '', $x = '', $sort = '')
     {
