@@ -443,7 +443,7 @@ class Uploader
 
     private function foobar($srch, &$args, &$hire)
     {
-        return function ($int, $arg) use ($srch, $args, $hire) {
+        return function ($int, $arg) use ($srch, &$args, &$hire) {
             if ($srch & $int) {
                 if (isset($hire[0])) {
                     $args[] = array_shift($hire);
@@ -465,13 +465,14 @@ class Uploader
         $srch = intval($search);
         $hire = [];
         $args = [];
+        $default = [$s, $p];
         if ($srch) {
             $func = $this->foobar($srch, $args, $hire);
             $payload = [[1, $u], [2, $t], [4, $x], [8, $sort]];
             foreach ($payload as $data) {
                 $func(...$data);
             }
-            return $this->found(...$args);
+            return $this->found(...$default, ...$args);
         }
         return $this->load();
     }
