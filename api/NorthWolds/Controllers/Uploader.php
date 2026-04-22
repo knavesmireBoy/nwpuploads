@@ -343,22 +343,15 @@ class Uploader
         }
 
         if (!$order) {
-
             $user = [];
             $time = [];
             $file = [];
-
             foreach ($displayfiles as $k => $v) {
                 $user[$k] = $v['user'];
                 $time[$k] = $v['time'];
                 $file[$k] = $v['filename'];
             }
-
-            dump([$user, $time, $file]);
-            usort($displayfiles, function ($a, $b) {
-
-                return $a['user'] <=> $b['user'];
-            });
+            array_multisort($user, SORT_DESC, $file, SORT_ASC, $displayfiles);
         }
 
         return $this->displayer($user->id, $priv, $displayfiles, '', $owner, $customVars);
