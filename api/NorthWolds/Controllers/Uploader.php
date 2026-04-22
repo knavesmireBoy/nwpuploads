@@ -158,10 +158,7 @@ class Uploader
 
             'upload' => ['template' => 'upload.html.php'],
 
-            'sort' => ['template' => 'upload.html.php',
-            'fhead' => $data['fhead'] ?? '',
-            'uhead' => $data['uhead'] ?? '',
-            'thead' => $data['thead'] ?? ''],
+            'sort' => ['fhead' => $data['fhead'] ?? '', 'uhead' => $data['uhead'] ?? '', 'thead' => $data['thead'] ?? ''],
 
             'delete' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this file?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/uploader/confirm/'],
 
