@@ -16,14 +16,14 @@ class Uploader
         }
     }
 
-    private function displayer($userId, $priv, $searchText, $owner = [], $customVars = [], $error = '')
+    private function displayer($userId, $priv, $displayfiles, $searchText, $owner = [], $customVars = [], $error = '')
     {
         list($users, $clients) = $this->presentList($priv);
         $thead = '';
         $fhead = '';
         $uhead = '';
         $defaultVars = [
-            'files' => array_slice(toObject($this->files, true), $this->start, $this->display),
+            'files' => $displayfiles,
             'priv' => $priv,
             'pages' => $this->pages,
             'fhead' => $fhead,
@@ -328,6 +328,10 @@ class Uploader
                 }
             }
         }
+
+        if($key === 'nav'){
+          //  dump($displayFiles);
+        }
         foreach ($displayFiles as $file) {
             $o = $this->usertable->find('id', $file->userid)[0];
             if ($cb($file->userid)) {
@@ -335,7 +339,7 @@ class Uploader
             }
         }
         $this->files = $files;
-        return $this->displayer($user->id, $priv, '', $owner, $customVars);
+        return $this->displayer($user->id, $priv, $displayFiles, '', $owner, $customVars);
     }
 
     public function upload(string $userid)
@@ -439,7 +443,7 @@ class Uploader
     }
 
 
-    private function foobar($srch, $args, $hire)
+    private function foobar($srch, &$args, &$hire)
     {
         return function ($int, $arg) use ($srch, $args, $hire) {
             if ($srch & $int) {
@@ -454,6 +458,23 @@ class Uploader
                 $args = '';
             }
         };
+    }
+
+
+    public function nav2($s, $p, $search, $u = '', $t = '', $x = '', $sort = '')
+    {
+        $this->start = intval($s);
+        $this->pages = intval($p);
+        $srch = intval($search);
+        $hire = [];
+        $args = [];
+        $func = $this->foobar($srch, $args, $hire);
+        $payload = [[1, $u], [2, $t], [4, $x], [8, $sort]];
+        foreach($payload as $data){
+            $func(...$data);
+        }
+        return $this->found(...$args);
+
     }
 
     public function nav($s, $p, $search, $u = '', $t = '', $x = '', $sort = '')
@@ -504,7 +525,7 @@ class Uploader
             }
             return $this->found(...$args);
         }
-        return $this->load();
+        return $this->load('nav');
     }
 
     public function find()
@@ -573,6 +594,8 @@ class Uploader
         $this->pages = $this->setPages(count($files));
         $this->files = $files;
         //$this->pages = $pages;
-        return $this->displayer($user->id, $priv, 'Clear Search Results', [], ['user_id' => $user_id, 'text' => $text, 'ext' => $ext]);
+        $displayFiles = array_slice(toObject($this->files, true), $this->start, $this->display);
+
+        return $this->displayer($user->id, $priv, $displayFiles, 'Clear Search Results', [], ['user_id' => $user_id, 'text' => $text, 'ext' => $ext]);
     }
 }
