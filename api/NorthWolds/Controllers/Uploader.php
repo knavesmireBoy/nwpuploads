@@ -471,6 +471,7 @@ class Uploader
                 $hire[] = $x;
                 $args[] = '';
             }
+            dump($args);
             return $this->found(...$args);
         }
         return $this->load();
