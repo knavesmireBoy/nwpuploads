@@ -297,7 +297,9 @@ class Uploader
         $priv = $details['role'];
         $cid = $details['client_id'];
         $cb = $this->validateFile($priv, $cid, $user->id);
-
+        if($key === 'clear'){
+            dump($this->files);
+        }
         if (empty($this->files) || $key === 'clear') {
             $this->files = $this->table->findAll();
             $this->pages = $this->setPages(count($this->files));
@@ -330,9 +332,6 @@ class Uploader
             }
         }
 
-        if($key === 'nav'){
-          //  dump($displayFiles);
-        }
         foreach ($displayFiles as $file) {
             $o = $this->usertable->find('id', $file['userid'])[0];
             if ($cb($file['userid'])) {
@@ -459,23 +458,25 @@ class Uploader
         };
     }
 
-    public function nav2($s, $p, $search, $u = '', $t = '', $x = '', $sort = '')
+    public function nav($s, $p, $search, $u = '', $t = '', $x = '', $sort = '')
     {
         $this->start = intval($s);
         $this->pages = intval($p);
         $srch = intval($search);
         $hire = [];
         $args = [];
-        $func = $this->foobar($srch, $args, $hire);
-        $payload = [[1, $u], [2, $t], [4, $x], [8, $sort]];
-        foreach($payload as $data){
-            $func(...$data);
+        if ($srch) {
+            $func = $this->foobar($srch, $args, $hire);
+            $payload = [[1, $u], [2, $t], [4, $x], [8, $sort]];
+            foreach ($payload as $data) {
+                $func(...$data);
+            }
+            return $this->found(...$args);
         }
-        return $this->found(...$args);
-
+        return $this->load();
     }
 
-    public function nav($s, $p, $search, $u = '', $t = '', $x = '', $sort = '')
+    public function nav1($s, $p, $search, $u = '', $t = '', $x = '', $sort = '')
     {
         $this->start = intval($s);
         $this->pages = intval($p);
