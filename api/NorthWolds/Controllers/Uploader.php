@@ -318,7 +318,7 @@ class Uploader
 
         $this->files = $this->table->findAll();
         $this->pages = $this->setPages(count($this->files));
-        $all = $this->table->findAll($this->sorter(), $this->display, $this->start, \PDO::FETCH_ASSOC);
+        $all = $this->table->findAll(null, $this->display, $this->start, \PDO::FETCH_ASSOC);
         $this->files = $all; //all files need this??
 
 
