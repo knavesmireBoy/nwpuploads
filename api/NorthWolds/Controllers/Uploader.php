@@ -466,8 +466,12 @@ class Uploader
         $srch = intval($search);
         $args = [];
         $hire = [];
-        $aux = [];
+       // $aux = [];
         $default = [$s, $p];
+
+        if(!is_array($args)){
+            dump([$args, $hire]);
+        }
 
         $foo = function ($int, $arg) use ($srch, &$args, &$hire) {
             if ($srch & $int) {
@@ -491,6 +495,7 @@ class Uploader
             }
 
             $aux = array_slice($args, 0);
+            
             return $this->found(...$default, ...$aux);
         }
         return $this->load();
