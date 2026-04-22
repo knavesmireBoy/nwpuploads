@@ -443,6 +443,9 @@ class Uploader
         return function ($int, $arg) use ($srch, &$args, &$hire) {
             if ($srch & $int) {
                 if (isset($hire[0])) {
+                    if(!is_array($args)){
+                        dump($args);
+                    }
                     $args[] = array_shift($hire);
                     $hire[] = $arg;
                 } else {
@@ -460,8 +463,8 @@ class Uploader
         $this->start = intval($s);
         $this->pages = intval($p);
         $srch = intval($search);
-        $hire = [];
         $args = [];
+        $hire = [];
         $default = [$s, $p];
         if ($srch) {
             $func = $this->foobar($srch, $args, $hire);
