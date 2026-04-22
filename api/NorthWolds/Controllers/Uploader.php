@@ -333,9 +333,9 @@ class Uploader
           //  dump($displayFiles);
         }
         foreach ($displayFiles as $file) {
-            $o = $this->usertable->find('id', $file->userid)[0];
-            if ($cb($file->userid)) {
-                $files[] = $this->prepFileForDisplay(get_object_vars($file), $o);
+            $o = $this->usertable->find('id', $file['userid'])[0];
+            if ($cb($file['userid'])) {
+                $files[] = $this->prepFileForDisplay($file, $o);
             }
         }
         $this->files = $files;
