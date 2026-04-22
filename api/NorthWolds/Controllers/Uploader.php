@@ -7,6 +7,7 @@ use \Ninja\DatabaseTable;
 class Uploader
 {
     private $files = [];
+    private $sort = 'tt';
     public function __construct(private DatabaseTable $table, private DatabaseTable $usertable, private int $display, private int $start, private int $pages, private string $home) {}
 
     private function remove($path)
@@ -275,17 +276,10 @@ class Uploader
 
     public function sort($state = '')
     {
-        // list($qs, $state) = qsort('sort=');
+        $this->sort = $state ? $state : $this->sort;
         $ufn = qUserHead('u');
         $tfn = qHead('t');
         $ffn = qHead('f', 'u');
-        /*
-        $tmp = $qs ? "&sort=" : "?sort=";
-        $qs = $qs ? "?$qs" : '';
-        $qs = $qs . $tmp;
-        $qs = preg_replace("/&&/", "&", $qs);
-        */
-
         $fhead =  $ffn($state);
         $uhead =  $ufn($state);
         $thead =  $tfn($state);
@@ -296,28 +290,19 @@ class Uploader
     {
         $sorter = array('f' => 'filename ASC', 'ff' => 'filename DESC', 'u' => 'name ASC', 'uu' => 'name DESC', 'uf' => 'name ASC, filename ASC', 'uuf' => 'name DESC, filename ASC',  'uff' => 'name ASC, filename DESC',  'uuff' => 'name DESC, filename DESC', 'ut' => 'name ASC, time ASC', 'utt' => 'name ASC, time DESC', 'uut' => 'name DESC, time ASC', 'uutt' => 'name DESC, time DESC', 't' => 'time ASC', 'tt' => 'time DESC');
 
-        $mainclass = $this->pages === 1 ? '' : 'paginate';
-
-        if (isset($_GET['s']) && is_numeric($_GET['s'])) {
-            $start = $_GET['s'];
-        } else {
-            $start = 0;
-        }
-
-        $sort = $_GET['sort'] ?? '1';
-
         foreach ($sorter as $k => $v) {
-            if ($k == $sort) break;
+            if ($k == $this->sort) break;
         }
-        switch ($sort) {
+        switch ($this->sort) {
             case $k:
                 $order_by = $sorter[$k];
                 break;
             default:
                 $order_by = 'time DESC';
-                $sort = 'tt';
+                $this->sort = 'tt';
                 break;
         }
+        return $order_by;
     }
 
     public function load(string $key = '', array $vars = [])
@@ -333,7 +318,7 @@ class Uploader
 
         $this->files = $this->table->findAll();
         $this->pages = $this->setPages(count($this->files));
-        $all = $this->table->findAll(null, $this->display, $this->start, \PDO::FETCH_ASSOC);
+        $all = $this->table->findAll($this->sorter(), $this->display, $this->start, \PDO::FETCH_ASSOC);
         $this->files = $all; //all files need this??
 
 
