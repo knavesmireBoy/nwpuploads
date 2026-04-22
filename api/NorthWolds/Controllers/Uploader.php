@@ -504,8 +504,6 @@ class Uploader
         $getExt = composer('strtolower', curry2('substr')(1), curry2('strrchr')('.'));
         $records = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
 
-        dump([$file, $user_id, $priv, $details]);
-
         if ($user_id) {
             $user = $this->usertable->find('id', $user_id)[0];
             $details = $user->getDetails();
