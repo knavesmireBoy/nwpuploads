@@ -443,18 +443,13 @@ class Uploader
         return function ($int, $arg) use ($srch, &$args, &$hire) {
             if ($srch & $int) {
                 if (isset($hire[0])) {
-
                     $args[] = array_shift($hire);
-
                     $hire[] = $arg;
-
                 } else {
                     $args[] = $arg;
-
                 }
             } else {
                 $hire[] = $arg;
-                
                 $args = '';
             }
         };
@@ -474,7 +469,7 @@ class Uploader
             foreach ($payload as $data) {
                 $func(...$data);
             }
-            $aux = $args;
+            $aux = array_slice($args, 0);
             return $this->found(...$default, ...$aux);
         }
         return $this->load();
