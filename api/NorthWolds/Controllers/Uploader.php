@@ -19,9 +19,7 @@ class Uploader
     private function displayer($userId, $priv, $displayfiles, $searchText, $owner = [], $customVars = [], $error = '')
     {
         list($users, $clients) = $this->presentList($priv);
-        $thead = 't';
-        $fhead = 'f';
-        $uhead = 'u';
+        list($fhead, $uhead, $thead) = $this->sort();
         $defaultVars = [
             'files' => $displayfiles,
             'priv' => $priv,
@@ -274,19 +272,23 @@ class Uploader
         $thead = $qs . $tfn($state);
     }
 
-    private function tablehead()
+    public function sort($state = '')
     {
-        list($qs, $state) = qsort('sort=');
+       // list($qs, $state) = qsort('sort=');
         $ufn = qUserHead('u');
         $tfn = qHead('t');
         $ffn = qHead('f', 'u');
+        /*
         $tmp = $qs ? "&sort=" : "?sort=";
         $qs = $qs ? "?$qs" : '';
         $qs = $qs . $tmp;
         $qs = preg_replace("/&&/", "&", $qs);
-        $fhead = $qs . $ffn($state);
-        $uhead = $qs . $ufn($state);
-        $thead = $qs . $tfn($state);
+        */
+
+        $fhead =  $ffn($state);
+        $uhead =  $ufn($state);
+        $thead =  $tfn($state);
+        return [$fhead, $uhead, $thead];
     }
 
     private function sorter()
