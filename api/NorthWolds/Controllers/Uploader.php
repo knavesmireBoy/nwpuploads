@@ -319,7 +319,7 @@ class Uploader
         $this->files = $this->table->findAll();
         $this->pages = $this->setPages(count($this->files));
         $orderby = $this->sorter();
-        $order =  preg_match('/\sname\s/', $orderby) ? null : $orderby;
+        $order =  preg_match('/^name/i', $orderby) ? null : $orderby;
         $all = $this->table->findAll($order, $this->display, $this->start, \PDO::FETCH_ASSOC);
         $this->files = $all; //all files need this??
 
