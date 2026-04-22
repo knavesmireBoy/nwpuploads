@@ -259,21 +259,6 @@ class Uploader
         exit();
     }
 
-    private function tablehead1()
-    {
-        list($qs, $state) = qsort('sort=');
-        $ufn = qUserHead('u');
-        $tfn = qHead('t');
-        $ffn = qHead('f', 'u');
-        $tmp = $qs ? "&sort=" : "?sort=";
-        $qs = $qs ? "?$qs" : '';
-        $qs = $qs . $tmp;
-        $qs = preg_replace("/&&/", "&", $qs);
-        $fhead = $qs . $ffn($state);
-        $uhead = $qs . $ufn($state);
-        $thead = $qs . $tfn($state);
-    }
-
     public function sort($state = '')
     {
         $this->sort = $state ? $state : $this->sort;
@@ -321,6 +306,7 @@ class Uploader
         $orderby = $this->sorter();
         $order =  preg_match('/^name/i', $orderby) ? null : $orderby;
         $all = $this->table->findAll($order, $this->display, $this->start, \PDO::FETCH_ASSOC);
+
         $this->files = $all; //all files need this??
 
 
@@ -355,6 +341,15 @@ class Uploader
                 $displayfiles[] = $this->prepFileForDisplay($file, $o);
             }
         }
+
+
+
+        if(!$order){
+            usort($displayfiles, function($a, $b) {
+                return $a['name'] <=> $b['name']; 
+            });
+        }
+
         return $this->displayer($user->id, $priv, $displayfiles, '', $owner, $customVars);
     }
 
