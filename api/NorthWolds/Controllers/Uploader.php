@@ -369,6 +369,7 @@ class Uploader
                 list($a, $b) = $matches[0];
                 $sort = [$lib[$a]];
                 if(isset($b)){
+                    //IF same sort is found twice only one will be returned
                     $sort[] = $b;
                 }
                 array_multisort($last, $sort[0], $second, $sort[1] ?  $sort[1] : $sort[0], $displayfiles);
