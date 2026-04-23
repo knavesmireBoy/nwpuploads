@@ -371,7 +371,6 @@ class Uploader
                 array_multisort($last, $sort[0], $second, $sort[1], $displayfiles);
             } else {
                 preg_match('/[A-Z]+/', $orderby, $matches);
-                dump($matches[0]);
                 array_multisort($last, $lib[$matches[0]], $displayfiles);
             }
 
@@ -523,6 +522,9 @@ class Uploader
             }
         };
 
+        $this->sort = end($args);
+        dump([func_get_args(), $args]);
+
         if ($srch) {
             $payload = [[1, $first], [2, $second], [4, $third], [8, $fourth]];
             foreach ($payload as $data) {
@@ -530,9 +532,7 @@ class Uploader
             }
             return $this->found(...$args);
         }
-        $this->sort = end($args);
-
-        dump([func_get_args(), $args]);
+       
         return $this->load();
     }
 
