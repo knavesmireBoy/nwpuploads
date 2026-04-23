@@ -348,7 +348,7 @@ class Uploader
             $file = [];
             $second = [];
             $lib = ['ASC' => SORT_ASC, 'DESC' => SORT_DESC];
-            
+
             foreach ($displayfiles as $k => $v) {
                 $u = explode(' ', $v['user']);
                 $first[$k] = $u[0];
@@ -357,11 +357,14 @@ class Uploader
                 $time[$k] = $v['time'];
                 $file[$k] = $v['filename'];
             }
-            if(strpos($orderby, ',')){
+            if (strpos($orderby, ',')) {
                 $second = strpos($orderby, 'time') ? $time : $file;
-                preg_match('/[A-Z]+/', $orderby, $matches);
+                preg_match_all('/[A-Z]+/', $orderby, $matches);
+                list($a, $b) = $matches[0];
+                $sort = [$lib[$a], $lib[$b]];
             }
-            array_multisort($last, SORT_DESC, $file, SORT_ASC, $displayfiles);
+
+            array_multisort($last, $sort[0], $second, $sort[1], $displayfiles);
             foreach ($displayfiles as $k => $v) {
                 $f = $first[$k];
                 $l = $last[$k];
@@ -519,7 +522,7 @@ class Uploader
         return $this->load();
     }
 
-  
+
     public function find()
     {
         return $this->load('search');
