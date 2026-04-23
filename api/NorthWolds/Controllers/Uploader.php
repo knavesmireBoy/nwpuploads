@@ -371,6 +371,7 @@ class Uploader
                 array_multisort($last, $sort[0], $second, $sort[1], $displayfiles);
             } else {
                 preg_match('/[A-Z]+/', $orderby, $matches);
+                dump($matches[0]);
                 array_multisort($last, $lib[$matches[0]], $displayfiles);
             }
 
@@ -534,7 +535,6 @@ class Uploader
         dump([func_get_args(), $args]);
         return $this->load();
     }
-
 
     public function find()
     {
