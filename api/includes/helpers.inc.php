@@ -7,6 +7,12 @@ function dump($arg)
     exit;
 }
 
+function randomID()
+{
+    $uk = strtoupper(substr(sha1(microtime()), rand(0, 5), 20));
+    return implode("-", str_split($uk, 5));
+}
+
 function doWhen($predicate, $action)
 {
     return function (...$args) use ($predicate, $action) {
@@ -91,7 +97,8 @@ function arrayDiff($arr, ...$args)
     return array_values(array_diff($arr, ...$args));
 }
 
-function every($a, $b){
+function every($a, $b)
+{
     return $a && $b;
 }
 
@@ -481,12 +488,11 @@ function lastInsert1($pdo, $db = 'mysql', $tblname = '')
     if ($db === 'postgres' && $tblname) {
         include CONNECT;
         $pdo->exec('SET search_path TO uploads');
-        try{
-        $st = doQuery($pdo, "SELECT currval(pg_get_serial_sequence($tblname, 'id')) AS id", 'error obtaining last insert id');
-        $row = $st->fetch(PDO::FETCH_ASSOC);
-        }
-        catch(Exception $e){
-        dump($e);
+        try {
+            $st = doQuery($pdo, "SELECT currval(pg_get_serial_sequence($tblname, 'id')) AS id", 'error obtaining last insert id');
+            $row = $st->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            dump($e);
         }
         return isset($row) ? $row['id'] : null;
     }
