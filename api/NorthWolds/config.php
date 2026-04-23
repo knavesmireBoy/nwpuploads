@@ -23,7 +23,7 @@ define('BASE_PATH', __DIR__);
 define('CONNECT', __DIR__  . '/includes/db.inc.php');
 define('DBSYSTEM', 'postgres');
 define('SUPERUSER', 'files@northwolds.co.uk');
-define('PAGINATE', 10);
+define('PAGINATE', 5);
 
 define("LOGOUT", '/logger/logout');
 define("LOGIN", '/logger/login');
