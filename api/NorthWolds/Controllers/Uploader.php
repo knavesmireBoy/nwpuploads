@@ -377,9 +377,10 @@ class Uploader
                 $l = $last[$uk];
                 $displayfiles[$k]['user'] = "$f $l";
             }
+            dump($displayfiles);
+
         }
 
-        dump($displayfiles);
         return $this->displayer($user->id, $priv, $displayfiles, '', $owner, $customVars);
     }
 
