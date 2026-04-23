@@ -308,8 +308,6 @@ class Uploader
         $all = $this->table->findAll($order, $this->display, $this->start, \PDO::FETCH_ASSOC);
 
         $this->files = $all; //all files need this??
-
-
         $displayfiles = [];
         $owner = [];
         $customVars = [];
@@ -343,17 +341,16 @@ class Uploader
         }
 
         if (!$order) {
-            $user = [];
+            $usr = [];
             $time = [];
             $file = [];
             foreach ($displayfiles as $k => $v) {
-                $user[$k] = $v['user'];
+                $usr[$k] = $v['user'];
                 $time[$k] = $v['time'];
                 $file[$k] = $v['filename'];
             }
-            array_multisort($user, SORT_DESC, $file, SORT_ASC, $displayfiles);
+            array_multisort($usr, SORT_DESC, $file, SORT_ASC, $displayfiles);
         }
-
         return $this->displayer($user->id, $priv, $displayfiles, '', $owner, $customVars);
     }
 
