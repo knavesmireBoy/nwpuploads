@@ -343,9 +343,12 @@ class Uploader
 
         if (!$order) {
             $first = [];
+            $last = [];
             $time = [];
             $file = [];
-            $last = [];
+            $second = [];
+            $lib = ['ASC' => SORT_ASC, 'DESC' => SORT_DESC];
+            
             foreach ($displayfiles as $k => $v) {
                 $u = explode(' ', $v['user']);
                 $first[$k] = $u[0];
@@ -354,6 +357,13 @@ class Uploader
                 $time[$k] = $v['time'];
                 $file[$k] = $v['filename'];
             }
+            if(strpos($orderby, ',')){
+                $second = strpos($orderby, 'time') ? $time : $file;
+                preg_match('/[A-Z]+/', $orderby, $matches);
+            }
+
+
+
             array_multisort($last, SORT_DESC, $file, SORT_ASC, $displayfiles);
             foreach ($displayfiles as $k => $v) {
                 $f = $first[$k];
