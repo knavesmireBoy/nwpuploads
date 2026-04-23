@@ -529,7 +529,6 @@ class Uploader
             }
             return $this->found(...$args);
         }
-        dump([func_get_Args(), $args, end($args)]);
         return $this->load();
     }
 

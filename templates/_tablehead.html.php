@@ -1,8 +1,11 @@
 <?php
+/*
 $tel = '';
 $sort = '';
 $toggle = ['f', 'u', 't'];
-$uhead = ($priv === 'Admin') ? $uhead : '.';
+*/
+$uhead = ($priv === 'Admin') ? $uhead : '/uploader/load';
+
 ?>
 <div id="upload">
 <table>
