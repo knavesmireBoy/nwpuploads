@@ -531,7 +531,6 @@ class Uploader
             }
 
             $this->sort = end($args);
-            dump($args);
             return $this->found(...$args);
         }
        

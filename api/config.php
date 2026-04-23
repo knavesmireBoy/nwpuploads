@@ -35,7 +35,7 @@ define('SUPERUSER', 'files@northwolds.co.uk');
 //define('DBSYSTEM', 'mysql');
 //define('SUPERUSER', 'files@northwolds.co.uk');
 define('MYIP', '86.160.57.166');
-define('PAGINATE', 5);
+define('PAGINATE', 10);
 
 define("LOGOUT", '/logger/logout');
 define("LOGIN", '/logger/login');
@@ -57,7 +57,6 @@ define("USER_MAIL", '/user/changeemail/');
 define("USER_OK", '/user/success');
 define("USER_RESET_PWD", '/user/resetpassword/');
 define("USER_RESET_EMAIL", '/user/resetemail/');
-
 
 define("ASSET_UPLOAD",  '/uploader/upload/');
 define("ASSET_LOAD",  '/uploader/load/');
