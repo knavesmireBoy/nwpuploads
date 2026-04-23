@@ -306,13 +306,13 @@ class Uploader
         $this->pages = $this->setPages(count($this->files));
         $orderby = $this->sorter();
         $order =  preg_match('/^name/i', $orderby) ? null : $orderby;
+
+        //branch for user files...
         $all = $this->table->findAll($order, $this->display, $this->start, \PDO::FETCH_ASSOC);
 
-        $this->files = $all; //all files need this??
         $displayfiles = [];
         $owner = [];
         $customVars = [];
-        //$customVars: vars for prompts
         $error = $this->getErrors($key);
 
         if (!$error) {
