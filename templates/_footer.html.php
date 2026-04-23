@@ -7,6 +7,8 @@ $klas = $pages > 1 ? 'paginate' : '';
     include '_logout.html.php';
 
     $srch = 0;
+    $sort = $this->sort;
+
     if ($user_id) {
         $srch += 1;
     }
@@ -16,15 +18,10 @@ $klas = $pages > 1 ? 'paginate' : '';
     if ($ext) {
         $srch += 4;
     }
-
-    $sort = '';
-
-    if (isset($_SERVER["QUERY_STRING"])) {
-        $sort = explode('sort=', $_SERVER["QUERY_STRING"] ?? '');
-        $sort = isset($sort[1]) ? $sort[1] : '';
-        $sort = $sort ? "&sort=$sort" : '';
-        $sort = preg_replace("/&&/", "&", $sort);
+    if ($sort) {
+        $srch += 8;
     }
+
 
     if ($pages > 1) {
         $current_page = ($start / $display) + 1;
