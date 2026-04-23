@@ -342,16 +342,24 @@ class Uploader
         }
 
         if (!$order) {
-            $usr = [];
+            $first = [];
             $time = [];
             $file = [];
+            $last = [];
             foreach ($displayfiles as $k => $v) {
-                $u = preg_replace('/\S+\s(\S)+/', '$1', $v['user']);
-                $usr[$k] = $u;
+                $u = explode(' ', $v['user']);
+                $first[$k] = $u[0];
+                $last[$k] = $u[1];
+                $displayfiles[$k]['user'] = $u[1];
                 $time[$k] = $v['time'];
                 $file[$k] = $v['filename'];
             }
-            array_multisort($usr, SORT_DESC, $file, SORT_ASC, $displayfiles);
+            array_multisort($last, SORT_DESC, $file, SORT_ASC, $displayfiles);
+            foreach ($displayfiles as $k => $v) {
+                $f = $first[$k];
+                $l = $last[$k];
+                $displayfiles[$k]['user'] = "$f $l";
+            }
         }
         return $this->displayer($user->id, $priv, $displayfiles, '', $owner, $customVars);
     }
