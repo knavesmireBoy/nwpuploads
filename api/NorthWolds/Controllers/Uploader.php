@@ -346,7 +346,7 @@ class Uploader
             $time = [];
             $file = [];
             foreach ($displayfiles as $k => $v) {
-                $u = preg_replace('/(\S)+/', '$1', $v['user']);
+                $u = preg_replace('/\S+\s(\S)+/', '$1', $v['user']);
                 $usr[$k] = $u;
                 $time[$k] = $v['time'];
                 $file[$k] = $v['filename'];
