@@ -355,11 +355,12 @@ class Uploader
 
             foreach ($displayfiles as $k => $v) {
                 $u = explode(' ', $v['user']);
+                $uk = $displayfiles[$k]['userid'];
                 $full[$k] = $v['user'];
                 $first[$uk] = $u[0];
                 $last[$uk] = $u[1];
                 $displayfiles[$k]['user'] = $u[1];
-                $displayfiles[$k]['uk'] = $displayfiles[$k]['userid'];
+                $displayfiles[$k]['uk'] = $uk;
                 $time[$k] = $v['time'];
                 $file[$k] = $v['filename'];
             }
