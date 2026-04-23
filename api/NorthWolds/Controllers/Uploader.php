@@ -346,7 +346,8 @@ class Uploader
             $time = [];
             $file = [];
             foreach ($displayfiles as $k => $v) {
-                $usr[$k] = $v['user'];
+                $u = preg_replace('/(\S)+/', '$1', $v['user']);
+                $usr[$k] = $u;
                 $time[$k] = $v['time'];
                 $file[$k] = $v['filename'];
             }
@@ -511,14 +512,15 @@ class Uploader
     //form submission
     public function finder()
     {
-        return $this->found($_GET['user'], $_GET['text'], $_GET['ext']);
+        return $this->found($_GET['user'], $_GET['text'], $_GET['ext'], $this->sort);
     }
 
-    private function found($user_id, $text, $ext)
+    private function found($user_id, $text, $ext, $sort)
     {
         if (!isset($_SESSION['username'])) {
             reLocate(REG);
         }
+        $this->sort = $sort;
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
         $priv = $details['role'];

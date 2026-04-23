@@ -35,7 +35,7 @@ define('SUPERUSER', 'files@northwolds.co.uk');
 //define('DBSYSTEM', 'mysql');
 //define('SUPERUSER', 'files@northwolds.co.uk');
 define('MYIP', '86.160.57.166');
-define('PAGINATE', 5);
+define('PAGINATE', 10);
 
 define("LOGOUT", '/logger/logout');
 define("LOGIN", '/logger/login');
