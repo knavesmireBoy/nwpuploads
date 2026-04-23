@@ -377,8 +377,6 @@ class Uploader
                 $l = $last[$uk];
                 $displayfiles[$k]['user'] = "$f $l";
             }
-            dump($displayfiles);
-
         }
 
         return $this->displayer($user->id, $priv, $displayfiles, '', $owner, $customVars);
@@ -522,18 +520,18 @@ class Uploader
             }
         };
 
-       
-
         if ($srch) {
             $payload = [[1, $first], [2, $second], [4, $third], [8, $fourth]];
             foreach ($payload as $data) {
                 $sortargs(...$data);
             }
-
             $this->sort = end($args);
+            if ($this->sort === $first) {
+                return $this->load();
+            }
             return $this->found(...$args);
         }
-       
+
         return $this->load();
     }
 
@@ -603,9 +601,7 @@ class Uploader
         }
         $this->pages = $this->setPages(count($files));
         $this->files = $files;
-        //$this->pages = $pages;
         $displayFiles = array_slice(toObject($this->files, true), $this->start, $this->display);
-
         return $this->displayer($user->id, $priv, $displayFiles, 'Clear Search Results', [], ['user_id' => $user_id, 'text' => $text, 'ext' => $ext]);
     }
 }
