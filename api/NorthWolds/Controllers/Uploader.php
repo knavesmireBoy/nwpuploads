@@ -354,9 +354,15 @@ class Uploader
             foreach ($displayfiles as $k => $v) {
                 $u = explode(' ', $v['user']);
                 $full[$k] = $v['user'];
-                $first[$k] = $u[0];
-                $last[$k] = $u[1];
+
+                $uk = strtoupper(substr(sha1(microtime()), rand(0, 5), 20));
+                $uk  = implode("-", str_split($uk, 5));
+
+
+                $first[$uk] = $u[0];
+                $last[$uk] = $u[1];
                 $displayfiles[$k]['user'] = $u[1];
+                $displayfiles[$k]['uk'] = $uk;
                 $time[$k] = $v['time'];
                 $file[$k] = $v['filename'];
             }
@@ -366,8 +372,7 @@ class Uploader
                 list($a, $b) = $matches[0];
                 $sort = [$lib[$a], $lib[$b]];
                 array_multisort($last, $sort[0], $second, $sort[1], $displayfiles);
-            }
-            else {
+            } else {
                 preg_match('/[A-Z]+/', $orderby, $matches);
                 array_multisort($last, $lib[$matches[0]], $displayfiles);
             }
@@ -377,6 +382,7 @@ class Uploader
                 $l = $last[$k];
                 $displayfiles[$k]['user'] = "$f $l";
             }
+            dump([$k, $v]);
         }
         return $this->displayer($user->id, $priv, $displayfiles, '', $owner, $customVars);
     }
