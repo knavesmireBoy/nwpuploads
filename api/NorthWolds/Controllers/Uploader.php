@@ -365,16 +365,9 @@ class Uploader
             }
             if (strpos($orderby, ',')) {
                 $second = strpos($orderby, 'time') ? $time : $file;
-                preg_match('/[A-Z]+/', $orderby, $matches);
+                preg_match_all('/[A-Z]+/', $orderby, $matches);
                 list($a, $b) = $matches[0];
-                $sort = [$lib[$a]];
-                if (isset($b)) {
-                    //'name ASC, filename ASC'
-                    //IF same sort is found twice (ASC) only one will be returned
-                    $sort[] = $b;
-                } else {
-                    $sort[] = $a;
-                }
+                $sort = [$lib[$a], $lib[$b]];
                 array_multisort($last, $sort[0], $second, $sort[1], $displayfiles);
             } else {
                 preg_match('/[A-Z]+/', $orderby, $matches);
