@@ -367,7 +367,10 @@ class Uploader
                 $second = strpos($orderby, 'time') ? $time : $file;
                 preg_match('/[A-Z]+/', $orderby, $matches);
                 list($a, $b) = $matches[0];
-                $sort = [$lib[$a], $lib[$b]];
+                $sort = [$lib[$a]];
+                if(isset($b)){
+                    $sort[] = $b;
+                }
                 array_multisort($last, $sort[0], $second, $sort[1] ?  $sort[1] : $sort[0], $displayfiles);
             } else {
                 preg_match('/[A-Z]+/', $orderby, $matches);
