@@ -529,6 +529,7 @@ class Uploader
             }
             return $this->found(...$args);
         }
+        $this->sort = end($args);
         return $this->load();
     }
 
