@@ -374,7 +374,7 @@ class Uploader
             }
 
             foreach ($displayfiles as $k => $v) {
-                $uk = $displayfiles[$k]['userid'];
+                $uk = $displayfiles[$k]['uk'];
                 $f = $first[$uk];
                 $l = $last[$uk];
                 $displayfiles[$k]['user'] = "$f $l";
