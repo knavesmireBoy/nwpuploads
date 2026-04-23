@@ -43,7 +43,8 @@ class Uploader
             'ext' => '',
             'fhead' => 'f',
             'uhead' => 'u',
-            'thead' => 't'
+            'thead' => 't',
+            'sort' => $this->sort
         ];
         $vars = array_merge($defaultVars, $customVars);
         if ($vars['searchtext']) {
@@ -460,7 +461,7 @@ class Uploader
         $this->pages = intval($p);
         $srch = intval($search);
         $args = [];
-        $hire = [];
+        $hold = [];
 
         /* DOOZY
         the alternative to persistence in the QUERY_STRING (which can get ugly) is to pass data via function params
@@ -478,16 +479,16 @@ class Uploader
         }
         */
 
-        $sortargs = function ($int, $arg) use ($srch, &$args, &$hire) {
+        $sortargs = function ($int, $arg) use ($srch, &$args, &$hold) {
             if ($srch & $int) {
-                if (isset($hire[0])) {
-                    $args[] = array_shift($hire);
-                    $hire[] = $arg;
+                if (isset($hold[0])) {
+                    $args[] = array_shift($hold);
+                    $hold[] = $arg;
                 } else {
                     $args[] = $arg;
                 }
             } else {
-                $hire[] = $arg;
+                $hold[] = $arg;
                 $args[] = '';
             }
         };
@@ -502,57 +503,7 @@ class Uploader
         return $this->load();
     }
 
-    public function nav1($s, $p, $search, $u = '', $t = '', $x = '', $sort = '')
-    {
-        $this->start = intval($s);
-        $this->pages = intval($p);
-        $srch = intval($search);
-        $hire = [];
-        $args = [];
-
-        if ($srch) {
-            if ($srch & 1) {
-                $args[] = $u;
-            } else {
-                $hire[] = $u;
-                $args[] = '';
-            }
-            if ($srch & 2) {
-                if (isset($hire[0])) {
-                    $args[] = array_shift($hire);
-                    $hire[] = $t;
-                } else {
-                    $args[] = $t;
-                }
-            } else {
-                $hire[] = $t;
-                $args[] = '';
-            }
-            if ($srch & 4) {
-                if (isset($hire[0])) {
-                    $args[] = array_shift($hire);
-                    $hire[] = $x;
-                } else {
-                    $args[] = $x;
-                }
-            } else {
-                $hire[] = $x;
-                $args[] = '';
-            }
-
-            if ($srch & 8) {
-                if (isset($hire[0])) {
-                    $args[] = array_shift($hire);
-                    $hire[] = $sort;
-                } else {
-                    $args[] = $sort;
-                }
-            }
-            return $this->found(...$args);
-        }
-        return $this->load('nav');
-    }
-
+  
     public function find()
     {
         return $this->load('search');

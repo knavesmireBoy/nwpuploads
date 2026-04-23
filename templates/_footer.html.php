@@ -7,7 +7,6 @@ $klas = $pages > 1 ? 'paginate' : '';
     include '_logout.html.php';
 
     $srch = 0;
-    $sort = $this->sort;
 
     if ($user_id) {
         $srch += 1;
@@ -21,7 +20,6 @@ $klas = $pages > 1 ? 'paginate' : '';
     if ($sort) {
         $srch += 8;
     }
-
 
     if ($pages > 1) {
         $current_page = ($start / $display) + 1;
