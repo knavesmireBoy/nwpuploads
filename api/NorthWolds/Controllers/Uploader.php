@@ -359,12 +359,16 @@ class Uploader
             }
             if (strpos($orderby, ',')) {
                 $second = strpos($orderby, 'time') ? $time : $file;
-                preg_match_all('/[A-Z]+/', $orderby, $matches);
+                preg_match('/[A-Z]+/', $orderby, $matches);
                 list($a, $b) = $matches[0];
                 $sort = [$lib[$a], $lib[$b]];
+                array_multisort($last, $sort[0], $second, $sort[1], $displayfiles);
+            }
+            else {
+                preg_match('/[A-Z]+/', $orderby, $matches);
+                array_multisort($last, $matches[0], $displayfiles);
             }
 
-            array_multisort($last, $sort[0], $second, $sort[1], $displayfiles);
             foreach ($displayfiles as $k => $v) {
                 $f = $first[$k];
                 $l = $last[$k];
