@@ -306,7 +306,7 @@ class Uploader
         $cid = $details['client_id'];
         $cb = $this->validateFile($priv, $cid, $user->id);
 
-        $this->pages = $this->setPages(count($this->files));
+        
         $orderby = $this->sorter();
         $order =  preg_match('/^name/i', $orderby) ? null : $orderby;
         if (!$error) {
@@ -331,6 +331,7 @@ class Uploader
         //branch for user files...
         if ($order) {
             $all = $this->table->findAll($order, $this->display, $this->start, \PDO::FETCH_ASSOC);
+            $this->pages = $this->setPages(count($all));
             foreach ($all as $file) {
                 $o = $this->usertable->find('id', $file['userid'])[0];
                 if ($cb($file['userid'])) {
@@ -341,6 +342,7 @@ class Uploader
 
         if (!$order) {
             $all = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
+            $this->pages = $this->setPages(count($all));
             $first = [];
             $last = [];
             $time = [];
