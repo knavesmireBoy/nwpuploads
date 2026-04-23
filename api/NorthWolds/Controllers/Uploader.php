@@ -341,7 +341,6 @@ class Uploader
             }
         }
 
-        dump(count($displayfiles));
         if (!$order) {
             $first = [];
             $last = [];
@@ -379,6 +378,8 @@ class Uploader
                 $displayfiles[$k]['user'] = "$f $l";
             }
         }
+
+        dump($displayfiles);
         return $this->displayer($user->id, $priv, $displayfiles, '', $owner, $customVars);
     }
 
