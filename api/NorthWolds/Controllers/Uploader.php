@@ -6,7 +6,6 @@ use \Ninja\DatabaseTable;
 
 class Uploader
 {
-    private $files = [];
     private $sort = 'tt';
     public function __construct(private DatabaseTable $table, private DatabaseTable $usertable, private int $display, private int $start, private int $pages, private string $home) {}
 
@@ -306,7 +305,9 @@ class Uploader
         $cid = $details['client_id'];
         $cb = $this->validateFile($priv, $cid, $user->id);
 
-        
+        $all = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
+        $this->pages = $this->setPages(count($all));
+
         $orderby = $this->sorter();
         $order =  preg_match('/^name/i', $orderby) ? null : $orderby;
         if (!$error) {
@@ -327,11 +328,9 @@ class Uploader
                 }
             }
         }
-
         //branch for user files...
         if ($order) {
             $all = $this->table->findAll($order, $this->display, $this->start, \PDO::FETCH_ASSOC);
-            $this->pages = $this->setPages(count($all));
             foreach ($all as $file) {
                 $o = $this->usertable->find('id', $file['userid'])[0];
                 if ($cb($file['userid'])) {
@@ -341,8 +340,6 @@ class Uploader
         }
 
         if (!$order) {
-            $all = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
-            $this->pages = $this->setPages(count($all));
             $first = [];
             $last = [];
             $time = [];
@@ -386,7 +383,6 @@ class Uploader
             }
             $displayfiles = array_slice($displayfiles, $this->start, $this->display);
         }
-
         return $this->displayer($user->id, $priv, $displayfiles, '', $owner, $customVars);
     }
 
