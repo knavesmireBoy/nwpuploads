@@ -354,7 +354,6 @@ class Uploader
             foreach ($displayfiles as $k => $v) {
                 $u = explode(' ', $v['user']);
                 $full[$k] = $v['user'];
-
                 $uk = strtoupper(substr(sha1(microtime()), rand(0, 5), 20));
                 $uk  = implode("-", str_split($uk, 5));
                 $first[$uk] = $u[0];
@@ -369,6 +368,7 @@ class Uploader
                 preg_match('/[A-Z]+/', $orderby, $matches);
                 list($a, $b) = $matches[0];
                 $sort = [$lib[$a], $lib[$b]];
+                dump([$second, $matches]);
                 array_multisort($last, $sort[0], $second, $sort[1], $displayfiles);
             } else {
                 preg_match('/[A-Z]+/', $orderby, $matches);
