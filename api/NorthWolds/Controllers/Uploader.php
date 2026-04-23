@@ -357,8 +357,6 @@ class Uploader
 
                 $uk = strtoupper(substr(sha1(microtime()), rand(0, 5), 20));
                 $uk  = implode("-", str_split($uk, 5));
-
-
                 $first[$uk] = $u[0];
                 $last[$uk] = $u[1];
                 $displayfiles[$k]['user'] = $u[1];
@@ -378,11 +376,11 @@ class Uploader
             }
 
             foreach ($displayfiles as $k => $v) {
-                $f = $first[$k];
-                $l = $last[$k];
+                $uk = $displayfiles[$k]['uk'];
+                $f = $first[$uk];
+                $l = $last[$uk];
                 $displayfiles[$k]['user'] = "$f $l";
             }
-            dump([$k, $v]);
         }
         return $this->displayer($user->id, $priv, $displayfiles, '', $owner, $customVars);
     }
