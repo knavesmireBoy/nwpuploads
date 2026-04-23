@@ -368,8 +368,7 @@ class Uploader
                 preg_match('/[A-Z]+/', $orderby, $matches);
                 list($a, $b) = $matches[0];
                 $sort = [$lib[$a], $lib[$b]];
-                dump([$second, $matches]);
-                array_multisort($last, $sort[0], $second, $sort[1], $displayfiles);
+                array_multisort($last, $sort[0], $second, $sort[1] ?? $sort[0], $displayfiles);
             } else {
                 preg_match('/[A-Z]+/', $orderby, $matches);
                 array_multisort($last, $lib[$matches[0]], $displayfiles);
