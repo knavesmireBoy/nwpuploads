@@ -344,21 +344,21 @@ class Uploader
         if (!$order) {
             $first = [];
             $last = [];
-            $full = [];
+            //$full = [];
             $time = [];
             $file = [];
             $second = [];
-            $original = array_slice($displayfiles, 0);
+            //$original = array_slice($displayfiles, 0);
             $lib = ['ASC' => SORT_ASC, 'DESC' => SORT_DESC];
 
             foreach ($displayfiles as $k => $v) {
                 $u = explode(' ', $v['user']);
-                $uk = $displayfiles[$k]['userid'];
-                $full[$k] = $v['user'];
+                $uk = randomID();
+                //$full[$k] = $v['user'];
                 $first[$uk] = $u[0];
                 $last[$uk] = $u[1];
                 $displayfiles[$k]['user'] = $u[1];
-               // $displayfiles[$k]['uk'] = $uk;
+                $displayfiles[$k]['uk'] = $uk;
                 $time[$k] = $v['time'];
                 $file[$k] = $v['filename'];
             }
