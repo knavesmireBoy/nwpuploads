@@ -366,6 +366,7 @@ class Uploader
             }
             else {
                 preg_match('/[A-Z]+/', $orderby, $matches);
+                dump($matches);
                 array_multisort($last, $matches[0], $displayfiles);
             }
 
