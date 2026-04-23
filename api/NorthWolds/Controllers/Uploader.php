@@ -341,8 +341,6 @@ class Uploader
             }
         }
 
-        dump($displayfiles);
-
         if (!$order) {
             $first = [];
             $last = [];
