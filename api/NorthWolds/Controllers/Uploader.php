@@ -296,25 +296,19 @@ class Uploader
         if (!isset($_SESSION['username'])) {
             reLocate(REG);
         }
+        $displayfiles = [];
+        $owner = [];
+        $customVars = [];
+        $error = $this->getErrors($key);
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
         $priv = $details['role'];
         $cid = $details['client_id'];
         $cb = $this->validateFile($priv, $cid, $user->id);
 
-        $this->files = $this->table->findAll();
         $this->pages = $this->setPages(count($this->files));
         $orderby = $this->sorter();
         $order =  preg_match('/^name/i', $orderby) ? null : $orderby;
-
-        //branch for user files...
-        $all = $this->table->findAll($order, $this->display, $this->start, \PDO::FETCH_ASSOC);
-
-        $displayfiles = [];
-        $owner = [];
-        $customVars = [];
-        $error = $this->getErrors($key);
-
         if (!$error) {
             $customVars = $this->getCustomVars($key, $vars);
         }
@@ -334,14 +328,19 @@ class Uploader
             }
         }
 
-        foreach ($all as $file) {
-            $o = $this->usertable->find('id', $file['userid'])[0];
-            if ($cb($file['userid'])) {
-                $displayfiles[] = $this->prepFileForDisplay($file, $o);
+        //branch for user files...
+        if ($order) {
+            $all = $this->table->findAll($order, $this->display, $this->start, \PDO::FETCH_ASSOC);
+            foreach ($all as $file) {
+                $o = $this->usertable->find('id', $file['userid'])[0];
+                if ($cb($file['userid'])) {
+                    $displayfiles[] = $this->prepFileForDisplay($file, $o);
+                }
             }
         }
 
         if (!$order) {
+            $all = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
             $first = [];
             $last = [];
             $time = [];
@@ -377,6 +376,7 @@ class Uploader
                 $l = $last[$uk];
                 $displayfiles[$k]['user'] = "$f $l";
             }
+            $displayfiles = array_slice($displayfiles, $this->start, $this->display);
         }
 
         return $this->displayer($user->id, $priv, $displayfiles, '', $owner, $customVars);
@@ -550,7 +550,8 @@ class Uploader
         if (!isset($_SESSION['username'])) {
             reLocate(REG);
         }
-        $this->sort = $sort;
+      //  $this->sort = $sort;
+        $this->sort = 'tt';
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
         $priv = $details['role'];
