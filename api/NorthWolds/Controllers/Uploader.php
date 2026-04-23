@@ -348,6 +348,12 @@ class Uploader
             $second = [];
             $lib = ['ASC' => SORT_ASC, 'DESC' => SORT_DESC];
 
+            foreach ($all as $file) {
+                $o = $this->usertable->find('id', $file['userid'])[0];
+                if ($cb($file['userid'])) {
+                    $displayfiles[] = $this->prepFileForDisplay($file, $o);
+                }
+            }
             foreach ($displayfiles as $k => $v) {
                 $u = explode(' ', $v['user']);
                 $uk = randomID();
@@ -550,7 +556,7 @@ class Uploader
         if (!isset($_SESSION['username'])) {
             reLocate(REG);
         }
-      //  $this->sort = $sort;
+        //  $this->sort = $sort;
         $this->sort = 'tt';
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
@@ -601,8 +607,7 @@ class Uploader
             $files[] = $this->prepFileForDisplay($file, $o);
         }
         $this->pages = $this->setPages(count($files));
-        $this->files = $files;
-        $displayFiles = array_slice(toObject($this->files, true), $this->start, $this->display);
+        $displayFiles = array_slice(toObject($files, true), $this->start, $this->display);
         return $this->displayer($user->id, $priv, $displayFiles, 'Clear Search Results', [], ['user_id' => $user_id, 'text' => $text, 'ext' => $ext]);
     }
 }
