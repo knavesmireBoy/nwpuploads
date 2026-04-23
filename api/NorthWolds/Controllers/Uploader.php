@@ -341,14 +341,13 @@ class Uploader
             }
         }
 
+        dump(count($displayfiles));
         if (!$order) {
             $first = [];
             $last = [];
-            //$full = [];
             $time = [];
             $file = [];
             $second = [];
-            //$original = array_slice($displayfiles, 0);
             $lib = ['ASC' => SORT_ASC, 'DESC' => SORT_DESC];
 
             foreach ($displayfiles as $k => $v) {
