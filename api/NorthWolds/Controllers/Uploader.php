@@ -19,6 +19,8 @@ class Uploader
     private function displayer($userId, $priv, $displayfiles, $searchText, $owner = [], $customVars = [], $error = '')
     {
         list($users, $clients) = $this->presentList($priv);
+
+
         $defaultVars = [
             'files' => $displayfiles,
             'priv' => $priv,
@@ -216,7 +218,12 @@ class Uploader
                 if (empty($row->client_id)) {
                     $users[$row->id] = $row->name;
                 } else {
-                    $client[$row->id] = $row->name;
+
+                    $u = $this->usertable->find('id', $row->id)[0];
+                    $details = $u->getDetails();
+                    $client[$details['domain']] = $details['clientname'];
+
+                  //  $client[$row->id] = $row->name;
                 }
             }
             return [$users, $client];
