@@ -496,14 +496,13 @@ class Uploader
         }
     }
 
-    public function nav($s, $p, $search, $first = '', $second = '', $third = '', $fourth = '')
+    public function nav($s, $p, $first = '', $second = '', $third = '', $fourth = '')
     {
         
        
         $this->start = intval($s);
         $this->pages = intval($p);
-        $srch = intval($search);
-        $srch = $_COOKIE['searched'] ?? 0;
+        $srch = intval($_COOKIE['searched'] ?? 0);
 
         dump($srch);
         $args = [];
