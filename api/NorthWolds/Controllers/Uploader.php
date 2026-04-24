@@ -603,7 +603,7 @@ class Uploader
                     $records = toObject($file->getClientFiles($user_id), true);
                 } else {
                     $records = $this->table->find('userid', $user_id, null, 0, 0, \PDO::FETCH_ASSOC);
-                    $records = $records[0] ?? [];
+                    $records = $records ?? [];
                 }
             } else { //multi client
                 $records = toObject($file->getClientFiles($user_id), true);
