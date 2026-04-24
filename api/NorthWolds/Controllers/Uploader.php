@@ -220,20 +220,22 @@ class Uploader
                 } else {
                     $u = $this->usertable->find('id', $row->id)[0];
                     $details = $u->getDetails();
-                    $client['domain'] = $details['domain'];
-                    $client['name'] = $details['clientname'];
-                   // $client[$details['domain']] = $details['clientname'];
+                    //  $client['domain'] = $details['domain'];
+                    // $client['name'] = $details['clientname'];
+                    $client[$details['domain']] = $details['clientname'];
                 }
             }
-           // return [$users, $client];
-           $names = array_column($client, 'name');
-           dump([count($client), count($names)]);
-           array_multisort($names, SORT_ASC, $client);
-           $client = array_combine(...array_map(null, ...array_chunk($client, 2)));
 
-           // Source - https://stackoverflow.com/a/57468672
-// Posted by Don't Panic, modified by community. See post 'Timeline' for change history
-// Retrieved 2026-04-24, License - CC BY-SA 4.0
+            //   dump([count($client), count($names)]);
+
+            return [$users, $client];
+            $names = array_column($client, 'name');
+            array_multisort($names, SORT_ASC, $client);
+            $client = array_combine(...array_map(null, ...array_chunk($client, 2)));
+
+            // Source - https://stackoverflow.com/a/57468672
+            // Posted by Don't Panic, modified by community. See post 'Timeline' for change history
+            // Retrieved 2026-04-24, License - CC BY-SA 4.0
         }
         return [[], []];
     }
@@ -604,7 +606,7 @@ class Uploader
         if ($user_id) {
             $details = $this->findUser($user_id);
 
-          //  dump($user_id, $details);
+            //  dump($user_id, $details);
             if ($priv == 'Admin') {
                 if (!empty($details['client_id']) || !empty($details['domain'])) {
                     $records = toObject($file->getClientFiles($user_id), true);
