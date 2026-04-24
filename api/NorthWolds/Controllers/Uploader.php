@@ -194,7 +194,7 @@ class Uploader
             $vars['origin'] = substr($vars['file'], 11, 14);
             return $vars;
         };
-
+       
         foreach ($records as $file) {
             $o = $this->usertable->find('id', $file['userid'])[0];
             if ($cb($file['userid'])) {
@@ -347,7 +347,7 @@ class Uploader
         $order =  preg_match('/^name/i', $orderby) ? null : $orderby;
         //sub sort by time or file only involves one table `upload`
         if ($order) {
-            $all = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
+           // $all = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
             $contenders = $this->prepFileForDisplay($all, $cb);
         }
         //but sub sort by `user` can only be achieved with a JOIN which we are not supporting in this ORM version
@@ -569,7 +569,7 @@ class Uploader
         if (!isset($_SESSION['username'])) {
             reLocate(REG);
         }
-        //  $this->sort = $sort;
+        //$this->sort = $sort;
         $this->sort = 'tt';
         $srch = 0;
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
@@ -577,6 +577,9 @@ class Uploader
         $priv = $details['role'];
         $file = $this->table->getEntity();
         $pos = curry2('strpos');
+
+        dump($details);
+        //$cb = $this->validateFile($priv, $cid, $user->id);
         $files = [];
         $getExt = composer('strtolower', curry2('substr')(1), curry2('strrchr')('.'));
         $records = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
@@ -616,10 +619,7 @@ class Uploader
                 $records = safeFilter($records, $byExt);
             }
         }
-        foreach ($records as $file) {
-            $o = $this->usertable->find('id', $file['userid'])[0];
-            $files[] = $this->prepFileForDisplay($file, $o);
-        }
+        $files = $this->prepFileForDisplay($records, 'identity');
 
         if ($user_id) {
             $srch += 1;
