@@ -222,7 +222,7 @@ class Uploader
                     $details = $u->getDetails();
                     $client['domain'] = $details['domain'];
                     $client['name'] = $details['clientname'];
-                    $client[$details['domain']] = $details['clientname'];
+                   // $client[$details['domain']] = $details['clientname'];
                 }
             }
            // return [$users, $client];
