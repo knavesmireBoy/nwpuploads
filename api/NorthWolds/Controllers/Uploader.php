@@ -210,6 +210,7 @@ class Uploader
     {
         $users = [];
         $client = [];
+        $alt = [];
         $all = $this->usertable->findAll();
 
         if (isApproved($role, 'ADMIN')) {
@@ -220,13 +221,13 @@ class Uploader
                 } else {
                     $u = $this->usertable->find('id', $row->id)[0];
                     $details = $u->getDetails();
-                    //  $client['domain'] = $details['domain'];
-                    // $client['name'] = $details['clientname'];
+                    $alt['domain'] = $details['domain'];
+                    $alt['name'] = $details['clientname'];
                     $client[$details['domain']] = $details['clientname'];
                 }
             }
 
-            //   dump([count($client), count($names)]);
+            dump([$client, $alt]);
 
             return [$users, $client];
             $names = array_column($client, 'name');
