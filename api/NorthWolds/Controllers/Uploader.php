@@ -220,11 +220,19 @@ class Uploader
                 } else {
                     $u = $this->usertable->find('id', $row->id)[0];
                     $details = $u->getDetails();
+                    $client['domain'] = $details['domain'];
+                    $client['name'] = $details['clientname'];
                     $client[$details['domain']] = $details['clientname'];
                 }
             }
-            $names = array_column($client, 'name');
-            return [$users, array_multisort($names, SORT_ASC, $client)];
+           // return [$users, $client];
+           $names = array_column($client, 'name');
+           array_multisort($names, SORT_ASC, $client);
+           $client = array_combine(...array_map(null, ...array_chunk($client, 2)));
+dump($client);
+           // Source - https://stackoverflow.com/a/57468672
+// Posted by Don't Panic, modified by community. See post 'Timeline' for change history
+// Retrieved 2026-04-24, License - CC BY-SA 4.0
         }
         return [[], []];
     }
