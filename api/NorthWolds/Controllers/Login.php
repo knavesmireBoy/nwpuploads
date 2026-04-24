@@ -19,7 +19,7 @@ class Login
                 'template' => 'login.html.php',
                 'title' => 'Admin',
                 'variables' => [
-                    'action' => '/bolt/fart'
+                    'action' => '/logger/login/'
                 ]
             ];
         } else {
@@ -97,7 +97,7 @@ class Login
         }
     }
 
-    public function loginSubmit()
+    public function loginSubmit2()
     {
         if (!empty($_POST)) {
             $user = $_POST['user'];
@@ -123,5 +123,15 @@ class Login
         } else {
             retour();
         }
+    }
+
+    public function loginSubmit()
+    {
+        $success = $this->authentication->login($_POST['email'], $_POST['password']);
+        if ($success) {
+            reLocate("/uploader/load/");
+            exit();
+        }
+        reLocate(BBC);
     }
 }
