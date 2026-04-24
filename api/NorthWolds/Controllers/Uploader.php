@@ -227,9 +227,10 @@ class Uploader
             }
            // return [$users, $client];
            $names = array_column($client, 'name');
+           dump([count($client), count($names)]);
            array_multisort($names, SORT_ASC, $client);
            $client = array_combine(...array_map(null, ...array_chunk($client, 2)));
-dump($client);
+
            // Source - https://stackoverflow.com/a/57468672
 // Posted by Don't Panic, modified by community. See post 'Timeline' for change history
 // Retrieved 2026-04-24, License - CC BY-SA 4.0
