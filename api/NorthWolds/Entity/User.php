@@ -74,7 +74,7 @@ class User extends Entity
 
   public function fromDomain($domain, $mode = \PDO::FETCH_CLASS)
   {
-    return $this->clienttable->find('domain', $domain, null, 0, 0, $mode)[0];
+    return $this->clienttable->find('domain', $domain, 'name', 0, 0, $mode)[0];
   }
 
 

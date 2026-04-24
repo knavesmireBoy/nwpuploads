@@ -35,6 +35,20 @@ class Login
         */
         $user = $this->authentication->isLoggedIn();
         if (!$user) {
+            return $this->reg();
+        } else {
+            retour();
+        }
+    }
+
+    public function login1($errors = [], $msg = '')
+    {
+        /*
+        there is nothing to prevent people guessing a path to logging in
+        logger/login/3/5/6 is_numeric check would at least suppress that kind of malarkey
+        */
+        $user = $this->authentication->isLoggedIn();
+        if (!$user) {
             return [
                 'template' => 'register.html.php',
                 'title' => 'Admin',
