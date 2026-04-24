@@ -20,7 +20,7 @@ class Client extends Entity
         if (is_numeric($arg)) {
             return $this->fetch('TABLE','id', $arg);
         } else {
-            return $this->fetch('TABLE', 'domain', $arg);
+            return $this->fetch('TABLE', 'domain', $arg, 'name');
         }
     }
 }

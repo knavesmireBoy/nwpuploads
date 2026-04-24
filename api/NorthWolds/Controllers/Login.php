@@ -11,7 +11,7 @@ class Login
         $this->authentication = $authentication;
     }
 
-    public function reg($arg = '')
+    public function reg($errors = [], $msg = '')
     {
         $user = $this->authentication->isLoggedIn();
         if (!$user) {
@@ -19,7 +19,8 @@ class Login
                 'template' => 'login.html.php',
                 'title' => 'Admin',
                 'variables' => [
-                    'action' => '/logger/login/'
+                    'action' => '/logger/login/',
+                    'errors' => $msg
                 ]
             ];
         } else {
@@ -35,7 +36,7 @@ class Login
         */
         $user = $this->authentication->isLoggedIn();
         if (!$user) {
-            return $this->reg();
+            return $this->reg($errors, $msg);
         } else {
             retour();
         }
