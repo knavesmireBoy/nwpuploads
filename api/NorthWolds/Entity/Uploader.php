@@ -17,19 +17,27 @@ class Uploader extends Entity
     public function __construct(protected \Ninja\DatabaseTable $table, protected \Ninja\DatabaseTable $usertable) {}
 
 
-    public function getClientFiles($ownerid)
+    public function getClientFiles($arg)
     {
-        $user = $this->usertable->find('id', $ownerid)[0];
         $files = [];
-        if ($user) {
-            $users = $this->usertable->find('client_id', $user->client_id);
-            $userids = array_map(fn($o) => $o->id, $users);
-            $cb = curry2('in_array')($userids);
-            $all = $this->table->findAll();
-            foreach ($all as $file) {
-                if ($cb($file->userid)) {
-                    $files[] = $file;
-                }
+        if (is_numeric($arg)) {
+            $user = $this->usertable->find('id', $arg)[0];
+            if ($user) {
+                $users = $this->usertable->find('client_id', $user->client_id);
+            }
+        } else {
+            $user = $this->usertable->getEntity();
+            $client = $user->fromDomain($arg);
+            $users = $this->usertable->find('client_id', $client->id);
+        }
+
+        $userids = array_map(fn($o) => $o->id, $users);
+        $cb = curry2('in_array')($userids);
+        $all = $this->table->findAll();
+
+        foreach ($all as $file) {
+            if ($cb($file->userid)) {
+                $files[] = $file;
             }
         }
         return $files;
