@@ -360,14 +360,12 @@ class Uploader
             $second = [];
             $lib = ['ASC' => SORT_ASC, 'DESC' => SORT_DESC];
             $contenders = $this->prepFileForDisplay($all, $cb);
-            //split $name into first and last; TODO handle one and three word names
             foreach ($contenders as $k => $v) {
                 $u = explode(' ', $v['user']);
                 $uk = randomID();
-                //assign unique key for retrieval (userid would only work if each user had only one file)
-                //otherwise earlier entries get overwritten and $first, $last and $contenders must match in length
-                $first[$uk] = $u[0];
-                $last[$uk] = $u[1];
+                /*assign unique key for retrieval (userid would only work if each user had only one file) otherwise earlier entries get overwritten and $first, $last and $contenders must match in length*/
+                $first[$uk] = current($u);
+                $last[$uk] = end($u) || '';
                 $contenders[$k]['user'] = $u[1];
                 $contenders[$k]['uniq'] = $uk; //assign same key to the `uniq` property
                 $time[$k] = $v['time'];
@@ -557,12 +555,10 @@ class Uploader
     //form submission
     public function finder()
     {
-        
-        dump($this->sort);
-        return $this->found($_GET['user'], $_GET['text'], $_GET['ext'], $this->sort);
+        return $this->found($_GET['user'], $_GET['text'], $_GET['ext']);
     }
 
-    private function found($user_id, $text, $ext, $sort)
+    private function found($user_id, $text, $ext)
     {
         if (!isset($_SESSION['username'])) {
             reLocate(REG);
@@ -574,7 +570,7 @@ class Uploader
         $file = $this->table->getEntity();
         $pos = curry2('strpos');
 
-        //$cb = $this->validateFile($priv, $cid, $user->id);
+        $cb = $this->validateFile($priv, $details['client_id'], $user->id);
         $files = [];
         $getExt = composer('strtolower', curry2('substr')(1), curry2('strrchr')('.'));
         $records = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
@@ -622,7 +618,7 @@ class Uploader
             $this->sort = 'tt';
         }
         //do we allow for filtering by user type
-        $files = $this->prepFileForDisplay($records, 'identity');
+        $files = $this->prepFileForDisplay($records, $cb);
 
         if ($user_id) {
             $srch += 1;
@@ -636,7 +632,6 @@ class Uploader
         $srch += 8;//sort
         $setcookie = doSetCookie(true);
         $setcookie('searched', $srch);
-
         $this->pages = $this->setPages(count($files));
         $displayFiles = array_slice(toObject($files, true), $this->start, $this->display);
         return $this->displayer($user->id, $priv, $displayFiles, 'Clear Search Results', [], ['user_id' => $user_id, 'text' => $text, 'ext' => $ext]);
