@@ -2,7 +2,7 @@
 
 namespace NorthWolds\Entity;
 
-class Client
+class Client extends Entity
 {
     private $table;
     public $id;
@@ -15,9 +15,12 @@ class Client
         $this->table = $table;
     }
 
-    public function getDetails($id) {
-
-        return $this->table->find('id', $id);
-
+    public function getDetails($arg)
+    {
+        if (is_numeric($arg)) {
+            return $this->fetch('TABLE','id', $arg);
+        } else {
+            return $this->fetch('TABLE', 'domain', $arg);
+        }
     }
 }

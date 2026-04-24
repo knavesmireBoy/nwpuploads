@@ -196,7 +196,7 @@ class Uploader
             $vars['origin'] = substr($vars['file'], 11, 14);
             return $vars;
         };
-       
+
         foreach ($records as $file) {
             $o = $this->usertable->find('id', $file['userid'])[0];
             if ($cb($file['userid'])) {
@@ -223,7 +223,7 @@ class Uploader
                     $details = $u->getDetails();
                     $client[$details['domain']] = $details['clientname'];
 
-                  //  $client[$row->id] = $row->name;
+                    //  $client[$row->id] = $row->name;
                 }
             }
             return [$users, $client];
@@ -354,7 +354,7 @@ class Uploader
         $order =  preg_match('/^name/i', $orderby) ? null : $orderby;
         //sub sort by time or file only involves one table `upload`
         if ($order) {
-           // $all = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
+            // $all = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
             $contenders = $this->prepFileForDisplay($all, $cb);
         }
         //but sub sort by `user` can only be achieved with a JOIN which we are not supporting in this ORM version
@@ -565,11 +565,23 @@ class Uploader
         return $this->found($_GET['user'], $_GET['text'], $_GET['ext']);
     }
 
+
+    private function findUser($arg)
+    {
+        if (is_numeric($arg)) {
+            $user = $this->usertable->find('id', $arg)[0];
+            return $user->getDetails();
+        } else {
+            $user = $this->usertable->getEntity();
+            return $user->fromDomain($arg, \PDO::FETCH_ASSOC);
+        }
+    }
+
     private function found($user_id, $text, $ext)
     {
         if (!isset($_SESSION['username'])) {
             reLocate(REG);
-        }       
+        }
         $srch = 0;
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
@@ -583,9 +595,9 @@ class Uploader
         $records = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
         $count = count($records);
         if ($user_id) {
-            $this->sort = 'tt';
-            $user = $this->usertable->find('id', $user_id)[0];
-            $details = $user->getDetails();
+            $details = $this->findUser($user_id);
+            dump($details);
+
             if ($priv == 'Admin') {
                 if (isset($details['client_id'])) {
                     $records = toObject($file->getClientFiles($user_id), true);
@@ -621,7 +633,7 @@ class Uploader
             }
         }
         //reset sort to default if filtering by any criteria
-        if(count($records) !== $count){
+        if (count($records) !== $count) {
             $this->sort = 'tt';
         }
         //do we allow for filtering by user type
@@ -636,7 +648,7 @@ class Uploader
         if ($ext) {
             $srch += 4;
         }
-        $srch += 8;//sort
+        $srch += 8; //sort
         $setcookie = doSetCookie(true);
         $setcookie('searched', $srch);
         $this->pages = $this->setPages(count($files));

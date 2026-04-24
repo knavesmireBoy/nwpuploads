@@ -72,14 +72,19 @@ class User extends Entity
   }
 
 
+  public function fromDomain($domain, $mode = \PDO::FETCH_CLASS)
+  {
+    return $this->clienttable->find('domain', $domain, null, 0, 0, $mode)[0];
+  }
+
+
   public function getUserIds()
   {
     $details = $this->getDetails();
     if ($details['client_id']) {
       $users = $this->table->find('client_id', $this->client_id);
       return array_map(fn($o) => $o->id, $users);
-    }
-    else {
+    } else {
       return [];
     }
   }
