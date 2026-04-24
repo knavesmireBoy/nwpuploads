@@ -391,7 +391,7 @@ class Uploader
             }
         }
         $this->pages = isApproved($priv, 'ADMIN') ? $this->pages : $this->setPages(count($contenders));
-        //do this last
+        //do this last; paginate
         $displayfiles = array_slice($contenders, $this->start, $this->display);
         return $this->displayer($user->id, $priv, $displayfiles, '', $owner, $customVars);
     }
@@ -498,18 +498,15 @@ class Uploader
 
     public function nav($s, $p, $first = '', $second = '', $third = '', $fourth = '')
     {
-        
-       
         $this->start = intval($s);
         $this->pages = intval($p);
         $srch = intval($_COOKIE['searched'] ?? 0);
 
-        dump($srch);
         $args = [];
         $hold = [];
 
         /* DOOZY
-        the alternative to persistence in the QUERY_STRING (which can get ugly) is to pass data via function params
+        the alternative to persistence in the QUERY_STRING (which can get ugly) is to pass data via function params OR cookies
         $empty = ''; $int = 47;
         but php will skip any empty params ie /$empty/$int php treats this as //$int
         so if only 2 params are defined they will be $first and $second; even though the values sent may be $third and $fourth
@@ -560,6 +557,8 @@ class Uploader
     //form submission
     public function finder()
     {
+        
+        dump($this->sort);
         return $this->found($_GET['user'], $_GET['text'], $_GET['ext'], $this->sort);
     }
 
