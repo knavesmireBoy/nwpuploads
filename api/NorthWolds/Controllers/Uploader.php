@@ -596,8 +596,10 @@ class Uploader
         $count = count($records);
         if ($user_id) {
             $details = $this->findUser($user_id);
+
+          //  dump($user_id, $details);
             if ($priv == 'Admin') {
-                if (isset($details['client_id']) || isset($details['domain'])) {
+                if (!empty($details['client_id']) || !empty($details['domain'])) {
                     $records = toObject($file->getClientFiles($user_id), true);
                 } else {
                     $records = $this->table->find('userid', $user_id, null, 0, 0, \PDO::FETCH_ASSOC);
