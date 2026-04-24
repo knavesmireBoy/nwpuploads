@@ -568,9 +568,7 @@ class Uploader
     {
         if (!isset($_SESSION['username'])) {
             reLocate(REG);
-        }
-        //$this->sort = $sort;
-        $this->sort = 'tt';
+        }       
         $srch = 0;
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
@@ -578,12 +576,13 @@ class Uploader
         $file = $this->table->getEntity();
         $pos = curry2('strpos');
 
-        dump($details);
         //$cb = $this->validateFile($priv, $cid, $user->id);
         $files = [];
         $getExt = composer('strtolower', curry2('substr')(1), curry2('strrchr')('.'));
         $records = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
+        $count = count($records);
         if ($user_id) {
+            $this->sort = 'tt';
             $user = $this->usertable->find('id', $user_id)[0];
             $details = $user->getDetails();
             if ($priv == 'Admin') {
@@ -602,6 +601,7 @@ class Uploader
         }
 
         if ($text) { // Some search text was specified 
+
             $byText = composer('is_numeric', $pos($text), curry2('getter')('filename'));
             $records = safeFilter($records, $byText);
         }
@@ -610,7 +610,7 @@ class Uploader
             $sub = curry2('substr')(1);
             $pos = curry2('strrchr')('.');
             $contains = curry2('in_array')(['pdf', 'zip', 'jpg']);
-            $find = composer(negate('identity'), $contains, 'strtolower', curry2('substr')(1), curry2('strrchr')('.'), curry2('getter')('filename'));
+            $find = composer(negate('identity'), $contains, $getExt, curry2('getter')('filename'));
             if ($ext === 'owt') {
                 $records = safeFilter($records, $find);
             } else {
@@ -619,6 +619,11 @@ class Uploader
                 $records = safeFilter($records, $byExt);
             }
         }
+        //reset sort to default if filtering by any criteria
+        if(count($records) !== $count){
+            $this->sort = 'tt';
+        }
+        //do we allow for filtering by user type
         $files = $this->prepFileForDisplay($records, 'identity');
 
         if ($user_id) {
