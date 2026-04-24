@@ -11,7 +11,7 @@ class Login
         $this->authentication = $authentication;
     }
 
-    public function reg($errors = [], $msg = '')
+    public function reg($key)
     {
         $user = $this->authentication->isLoggedIn();
         if (!$user) {
@@ -20,7 +20,6 @@ class Login
                 'title' => 'Admin',
                 'variables' => [
                     'action' => '/logger/login/',
-                    'errors' => $msg
                 ]
             ];
         } else {
@@ -80,7 +79,7 @@ class Login
             reLocate("/uploader/load/");
             exit();
         } else {
-            return $this->login(['Login Failed'], 'Unable to login, please check password and email address:');
+            return $this->login('login', 'Unable to login, please check password and email address:');
         }
     }
 }

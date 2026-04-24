@@ -218,15 +218,13 @@ class Uploader
                 if (empty($row->client_id)) {
                     $users[$row->id] = $row->name;
                 } else {
-
                     $u = $this->usertable->find('id', $row->id)[0];
                     $details = $u->getDetails();
                     $client[$details['domain']] = $details['clientname'];
-
-                    //  $client[$row->id] = $row->name;
                 }
             }
-            return [$users, $client];
+            $names = array_column($client, 'name');
+            return [$users, array_multisort($names, SORT_ASC, $client)];
         }
         return [[], []];
     }
