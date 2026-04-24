@@ -179,17 +179,29 @@ class Uploader
         return $ret;
     }
 
-    private function prepFileForDisplay(array $file, \NorthWolds\Entity\User $user)
+
+    private function prepFileForDisplay($records, $cb)
     {
-        $details = $user->getDetails();
-        $name = $details['name'];
-        unset($details['id']);
-        unset($details['role']);
-        unset($details['name']);
-        unset($details['client_id']);
-        $vars = array_merge($file, $details, ['user' => $name]);
-        $vars['origin'] = substr($vars['file'], 11, 14);
-        return $vars;
+        $ret = [];
+        $callback = function (array $file, \NorthWolds\Entity\User $user) {
+            $details = $user->getDetails();
+            $name = $details['name'];
+            unset($details['id']);
+            unset($details['role']);
+            unset($details['name']);
+            unset($details['client_id']);
+            $vars = array_merge($file, $details, ['user' => $name]);
+            $vars['origin'] = substr($vars['file'], 11, 14);
+            return $vars;
+        };
+
+        foreach ($records as $file) {
+            $o = $this->usertable->find('id', $file['userid'])[0];
+            if ($cb($file['userid'])) {
+                $ret[] = $callback($file, $o);
+            }
+        }
+        return $ret;
     }
 
     private function presentList($role)
@@ -295,7 +307,7 @@ class Uploader
         if (!isset($_SESSION['username'])) {
             reLocate(REG);
         }
-        $displayfiles = [];
+        $contenders = [];
         $owner = [];
         $customVars = [];
         $error = $this->getErrors($key);
@@ -304,12 +316,9 @@ class Uploader
         $priv = $details['role'];
         $cid = $details['client_id'];
         $cb = $this->validateFile($priv, $cid, $user->id);
-
         $all = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
-        $this->pages = $this->setPages(count($all));
+        $this->pages = $this->setPages(count($all));//assume $priv is Admin
 
-        $orderby = $this->sorter();
-        $order =  preg_match('/^name/i', $orderby) ? null : $orderby;
         if (!$error) {
             $customVars = $this->getCustomVars($key, $vars);
         }
@@ -328,17 +337,16 @@ class Uploader
                 }
             }
         }
-        //branch for user files...
-        if ($order) {
-            $all = $this->table->findAll($order, $this->display, $this->start, \PDO::FETCH_ASSOC);
-            foreach ($all as $file) {
-                $o = $this->usertable->find('id', $file['userid'])[0];
-                if ($cb($file['userid'])) {
-                    $displayfiles[] = $this->prepFileForDisplay($file, $o);
-                }
-            }
-        }
 
+        $orderby = $this->sorter();
+        $order =  preg_match('/^name/i', $orderby) ? null : $orderby;
+        //sub sort by time or file is handled only involves one table `upload`
+        if ($order) {
+            $all = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
+            $contenders = $this->prepFileForDisplay($all, $cb);
+        }
+        //but sub sort by `user` can only be achieved with a JOIN which we are not supporting in this ORM version
+        //https://stackoverflow.com/questions/1532218/life-without-joins-understanding-and-common-practices
         if (!$order) {
             $first = [];
             $last = [];
@@ -346,21 +354,17 @@ class Uploader
             $file = [];
             $second = [];
             $lib = ['ASC' => SORT_ASC, 'DESC' => SORT_DESC];
-
-            foreach ($all as $file) {
-                $o = $this->usertable->find('id', $file['userid'])[0];
-                if ($cb($file['userid'])) {
-                    $displayfiles[] = $this->prepFileForDisplay($file, $o);
-                }
-            }
-            foreach ($displayfiles as $k => $v) {
+            $contenders = $this->prepFileForDisplay($all, $cb);
+            //split $name into first and last; TODO handle one and three word names
+            foreach ($contenders as $k => $v) {
                 $u = explode(' ', $v['user']);
                 $uk = randomID();
-                //$full[$k] = $v['user'];
+                //assign unique key for retrieval (userid would only work if each user had only one file)
+                //otherwise earlier entries get overwritten and $first, $last and $contenders must match in length
                 $first[$uk] = $u[0];
                 $last[$uk] = $u[1];
-                $displayfiles[$k]['user'] = $u[1];
-                $displayfiles[$k]['uk'] = $uk;
+                $contenders[$k]['user'] = $u[1];
+                $contenders[$k]['uniq'] = $uk; //assign same key to the `uniq` property
                 $time[$k] = $v['time'];
                 $file[$k] = $v['filename'];
             }
@@ -369,24 +373,34 @@ class Uploader
                 preg_match_all('/[A-Z]+/', $orderby, $matches);
                 list($a, $b) = $matches[0];
                 $sort = [$lib[$a], $lib[$b]];
-                array_multisort($last, $sort[0], $second, $sort[1], $displayfiles);
+                array_multisort($last, $sort[0], $second, $sort[1], $contenders);
+               
             } else {
                 preg_match('/[A-Z]+/', $orderby, $matches);
-                array_multisort($last, $lib[$matches[0]], $displayfiles);
+                array_multisort($last, $lib[$matches[0]], $contenders);
             }
-
-            foreach ($displayfiles as $k => $v) {
-                $uk = $displayfiles[$k]['uk'];
+            foreach ($contenders as $k => $v) {
+                $uk = $contenders[$k]['uniq'];
                 $f = $first[$uk];
                 $l = $last[$uk];
-                $displayfiles[$k]['user'] = "$f $l";
+                $contenders[$k]['user'] = "$f $l";
+               // unset($contenders[$k]['uniq']);//not strictly neccessary but tidy
             }
-            $displayfiles = array_slice($displayfiles, $this->start, $this->display);
+            /*
+            unset($time);
+            unset($file);
+            unset($first);
+            unset($last);
+            unset($second);
+            unset($lib);
+            */
         }
+        $this->pages = isApproved($priv, 'ADMIN') ? $this->pages : $this->setPages(count($contenders));
+        $displayfiles = array_slice($contenders, $this->start, $this->display);
         return $this->displayer($user->id, $priv, $displayfiles, '', $owner, $customVars);
     }
 
-    public function upload(string $userid)
+    public function upload()
     {
         return $this->load('upload', []);
     }
