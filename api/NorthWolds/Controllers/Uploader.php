@@ -310,6 +310,11 @@ class Uploader
         $contenders = [];
         $owner = [];
         $customVars = [];
+
+        $srch = 8;
+        $setcookie = doSetCookie(true);
+        $setcookie('searched', $srch);
+
         $error = $this->getErrors($key);
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
@@ -317,7 +322,7 @@ class Uploader
         $cid = $details['client_id'];
         $cb = $this->validateFile($priv, $cid, $user->id);
         $all = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
-        $this->pages = $this->setPages(count($all));//assume $priv is Admin
+        $this->pages = $this->setPages(count($all)); //assume $priv is Admin
 
         if (!$error) {
             $customVars = $this->getCustomVars($key, $vars);
@@ -340,7 +345,7 @@ class Uploader
 
         $orderby = $this->sorter();
         $order =  preg_match('/^name/i', $orderby) ? null : $orderby;
-        //sub sort by time or file is handled only involves one table `upload`
+        //sub sort by time or file only involves one table `upload`
         if ($order) {
             $all = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
             $contenders = $this->prepFileForDisplay($all, $cb);
@@ -374,7 +379,6 @@ class Uploader
                 list($a, $b) = $matches[0];
                 $sort = [$lib[$a], $lib[$b]];
                 array_multisort($last, $sort[0], $second, $sort[1], $contenders);
-               
             } else {
                 preg_match('/[A-Z]+/', $orderby, $matches);
                 array_multisort($last, $lib[$matches[0]], $contenders);
@@ -384,18 +388,10 @@ class Uploader
                 $f = $first[$uk];
                 $l = $last[$uk];
                 $contenders[$k]['user'] = "$f $l";
-               // unset($contenders[$k]['uniq']);//not strictly neccessary but tidy
             }
-            /*
-            unset($time);
-            unset($file);
-            unset($first);
-            unset($last);
-            unset($second);
-            unset($lib);
-            */
         }
         $this->pages = isApproved($priv, 'ADMIN') ? $this->pages : $this->setPages(count($contenders));
+        //do this last
         $displayfiles = array_slice($contenders, $this->start, $this->display);
         return $this->displayer($user->id, $priv, $displayfiles, '', $owner, $customVars);
     }
@@ -502,9 +498,14 @@ class Uploader
 
     public function nav($s, $p, $search, $first = '', $second = '', $third = '', $fourth = '')
     {
+        
+       
         $this->start = intval($s);
         $this->pages = intval($p);
         $srch = intval($search);
+        $srch = $_COOKIE['searched'] ?? 0;
+
+        dump($srch);
         $args = [];
         $hold = [];
 
@@ -570,6 +571,7 @@ class Uploader
         }
         //  $this->sort = $sort;
         $this->sort = 'tt';
+        $srch = 0;
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
         $priv = $details['role'];
@@ -618,6 +620,20 @@ class Uploader
             $o = $this->usertable->find('id', $file['userid'])[0];
             $files[] = $this->prepFileForDisplay($file, $o);
         }
+
+        if ($user_id) {
+            $srch += 1;
+        }
+        if ($text) {
+            $srch += 2;
+        }
+        if ($ext) {
+            $srch += 4;
+        }
+        $srch += 8;//sort
+        $setcookie = doSetCookie(true);
+        $setcookie('searched', $srch);
+
         $this->pages = $this->setPages(count($files));
         $displayFiles = array_slice(toObject($files, true), $this->start, $this->display);
         return $this->displayer($user->id, $priv, $displayFiles, 'Clear Search Results', [], ['user_id' => $user_id, 'text' => $text, 'ext' => $ext]);

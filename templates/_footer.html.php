@@ -6,21 +6,6 @@ $klas = $pages > 1 ? 'paginate' : '';
     <?php
     include '_logout.html.php';
 
-    $srch = 0;
-
-    if ($user_id) {
-        $srch += 1;
-    }
-    if ($text) {
-        $srch += 2;
-    }
-    if ($ext) {
-        $srch += 4;
-    }
-    if ($sort) {
-        $srch += 8;
-    }
-
     if ($pages > 1) {
         $current_page = ($start / $display) + 1;
         if ($current_page != 1) { ?>
