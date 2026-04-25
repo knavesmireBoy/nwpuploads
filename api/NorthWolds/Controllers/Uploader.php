@@ -376,8 +376,8 @@ class Uploader
         //but sub sort by `user` can only be achieved with a JOIN which we are not supporting in this ORM version
         //https://stackoverflow.com/questions/1532218/life-without-joins-understanding-and-common-practices
         if (!$order) {
-            $first = [];
-            $last = [];
+           // $first = [];
+           // $last = [];
             $time = [];
             $file = [];
             $second = [];
@@ -391,10 +391,10 @@ class Uploader
                 $u = explode(' ', $v['user']);
                 $uk = randomID();
                 /*assign unique key for retrieval (userid would only work if each user had only one file) otherwise earlier entries get overwritten and $first, $last and $contenders must match in length*/
-                $first[$k] = current($u);
-                $last[$k] = end($u) || '';
+                $first[$uk] = current($u);
+                $last[$uk] = end($u) || '';
                 $contenders[$k]['user'] = $u[1];
-                $contenders[$k]['uniq'] = $k; //assign same key to the `uniq` property
+                $contenders[$k]['uniq'] = $uk; //assign same key to the `uniq` property
                 $time[$k] = $v['time'];
                 $file[$k] = $v['filename'];
             }
