@@ -7,7 +7,7 @@ function dump($arg)
     exit;
 }
 
-function toKeyValue($records, $key, $value)
+function toKeyValue1($records, $key, $value)
 {
     $ret = [];
 
@@ -19,7 +19,7 @@ function toKeyValue($records, $key, $value)
     return $ret;
 }
 
-function toKeyValue2($records, $key, $value)
+function toKeyValue($records, $key, $value)
 {
     $ret = [];
     foreach ($records as $record) {
