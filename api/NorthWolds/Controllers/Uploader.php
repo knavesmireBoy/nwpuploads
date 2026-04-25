@@ -226,7 +226,7 @@ class Uploader
             }
             array_multisort(array_column($usr, 'name'), SORT_ASC, $usr);
             array_multisort(array_column($clients, 'name'), SORT_ASC, $clients);
-            $users = toKeyValue($usr, 'domain', 'name');
+            $users = toKeyValue($usr, 'id', 'name');
             $client = toKeyValue($clients, 'domain', 'name');
             return [$users, $client];
         }
