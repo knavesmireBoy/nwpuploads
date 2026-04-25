@@ -391,13 +391,12 @@ class Uploader
                 $u = explode(' ', $v['user']);
                 $uk = randomID();
                 /*assign unique key for retrieval (userid would only work if each user had only one file) otherwise earlier entries get overwritten and $first, $last and $contenders must match in length*/
-
                 $a = current($u);
                 $b = end($u);
-                $first[$k] = $a;
-                $last[$k] = ($b === $a) ? '' : $b;
+                $first[$uk] = $a;
+                $last[$uk] = ($b === $a) ? '' : $b;
                 $contenders[$k]['user'] = $u[1];
-                $contenders[$k]['uniq'] = $k; //assign same key to the `uniq` property
+                $contenders[$k]['uniq'] = $uk; //assign same key to the `uniq` property
                 $time[$k] = $v['time'];
                 $file[$k] = $v['filename'];
             }
@@ -412,9 +411,9 @@ class Uploader
                 array_multisort($last, $lib[$matches[0]], $contenders);
             }
             foreach ($contenders as $k => $v) {
-               // $uk = $contenders[$k]['uniq'];
-                $f = $first[$k];
-                $l = $last[$k];
+                $uk = $contenders[$k]['uniq'];
+                $f = $first[$uk];
+                $l = $last[$uk];
                 $contenders[$k]['user'] = "$f $l";
             }
         }
