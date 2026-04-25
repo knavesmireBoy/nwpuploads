@@ -376,15 +376,14 @@ class Uploader
         //but sub sort by `user` can only be achieved with a JOIN which we are not supporting in this ORM version
         //https://stackoverflow.com/questions/1532218/life-without-joins-understanding-and-common-practices
         if (!$order) {
-            // $first = [];
+            /* $first = [];
             // $last = [];
             $time = [];
             $file = [];
             $second = [];
+            */
             $lib = ['ASC' => SORT_ASC, 'DESC' => SORT_DESC];
             $contenders = $this->prepFileForDisplay($all, $cb);
-
-
             // list($first, $last, $contenders) = $this->fooey($contenders, 'user');
 
             foreach ($contenders as $k => $v) {
@@ -415,6 +414,7 @@ class Uploader
                 $f = $first[$uk];
                 $l = $last[$uk];
                 $contenders[$k]['user'] = "$f $l";
+                unset($contenders[$k]['uniq']);
             }
         }
         $this->pages = isApproved($priv, 'ADMIN') ? $this->pages : $this->setPages(count($contenders));
