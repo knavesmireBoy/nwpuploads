@@ -227,7 +227,7 @@ class Uploader
                 }
             }
 
-            array_multisort($names, SORT_ASC, $alt);
+            array_multisort(array_column($alt, 'name'), SORT_ASC, $alt);
             dump($alt);
             return [$users, $client];
             $names = array_column($client, 'name');
