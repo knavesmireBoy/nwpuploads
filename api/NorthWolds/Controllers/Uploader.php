@@ -412,9 +412,9 @@ class Uploader
                 array_multisort($last, $lib[$matches[0]], $contenders);
             }
             foreach ($contenders as $k => $v) {
-               // $uk = $contenders[$k]['uniq'];
-                $f = $first[$k];
-                $l = $last[$k];
+                $uk = $contenders[$k]['uniq'];
+                $f = $first[$uk];
+                $l = $last[$uk];
                 $contenders[$k]['user'] = "$f $l";
             }
         }
