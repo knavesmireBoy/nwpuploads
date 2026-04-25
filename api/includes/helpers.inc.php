@@ -19,6 +19,15 @@ function toKeyValue($records, $key, $value)
     return $ret;
 }
 
+function toKeyValue2($records, $key, $value)
+{
+    $ret = [];
+    foreach ($records as $record) {
+        $ret[$record[$key]] = $record[$value];
+    }
+    return $ret;
+}
+
 function randomID()
 {
     $uk = strtoupper(substr(sha1(microtime()), rand(0, 5), 20));
