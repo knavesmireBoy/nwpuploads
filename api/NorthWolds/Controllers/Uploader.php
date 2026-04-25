@@ -227,8 +227,9 @@ class Uploader
                     $tmp[$k]['name'] = $details['clientname'];
                 }
             }
-            array_multisort(array_column($pairs, 'name'), SORT_ASC, $pairs);
-            $users = pairsToKeyValue($tmp);
+           // array_multisort(array_column($pairs, 'name'), SORT_ASC, $pairs);
+            $users = pairsToKeyValue($pairs);
+            dump($users);
             array_multisort(array_column($tmp, 'name'), SORT_ASC, $tmp);
             $client = toKeyValue($tmp, 'domain', 'name');
             return [$users, $client];
