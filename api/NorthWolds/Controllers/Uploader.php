@@ -228,11 +228,12 @@ class Uploader
             }
 
             array_multisort(array_column($alt, 'name'), SORT_ASC, $alt);
-            dump($alt);
+            $client = array_combine(...array_map(null, ...array_chunk($alt, 2)));
+            dump($client);
             return [$users, $client];
             $names = array_column($client, 'name');
             
-            $client = array_combine(...array_map(null, ...array_chunk($client, 2)));
+           
 
             // Source - https://stackoverflow.com/a/57468672
             // Posted by Don't Panic, modified by community. See post 'Timeline' for change history
