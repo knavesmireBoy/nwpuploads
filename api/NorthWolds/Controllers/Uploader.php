@@ -229,8 +229,8 @@ class Uploader
 
             array_multisort(array_column($alt, 'name'), SORT_ASC, $alt);
             $client = toKeyValue($alt, 'domain', 'name');
-            dump($users[0]);
-            return [$users, $client];
+           // dump($users);
+            return [$users, []];
         }
         return [[], []];
     }
