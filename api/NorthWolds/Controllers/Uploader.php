@@ -228,20 +228,8 @@ class Uploader
             }
 
             array_multisort(array_column($alt, 'name'), SORT_ASC, $alt);
-
-            dump(toKeyValue($alt,'domain','name'));
-
-            $client = array_combine(...array_map(null, ...array_chunk($alt, 2)));
-
-            dump($client);
+            $client = toKeyValue($alt, 'domain', 'name');
             return [$users, $client];
-            $names = array_column($client, 'name');
-            
-           
-
-            // Source - https://stackoverflow.com/a/57468672
-            // Posted by Don't Panic, modified by community. See post 'Timeline' for change history
-            // Retrieved 2026-04-24, License - CC BY-SA 4.0
         }
         return [[], []];
     }
