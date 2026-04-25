@@ -394,8 +394,8 @@ class Uploader
 
                 $a = current($u);
                 $b = end($u);
-                $first[$uk] = $a;
-                $last[$uk] = ($b === $a) ? '' : $b;
+                $first[$k] = $a;
+                $last[$k] = ($b === $a) ? '' : $b;
                 $contenders[$k]['user'] = $u[1];
                 $contenders[$k]['uniq'] = $k; //assign same key to the `uniq` property
                 $time[$k] = $v['time'];
@@ -412,9 +412,9 @@ class Uploader
                 array_multisort($last, $lib[$matches[0]], $contenders);
             }
             foreach ($contenders as $k => $v) {
-                $uk = $contenders[$k]['uniq'];
-                $f = $first[$uk];
-                $l = $last[$uk];
+               // $uk = $contenders[$k]['uniq'];
+                $f = $first[$k];
+                $l = $last[$k];
                 $contenders[$k]['user'] = "$f $l";
             }
         }
