@@ -215,23 +215,23 @@ class Uploader
 
         if (isApproved($role, 'ADMIN')) {
 
-            foreach ($all as $row) {
+            foreach ($all as $k => $row) {
                 if (empty($row->client_id)) {
                     $users[$row->id] = $row->name;
                 } else {
                     $u = $this->usertable->find('id', $row->id)[0];
                     $details = $u->getDetails();
-                    $alt['domain'] = $details['domain'];
-                    $alt['name'] = $details['clientname'];
+                    $alt[$k]['domain'] = $details['domain'];
+                    $alt[$k]['name'] = $details['clientname'];
                     $client[$details['domain']] = $details['clientname'];
                 }
             }
 
-            dump([$client, $alt]);
-
+            array_multisort($names, SORT_ASC, $alt);
+            dump($alt);
             return [$users, $client];
             $names = array_column($client, 'name');
-            array_multisort($names, SORT_ASC, $client);
+            
             $client = array_combine(...array_map(null, ...array_chunk($client, 2)));
 
             // Source - https://stackoverflow.com/a/57468672

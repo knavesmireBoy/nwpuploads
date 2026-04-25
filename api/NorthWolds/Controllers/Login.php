@@ -20,6 +20,7 @@ class Login
                 'title' => 'Admin',
                 'variables' => [
                     'action' => '/logger/login/',
+                    'loginerror' => $key ? 'Unable to login, please check password and email address:' : ''
                 ]
             ];
         } else {
