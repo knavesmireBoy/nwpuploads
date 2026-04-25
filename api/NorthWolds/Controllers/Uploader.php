@@ -392,7 +392,7 @@ class Uploader
                 $uk = randomID();
                 /*assign unique key for retrieval (userid would only work if each user had only one file) otherwise earlier entries get overwritten and $first, $last and $contenders must match in length*/
                 $first[$uk] = current($u);
-                $last[$uk] = end($u) || '';
+                $last[$uk] = end($u);
                 $contenders[$k]['user'] = $u[1];
                 $contenders[$k]['uniq'] = $uk; //assign same key to the `uniq` property
                 $time[$k] = $v['time'];
