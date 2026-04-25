@@ -16,6 +16,20 @@ class Uploader
         }
     }
 
+    private function fooey($group, $prop)
+    {
+        $first = [];
+        $last = [];
+        foreach ($group as $k => $v) {
+            $u = explode(' ', $v[$prop]);
+            $first[$k] = current($u);
+            $last[$k] = end($u) || '';
+            $group[$k][$prop] = $u[1];
+            $group[$k]['uniq'] = $k; //assign same key to the `uniq` property
+        }
+        return [$first, $last, $group];
+    }
+
     private function displayer($userId, $priv, $displayfiles, $searchText, $owner = [], $customVars = [], $error = '')
     {
         list($users, $clients) = $this->presentList($priv);
@@ -369,14 +383,18 @@ class Uploader
             $second = [];
             $lib = ['ASC' => SORT_ASC, 'DESC' => SORT_DESC];
             $contenders = $this->prepFileForDisplay($all, $cb);
+
+
+           // list($first, $last, $contenders) = $this->fooey($contenders, 'user');
+
             foreach ($contenders as $k => $v) {
                 $u = explode(' ', $v['user']);
                 $uk = randomID();
                 /*assign unique key for retrieval (userid would only work if each user had only one file) otherwise earlier entries get overwritten and $first, $last and $contenders must match in length*/
-                $first[$uk] = current($u);
-                $last[$uk] = end($u) || '';
+                $first[$k] = current($u);
+                $last[$k] = end($u) || '';
                 $contenders[$k]['user'] = $u[1];
-                $contenders[$k]['uniq'] = $uk; //assign same key to the `uniq` property
+                $contenders[$k]['uniq'] = $k; //assign same key to the `uniq` property
                 $time[$k] = $v['time'];
                 $file[$k] = $v['filename'];
             }
