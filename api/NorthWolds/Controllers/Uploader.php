@@ -376,8 +376,8 @@ class Uploader
         //but sub sort by `user` can only be achieved with a JOIN which we are not supporting in this ORM version
         //https://stackoverflow.com/questions/1532218/life-without-joins-understanding-and-common-practices
         if (!$order) {
-           // $first = [];
-           // $last = [];
+            // $first = [];
+            // $last = [];
             $time = [];
             $file = [];
             $second = [];
@@ -385,16 +385,19 @@ class Uploader
             $contenders = $this->prepFileForDisplay($all, $cb);
 
 
-           // list($first, $last, $contenders) = $this->fooey($contenders, 'user');
+            // list($first, $last, $contenders) = $this->fooey($contenders, 'user');
 
             foreach ($contenders as $k => $v) {
                 $u = explode(' ', $v['user']);
                 $uk = randomID();
                 /*assign unique key for retrieval (userid would only work if each user had only one file) otherwise earlier entries get overwritten and $first, $last and $contenders must match in length*/
-                $first[$uk] = current($u);
-                $last[$uk] = end($u);
+
+                $a = current($u);
+                $b = end($u);
+                $first[$uk] = $a;
+                $last[$uk] = ($b === $a) ? '' : $b;
                 $contenders[$k]['user'] = $u[1];
-                $contenders[$k]['uniq'] = $uk; //assign same key to the `uniq` property
+                $contenders[$k]['uniq'] = $k; //assign same key to the `uniq` property
                 $time[$k] = $v['time'];
                 $file[$k] = $v['filename'];
             }
@@ -409,9 +412,9 @@ class Uploader
                 array_multisort($last, $lib[$matches[0]], $contenders);
             }
             foreach ($contenders as $k => $v) {
-                $uk = $contenders[$k]['uniq'];
-                $f = $first[$uk];
-                $l = $last[$uk];
+               // $uk = $contenders[$k]['uniq'];
+                $f = $first[$k];
+                $l = $last[$k];
                 $contenders[$k]['user'] = "$f $l";
             }
         }
