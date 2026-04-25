@@ -10,8 +10,11 @@ function dump($arg)
 function toKeyValue($records, $key, $value)
 {
     $ret = [];
+
     foreach ($records as $record) {
-        $ret[$record[$key]] = $record[$value];
+        $tmp = [];
+        $tmp[$record[$key]] = $record[$value];
+        $ret[] = $tmp;
     }
     return $ret;
 }
