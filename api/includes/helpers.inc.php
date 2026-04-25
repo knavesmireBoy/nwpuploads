@@ -7,16 +7,10 @@ function dump($arg)
     exit;
 }
 
-function toKeyValue1($records, $key, $value)
+function pairsToKeyValue($records)
 {
-    $ret = [];
-
-    foreach ($records as $record) {
-        $tmp = [];
-        $tmp[$record[$key]] = $record[$value];
-        $ret[] = $tmp;
-    }
-    return $ret;
+    //https://stackoverflow.com/questions/57468460/convert-every-two-values-of-an-associative-array-into-key-value-pairs
+    return array_combine(...array_map(null, ...array_chunk($records, 2)));
 }
 
 function toKeyValue($records, $key, $value)

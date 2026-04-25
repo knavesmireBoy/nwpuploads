@@ -208,27 +208,29 @@ class Uploader
 
     private function presentList($role)
     {
-        $users = [];
-        $client = [];
-        $alt = [];
+       // $users = [];
+       // $client = [];
+        $tmp = [];
+        $pairs = [];
         $all = $this->usertable->findAll();
 
         if (isApproved($role, 'ADMIN')) {
-
             foreach ($all as $k => $row) {
                 if (empty($row->client_id)) {
-                    $users[$row->id] = $row->name;
+                    $pairs[] =  $row->id;
+                    $pairs[] = $row->name;
+                   // $users[$row->id] = $row->name;
                 } else {
                     $u = $this->usertable->find('id', $row->id)[0];
                     $details = $u->getDetails();
-                    $alt[$k]['domain'] = $details['domain'];
-                    $alt[$k]['name'] = $details['clientname'];
-                    $client[$details['domain']] = $details['clientname'];
+                    $tmp[$k]['domain'] = $details['domain'];
+                    $tmp[$k]['name'] = $details['clientname'];
                 }
             }
-
-            array_multisort(array_column($alt, 'name'), SORT_ASC, $alt);
-            $client = toKeyValue($alt, 'domain', 'name');
+            array_multisort(array_column($pairs, 'name'), SORT_ASC, $pairs);
+            $users = pairsToKeyValue($tmp);
+            array_multisort(array_column($tmp, 'name'), SORT_ASC, $tmp);
+            $client = toKeyValue($tmp, 'domain', 'name');
             return [$users, $client];
         }
         return [[], []];
