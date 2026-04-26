@@ -244,9 +244,10 @@ class Uploader
         } else {
             $user = $this->usertable->find('id', $userId);
             $user = $user[0] ?? null;
-            dump($user);
+           
             if (isset($user)) {
                 $users = $user->getUserIds();
+                dump($users);
                 if (isset($users[1])) {
                     foreach ($users as $row) {
                         $usr[$row['id']] = $row['name'];
