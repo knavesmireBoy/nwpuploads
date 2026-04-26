@@ -247,7 +247,6 @@ class Uploader
            
             if (isset($user)) {
                 $users = $user->getUserIds();
-                dump($users);
                 if (isset($users[1])) {
                     foreach ($users as $row) {
                         $usr[$row['id']] = $row['name'];

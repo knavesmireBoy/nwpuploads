@@ -11,7 +11,7 @@
 					<option value="<?= $k; ?>"><?= $v; ?>
 					</option><?php endforeach; ?>
 				</optgroup>
-				<?php if ($priv == "Admin") { ?>
+				<?php if (!empty($users)) { ?>
 					<optgroup label="users">
 					<?php }
 				foreach ($users as $k => $v): ?>
