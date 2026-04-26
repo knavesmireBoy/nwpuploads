@@ -252,6 +252,7 @@ class Uploader
                         $usr[$u->id] = $u->name;
                     }
                 }
+                dump($usr);
                 return [$usr, []];
             }
         }
