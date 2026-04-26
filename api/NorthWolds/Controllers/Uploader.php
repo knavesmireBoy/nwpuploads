@@ -341,11 +341,10 @@ class Uploader
         if (!isset($_SESSION['username'])) {
             reLocate(REG);
         }
-        /*
-        $contenders = [];
         $owner = [];
+        $contenders = [];
         $customVars = [];
-        */
+        
         $srch = 8;
         $setcookie = doSetCookie(true);
         $setcookie('searched', $srch);
