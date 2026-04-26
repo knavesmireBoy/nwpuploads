@@ -32,9 +32,7 @@ class Uploader
 
     private function displayer($userId, $priv, $displayfiles, $searchText, $owner = [], $customVars = [], $error = '')
     {
-        list($users, $clients) = $this->presentList($priv);
-
-
+        list($users, $clients) = $this->presentList($priv, $userId);
         $defaultVars = [
             'files' => $displayfiles,
             'priv' => $priv,
@@ -220,7 +218,7 @@ class Uploader
         return $ret;
     }
 
-    private function presentList($role)
+    private function presentList($role, $userId)
     {
         $clients = [];
         $usr = [];
@@ -243,8 +241,21 @@ class Uploader
             $users = toKeyValue($usr, 'id', 'name');
             $client = toKeyValue($clients, 'domain', 'name');
             return [$users, $client];
+        } else {
+            $user = $this->usertable->find('id', $userId);
+            $user = $user[0] ?? null;
+            dump($user);
+            if (isset($user)) {
+                $users = $user->getUserIds();
+                if (isset($users[1])) {
+                    foreach ($users as $row) {
+                        $usr[$row['id']] = $row['name'];
+                    }
+                }
+            }
+            return [$usr, []];
         }
-        return [[], []];
+       // return [[], []];
     }
 
     private function validateFile($priv, $cid, $userid)
@@ -330,10 +341,11 @@ class Uploader
         if (!isset($_SESSION['username'])) {
             reLocate(REG);
         }
+        /*
         $contenders = [];
         $owner = [];
         $customVars = [];
-
+        */
         $srch = 8;
         $setcookie = doSetCookie(true);
         $setcookie('searched', $srch);
@@ -365,25 +377,18 @@ class Uploader
                 }
             }
         }
-
         $orderby = $this->sorter();
         $order =  preg_match('/^name/i', $orderby) ? null : $orderby;
         //sub sort by time or file only involves one table `upload`
+        $contenders = $this->prepFileForDisplay($all, $cb);
         if ($order) {
             // $all = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
-            $contenders = $this->prepFileForDisplay($all, $cb);
         }
         //but sub sort by `user` can only be achieved with a JOIN which we are not supporting in this ORM version
         //https://stackoverflow.com/questions/1532218/life-without-joins-understanding-and-common-practices
         if (!$order) {
-            /* $first = [];
-            // $last = [];
-            $time = [];
-            $file = [];
-            $second = [];
-            */
             $lib = ['ASC' => SORT_ASC, 'DESC' => SORT_DESC];
-            $contenders = $this->prepFileForDisplay($all, $cb);
+            // $contenders = $this->prepFileForDisplay($all, $cb);
             // list($first, $last, $contenders) = $this->fooey($contenders, 'user');
 
             foreach ($contenders as $k => $v) {
@@ -619,7 +624,6 @@ class Uploader
         if ($user_id) {
             $details = $this->findUser($user_id);
 
-            //  dump($user_id, $details);
             if ($priv == 'Admin') {
                 if (!empty($details['client_id']) || !empty($details['domain'])) {
                     $records = toObject($file->getClientFiles($user_id), true);
