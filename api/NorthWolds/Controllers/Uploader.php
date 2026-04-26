@@ -244,7 +244,6 @@ class Uploader
         } else {
             $user = $this->usertable->find('id', $userId);
             $user = $user[0] ?? null;
-
             if (isset($user)) {
                 $users = $user->getUserIds();
                 if (isset($users[1])) {
@@ -252,11 +251,10 @@ class Uploader
                         $usr[] = $this->usertable->find('id', $v, null, 0, 0, \PDO::FETCH_ASSOC)[0];
                     }
                 }
-                dump($usr);
             }
             return [$usr, []];
         }
-        // return [[], []];
+        return [[], []];
     }
 
     private function validateFile($priv, $cid, $userid)
