@@ -442,7 +442,8 @@ class Uploader
 
     public function swapSubmit()
     {
-       
+        $_POST['answer'] = $_POST['update'];
+        unset($_POST['update']);
         return $this->prepUpdate($_POST);
     }
 
