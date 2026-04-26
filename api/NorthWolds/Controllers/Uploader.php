@@ -250,6 +250,8 @@ class Uploader
                 dump($users);
                 if (isset($users[1])) {
                     foreach ($users as $k => $v) {
+
+                        dump([$k,$v]);
                         $usr[] = $this->table->find('id', $v, null, 0, 0, \PDO::FETCH_ASSOC)[0];
                     }
                 }
