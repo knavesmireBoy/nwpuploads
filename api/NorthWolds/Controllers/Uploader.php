@@ -250,7 +250,7 @@ class Uploader
 
                 if (isset($users[1])) {
                     foreach ($users as $row) {
-                        $usr[] = $this->table->find('id', $row['id'], null, 0, 0, \PDO::FETCH_ASSOC)[0];
+                        $usr[] = $this->table->find('id', $row, null, 0, 0, \PDO::FETCH_ASSOC)[0];
                     }
                 }
                 dump($usr);
