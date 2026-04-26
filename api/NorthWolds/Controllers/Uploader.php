@@ -34,7 +34,6 @@ class Uploader
     {
         list($users, $clients) = $this->presentList($priv, $userId);
 
-        dump($users);
         $defaultVars = [
             'files' => $displayfiles,
             'priv' => $priv,

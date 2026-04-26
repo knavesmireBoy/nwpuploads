@@ -8,7 +8,9 @@
                 $optgroup = 'clients';
                 $group = $clients;
                 include '_optgroup.html.php';
-                $optgroup = 'users';
+            }
+            else if (!empty($users)) {
+               // $optgroup = 'users';
                 $group = $users;
                 include '_optgroup.html.php';
             } ?>
