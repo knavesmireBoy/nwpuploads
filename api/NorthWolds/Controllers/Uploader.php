@@ -440,7 +440,7 @@ class Uploader
 
     public function swapSubmit()
     {
-        dump($_POST);
+        return $this->prepUpdate($_POST);
     }
 
     public function editSubmit()
