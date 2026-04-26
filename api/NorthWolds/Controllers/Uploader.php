@@ -33,6 +33,8 @@ class Uploader
     private function displayer($userId, $priv, $displayfiles, $searchText, $owner = [], $customVars = [], $error = '')
     {
         list($users, $clients) = $this->presentList($priv, $userId);
+
+        dump($users);
         $defaultVars = [
             'files' => $displayfiles,
             'priv' => $priv,
@@ -252,7 +254,6 @@ class Uploader
                         $usr[$u->id] = $u->name;
                     }
                 }
-                dump($usr);
                 return [$usr, []];
             }
         }
