@@ -244,18 +244,20 @@ class Uploader
         } else {
             $user = $this->usertable->find('id', $userId);
             $user = $user[0] ?? null;
-           
+
             if (isset($user)) {
                 $users = $user->getUserIds();
+
                 if (isset($users[1])) {
                     foreach ($users as $row) {
-                        $usr[$row['id']] = $row['name'];
+                        $usr[] = $this->table->find('id', $row['id'], null, 0, 0, \PDO::FETCH_ASSOC)[0];
                     }
                 }
+                dump($usr);
             }
             return [$usr, []];
         }
-       // return [[], []];
+        // return [[], []];
     }
 
     private function validateFile($priv, $cid, $userid)
@@ -344,7 +346,7 @@ class Uploader
         $owner = [];
         $contenders = [];
         $customVars = [];
-        
+
         $srch = 8;
         $setcookie = doSetCookie(true);
         $setcookie('searched', $srch);
