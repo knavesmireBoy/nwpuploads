@@ -20,7 +20,6 @@
 			<option value="">Select One</option>
 			<?php
 			$group = $colleagues;
-			dump($group);
 			include '_opgtroup.html.php'; ?>
 		</select>
 	<?php } ?>

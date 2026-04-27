@@ -9,7 +9,12 @@ if (isset($optgroup)) { ?>
     <?php
 } else {
 
-    foreach ($group as $k => $v): ?>
+    foreach ($group as $k => $v): 
+    
+        dump($k);
+    ?>
+
+  
         <option value="<?= $k; ?>"><?= $v; ?>
         </option><?php endforeach; ?>
 

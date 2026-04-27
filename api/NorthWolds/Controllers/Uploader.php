@@ -445,6 +445,11 @@ class Uploader
         return $this->doUpdate($_POST);
     }
 
+    public function swap()
+    {
+        reLocate('/uploader/load');
+    }
+
     public function swapSubmit()
     {
         return $this->prepUpdate($_POST);
