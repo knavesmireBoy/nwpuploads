@@ -378,6 +378,9 @@ class Uploader
                 $data = $file->getData($_SESSION['username']);
                 $client = $this->usertable->find('client_id', $data['client_id'] ?? 0);
                 $client = !empty($client) ? $client[0] : null;
+
+                dump([382,$data]);
+
                 if ($client) {
                     $owner = [...$data, ...$client->getDetails()];
                 } else {
@@ -516,8 +519,6 @@ class Uploader
         if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
             return $this->load('confirm', $_POST);
         } else {
-
-            dump($_POST);
             return $this->load('edit', $_POST);
         }
     }
