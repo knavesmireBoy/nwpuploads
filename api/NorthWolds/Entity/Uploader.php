@@ -30,11 +30,13 @@ class Uploader extends Entity
             $client = $user->fromDomain($arg);
             $users = $this->usertable->find('client_id', $client->id);
         }
-
-        $userids = array_map(fn($o) => $o->id, $users);
-        $cb = curry2('in_array')($userids);
+        if (isset($users)) {
+            $userids = array_map(fn($o) => $o->id, $users);
+            $cb = curry2('in_array')($userids);
+        } else {
+            $cb = curry2('equals')(intval($arg));
+        }
         $all = $this->table->findAll();
-
         foreach ($all as $file) {
             if ($cb($file->userid)) {
                 $files[] = $file;
