@@ -675,7 +675,6 @@ class Uploader
         }
 
         if ($text) { // Some search text was specified 
-
             $byText = composer('is_numeric', $pos($text), curry2('getter')('filename'));
             $records = safeFilter($records, $byText);
         }
