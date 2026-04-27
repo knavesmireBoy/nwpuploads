@@ -17,7 +17,7 @@
 	<?php }
 	if (!empty($colleagues)) { ?>
 		<label for="colleagues">Colleagues:&nbsp;</label> <select id="colleagues" name="colleagues">
-			<option value="">Select one</option>
+			<option value="">Select One</option>
 			<?php
 			$group = $colleagues;
 			include '_opgtroup.html.php'; ?>
