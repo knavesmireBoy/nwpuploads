@@ -102,6 +102,8 @@ class Uploader
         $file = $this->table->find('id', $data['id'] ?? 0);
         $file = $file[0] ?? null;
 
+        dump($data);
+
         if (!isset($_SESSION['username'])) {
             reLocate(REG);
         }
