@@ -484,7 +484,7 @@ class Uploader
         $user = $this->usertable->getEntity();
         $client = $user->fromDomain($domain, \PDO::FETCH_ASSOC);
         $users = $this->usertable->find('client_id', $client['id'], null, 1, 0);
-        return $users[0] ?? [];
+        return $users[0] ? $users[0]->id : null;
 
         // return $this->usertable->;
     }
@@ -501,8 +501,6 @@ class Uploader
         } else {
             $userid = !empty($_POST['user']) ? $_POST['user'] : $_POST['key'];
             $userid = is_numeric($userid) ? $userid : $this->dom($userid);
-
-dump($userid);
 
             $description = isset($_POST['desc']) ? $_POST['desc'] : '';
             $dofile = function ($arg) {
