@@ -482,7 +482,7 @@ class Uploader
     private function dom($domain)
     {
         $user = $this->usertable->getEntity();
-        $client = $user->fromDomain($domain, \PDO::FETCH_ASSOC);
+        $client = $user->fromDomain($domain);
         $users = $this->usertable->find('client_id', $client->id, null, 1, 0);
         return $users[0] ?? [];
 
