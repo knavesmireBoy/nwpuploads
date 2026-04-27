@@ -436,6 +436,8 @@ class Uploader
 
     public function updateSubmit()
     {
+        
+        dump($_POST);
         return $this->doUpdate($_POST);
     }
 
