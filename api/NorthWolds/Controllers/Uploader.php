@@ -443,10 +443,10 @@ class Uploader
 
     public function editSubmit()
     {
-        //proceed to update
         if (isset($_POST['answer']) && $_POST['answer'] === 'No') {
             reLocate('/uploader/load');
         } else {
+            $_POST['answer'] === 'No';
             return $this->prepUpdate($_POST);
         }
     }
