@@ -124,8 +124,6 @@ class Uploader
                 $colleagues[$id] = $u->name;
             }
         }
-
-        dump($colleagues);
         $swap = $data['answer'] ?? 'No';
         $payload = ['users' => $all, 'answer' => $swap, 'button' => 'Update', 'filename' => $file->filename, 'description' => $file->description, 'colleagues' => $colleagues];
         return $this->load('update', [...$_POST, ...$payload]);
