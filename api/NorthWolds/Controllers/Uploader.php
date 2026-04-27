@@ -109,8 +109,6 @@ class Uploader
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
         $priv = $details['role'];
-        $all = [];
-        $colleagues = [];
         $group = [];
         if (isApproved($priv, 'ADMIN')) {
             $users = $this->usertable->findAll();
@@ -121,12 +119,14 @@ class Uploader
             $ids = $user->getUserIds();
             foreach ($ids as $id) {
                 $u = $this->usertable->find('id', $id)[0];
-                $group[$id] = $u->name;
+                if ($id !== $user->id) {
+                    $group[$id] = $u->name;
+                }
             }
         }
         $swap = $data['answer'] ?? 'No';
         $source = ['group' => $group];
-        $payload = ['answer' => $swap, 'button' => 'Update', 'filename' => $file->filename, 'description' => $file->description/*, 'colleagues' => $colleagues, 'users' => $all*/];
+        $payload = ['answer' => $swap, 'button' => 'Update', 'filename' => $file->filename, 'description' => $file->description];
         return $this->load('update', [...$_POST, ...$payload, ...$source]);
     }
 
@@ -478,15 +478,12 @@ class Uploader
         }
     }
 
-
-    private function dom($domain)
+    private function idFromDomain($domain)
     {
         $user = $this->usertable->getEntity();
-        $client = $user->fromDomain($domain, \PDO::FETCH_ASSOC);
-        $users = $this->usertable->find('client_id', $client['id'], null, 1, 0);
+        $client = $user->fromDomain($domain);
+        $users = $this->usertable->find('client_id', $client->id, null, 1, 0);
         return $users[0] ? $users[0]->id : null;
-
-        // return $this->usertable->;
     }
 
     public function uploadSubmit()
@@ -500,8 +497,7 @@ class Uploader
             exit();
         } else {
             $userid = !empty($_POST['user']) ? $_POST['user'] : $_POST['key'];
-            $userid = is_numeric($userid) ? $userid : $this->dom($userid);
-
+            $userid = is_numeric($userid) ? $userid : $this->idFromDomain($userid);
             $description = isset($_POST['desc']) ? $_POST['desc'] : '';
             $dofile = function ($arg) {
                 return $_FILES['upload'][$arg];
@@ -509,13 +505,8 @@ class Uploader
             $size = $dofile('size') / 1024;
             $time = date('Y-m-d');
             $mimetype = $dofile('type');
-
-
-
             $values = ['filename' => $realname, 'mimetype' => $mimetype, 'description' => $description, 'filepath' => FILESTORE, 'file' => $uploadname, 'size' => $size, 'userid' => $userid, 'time' => $time];
-
             $this->table->save($values, true);
-            $key = $_POST['key'];
             reLocate("/uploader/load/");
         }
     }
