@@ -80,10 +80,10 @@ class Uploader
         if ($answer === 'No') {
             $record = $this->table->find('id', $data['id'], null, 0, 0, \PDO::FETCH_ASSOC);
             $record = $record[0] ?? [];
-            if (!$record === []) {
+            if ($record === []) {
                 reLocate('/uploader/load/');
             }
-            $record['userid'] = !empty($data['user']) ? $data['user'] : $data['original'];
+            $record['userid'] = $data['user'] === '' ? $owner : $data['user'];
             unset($data['user']);
             $this->table->save([...$record, ...$data]);
         } else {
