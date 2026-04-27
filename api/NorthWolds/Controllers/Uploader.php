@@ -110,22 +110,23 @@ class Uploader
         $priv = $details['role'];
         $all = [];
         $colleagues = [];
+        $group = [];
         if (isApproved($priv, 'ADMIN')) {
             $users = $this->usertable->findAll();
             foreach ($users as $u) {
-                $all[$u->id] = $u->name;
+                $group[$u->id] = $u->name;
             }
         } else if (isApproved($priv, 'admin')) {
             $ids = $user->getUserIds();
             foreach ($ids as $id) {
                 $u = $this->usertable->find('id', $id)[0];
-                $colleagues[$id] = $u->name;
+                $group[$id] = $u->name;
             }
         }
         $swap = $data['answer'] ?? 'No';
-       // $source = ['group' => $group];
-        $payload = ['users' => $all, 'answer' => $swap, 'button' => 'Update', 'filename' => $file->filename, 'description' => $file->description, 'colleagues' => $colleagues];
-        return $this->load('update', [...$_POST, ...$payload]);
+        $source = ['group' => $group];
+        $payload = ['answer' => $swap, 'button' => 'Update', 'filename' => $file->filename, 'description' => $file->description/*, 'colleagues' => $colleagues, 'users' => $all*/];
+        return $this->load('update', [...$_POST, ...$payload, ...$source]);
     }
 
     private function getErrors($key)
@@ -188,7 +189,7 @@ class Uploader
 
             'edit' => ['id' => $data['id'] ?? '', 'pos' => 'Yes', 'neg' => 'No', 'action' => $ismulti ? '/uploader/swap/' : '/uploader/edit/', 'call' => 'answer', 'prompt' => $ismulti ? "Change ownership on ALL files?" : "Proceed to Update", 'template' => 'prompt.html.php'],
 
-            'update' => ['id' => $data['id'] ?? '', 'button' =>  $data['button'] ?? '', 'all_users' => $data['users'] ?? [], 'colleagues' => $data['colleagues'] ?? [], 'answer' => $data['answer'] ?? '', 'action' => '/uploader/update/', 'template' => 'update.html.php', 'title' => 'Update', 'filename' => $data['filename'] ?? '', 'description' => $data['description'] ?? '']
+            'update' => ['id' => $data['id'] ?? '', 'button' =>  $data['button'] ?? '', 'all_users' => $data['users'] ?? [], 'colleagues' => $data['colleagues'] ?? [], 'group' => $data['group'] ?? '', 'answer' => $data['answer'] ?? '', 'action' => '/uploader/update/', 'template' => 'update.html.php', 'title' => 'Update', 'filename' => $data['filename'] ?? '', 'description' => $data['description'] ?? '']
         ];
 
         if ($key && isset($lib[$key])) {

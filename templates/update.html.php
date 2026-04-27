@@ -7,11 +7,11 @@
 		<label for="filename">Name</label><input id="filename" type="text" name="filename" value="<?= $filename; ?>" />
 		<label for="description">Description</label><input id="description" type="text" name="description" value="<?= $description; ?>" />
 	<?php } ?>
-	<?php if (empty($colleagues) && !empty($all_users)) { ?>
+	<?php if (!empty($group)) { ?>
 		<label for="user">User</label><select id="user" name="user">
 			<option value="">Select One</option>
 			<?php
-			$group = $all_users;
+			//$group = $all_users;
 			include '_optgroup.html.php'; ?>
 		</select>
 	<?php }
