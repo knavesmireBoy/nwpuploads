@@ -89,7 +89,7 @@ class Uploader
         } else {
             $records = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
             foreach ($records as $record) {
-                if ($record['userid'] === $owner && isset($data['user'])) {
+                if ($record['userid'] === $owner && $data['user']) {
                     $record['userid'] = intval($data['user']);
                     $this->table->save($record);
                 }
@@ -433,8 +433,6 @@ class Uploader
 
     public function updateSubmit()
     {
-        
-        dump($_POST);
         return $this->doUpdate($_POST);
     }
 
