@@ -64,19 +64,17 @@ class User extends Entity
         return $this->{$prop};
       }
       if ($this->client_id) {
-        $client = $this->fetch('clienttable', ' id', $this->client_id);
+        $client = $this->fetch('clienttable', 'id', $this->client_id);
       }
       return ['ownerid' => $this->id, 'name' => $this->name, 'email' => $this->email, 'role' => $role,  'client_id' => $this->client_id, 'clientname' => $client->name ?? '', 'tel' => $client->tel ?? '', 'domain' => $client->domain ?? ''];
     }
     return null;
   }
 
-
   public function fromDomain($domain, $mode = \PDO::FETCH_CLASS)
   {
     return $this->clienttable->find('domain', $domain, 'name', 0, 0, $mode)[0];
   }
-
 
   public function getUserIds()
   {

@@ -136,6 +136,15 @@ class Uploader
         return $lib[$key] ?? '';
     }
 
+    private function getClient()
+    {
+
+
+        //   $users = $this->usertable->find('client_id', $user->client_id);
+        //   $userids = array_map(fn($o) => $o->id, $users);
+
+    }
+
     private function getClientFiles($ownerid)
     {
         $files = [];
@@ -147,6 +156,7 @@ class Uploader
         $userids = array_map(fn($o) => $o->id, $users);
         $cb = curry2('in_array')($userids);
         $all = $this->table->findAll();
+
         foreach ($all as $file) {
             if ($cb($file->userid)) {
                 $files[] = $file;
@@ -384,7 +394,6 @@ class Uploader
                     $owner = $data;
                 }
             }
-
         }
         $orderby = $this->sorter();
         $order =  preg_match('/^name/i', $orderby) ? null : $orderby;
@@ -469,6 +478,17 @@ class Uploader
         }
     }
 
+
+    private function dom($domain)
+    {
+        $user = $this->usertable->getEntity();
+        $client = $user->fromDomain($domain, \PDO::FETCH_ASSOC);
+        $users = $this->usertable->find('client_id', $client->id, null, 1, 0);
+        return $users[0] ?? [];
+
+        // return $this->usertable->;
+    }
+
     public function uploadSubmit()
     {
         list($uploadfile, $uploadname, $filename, $realname) = $this->getUploadedFile();
@@ -480,6 +500,7 @@ class Uploader
             exit();
         } else {
             $userid = !empty($_POST['user']) ? $_POST['user'] : $_POST['key'];
+            $userid = is_numeric($userid) ? $userid : $this->dom($userid);
             $description = isset($_POST['desc']) ? $_POST['desc'] : '';
             $dofile = function ($arg) {
                 return $_FILES['upload'][$arg];
@@ -487,6 +508,8 @@ class Uploader
             $size = $dofile('size') / 1024;
             $time = date('Y-m-d');
             $mimetype = $dofile('type');
+
+
 
             $values = ['filename' => $realname, 'mimetype' => $mimetype, 'description' => $description, 'filepath' => FILESTORE, 'file' => $uploadname, 'size' => $size, 'userid' => $userid, 'time' => $time];
 
@@ -612,7 +635,6 @@ class Uploader
     {
         return $this->found($_GET['user'], $_GET['text'], $_GET['ext']);
     }
-
 
     private function findUser($arg)
     {
