@@ -110,13 +110,13 @@ class Uploader
         $priv = $details['role'];
         $all = [];
         $colleagues = [];
-        if ($priv === 'Admin') {
+        if (isApproved($priv, 'ADMIN')) {
             $users = $this->usertable->findAll();
             foreach ($users as $u) {
                 $all[$u->id] = $u->name;
             }
         }
-        else {
+        else if (isApproved($priv, 'admin')) {
             $user = $this->usertable->find('id', $data['ownerid'])[0];
             $ids = $user->getUserIds();
             foreach($ids as $id){
