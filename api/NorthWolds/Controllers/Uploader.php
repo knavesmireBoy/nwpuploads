@@ -102,8 +102,6 @@ class Uploader
         $file = $this->table->find('id', $data['id'] ?? 0);
         $file = $file[0] ?? null;
 
-        dump($data);
-
         if (!isset($_SESSION['username'])) {
             reLocate(REG);
         }
@@ -119,7 +117,7 @@ class Uploader
             }
         }
         else {
-            $user = $this->usertable->find('id', $data['original'])[0];
+            $user = $this->usertable->find('id', $data['ownerid'])[0];
             $ids = $user->getUserIds();
             foreach($ids as $id){
                 $u = $this->usertable->find('id', $id)[0];
