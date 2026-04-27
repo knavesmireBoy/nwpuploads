@@ -446,7 +446,8 @@ class Uploader
         if (isset($_POST['answer']) && $_POST['answer'] === 'No') {
             reLocate('/uploader/load');
         } else {
-            $_POST['answer'] === 'No';
+            //Yes is the route to change ownership ONLY not required when only one file...
+            $_POST['answer'] = 'No';
             return $this->prepUpdate($_POST);
         }
     }
