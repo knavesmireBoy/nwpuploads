@@ -83,11 +83,8 @@ class Uploader
             if (!$record === []) {
                 reLocate('/uploader/load/');
             }
-            $record['userid'] = $data['user'];
-            if (isset($data['user'])) {
-                $record['userid'] = $data['user'];
-                unset($data['user']);
-            }
+            $record['userid'] = !empty($data['user']) ? $data['user'] : $data['original'];
+            unset($data['user']);
             $this->table->save([...$record, ...$data]);
         } else {
             $records = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
