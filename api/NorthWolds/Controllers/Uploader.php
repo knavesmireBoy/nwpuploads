@@ -73,10 +73,10 @@ class Uploader
 
     private function doUpdate($data)
     {
-        $owner = intval($data['original']);
+        $owner = intval($data['ownerid']);
         $answer = $data['answer'];
         unset($data['answer']);
-        unset($data['original']);
+        unset($data['ownerid']);
         if ($answer === 'No') {
             $record = $this->table->find('id', $data['id'], null, 0, 0, \PDO::FETCH_ASSOC);
             $record = $record[0] ?? [];

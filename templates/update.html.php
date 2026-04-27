@@ -25,6 +25,6 @@
 	<?php } ?>
 	<input type="hidden" name="id" value="<?= $id; ?>" />
 	<input type="hidden" name="answer" value="<?= $answer; ?>" />
-	<input type="hidden" name="original" value="<?= $owner['id']; ?>" />
+	<input type="hidden" name="ownerid" value="<?= $owner['id']; ?>" />
 	<input type="submit" value="<?= $button; ?>" />
 </form>
