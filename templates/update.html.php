@@ -20,7 +20,7 @@
 			<option value="">Select One</option>
 			<?php
 			$group = $colleagues;
-			include '_opgtroup.html.php'; ?>
+			include '_optgroup.html.php'; ?>
 		</select>
 	<?php } ?>
 	<input type="hidden" name="id" value="<?= $id; ?>" />
