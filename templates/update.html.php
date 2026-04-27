@@ -1,7 +1,6 @@
 <form action="<?= $action; ?>" method="post" name="updatefileinfo" class="details">
 	<a href="/uploader/load/" class="cancel">X</a>
 	<?php
-	
 	//if no allow filename and description to be updated, otherwise assume we are only interested in changing file ownership
 	if ($answer === 'No') {
 	?>
@@ -21,6 +20,7 @@
 			<option value="">Select one</option>
 			<?php
 			$group = $colleagues;
+			dump([111, $group, $optgroup]);
 			include '_opgtroup.html.php'; ?>
 		</select>
 	<?php } ?>

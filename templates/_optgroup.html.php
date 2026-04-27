@@ -6,8 +6,6 @@ if (isset($optgroup)) { ?>
             </option><?php endforeach; ?>
     </optgroup>
     <?php
-    dump([44, $group]);
-
 } else {
     foreach ($group as $k => $v): ?>
         <option value="<?= $k; ?>"><?= $v; ?>
