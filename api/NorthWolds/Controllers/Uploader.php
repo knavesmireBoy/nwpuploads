@@ -109,14 +109,23 @@ class Uploader
         $details = $user->getDetails();
         $priv = $details['role'];
         $all = [];
+        $colleagues = [];
         if ($priv === 'Admin') {
             $users = $this->usertable->findAll();
             foreach ($users as $u) {
                 $all[$u->id] = $u->name;
             }
         }
+        else {
+            $user = $this->usertable->find('id', $data['original'])[0];
+            $ids = $user->getUserIds();
+            foreach($ids as $id){
+                $u = $this->usertable->find('id', $id)[0];
+                $colleagues[$id] = $u->name;
+            }
+        }
         $swap = $data['answer'] ?? 'No';
-        $payload = ['users' => $all, 'answer' => $swap, 'button' => 'Update', 'filename' => $file->filename, 'description' => $file->description];
+        $payload = ['users' => $all, 'answer' => $swap, 'button' => 'Update', 'filename' => $file->filename, 'description' => $file->description, 'colleagues' => $colleagues];
         return $this->load('update', [...$_POST, ...$payload]);
     }
 
