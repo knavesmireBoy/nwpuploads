@@ -30,7 +30,7 @@ class Uploader extends Entity
             $client = $user->fromDomain($arg);
             $users = $this->usertable->find('client_id', $client->id);
         }
-        if (isset($users)) {
+        if (isset($client)) {
             $userids = array_map(fn($o) => $o->id, $users);
             $cb = curry2('in_array')($userids);
         } else {
