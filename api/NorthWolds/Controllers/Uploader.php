@@ -103,8 +103,6 @@ class Uploader
         $file = $this->table->find('id', $data['id'] ?? 0);
         $file = $file[0] ?? null;
 
-        dump($data);
-
         if (!isset($_SESSION['username'])) {
             reLocate(REG);
         }
@@ -387,7 +385,6 @@ class Uploader
                 }
             }
 
-            dump($owner);
         }
         $orderby = $this->sorter();
         $order =  preg_match('/^name/i', $orderby) ? null : $orderby;
@@ -519,6 +516,8 @@ class Uploader
         if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
             return $this->load('confirm', $_POST);
         } else {
+
+            dump($_POST);
             return $this->load('edit', $_POST);
         }
     }
