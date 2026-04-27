@@ -181,7 +181,7 @@ class Uploader
 
             'confirm' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Select the extent of deletions", 'delete' => 'proceed',  'action' => '/uploader/destroy/'],
 
-            'edit' => ['id' => $data['id'] ?? '', 'pos' => 'Yes', 'neg' => 'No', 'action' => $ismulti ? '/uploader/swap/' : '/uploader/edit/', 'call' => 'update', 'prompt' => $ismulti ? "Change ownership on ALL files?" : "Proceed to Update", 'template' => 'prompt.html.php'],
+            'edit' => ['id' => $data['id'] ?? '', 'pos' => 'Yes', 'neg' => 'No', 'action' => $ismulti ? '/uploader/swap/' : '/uploader/edit/', 'call' => 'answer', 'prompt' => $ismulti ? "Change ownership on ALL files?" : "Proceed to Update", 'template' => 'prompt.html.php'],
 
             'update' => ['id' => $data['id'] ?? '', 'button' =>  $data['button'] ?? '', 'all_users' => $data['users'] ?? [], 'colleagues' => $data['colleagues'] ?? [], 'answer' => $data['answer'] ?? '', 'action' => '/uploader/update/', 'template' => 'update.html.php', 'title' => 'Update', 'filename' => $data['filename'] ?? '', 'description' => $data['description'] ?? '']
         ];
@@ -441,15 +441,13 @@ class Uploader
 
     public function swapSubmit()
     {
-        $_POST['answer'] = $_POST['update'];
-        unset($_POST['update']);
         return $this->prepUpdate($_POST);
     }
 
     public function editSubmit()
     {
         //proceed to update
-        if (isset($_POST['update']) && $_POST['update'] === 'No') {
+        if (isset($_POST['answer']) && $_POST['answer'] === 'No') {
             reLocate('/uploader/load');
         } else {
             return $this->prepUpdate($_POST);
