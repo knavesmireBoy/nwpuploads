@@ -28,7 +28,7 @@
   </div>
 </dialog>
         <form action="<?= $action; ?>" method="post" name="choice" class="prompt" id="yesno">
-            <input type="hidden" name="ownerid" value="<?= $owner['id'] ?? $id; ?>" />
+            <input type="hidden" name="ownerid" value="<?= $owner['id'] ?? ''; ?>" />
             <input type="hidden" name="ownername" value="<?= $owner['name'] ?? ''; ?>" />
             <input type="hidden" name="multi" value="<?= $owner['multi'] ?? '' ?>" />
             <input type="hidden" name="domain" value="<?= $owner['domain'] ?? ''; ?>" />

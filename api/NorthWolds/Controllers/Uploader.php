@@ -86,7 +86,6 @@ class Uploader
             $record['userid'] = $data['user'] === '' ? $owner : $data['user'];
             unset($data['user']);
 
-            dump([...$record, ...$data]);
             $this->table->save([...$record, ...$data]);
         } else {
             $records = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
@@ -387,6 +386,8 @@ class Uploader
                     $owner = $data;
                 }
             }
+
+            dump($owner);
         }
         $orderby = $this->sorter();
         $order =  preg_match('/^name/i', $orderby) ? null : $orderby;
@@ -436,6 +437,7 @@ class Uploader
         $this->pages = isApproved($priv, 'ADMIN') ? $this->pages : $this->setPages(count($contenders));
         //do this last; paginate
         $displayfiles = array_slice($contenders, $this->start, $this->display);
+
         return $this->displayer($user->id, $priv, $displayfiles, '', $owner, $customVars);
     }
 
