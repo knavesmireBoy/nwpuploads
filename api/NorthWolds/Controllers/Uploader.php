@@ -85,6 +85,8 @@ class Uploader
             }
             $record['userid'] = $data['user'] === '' ? $owner : $data['user'];
             unset($data['user']);
+
+            dump([...$record, ...$data]);
             $this->table->save([...$record, ...$data]);
         } else {
             $records = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
@@ -101,6 +103,8 @@ class Uploader
     {
         $file = $this->table->find('id', $data['id'] ?? 0);
         $file = $file[0] ?? null;
+
+        dump($data);
 
         if (!isset($_SESSION['username'])) {
             reLocate(REG);
