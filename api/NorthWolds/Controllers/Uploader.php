@@ -115,16 +115,15 @@ class Uploader
             foreach ($users as $u) {
                 $all[$u->id] = $u->name;
             }
-        }
-        else if (isApproved($priv, 'admin')) {
-            $user = $this->usertable->find('id', $data['ownerid'])[0];
+        } else if (isApproved($priv, 'admin')) {
             $ids = $user->getUserIds();
-            foreach($ids as $id){
+            foreach ($ids as $id) {
                 $u = $this->usertable->find('id', $id)[0];
                 $colleagues[$id] = $u->name;
             }
         }
         $swap = $data['answer'] ?? 'No';
+       // $source = ['group' => $group];
         $payload = ['users' => $all, 'answer' => $swap, 'button' => 'Update', 'filename' => $file->filename, 'description' => $file->description, 'colleagues' => $colleagues];
         return $this->load('update', [...$_POST, ...$payload]);
     }
