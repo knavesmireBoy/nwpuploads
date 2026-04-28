@@ -182,7 +182,6 @@ if (isset($_POST['action']) && $_POST['action'] === 'Choose' && $_POST['client']
   $clientid = $id;
   $nwpsql .= " WHERE id=:id";
 }
-
 $nwpsql .= " ORDER BY name";
 $nwpst = $pdo->prepare($nwpsql);
 if (isset($clientid)) {

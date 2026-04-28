@@ -108,9 +108,8 @@ class NorthWoldsWebsite implements Website
         $defaultArgs = [
             'logger' => [$this->authentication],
             'user' => [$this->userTable],
-            'bolt' => [$this->authentication],
-            'uploader' => [$this->uploadTable, $this->userTable],
-            'spadger' => []
+            'client' => [$this->clientTable, $this->userTable],
+            'uploader' => [$this->uploadTable, $this->userTable]
         ];
 
         if (isset($defaultArgs[$name])) {
