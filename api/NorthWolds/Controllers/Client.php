@@ -78,7 +78,24 @@ class Client
         return $this->load('choose', $data);
     }
 
-    public function editSubmit(){
+    public function editSubmit()
+    {
 
+        $data = ['id', 'name', 'domain', 'tel'];
+        $ret = [];
+
+        $values = $this->table->find('id', $_POST['id'], null, 0, 0, \PDO::FETCH_ASSOC)[0];
+      
+        foreach ($_POST as $k => $v){
+            if($values[$k]){
+                $values[$k] = $v;
+            }
+        }
+
+        dump($values);
+        $ret['name'] = $_POST['name'];
+        $ret['domain'] = $_POST['domain'];
+        $ret['tel'] = $_POST['tel'];
+     //   $this->table->save($ret);
     }
 }
