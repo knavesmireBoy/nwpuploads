@@ -6,7 +6,8 @@ use \Ninja\DatabaseTable;
 
 class Uploader
 {
-    public function __construct(private DatabaseTable $table, private DatabaseTable $usertable, private int $display, private int $start, private int $pages, private string $home) {
+    public function __construct(private DatabaseTable $table, private DatabaseTable $usertable, private int $display, private int $start, private int $pages, private string $home)
+    {
         $setcookie = doSetCookie(true);
         $setcookie('sort', 'tt');
     }
@@ -384,14 +385,8 @@ class Uploader
             $file = $this->table->find('id', $vars['id']);
             $file = !empty($file) ? $file[0] : null;
             if ($file) {
-
                 $user = $this->usertable->find('id', $file->userid)[0];
                 $data = $file->getData($_SESSION['username']);
-
-            //    $client = $this->usertable->find('client_id', $data['client_id'] ?? 0);
-             //   $client = !empty($client) ? $client[0] : null;
-
-
                 if ($user->client_id) {
                     $owner = [...$data, ...$user->getDetails()];
                 } else {
@@ -410,9 +405,6 @@ class Uploader
         //https://stackoverflow.com/questions/1532218/life-without-joins-understanding-and-common-practices
         if (!$order) {
             $lib = ['ASC' => SORT_ASC, 'DESC' => SORT_DESC];
-            // $contenders = $this->prepFileForDisplay($all, $cb);
-            // list($first, $last, $contenders) = $this->fooey($contenders, 'user');
-
             foreach ($contenders as $k => $v) {
                 $u = explode(' ', $v['user']);
                 $uk = randomID();
@@ -447,7 +439,6 @@ class Uploader
         $this->pages = isApproved($priv, 'ADMIN') ? $this->pages : $this->setPages(count($contenders));
         //do this last; paginate
         $displayfiles = array_slice($contenders, $this->start, $this->display);
-
         return $this->displayer($user->id, $priv, $displayfiles, '', $owner, $customVars);
     }
 
@@ -578,7 +569,6 @@ class Uploader
         $this->start = intval($s);
         $this->pages = intval($p);
         $srch = intval($_COOKIE['searched'] ?? 0);
-        $sort = intval($_COOKIE['sort'] ?? 'tt');
         $args = [];
         $hold = [];
 
@@ -597,7 +587,6 @@ class Uploader
         00000001 = 1 00000010 = 2 00000011 = 3
         }
         */
-
         $sortargs = function ($int, $arg) use ($srch, &$args, &$hold) {
             if ($srch & $int) {
                 if (isset($hold[0])) {
@@ -617,7 +606,6 @@ class Uploader
             foreach ($payload as $data) {
                 $sortargs(...$data);
             }
-           // $sort = end($args);
             if (empty($args)) {
                 return $this->load();
             }
@@ -707,7 +695,6 @@ class Uploader
         }
         //do we allow for filtering by user type
         $files = $this->prepFileForDisplay($records, $cb);
-
         if ($user_id) {
             $srch += 1;
         }
@@ -717,7 +704,7 @@ class Uploader
         if ($ext) {
             $srch += 4;
         }
-       // $srch += 8; //sort
+        // $srch += 8; //sort
         $setcookie('searched', $srch);
         $this->pages = $this->setPages(count($files));
         $displayFiles = array_slice(toObject($files, true), $this->start, $this->display);
