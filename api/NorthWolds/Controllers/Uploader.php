@@ -6,8 +6,10 @@ use \Ninja\DatabaseTable;
 
 class Uploader
 {
-    private $sort = 'tt';
-    public function __construct(private DatabaseTable $table, private DatabaseTable $usertable, private int $display, private int $start, private int $pages, private string $home) {}
+    public function __construct(private DatabaseTable $table, private DatabaseTable $usertable, private int $display, private int $start, private int $pages, private string $home) {
+        $setcookie = doSetCookie(true);
+        $setcookie('sort', 'tt');
+    }
 
     private function remove($path)
     {
@@ -58,7 +60,7 @@ class Uploader
             'fhead' => 'f',
             'uhead' => 'u',
             'thead' => 't',
-            'sort' => $this->sort
+            'sort' => $_COOKIE('sort')
         ];
         $vars = array_merge($defaultVars, $customVars);
         if ($vars['searchtext']) {
@@ -134,15 +136,6 @@ class Uploader
     {
         $lib = ['missing' => 'File could not be found'];
         return $lib[$key] ?? '';
-    }
-
-    private function getClient()
-    {
-
-
-        //   $users = $this->usertable->find('client_id', $user->client_id);
-        //   $userids = array_map(fn($o) => $o->id, $users);
-
     }
 
     private function getClientFiles($ownerid)
@@ -325,10 +318,12 @@ class Uploader
         echo $filedata;
         exit();
     }
-
+    //called in tablehead
     public function sort($state = '')
     {
-        $this->sort = $state ? $state : $this->sort;
+        $setcookie = doSetCookie(true);
+        $sort = $state ? $state : $_COOKIE['sort'];
+        $setcookie('sort', $sort);
         $ufn = qUserHead('u');
         $tfn = qHead('t');
         $ffn = qHead('f', 'u');
@@ -342,16 +337,18 @@ class Uploader
     {
         $sorter = array('f' => 'filename ASC', 'ff' => 'filename DESC', 'u' => 'name ASC', 'uu' => 'name DESC', 'uf' => 'name ASC, filename ASC', 'uuf' => 'name DESC, filename ASC',  'uff' => 'name ASC, filename DESC',  'uuff' => 'name DESC, filename DESC', 'ut' => 'name ASC, time ASC', 'utt' => 'name ASC, time DESC', 'uut' => 'name DESC, time ASC', 'uutt' => 'name DESC, time DESC', 't' => 'time ASC', 'tt' => 'time DESC');
 
+        $setcookie = doSetCookie(true);
+
         foreach ($sorter as $k => $v) {
-            if ($k == $this->sort) break;
+            if ($k == $_COOKIE['sort']) break;
         }
-        switch ($this->sort) {
+        switch ($_COOKIE['sort']) {
             case $k:
                 $order_by = $sorter[$k];
                 break;
             default:
                 $order_by = 'time DESC';
-                $this->sort = 'tt';
+                $setcookie('sort', 'tt');
                 break;
         }
         return $order_by;
@@ -484,7 +481,7 @@ class Uploader
     {
         $user = $this->usertable->getEntity();
         $client = $user->fromDomain($domain);
-        $users = $this->usertable->find('client_id', $client->id);
+        $users = $this->usertable->find('client_id', $client->id, 'id');
         if ($permission) {
             $users = safeFilter($users, fn($usr) => $usr->checkPermission($permission));
         }
@@ -571,12 +568,12 @@ class Uploader
         }
     }
 
-    public function nav($s, $p, $first = '', $second = '', $third = '', $fourth = '')
+    public function nav($s, $p, $first = '', $second = '', $third = '')
     {
         $this->start = intval($s);
         $this->pages = intval($p);
         $srch = intval($_COOKIE['searched'] ?? 0);
-
+        $sort = intval($_COOKIE['sort'] ?? 'tt');
         $args = [];
         $hold = [];
 
@@ -611,12 +608,12 @@ class Uploader
         };
 
         if ($srch) {
-            $payload = [[1, $first], [2, $second], [4, $third], [8, $fourth]];
+            $payload = [[1, $first], [2, $second], [4, $third]];
             foreach ($payload as $data) {
                 $sortargs(...$data);
             }
-            $this->sort = end($args);
-            if ($this->sort === $first) {
+           // $sort = end($args);
+            if (empty($args)) {
                 return $this->load();
             }
             return $this->found(...$args);
@@ -651,6 +648,7 @@ class Uploader
         if (!isset($_SESSION['username'])) {
             reLocate(REG);
         }
+        $setcookie = doSetCookie(true);
         $srch = 0;
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
@@ -665,7 +663,6 @@ class Uploader
         $count = count($records);
         if ($user_id) {
             $details = $this->findUser($user_id);
-
             if ($priv == 'Admin') {
                 if (!empty($details['client_id']) || !empty($details['domain'])) {
                     $records = toObject($file->getClientFiles($user_id), true);
@@ -701,7 +698,7 @@ class Uploader
         }
         //reset sort to default if filtering by any criteria
         if (count($records) !== $count) {
-            $this->sort = 'tt';
+            $setcookie('sort', 'tt');
         }
         //do we allow for filtering by user type
         $files = $this->prepFileForDisplay($records, $cb);
@@ -715,8 +712,7 @@ class Uploader
         if ($ext) {
             $srch += 4;
         }
-        $srch += 8; //sort
-        $setcookie = doSetCookie(true);
+       // $srch += 8; //sort
         $setcookie('searched', $srch);
         $this->pages = $this->setPages(count($files));
         $displayFiles = array_slice(toObject($files, true), $this->start, $this->display);
