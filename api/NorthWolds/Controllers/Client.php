@@ -9,7 +9,6 @@ class Client
 
     public function __construct(private DatabaseTable $table, private DatabaseTable $usertable) {}
 
-
     private function displayer($priv)
     {
 
@@ -24,6 +23,7 @@ class Client
             );
         }
 
+        dump($clients);
 
         $defaultVars = [];
         /*
@@ -36,7 +36,8 @@ class Client
             'template' => 'clients.html.php',
             'title' => 'Edit Clients',
             'variables' => [
-                'priv' => $priv
+                'priv' => $priv,
+                'clients' => $clients
             ]
         ];
     }
