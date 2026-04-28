@@ -8,7 +8,7 @@ class Client
 {
     public function __construct(private DatabaseTable $table, private DatabaseTable $usertable) {}
 
-    private function displayer($priv)
+    private function displayer($priv, $customVars = [])
     {
         //list($users, $clients) = $this->presentList($priv, $userId);
         $rows = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
@@ -20,21 +20,18 @@ class Client
             );
         }
 
-        $defaultVars = [];
-        /*
+        $defaultVars = [
+            'priv' => $priv,
+            'action' => '/client/select/',
+            'clients' => $clients
+        ];
+
         $vars = array_merge($defaultVars, $customVars);
-        if ($vars['searchtext']) {
-            $vars['searchform'] = true;
-        }
-            */
+
         return [
             'template' => 'clients.html.php',
             'title' => 'Edit Clients',
-            'variables' => [
-                'priv' => $priv,
-                'action' => '/client/select/',
-                'clients' => $clients
-            ]
+            'variables' => $vars
         ];
     }
 
