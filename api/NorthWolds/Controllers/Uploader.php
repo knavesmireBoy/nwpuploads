@@ -481,8 +481,9 @@ class Uploader
     }
 
     private function strategy($list){
-      dump($list[0]->checkPermission(8));
+    
        $users = safeFilter(fn($usr) => $usr->checkPermission(8), $list);
+       dump($users);
        return $users[0] ?? null;
 
     }
