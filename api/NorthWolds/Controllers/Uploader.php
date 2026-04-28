@@ -481,8 +481,8 @@ class Uploader
     }
 
     private function strategy($list){
-
-      dump($list);
+        print_r($list);
+      dump($list[0]);
        $users = safeFilter(fn($usr) => $usr->checkPermission(8), $list);
        return $users[0] ?? null;
 
@@ -492,7 +492,7 @@ class Uploader
     {
         $user = $this->usertable->getEntity();
         $client = $user->fromDomain($domain);
-        $users = $this->usertable->find('client_id', $client->id/, null, 0, 0, \PDO::FETCH_ASSOC);
+        $users = $this->usertable->find('client_id', $client->id, null, 0, 0, \PDO::FETCH_ASSOC);
         return $this->strategy($users);
         return $users[0] ? $users[0]->id : null;
     }
