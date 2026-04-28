@@ -488,7 +488,7 @@ class Uploader
         if($permission){
             $users = safeFilter($users, fn($usr) => $usr->checkPermission($permission));
         }
-        return is_int($index) ? $users[$index] : $users;
+        return is_int($index) ? $users[$index]->id : $users;
     }
 
     public function uploadSubmit()
@@ -501,8 +501,11 @@ class Uploader
             include TEMPLATE . 'error.html.php';
             exit();
         } else {
+            $test = $_POST['user'];
+            dump($test ?? 'bolt');
             $userid = !empty($_POST['user']) ? $_POST['user'] : $_POST['key'];
             $userid = is_numeric($userid) ? $userid : $this->idFromDomain($userid, 8, 0);
+            dump($userid);
             $description = isset($_POST['desc']) ? $_POST['desc'] : '';
             $dofile = function ($arg) {
                 return $_FILES['upload'][$arg];
