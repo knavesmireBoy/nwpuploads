@@ -177,7 +177,7 @@ class Uploader
 
     private function getCustomVars($key, $data)
     {
-        if($key === 'confirm') dump($data);
+        //if($key === 'confirm') dump($data);
         $ret = [];
         $ismulti = !empty($data['multi']);
         $owner = ['ownerid' => $data['ownerid'] ?? '', 'ownername' => $data['ownername'] ?? '', 'domain' => $data['domain'] ?? '', 'multi' => $data['multi'] ?? '', 'editor' => $data['editor'] ?? '', 'clientname' => $data['clientname'] ?? ''];
@@ -384,11 +384,16 @@ class Uploader
             $file = $this->table->find('id', $vars['id']);
             $file = !empty($file) ? $file[0] : null;
             if ($file) {
+
+                $user = $this->usertable->find('id', $file->userid)[0];
                 $data = $file->getData($_SESSION['username']);
-                $client = $this->usertable->find('client_id', $data['client_id'] ?? 0);
-                $client = !empty($client) ? $client[0] : null;
-                if ($client) {
-                    $owner = [...$data, ...$client->getDetails()];
+
+            //    $client = $this->usertable->find('client_id', $data['client_id'] ?? 0);
+             //   $client = !empty($client) ? $client[0] : null;
+
+
+                if ($user->client_id) {
+                    $owner = [...$data, ...$user->getDetails()];
                 } else {
                     $owner = $data;
                 }
