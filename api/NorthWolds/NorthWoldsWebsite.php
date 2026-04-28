@@ -69,9 +69,8 @@ class NorthWoldsWebsite implements Website
         $controllers = [
             'user',
             'login',
-            'bolt',
-            'uploader',
-            'spadger'
+            'client',
+            'uploader'
         ];
         //https://stackoverflow.com/questions/534159/instantiate-a-class-from-a-variable-in-php#:~:text=Put%20the%20classname%20into%20a,%24classname(%22xyz%22)%3B
         $key = $this->validate($classname, $controllers);

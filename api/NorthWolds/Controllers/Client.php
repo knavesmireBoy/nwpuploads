@@ -10,7 +10,7 @@ class Client
 
     private function displayer($priv)
     {
-        //  list($users, $clients) = $this->presentList($priv, $userId);
+        //list($users, $clients) = $this->presentList($priv, $userId);
         $rows = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
         dump($rows);
         foreach ($rows as $row) {
@@ -20,8 +20,6 @@ class Client
                 'domain' => $row['domain']
             );
         }
-
-       
 
         $defaultVars = [];
         /*
