@@ -152,9 +152,11 @@ class Uploader
         if (!$user->client_id) {
             return $files;
         }
+
         $users = $this->usertable->find('client_id', $user->client_id);
         $userids = array_map(fn($o) => $o->id, $users);
         $cb = curry2('in_array')($userids);
+
         $all = $this->table->findAll();
 
         foreach ($all as $file) {
@@ -478,11 +480,20 @@ class Uploader
         }
     }
 
+    private function strategy($list){
+
+       // return $list[0];
+       $users = safeFilter(fn($usr) => $usr->hasPermission(8), $list);
+       return $users[0] ?? null;
+
+    }
+
     private function idFromDomain($domain)
     {
         $user = $this->usertable->getEntity();
         $client = $user->fromDomain($domain);
-        $users = $this->usertable->find('client_id', $client->id, null, 1, 0);
+        $users = $this->usertable->find('client_id', $client->id);
+        return $this->strategy($users);
         return $users[0] ? $users[0]->id : null;
     }
 

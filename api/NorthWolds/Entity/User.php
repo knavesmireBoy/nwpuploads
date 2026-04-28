@@ -5,11 +5,11 @@ namespace NorthWolds\Entity;
 class User extends Entity
 {
   const BROWSER = 1; // 00000001
-  const CONTENT_EDITOR = 2; // 00000010
-  const PHOTO_EDITOR = 4; // 00000100
-  const CHIEF_EDITOR = 8; // 00001000
-  const ACCOUNT_EDITOR = 16; // 00010000; edit user permissions
-  const ADMIN = 32; // 00100000; ; edit user permissions AND delete user (must ALSO be account_editor) ie 48
+  const MANAGER = 2; // 00000010
+  const CLIENT = 4; // 00000100
+  const CLIENT_ADMIN = 8; // 00001000
+  const ADMIN = 16; // 00010000; edit user permissions
+  const SUPER = 32; // 00100000; ; edit user permissions AND delete user (must ALSO be account_editor) ie 48
   const SUPERADMIN = 64; // 01000000 (use permissions : 80)
   private $roleid;
   protected $table;
@@ -31,12 +31,22 @@ class User extends Entity
     $this->clienttable = $client;
   }
 
-  public function hasPermission($allowed)
+  private function getRole(){
+    $res = $this->fetch('userroletable', 'userid', $this->id);
+    return $res->roleid ?? null;
+  }
+
+  public function hasPermission(int $permission)
   {
-    $res = $this->fetch('userroletable', ' userid', $this->id);
-    $role = $res->roleid ?? null;
+    $lib = [1 => 'Browser', 2 => 'Manager', 4 => 'Client', 8 => 'Client Admin', 16 => 'Admin'];
+    $libr = array_flip($lib);
+    $role = $this->getRole();
+    $int = isset($libr[$role]) ? $libr[$role] : 0;
+    return $int & $permission;
+     /*
     $found = array_search($role, $allowed);
     return is_numeric($found) ? $found : null;
+    */
   }
 
   public function checkPermission(int $permission)
@@ -56,8 +66,7 @@ class User extends Entity
 
   public function getDetails($prop = '')
   {
-    $res = $this->fetch('userroletable', 'userid', $this->id);
-    $role = $res->roleid ?? null;
+    $role = $this->getRole();
     $client = null;
     if (!empty($res)) {
       if ($prop) {
