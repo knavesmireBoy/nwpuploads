@@ -1,5 +1,3 @@
-
-<h1><?= $pagehead; ?></h1>
 <?php
 if (isset($id)) {
 	include TEMPLATE . '_call.html.php';
@@ -13,9 +11,3 @@ if (isset($id)) {
 	<input type="submit" value="<?= $button; ?>" />
 </form>
 <p><a href=".">Return to Client List</a></p>
-</main>
-<footer>
-	<?php
-	include TEMPLATE . '_logout.html.php'; ?>
-</footer>
-</body>

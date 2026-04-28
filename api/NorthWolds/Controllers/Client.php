@@ -22,6 +22,7 @@ class Client
 
         $defaultVars = [
             'priv' => $priv,
+            'pagehead' => 'Manage Clients',
             'action' => '/client/select/',
             'clients' => $clients
         ];
@@ -72,8 +73,6 @@ class Client
         }
         return $ret;
     }
-
-
     public function select()
     {
         $client = $this->table->find('id', $_POST['client'], null, 0, 0, \PDO::FETCH_ASSOC)[0];

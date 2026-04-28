@@ -1,4 +1,4 @@
-<h1>Manage Clients</h1>
+<h1><?= $pagehead; ?></h1>
 <?php
 if (isset($template)) {
 	ob_start();
@@ -19,9 +19,6 @@ if (preg_match("/admin/i", $priv)) { ?>
 		<input type="submit" name="action" value="Choose" />
 	</form>
 <?php }
-if (isset($selected) && $_POST['client'] !== '') {
-	//include 'clientform.html.php';
-}
 if (isset($template)) {
 	ob_end_clean();
 	include TEMPLATE . "$template";
@@ -30,5 +27,9 @@ if (isset($clientid)) { ?>
 	<p><a href="/client/load">Return to clients</a></p>
 <?php } ?>
 <p><a href="/user/load/">Return to users</a></p>
-
 </main>
+<footer>
+	<?php
+	include TEMPLATE . '_logout.html.php'; ?>
+</footer>
+</body>
