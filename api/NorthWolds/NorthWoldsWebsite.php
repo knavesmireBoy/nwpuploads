@@ -39,8 +39,8 @@ class NorthWoldsWebsite implements Website
 
         $this->userRoleTable = new DatabaseTable($this->pdo, 'userrole', 'userid');
         $this->roleTable = new DatabaseTable($this->pdo, 'role', 'id');
-        $this->clientTable = new DatabaseTable($this->pdo, 'client', 'id');
         $this->userTable = new DatabaseTable($this->pdo, 'usr', 'id', '\NorthWolds\Entity\User', [&$this->userTable, $this->clientTable, $this->userRoleTable, $this->roleTable]);
+        $this->clientTable = new DatabaseTable($this->pdo, 'client', 'id', '\NorthWolds\Entity\User', [&$this->clientTable, $this->userTable]);
         $this->uploadTable = new DatabaseTable($this->pdo, 'upload', 'id', '\NorthWolds\Entity\Uploader', [&$this->uploadTable, $this->userTable]);
         $this->authentication = new Authentication($this->userTable, 'email', 'password');
         //$this->authentication = new \stdClass();
@@ -235,7 +235,7 @@ class NorthWoldsWebsite implements Website
             return array_slice(['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'], $i);
         }
        //$default = ['Admin', 'Client Admin', 'Client', 'Manager', 'Browser'];
-        $actions = ['uploader/load' => set(), 'uploader/upload' => set(), 'uploader/update' => set(1), 'uploader/nav' => set(), 'uploader/delete' => set(1), 'uploader/confirm' => set(1), 'uploader/destroy' => set(1), 'client/load' => set(4)];
+        $actions = ['uploader/load' => set(), 'uploader/upload' => set(), 'uploader/update' => set(1), 'uploader/nav' => set(), 'uploader/delete' => set(1), 'uploader/confirm' => set(1), 'uploader/destroy' => set(1), 'client/load' => set(1)];
 
         if (!$user) { //not logged in
             if ($this->baseAccess($uri) || isset($actions[$uri])) {

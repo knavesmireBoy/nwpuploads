@@ -7,16 +7,12 @@ use \Ninja\DatabaseTable;
 class Client
 {
     public function __construct(private DatabaseTable $table, private DatabaseTable $usertable) {
-
-
-        dump(999);
     }
 
     private function displayer($priv)
     {
         //list($users, $clients) = $this->presentList($priv, $userId);
         $rows = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
-        dump($rows);
         foreach ($rows as $row) {
             $clients[] = array(
                 'id' => $row['id'],
@@ -45,8 +41,6 @@ class Client
     public function load(string $key = '', array $vars = [])
     {
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
-
-        var_dump($user);
         $details = $user->getDetails();
         $priv = $details['role'];
         return $this->displayer($priv);
