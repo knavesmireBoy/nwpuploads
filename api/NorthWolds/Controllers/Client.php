@@ -41,9 +41,7 @@ class Client
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
         $priv = $details['role'];
-
         $customVars = $this->getCustomVars($key, $vars);
-
         return $this->displayer($priv, $customVars);
     }
 
@@ -55,7 +53,7 @@ class Client
 
         $lib = [
 
-            'choose' => ['pagehead' => 'Edit Client', 'action' => '/client/edit/', 'route' => 'Edited', 'calltext' => 'Delete Client', 'callroute' => "delete=$id", 'button' => 'Update Client', 'selected' => $id, 'template' => 'clientform.html.php'],
+            'choose' => ['id' => $id, 'pagehead' => 'Edit Client', 'action' => '/client/edit/', 'route' => 'Edited', 'calltext' => 'Delete Client', 'callroute' => "delete=$id", 'button' => 'Update Client', 'selected' => $id, 'template' => 'clientform.html.php', 'name' => $data['name'] ?? '', 'tel' => $data['tel'] ?? '', 'domain' => $data['domain'] ?? ''],
 
             'upload' => ['template' => 'upload.html.php', 'home' => '/uploader/load/'],
 
@@ -78,5 +76,9 @@ class Client
         $client = $this->table->find('id', $_POST['client'], null, 0, 0, \PDO::FETCH_ASSOC)[0];
         $data = ['id' => $client['id'], 'name' => $client['name'], 'domain' => $client['domain'], 'tel' => $client['tel']];
         return $this->load('choose', $data);
+    }
+
+    public function editSubmit(){
+
     }
 }
