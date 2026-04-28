@@ -60,7 +60,7 @@ class Uploader
             'fhead' => 'f',
             'uhead' => 'u',
             'thead' => 't',
-            'sort' => $_COOKIE('sort')
+            'sort' => $_COOKIE['sort']
         ];
         $vars = array_merge($defaultVars, $customVars);
         if ($vars['searchtext']) {
