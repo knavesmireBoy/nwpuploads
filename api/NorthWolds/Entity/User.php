@@ -31,27 +31,26 @@ class User extends Entity
     $this->clienttable = $client;
   }
 
-  private function getRole(){
+  private function getRole()
+  {
     $res = $this->fetch('userroletable', 'userid', $this->id);
     return $res->roleid ?? null;
   }
 
-  public function hasPermission(int $permission)
+  public function hasPermission(array $allowed)
+  {
+    $role = $this->getRole();
+    $found = array_search($role, $allowed);
+    return is_numeric($found) ? $found : null;
+  }
+
+  public function checkPermission(int $permission)
   {
     $lib = [1 => 'Browser', 2 => 'Manager', 4 => 'Client', 8 => 'Client Admin', 16 => 'Admin'];
     $libr = array_flip($lib);
     $role = $this->getRole();
     $int = isset($libr[$role]) ? $libr[$role] : 0;
     return $int & $permission;
-     /*
-    $found = array_search($role, $allowed);
-    return is_numeric($found) ? $found : null;
-    */
-  }
-
-  public function checkPermission(int $permission)
-  {
-    //return $this->hasPermission($permission) && $this->permissions >= $permission;
   }
 
   public function canEdit()

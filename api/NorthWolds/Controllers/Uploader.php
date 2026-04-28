@@ -483,7 +483,7 @@ class Uploader
     private function strategy($list){
 
        // return $list[0];
-       $users = safeFilter(fn($usr) => $usr->hasPermission(8), $list);
+       $users = safeFilter(fn($usr) => $usr->checkPermission(8), $list);
        return $users[0] ?? null;
 
     }
