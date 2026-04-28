@@ -88,7 +88,6 @@ class Uploader
             }
             $record['userid'] = $data['user'] === '' ? $owner : $data['user'];
             unset($data['user']);
-
             $this->table->save([...$record, ...$data]);
         } else {
             $records = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);

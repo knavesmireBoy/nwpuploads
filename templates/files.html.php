@@ -145,6 +145,6 @@ if (!empty($searchtext)) { ?>
 <?php }
 ?>
 
-<p><a href="/admin/load/">Admin Pages</a></p>
+<p><a href="/client/load/">Admin Pages</a></p>
 <?php
 include "_footer.html.php";

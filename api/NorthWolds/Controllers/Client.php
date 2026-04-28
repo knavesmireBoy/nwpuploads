@@ -52,18 +52,7 @@ class Client
         $id = $data['id'] ?? '';
 
         $lib = [
-
-            'choose' => ['id' => $id, 'pagehead' => 'Edit Client', 'action' => '/client/edit/', 'route' => 'Edited', 'calltext' => 'Delete Client', 'callroute' => "delete=$id", 'button' => 'Update Client', 'selected' => $id, 'template' => 'clientform.html.php', 'name' => $data['name'] ?? '', 'tel' => $data['tel'] ?? '', 'domain' => $data['domain'] ?? ''],
-
-            'upload' => ['template' => 'upload.html.php', 'home' => '/uploader/load/'],
-
-            'sort' => ['fhead' => $data['fhead'] ?? '', 'uhead' => $data['uhead'] ?? '', 'thead' => $data['thead'] ?? ''],
-
-            'delete' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this file?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/uploader/confirm/'],
-
-            'confirm' => ['id' => $data['id'] ?? '', 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Select the extent of deletions", 'delete' => 'proceed',  'action' => '/uploader/destroy/'],
-
-            'update' => ['id' => $data['id'] ?? '', 'button' =>  $data['button'] ?? '', 'all_users' => $data['users'] ?? [], 'colleagues' => $data['colleagues'] ?? [], 'group' => $data['group'] ?? '', 'answer' => $data['answer'] ?? '', 'action' => '/uploader/update/', 'template' => 'update.html.php', 'title' => 'Update', 'filename' => $data['filename'] ?? '', 'description' => $data['description'] ?? '', 'home' => '/uploader/load/']
+            'choose' => ['id' => $id, 'pagehead' => 'Edit Client', 'action' => '/client/edit/', 'route' => 'Edited', 'calltext' => 'Delete Client', 'callroute' => "delete=$id", 'button' => 'Update Client', 'selected' => $id, 'template' => 'clientform.html.php', 'name' => $data['name'] ?? '', 'tel' => $data['tel'] ?? '', 'domain' => $data['domain'] ?? '']
         ];
 
         if ($key && isset($lib[$key])) {
@@ -80,22 +69,12 @@ class Client
 
     public function editSubmit()
     {
-
-        $data = ['id', 'name', 'domain', 'tel'];
-        $ret = [];
-
         $values = $this->table->find('id', $_POST['id'], null, 0, 0, \PDO::FETCH_ASSOC)[0];
-      
-        foreach ($_POST as $k => $v){
-            if(isset($values[$k])){
+        foreach ($_POST as $k => $v) {
+            if (isset($values[$k])) {
                 $values[$k] = $v;
             }
         }
-
-        dump($values);
-        $ret['name'] = $_POST['name'];
-        $ret['domain'] = $_POST['domain'];
-        $ret['tel'] = $_POST['tel'];
-     //   $this->table->save($ret);
+        $this->table->save($values);
     }
 }
