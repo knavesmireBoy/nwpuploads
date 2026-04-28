@@ -485,7 +485,7 @@ class Uploader
         $user = $this->usertable->getEntity();
         $client = $user->fromDomain($domain);
         $users = $this->usertable->find('client_id', $client->id);
-        if($permission){
+        if ($permission) {
             $users = safeFilter($users, fn($usr) => $usr->checkPermission($permission));
         }
         return is_int($index) ? $users[$index]->id : $users;
@@ -501,11 +501,10 @@ class Uploader
             include TEMPLATE . 'error.html.php';
             exit();
         } else {
-            $test = $_POST['user'];
-            dump($test ?? 'bolt');
-            $userid = !empty($_POST['user']) ? $_POST['user'] : $_POST['key'];
-            $userid = is_numeric($userid) ? $userid : $this->idFromDomain($userid, 8, 0);
-            dump($userid);
+            $userid = $_POST['key'];
+            if ($_POST['user']) {
+                $userid = $this->idFromDomain($_POST['user'], 8, 0);
+            }
             $description = isset($_POST['desc']) ? $_POST['desc'] : '';
             $dofile = function ($arg) {
                 return $_FILES['upload'][$arg];
