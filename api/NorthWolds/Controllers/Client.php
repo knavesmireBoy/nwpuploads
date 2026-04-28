@@ -87,7 +87,7 @@ class Client
         $values = $this->table->find('id', $_POST['id'], null, 0, 0, \PDO::FETCH_ASSOC)[0];
       
         foreach ($_POST as $k => $v){
-            if($values[$k]){
+            if(isset($values[$k])){
                 $values[$k] = $v;
             }
         }
