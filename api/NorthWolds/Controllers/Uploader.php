@@ -184,9 +184,9 @@ class Uploader
         $owner = ['ownerid' => $data['ownerid'] ?? '', 'ownername' => $data['ownername'] ?? '', 'domain' => $data['domain'] ?? '', 'multi' => $data['multi'] ?? '', 'editor' => $data['editor'] ?? '', 'clientname' => $data['clientname'] ?? ''];
 
         $lib = [
-            'search' => ['template' => '_search.html.php', 'zero' => null, 'action' => '/uploader/finder/', 'searchform' => true],
+            'search' => ['template' => '_search.html.php', 'zero' => null, 'action' => '/uploader/finder/', 'searchform' => true, 'home' => '/uploader/load/'],
 
-            'upload' => ['template' => 'upload.html.php'],
+            'upload' => ['template' => 'upload.html.php', 'home' => '/uploader/load/'],
 
             'sort' => ['fhead' => $data['fhead'] ?? '', 'uhead' => $data['uhead'] ?? '', 'thead' => $data['thead'] ?? ''],
 
@@ -196,7 +196,7 @@ class Uploader
 
             'edit' => ['id' => $data['id'] ?? '', 'pos' => 'Yes', 'neg' => 'No', 'action' => $ismulti ? '/uploader/swap/' : '/uploader/edit/', 'call' => 'answer', 'prompt' => $ismulti ? "Change ownership on ALL files?" : "Proceed to Update", 'template' => 'prompt.html.php'],
 
-            'update' => ['id' => $data['id'] ?? '', 'button' =>  $data['button'] ?? '', 'all_users' => $data['users'] ?? [], 'colleagues' => $data['colleagues'] ?? [], 'group' => $data['group'] ?? '', 'answer' => $data['answer'] ?? '', 'action' => '/uploader/update/', 'template' => 'update.html.php', 'title' => 'Update', 'filename' => $data['filename'] ?? '', 'description' => $data['description'] ?? '']
+            'update' => ['id' => $data['id'] ?? '', 'button' =>  $data['button'] ?? '', 'all_users' => $data['users'] ?? [], 'colleagues' => $data['colleagues'] ?? [], 'group' => $data['group'] ?? '', 'answer' => $data['answer'] ?? '', 'action' => '/uploader/update/', 'template' => 'update.html.php', 'title' => 'Update', 'filename' => $data['filename'] ?? '', 'description' => $data['description'] ?? '', 'home' => '/uploader/load/']
         ];
 
         if ($key && isset($lib[$key])) {

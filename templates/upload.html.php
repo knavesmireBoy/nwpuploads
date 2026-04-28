@@ -1,5 +1,5 @@
 <form action="/uploader/upload/" method="post" name="uploadform" enctype="multipart/form-data" class="details">
-        <a href="/uploader/load/" class="cancel">X</a>
+        <a href="<?= $home; ?>"class="cancel">X</a>
         <label for="uploadfiles">Upload File</label><input id="uploadfiles" type="file" name="upload" <?= $disabled; ?> />
         <label for="desc">Description</label><input id="desc" type="text" name="desc" />
         <?php
