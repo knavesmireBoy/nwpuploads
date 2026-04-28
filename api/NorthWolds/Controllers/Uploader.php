@@ -480,13 +480,6 @@ class Uploader
         }
     }
 
-    private function strategy($list, $){
-    
-       $users = safeFilter($list, fn($usr) => $usr->checkPermission(8));
-       return $users[0] ? $users[0] : null;
-
-    }
-
     private function idFromDomain(string $domain, int $permission, mixed $index = false)
     {
         $user = $this->usertable->getEntity();
