@@ -477,17 +477,17 @@ class Uploader
     {
         $user = $this->usertable->getEntity();
         $client = $user->fromDomain($domain);
-        $users = $this->usertable->find('client_id', $client->id, 'id');
+        $usrs = $this->usertable->find('client_id', $client->id, 'id');
         if ($permission) {
-            $users = safeFilter($users, fn($usr) => $usr->checkPermission($permission));
+            $users = safeFilter($usrs, fn($usr) => $usr->checkPermission($permission));
         }
+        $users = empty($users) ? $usrs : $users;
         return is_int($index) ? $users[$index]->id : $users;
     }
 
     public function uploadSubmit()
     {
         list($uploadfile, $uploadname, $filename, $realname) = $this->getUploadedFile();
-
         // Copy the file (if it is deemed safe)
         if (!copy($uploadfile, $filename)) {
             $error = "Could not save file as $filename!";
