@@ -1,25 +1,3 @@
-<?php
-include_once TEMPLATE . 'head.html.php';
-foreach (get_defined_vars() as $k => $v) {
-    $i = 0;
-    $fail = false;
-    $L = count($predicates);
-    for ($i; $i < $L; $i++) {
-      $fail = $predicates[$i]($k);
-      if ($fail) {
-        unset($$k);
-        break;
-      }
-    }
-  }
-  unset($k);
-  unset($v);
-  unset($i);
-  unset($L);
-  unset($fail);
-
-?>
-
 <h1>Manage Clients</h1>
 <?php
 if (isset($template)) {
@@ -42,16 +20,16 @@ if (preg_match("/admin/i", $priv)) { ?>
 	</form>
 <?php }
 if (isset($selected) && $_POST['client'] !== '') {
-	include 'form.html.php';
+	include 'clientform.html.php';
 }
 if (isset($template)) {
 	ob_end_clean();
 	include TEMPLATE . "$template";
 }
 if (isset($clientid)) { ?>
-	<p><a href=".">Return to clients</a></p>
+	<p><a href="/client/load">Return to clients</a></p>
 <?php } ?>
-<p><a href="../admin/">Return to users</a></p>
+<p><a href="user/load/">Return to users</a></p>
 
 </main>
 <footer>
