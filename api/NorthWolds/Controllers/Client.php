@@ -6,7 +6,11 @@ use \Ninja\DatabaseTable;
 
 class Client
 {
-    public function __construct(private DatabaseTable $table, private DatabaseTable $usertable) {}
+    public function __construct(private DatabaseTable $table, private DatabaseTable $usertable) {
+
+
+        dump(999);
+    }
 
     private function displayer($priv)
     {
