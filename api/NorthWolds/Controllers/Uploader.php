@@ -503,7 +503,7 @@ class Uploader
         } else {
             $userid = $_POST['key'];
             if ($_POST['user']) {
-                $userid = $this->idFromDomain($_POST['user'], 8, 0);
+                $userid = $this->idFromDomain($_POST['user'], 0, 0);
             }
             $description = isset($_POST['desc']) ? $_POST['desc'] : '';
             $dofile = function ($arg) {
