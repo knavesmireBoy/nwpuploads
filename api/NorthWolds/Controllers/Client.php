@@ -54,7 +54,7 @@ class Client
 
         $lib = [
 
-            'choose' => ['pagehead' => 'Edit Client', 'action' => '/client/edit/', 'route' => 'Edited', 'calltext' => 'Delete Client', 'callroute' => "delete=$id", 'button' => 'Update Client', 'selected' => $id],
+            'choose' => ['pagehead' => 'Edit Client', 'action' => '/client/edit/', 'route' => 'Edited', 'calltext' => 'Delete Client', 'callroute' => "delete=$id", 'button' => 'Update Client', 'selected' => $id, 'template' => 'clientform.html.php'],
 
             'upload' => ['template' => 'upload.html.php', 'home' => '/uploader/load/'],
 

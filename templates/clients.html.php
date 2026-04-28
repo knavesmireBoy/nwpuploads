@@ -20,7 +20,7 @@ if (preg_match("/admin/i", $priv)) { ?>
 	</form>
 <?php }
 if (isset($selected) && $_POST['client'] !== '') {
-	include 'clientform.html.php';
+	//include 'clientform.html.php';
 }
 if (isset($template)) {
 	ob_end_clean();
