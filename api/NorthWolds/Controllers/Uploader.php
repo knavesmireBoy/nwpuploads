@@ -177,7 +177,7 @@ class Uploader
 
     private function getCustomVars($key, $data)
     {
-        //if($key === 'confirm') dump($data);
+        if($key === 'confirm') dump($data);
         $ret = [];
         $ismulti = !empty($data['multi']);
         $owner = ['ownerid' => $data['ownerid'] ?? '', 'ownername' => $data['ownername'] ?? '', 'domain' => $data['domain'] ?? '', 'multi' => $data['multi'] ?? '', 'editor' => $data['editor'] ?? '', 'clientname' => $data['clientname'] ?? ''];
