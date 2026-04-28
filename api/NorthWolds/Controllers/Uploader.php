@@ -480,21 +480,22 @@ class Uploader
         }
     }
 
-    private function strategy($list){
+    private function strategy($list, $){
     
-       $users = safeFilter(fn($usr) => $usr->checkPermission(8), $list);
-       dump($users);
-       return $users[0] ?? null;
+       $users = safeFilter($list, fn($usr) => $usr->checkPermission(8));
+       return $users[0] ? $users[0] : null;
 
     }
 
-    private function idFromDomain($domain)
+    private function idFromDomain(string $domain, int $permission, mixed $index = false)
     {
         $user = $this->usertable->getEntity();
         $client = $user->fromDomain($domain);
         $users = $this->usertable->find('client_id', $client->id);
-        return $this->strategy($users);
-        return $users[0] ? $users[0]->id : null;
+        if($permission){
+            $users = safeFilter($users, fn($usr) => $usr->checkPermission($permission));
+        }
+        return is_int($index) ? $users[$index] : $users;
     }
 
     public function uploadSubmit()
@@ -508,7 +509,7 @@ class Uploader
             exit();
         } else {
             $userid = !empty($_POST['user']) ? $_POST['user'] : $_POST['key'];
-            $userid = is_numeric($userid) ? $userid : $this->idFromDomain($userid);
+            $userid = is_numeric($userid) ? $userid : $this->idFromDomain($userid, 8, 0);
             $description = isset($_POST['desc']) ? $_POST['desc'] : '';
             $dofile = function ($arg) {
                 return $_FILES['upload'][$arg];
