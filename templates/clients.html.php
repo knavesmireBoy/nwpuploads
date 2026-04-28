@@ -32,7 +32,3 @@ if (isset($clientid)) { ?>
 <p><a href="/user/load/">Return to users</a></p>
 
 </main>
-<footer>
-	<?php
-	include TEMPLATE . '_logout.html.php'; ?>
-</footer>
