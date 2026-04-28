@@ -67,7 +67,7 @@ class User extends Entity
   {
     $role = $this->getRole();
     $client = null;
-    if (!empty($res)) {
+    if (!empty($role)) {
       if ($prop) {
         return $this->{$prop};
       }
