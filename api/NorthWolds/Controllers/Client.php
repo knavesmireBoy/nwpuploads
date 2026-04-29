@@ -24,6 +24,8 @@ class Client
             'priv' => $priv,
             'pagehead' => 'Manage Clients',
             'action' => '/client/select/',
+            'callroute' => '/client/add/',
+            'calltext' => 'Add Client',
             'clients' => $clients
         ];
 
@@ -52,7 +54,7 @@ class Client
         $id = $data['id'] ?? '';
 
         $lib = [
-            'choose' => ['id' => $id, 'pagehead' => 'Edit Client', 'action' => '/client/edit/', 'route' => 'Edited', 'calltext' => 'Delete Client', 'callroute' => "delete=$id", 'button' => 'Update Client', 'selected' => $id, 'template' => 'clientform.html.php', 'name' => $data['name'] ?? '', 'tel' => $data['tel'] ?? '', 'domain' => $data['domain'] ?? '']
+            'choose' => ['id' => $id, 'pagehead' => 'Edit Client', 'action' => '/client/edit/', 'route' => 'Edited', 'calltext' => 'Delete Client', 'callroute' => "/client/delete/", 'button' => 'Update Client', 'selected' => $id, 'template' => 'clientform.html.php', 'name' => $data['name'] ?? '', 'tel' => $data['tel'] ?? '', 'domain' => $data['domain'] ?? '']
         ];
 
         if ($key && isset($lib[$key])) {

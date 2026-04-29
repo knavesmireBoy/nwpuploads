@@ -9,7 +9,7 @@ if (isset($id)) {
 } ?>
 <form action="<?= $action; ?>" method="post" name="clientform" class="details">
 	<label for="the_name">Name</label><input id="the_name" type="text" name="name" value="<?= $name ?? ''; ?>" required pattern="([a-zA-Z0-9]+\s){0,4}" autocomplete="off" />
-	<label for="the_domain">Domain</label><input id="the_domain" type="text" name="domain" value="<?= $domain ?? ''; ?>" required pattern="([a-zA-Z0-9]+[.-])*[a-zA-Z0-9]+" autocomplete="off"/>
+	<label for="the_domain">Domain</label><input id="the_domain" type="text" name="domain" value="<?= $domain ?? ''; ?>" required pattern="\w+\." autocomplete="off"/>
 	<label for="the_tel">Phone</label><input id="the_tel" type="text" name="tel" value="<?= $tel ?? ''; ?>" autocomplete="off" pattern="\d\d{5,6}\s?\d{4,6}"/>
 	<input type="hidden" name="id" value="<?= $id ?? ''; ?>" />
 	<input type="submit" value="<?= $button; ?>" />

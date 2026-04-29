@@ -24,7 +24,7 @@ if (isset($template)) {
 	include TEMPLATE . "$template";
 }
 if (isset($clientid)) { ?>
-	<p><a href="/client/load">Return to clients</a></p>
+	<p><a href="/client/load/">Return to clients</a></p>
 <?php } ?>
 <p><a href="/user/load/">Return to users</a></p>
 </main>
