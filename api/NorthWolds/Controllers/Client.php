@@ -61,7 +61,7 @@ class Client
 
     private function getCustomVars($key, $data)
     {
-       // if($key === 'delete') dump($data);
+        // if($key === 'delete') dump($data);
         $ret = [];
         $id = $data['id'] ?? '';
         $lib = [
@@ -82,8 +82,14 @@ class Client
     }
     public function select()
     {
+
+        if (!empty($_POST['client'])) {
+            reLocate($this->home);
+        }
         $client = $this->table->find('id', $_POST['client'], null, 0, 0, \PDO::FETCH_ASSOC)[0];
+        
         $data = ['id' => $client['id'], 'name' => $client['name'], 'domain' => $client['domain'], 'tel' => $client['tel']];
+
         return $this->load('choose', $data);
     }
 
