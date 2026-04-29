@@ -22,16 +22,17 @@ class Client extends Entity
 
     public function foo()
     {
-        
-        
-        $users = $this->usertable->findAll(null, 0, 0, \PDO::FETCH_ASSOC)[0];
 
-            dump($users);
-        $cb = function($o) {
+
+        $users = $this->usertable->findAll();
+        $domain = $this->domain;
+        $cb = function ($o) use ($domain) {
             $i = strrpos($o->email, '@');
-            return substr($o->email, $i + 1);
+            $dom = substr($o->email, $i + 1);
+            return $dom === $domain && !$o->client_id;
         };
 
-        $d = array_map($cb, $users);
+        $domains = safeFilter($users, $cb);
+        dump($domains);
     }
 }
