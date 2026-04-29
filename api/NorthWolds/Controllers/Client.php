@@ -8,7 +8,7 @@ class Client
 {
     public function __construct(private DatabaseTable $table, private DatabaseTable $usertable, private string $home) {}
 
-    private function displayer($priv, $customVars = [])
+    private function displayer($priv, $owner = [], $customVars = [])
     {
         //list($users, $clients) = $this->presentList($priv, $userId);
         $rows = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
@@ -26,7 +26,8 @@ class Client
             'action' => '/client/select/',
             'callroute' => '/client/add/',
             'calltext' => 'Add Client',
-            'clients' => $clients
+            'clients' => $clients,
+            'owner' => $owner
         ];
 
         $vars = array_merge($defaultVars, $customVars);
@@ -44,7 +45,18 @@ class Client
         $details = $user->getDetails();
         $priv = $details['role'];
         $customVars = $this->getCustomVars($key, $vars);
-        return $this->displayer($priv, $customVars);
+
+        $owner = [];
+
+        if (isset($vars['id'])) {
+            $client = $this->table->find('id', $vars['id'])[0];
+            $owner['id'] = $vars['id'];
+            $owner['name'] = $client->name;
+            $owner['domain'] = $client->domain;
+        }
+
+
+        return $this->displayer($priv, $owner, $customVars);
     }
 
     private function getCustomVars($key, $data)
@@ -54,8 +66,14 @@ class Client
         $id = $data['id'] ?? '';
 
         $lib = [
-            'choose' => ['id' => $id, 'pagehead' => 'Edit Client', 'action' => '/client/edit/', 'route' => 'Edited', 'calltext' => 'Delete Client', 'callroute' => "/client/delete/", 'button' => 'Update Client', 'selected' => $id, 'template' => 'clientform.html.php', 'name' => $data['name'] ?? '', 'tel' => $data['tel'] ?? '', 'domain' => $data['domain'] ?? ''],
-            'add' => ['template' => 'clientform.html.php', 'pagehead' => 'New Client', 'calltext' => 'Add Client', 'action' => '/client/edit/', 'button' => 'Add Client', 'pagetitle' => 'Admin | Client']
+            'choose' => ['id' => $id, 'template' => 'clientform.html.php', 'pagehead' => 'Edit Client', 'calltext' => 'Delete Client', 'callroute' => "/client/delete/", 'action' => '/client/edit/',  'button' => 'Update Client', 'selected' => $id, 'name' => $data['name'] ?? '', 'tel' => $data['tel'] ?? '', 'domain' => $data['domain'] ?? ''],
+
+            'add' => ['template' => 'clientform.html.php', 'pagetitle' => 'Admin | Client', 'pagehead' => 'New Client', 'calltext' => 'Add Client', 'action' => '/client/edit/', 'button' => 'Add Client'],
+
+            'delete' => ['id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this client?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/client/confirm/'],
+
+            'confirm' => ['id' => $id, 'action' => '/client/destroy/'],
+
         ];
 
         if ($key && isset($lib[$key])) {
@@ -70,12 +88,29 @@ class Client
         return $this->load('choose', $data);
     }
 
-    public function add() {}
+    public function add()
+    {
+        return $this->load('add');
+    }
 
-    public function delete() {}
+    public function delete()
+    {
+        return $this->load('delete', $_POST);
+    }
 
-    public function confirm() {}
+    public function confirm()
+    {
 
+        if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
+            return $this->load('confirm', $_POST);
+        }
+        reLocate($this->home);
+    }
+
+    public function destroy()
+    {
+        dump('really');
+    }
 
     public function editSubmit()
     {
@@ -85,7 +120,7 @@ class Client
                 $values[$k] = $v;
             }
         }
-       // $this->table->save($values);
+        // $this->table->save($values);
         reLocate($this->home);
     }
 }
