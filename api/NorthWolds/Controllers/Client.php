@@ -101,6 +101,8 @@ class Client
     public function confirm()
     {
         if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
+
+            dump($_POST);
             return $this->destroy($_POST['id']);
         }
         reLocate($this->home);
@@ -108,14 +110,17 @@ class Client
 
     public function destroy($id)
     {
-        dump("really $_POST{['id']}");
+        dump("really $id");
         $this->table->delete('id', $_POST['id']);
         reLocate($this->home);
     }
 
     public function editSubmit()
     {
-        $values = $this->table->find('id', $_POST['id'], null, 0, 0, \PDO::FETCH_ASSOC)[0];
+        $res = $this->table->find('id', $_POST['id'], null, 0, 0, \PDO::FETCH_ASSOC);
+
+        dump($res);
+
         foreach ($_POST as $k => $v) {
             if (isset($values[$k])) {
                 $values[$k] = $v;
