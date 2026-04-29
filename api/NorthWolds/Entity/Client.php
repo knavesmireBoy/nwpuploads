@@ -24,13 +24,13 @@ class Client extends Entity
     {
         //slaterclark.co.uk
         $domains = [];
-        $users = $this->usertable->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
+        $users = $this->usertable->findAll();
         $domain = $this->domain;
         $cb = function ($o) use ($domain) {
-            $e = $o['email'];
+            $e = $o->email;
             $i = strrpos($e, '@');
             $dom = substr($e, $i + 1);
-            return $dom === $domain && !$o['client_id'];
+            return $dom === $domain && !$o->client_id;
         };
         return safeFilter($users, $cb);
     }
