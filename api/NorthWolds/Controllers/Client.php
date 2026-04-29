@@ -61,7 +61,7 @@ class Client
 
     private function getCustomVars($key, $data)
     {
-        if($key === 'delete') dump($data);
+       // if($key === 'delete') dump($data);
         $ret = [];
         $id = $data['id'] ?? '';
         $lib = [
