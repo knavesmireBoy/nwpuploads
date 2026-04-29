@@ -101,9 +101,7 @@ class Client
     public function confirm()
     {
         if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
-
-            dump($_POST);
-            return $this->destroy($_POST['id']);
+            return $this->destroy($_POST['ownerid']);
         }
         reLocate($this->home);
     }
