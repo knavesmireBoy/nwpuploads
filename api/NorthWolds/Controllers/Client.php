@@ -61,10 +61,9 @@ class Client
 
     private function getCustomVars($key, $data)
     {
-        //if($key === 'confirm') dump($data);
+        if($key === 'delete') dump($data);
         $ret = [];
         $id = $data['id'] ?? '';
-
         $lib = [
             'choose' => ['id' => $id, 'template' => 'clientform.html.php', 'pagehead' => 'Edit Client', 'calltext' => 'Delete Client', 'callroute' => "/client/delete/", 'action' => '/client/edit/',  'button' => 'Update Client', 'selected' => $id, 'name' => $data['name'] ?? '', 'tel' => $data['tel'] ?? '', 'domain' => $data['domain'] ?? ''],
 
@@ -72,7 +71,7 @@ class Client
 
             'delete' => ['id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this client?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/client/confirm/'],
 
-            'confirm' => ['id' => $id, 'action' => '/client/destroy/'],
+            'confirm' => ['id' => $id],
 
         ];
 
@@ -116,16 +115,19 @@ class Client
 
     public function editSubmit()
     {
-       dump($_POST);
-        $res = $this->table->find('id', $_POST['id'], null, 0, 0, \PDO::FETCH_ASSOC);
-
-        
-
-        dump($res);
-
-        foreach ($_POST as $k => $v) {
-            if (isset($values[$k])) {
-                $values[$k] = $v;
+        $edit = false;
+        if ($_POST['id']) {
+            $res = $this->table->find('id', $_POST['id'], null, 0, 0, \PDO::FETCH_ASSOC);
+            $values = $res[0] ? $res[0] : [];
+            $edit = true;
+        } else {
+            $values = $_POST['data'];
+        }
+        if ($edit) {
+            foreach ($_POST['data'] as $k => $v) {
+                if ($v && isset($values[$k])) {
+                    $values[$k] = $v;
+                }
             }
         }
         $this->table->save($values, empty($_POST['id']));

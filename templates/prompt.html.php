@@ -18,15 +18,6 @@
         //confirm used by several controllers; review
     ?>
 
-<dialog id="modal">
-  <h3>Delete Account</h3>
-  <p>This action cannot be undone. Are you sure?</p>
-
-  <div class="actions">
-    <button id="cancelBtn">Cancel</button>
-    <button id="confirmBtn">Yes, Delete</button>
-  </div>
-</dialog>
         <form action="<?= $action; ?>" method="post" name="choice" class="prompt" id="yesno">
             <input type="hidden" name="ownerid" value="<?= $owner['id'] ?? ''; ?>" />
             <input type="hidden" name="ownername" value="<?= $owner['name'] ?? ''; ?>" />

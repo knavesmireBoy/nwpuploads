@@ -14,4 +14,4 @@ if (isset($id)) {
 	<input type="hidden" name="id" value="<?= $id ?? ''; ?>" />
 	<input type="submit" value="<?= $button; ?>" />
 </form>
-<p><a href=".">Return to Client List</a></p>
+<p><a href="/client/load/">Return to Client List</a></p>
