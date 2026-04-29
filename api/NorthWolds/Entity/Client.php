@@ -33,9 +33,8 @@ class Client extends Entity
             return $dom === $domain && !$o->client_id;
         };
         $domains = safeFilter($users, $cb);
-        dump($domains);
         foreach ($domains as $user) {
-            $user->client_id = $this->id;
+            $this->usertable->save(['id' => $user->id, 'client_id' => $this->id]);
         }
     }
 }

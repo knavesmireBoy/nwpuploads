@@ -145,7 +145,10 @@ class Client
         if ($add) {
             $client = $this->table->find('id', $client)[0];
             $users = $client->checkUserDomains();
+
+
             if($users !== []){
+                
                 return $this->load('associate');
             }
         }
