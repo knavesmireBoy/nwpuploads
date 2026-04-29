@@ -41,6 +41,10 @@ class Client
 
     public function load(string $key = '', array $vars = [])
     {
+
+        if (!isset($_SESSION['username'])) {
+            reLocate(REG);
+        }
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
         $priv = $details['role'];
@@ -85,12 +89,12 @@ class Client
         if (empty($_POST['client'])) {
             reLocate($this->home);
         }
-        /*
+        
         $client = $this->table->find('id', $_POST['client'], null, 0, 0, \PDO::FETCH_ASSOC)[0];
         $data = ['id' => $client['id'], 'name' => $client['name'], 'domain' => $client['domain'], 'tel' => $client['tel']];
-        */
+        
 
-        return $this->load('choose', ['id' => $_POST['client']]);
+        return $this->load('choose', $data);
     }
 
     public function add()
