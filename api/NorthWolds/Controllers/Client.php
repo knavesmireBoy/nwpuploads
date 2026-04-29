@@ -139,7 +139,7 @@ class Client
         }
         $client = $this->table->save($values, $add);
         if ($add) {
-            dump($client);
+            $client->foo();
         }
         reLocate($this->home);
     }
