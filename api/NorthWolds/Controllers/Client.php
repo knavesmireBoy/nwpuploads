@@ -89,12 +89,10 @@ class Client
         if (empty($_POST['client'])) {
             reLocate($this->home);
         }
-        
         $client = $this->table->find('id', $_POST['client'], null, 0, 0, \PDO::FETCH_ASSOC)[0];
-        $data = ['id' => $client['id'], 'name' => $client['name'], 'domain' => $client['domain'], 'tel' => $client['tel']];
-        
+        $templatedata = ['id' => $client['id'], 'name' => $client['name'], 'domain' => $client['domain'], 'tel' => $client['tel']];
 
-        return $this->load('choose', $data);
+        return $this->load('choose', $templatedata);
     }
 
     public function add()
@@ -117,13 +115,14 @@ class Client
 
     public function destroy($id)
     {
-        $this->table->delete('id', $_POST['id']);
+        $this->table->delete('id', $id);
         reLocate($this->home);
     }
 
     public function editSubmit()
     {
         $edit = false;
+        $add = empty($_POST['id']);
         if ($_POST['id']) {
             $res = $this->table->find('id', $_POST['id'], null, 0, 0, \PDO::FETCH_ASSOC);
             $values = $res[0] ? $res[0] : [];
@@ -138,7 +137,10 @@ class Client
                 }
             }
         }
-        $this->table->save($values, empty($_POST['id']));
+        $client = $this->table->save($values, $add);
+        if ($add) {
+            dump($client);
+        }
         reLocate($this->home);
     }
 }
