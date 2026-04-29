@@ -54,7 +54,8 @@ class Client
         $id = $data['id'] ?? '';
 
         $lib = [
-            'choose' => ['id' => $id, 'pagehead' => 'Edit Client', 'action' => '/client/edit/', 'route' => 'Edited', 'calltext' => 'Delete Client', 'callroute' => "/client/delete/", 'button' => 'Update Client', 'selected' => $id, 'template' => 'clientform.html.php', 'name' => $data['name'] ?? '', 'tel' => $data['tel'] ?? '', 'domain' => $data['domain'] ?? '']
+            'choose' => ['id' => $id, 'pagehead' => 'Edit Client', 'action' => '/client/edit/', 'route' => 'Edited', 'calltext' => 'Delete Client', 'callroute' => "/client/delete/", 'button' => 'Update Client', 'selected' => $id, 'template' => 'clientform.html.php', 'name' => $data['name'] ?? '', 'tel' => $data['tel'] ?? '', 'domain' => $data['domain'] ?? ''],
+            'add' => ['template' => 'clientform.html.php', 'pagehead' => 'New Client', 'calltext' => 'Add Client', 'action' => '/client/edit/', 'button' => 'Add Client', 'pagetitle' => 'Admin | Client']
         ];
 
         if ($key && isset($lib[$key])) {
@@ -69,6 +70,13 @@ class Client
         return $this->load('choose', $data);
     }
 
+    public function add() {}
+
+    public function delete() {}
+
+    public function confirm() {}
+
+
     public function editSubmit()
     {
         $values = $this->table->find('id', $_POST['id'], null, 0, 0, \PDO::FETCH_ASSOC)[0];
@@ -77,7 +85,7 @@ class Client
                 $values[$k] = $v;
             }
         }
-        $this->table->save($values);
+       // $this->table->save($values);
         reLocate($this->home);
     }
 }
