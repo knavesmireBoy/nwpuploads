@@ -32,6 +32,10 @@ class Client extends Entity
             $dom = substr($e, $i + 1);
             return $dom === $domain && !$o->client_id;
         };
-        return safeFilter($users, $cb);
+        $domains = safeFilter($users, $cb);
+        dump($domains);
+        foreach ($domains as $user) {
+            $user->client_id = $this->id;
+        }
     }
 }
