@@ -71,6 +71,10 @@ class Client
         $lib = [
             'choose' => ['id' => $id, 'template' => 'clientform.html.php', 'pagehead' => 'Edit Client', 'calltext' => 'Delete Client', 'callroute' => "/client/delete/$id", 'action' => '/client/edit/',  'button' => 'Update Client', 'selected' => $id, 'name' => $data['name'] ?? '', 'tel' => $data['tel'] ?? '', 'domain' => $data['domain'] ?? ''],
 
+            'associate' => [
+
+            ],
+
             'add' => ['template' => 'clientform.html.php', 'pagetitle' => 'Admin | Client', 'pagehead' => 'New Client', 'calltext' => 'Add Client', 'action' => '/client/edit/', 'button' => 'Add Client'],
 
             'delete' => ['id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this client?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/client/confirm/'],
@@ -140,7 +144,10 @@ class Client
         $client = $this->table->save($values, $add);
         if ($add) {
             $client = $this->table->find('id', $client)[0];
-            $client->foo();
+            $users = $client->checkUserDomains();
+            if($users !== []){
+                return $this->load('associate');
+            }
         }
         reLocate($this->home);
     }
