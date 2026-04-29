@@ -101,6 +101,7 @@ class Client
     public function confirm()
     {
         if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
+            dump($_POST);
             return $this->destroy($_POST['ownerid']);
         }
         reLocate($this->home);
@@ -115,7 +116,10 @@ class Client
 
     public function editSubmit()
     {
+       dump($_POST);
         $res = $this->table->find('id', $_POST['id'], null, 0, 0, \PDO::FETCH_ASSOC);
+
+        
 
         dump($res);
 
