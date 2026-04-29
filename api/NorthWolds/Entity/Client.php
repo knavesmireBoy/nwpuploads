@@ -26,8 +26,8 @@ class Client extends Entity
         $domains = [];
         $users = $this->usertable->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
         $domain = $this->domain;
-        $cb = function ($o) use ($domain) {
-            $o = $o[0];
+        $cb = function ($o, $i) use ($domain) {
+            $o = $o[$i];
             $e = $o['email'];
             $i = strrpos($e, '@');
             $dom = substr($e, $i + 1);
