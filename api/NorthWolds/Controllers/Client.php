@@ -6,7 +6,7 @@ use \Ninja\DatabaseTable;
 
 class Client
 {
-    public function __construct(private DatabaseTable $table, private DatabaseTable $usertable) {}
+    public function __construct(private DatabaseTable $table, private DatabaseTable $usertable, private string $home) {}
 
     private function displayer($priv, $customVars = [])
     {
@@ -76,5 +76,6 @@ class Client
             }
         }
         $this->table->save($values);
+        reLocate($this->home);
     }
 }
