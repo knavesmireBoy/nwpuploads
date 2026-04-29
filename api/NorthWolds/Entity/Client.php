@@ -23,7 +23,7 @@ class Client extends Entity
     }
 
     public function foo(){
-        $users = $this->usertable->findAll(null,0,0,\PDO::FETCH_ASSOC);
+        $users = $this->usertable->findAll(null,0,0,\PDO::FETCH_ASSOC)[0];
         $emails = array_map(function($o) {
             $i = strrpos($o->email, '@');
             $top = substr($o->email, $i + 1);
