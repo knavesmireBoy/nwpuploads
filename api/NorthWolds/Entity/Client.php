@@ -23,8 +23,8 @@ class Client extends Entity
     public function foo()
     {
 
-
-        $users = $this->usertable->findAll();
+        //slaterclark.co.uk
+        $users = $this->usertable->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
         $domain = $this->domain;
         $cb = function ($o) use ($domain) {
             $i = strrpos($o->email, '@');
