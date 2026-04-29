@@ -83,7 +83,7 @@ class Client
     public function select()
     {
 
-        if (!empty($_POST['client'])) {
+        if (empty($_POST['client'])) {
             reLocate($this->home);
         }
         $client = $this->table->find('id', $_POST['client'], null, 0, 0, \PDO::FETCH_ASSOC)[0];
