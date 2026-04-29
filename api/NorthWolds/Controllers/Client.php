@@ -100,16 +100,17 @@ class Client
 
     public function confirm()
     {
-
         if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
-            return $this->load('confirm', $_POST);
+            return $this->destroy($_POST['id']);
         }
         reLocate($this->home);
     }
 
-    public function destroy()
+    public function destroy($id)
     {
-        dump('really');
+        dump("really $id");
+        $this->table->delete('id', $id);
+        reLocate($this->home);
     }
 
     public function editSubmit()
@@ -120,7 +121,7 @@ class Client
                 $values[$k] = $v;
             }
         }
-        // $this->table->save($values);
+        $this->table->save($values, empty($_POST['id']));
         reLocate($this->home);
     }
 }
