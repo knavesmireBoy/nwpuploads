@@ -139,6 +139,7 @@ class Client
         }
         $client = $this->table->save($values, $add);
         if ($add) {
+            $client = $this->table->find('id', $client)[0];
             $client->foo();
         }
         reLocate($this->home);
