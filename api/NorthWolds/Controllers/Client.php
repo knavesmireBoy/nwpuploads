@@ -108,8 +108,8 @@ class Client
 
     public function destroy($id)
     {
-        dump("really $id");
-        $this->table->delete('id', $id);
+        dump("really $_POST{['id']}");
+        $this->table->delete('id', $_POST['id']);
         reLocate($this->home);
     }
 
