@@ -82,15 +82,15 @@ class Client
     }
     public function select()
     {
-
         if (empty($_POST['client'])) {
             reLocate($this->home);
         }
+        /*
         $client = $this->table->find('id', $_POST['client'], null, 0, 0, \PDO::FETCH_ASSOC)[0];
-        
         $data = ['id' => $client['id'], 'name' => $client['name'], 'domain' => $client['domain'], 'tel' => $client['tel']];
+        */
 
-        return $this->load('choose', $data);
+        return $this->load('choose', ['id' => $_POST['client']]);
     }
 
     public function add()
