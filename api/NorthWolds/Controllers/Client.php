@@ -31,6 +31,8 @@ class Client
 
         $vars = array_merge($defaultVars, $customVars);
 
+        dump($vars);
+
         return [
             'template' => 'clients.html.php',
             'title' => 'Edit Clients',
@@ -74,6 +76,7 @@ class Client
                 'button' => 'Associate Users',
                 'pos' => 'Yes',
                 'neg' => 'No',
+                'call' => 'associate',
                 'action' => '/client/associate/'
             ]
 
@@ -152,7 +155,6 @@ class Client
         if ($add) {
             $client = $this->table->find('id', $clientId)[0];
             $users = $client->checkUserDomains();
-            dump($users);
             if (isset($users[0])) {
                 $this->load('associate', ['id' => $client->id]);
                 $relocate = false;
