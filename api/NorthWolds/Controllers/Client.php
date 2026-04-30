@@ -107,7 +107,7 @@ class Client
 
     public function associate()
     {
-        if (isset($_POST['associate']) && $_POST['associate'] === 'Yes') {
+        if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
             $client = $this->table->find('id', $_POST['id'])[0];
             $client->checkUserDomains(true);
         }
