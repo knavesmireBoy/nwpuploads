@@ -37,14 +37,9 @@ class Client extends Entity
             $e = $o->email;
             $i = strrpos($e, '@');
             $dom = substr($e, $i + 1);
-            if(!$o->client_id){
-                var_dump($dom);
-                return $dom === $domain;
-            }
+            return !$o->client_id && $dom === $domain;
         };
-        $domains = safeFilter($users, $cb);
-        dump($domains);
-        return $domains;
+        return safeFilter($users, $cb);
 
         foreach ($domains as $user) {
          //   $this->usertable->save(['id' => $user->id, 'client_id' => $this->id]);
