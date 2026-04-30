@@ -77,7 +77,7 @@ class User extends Entity
       }
       return ['ownerid' => $this->id, 'name' => $this->name, 'email' => $this->email, 'role' => $role,  'client_id' => $this->client_id, 'clientname' => $client->name ?? '', 'tel' => $client->tel ?? '', 'domain' => $client->domain ?? ''];
     }
-    return null;
+    return [];
   }
 
   public function fromDomain($domain, $mode = \PDO::FETCH_CLASS)

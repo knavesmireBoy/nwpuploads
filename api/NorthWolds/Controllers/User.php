@@ -33,6 +33,11 @@ class User
             'pageid' => 'admin_user',
             'callroute' => '/user/add/',
             'calltext' => 'Add New User',
+            'nwproleplay' => '',
+            'nwp_id' => 0,
+            'pagehead_role' => null,
+            'error' => '',
+            'message' => '',
             'nwproleorder' => ['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'],
             'owner' => $owner
         ];

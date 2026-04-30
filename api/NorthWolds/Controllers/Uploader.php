@@ -245,6 +245,7 @@ class Uploader
                 } else {
                     $u = $this->usertable->find('id', $row->id)[0];
                     $details = $u->getDetails();
+                    dump([$clients, $k, $details]);
                     $clients[$k]['domain'] = $details['domain'];
                     $clients[$k]['name'] = $details['clientname'];
                 }
