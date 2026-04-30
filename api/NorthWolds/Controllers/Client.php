@@ -65,7 +65,7 @@ class Client
 
             'confirm' => ['id' => $id],
 
-            'associate' => ['id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Associate existing users?", 'call' => 'associate', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/client/associate/', 'button' => 'Associate Users']
+            'associate' => ['id' => $id, 'template' => 'associate.html.php', 'title' => 'Prompt', 'prompt' => "Associate existing users?", 'call' => 'associate', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/client/associate/', 'button' => 'Associate Users']
 
         ];
 
