@@ -31,8 +31,6 @@ class Client
 
         $vars = array_merge($defaultVars, $customVars);
 
-        dump($vars);
-
         return [
             'template' => 'clients.html.php',
             'title' => 'Edit Clients',
@@ -49,7 +47,7 @@ class Client
         $details = $user->getDetails();
         $priv = $details['role'];
         $customVars = $this->getCustomVars($key, $vars);
-        // if($key === 'associate') dump($customVars);
+      //   if($key === 'associate') dump($customVars);
         $owner = []; //prompt.html.php expects this from Uploader Controller
         return $this->displayer($priv, $customVars, $owner);
     }
