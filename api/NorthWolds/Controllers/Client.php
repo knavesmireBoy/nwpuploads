@@ -40,7 +40,6 @@ class Client
 
     public function load(string $key = '', array $vars = [])
     {
-
         if (!isset($_SESSION['username'])) {
             reLocate(REG);
         }
@@ -48,14 +47,13 @@ class Client
         $details = $user->getDetails();
         $priv = $details['role'];
         $customVars = $this->getCustomVars($key, $vars);
-       // if($key === 'associate') dump($customVars);
+        // if($key === 'associate') dump($customVars);
         $owner = []; //prompt.html.php expects this from Uploader Controller
         return $this->displayer($priv, $customVars, $owner);
     }
 
     private function getCustomVars($key, $data)
     {
-       
         $ret = [];
         $id = $data['id'] ?? '';
         $lib = [
@@ -67,17 +65,7 @@ class Client
 
             'confirm' => ['id' => $id],
 
-            'associate' => [
-                'id' => $id,
-                'template' => 'prompt.html.php',
-                'title' => 'Prompt',
-                'prompt' => "Associate existing users?",
-                'button' => 'Associate Users',
-                'pos' => 'Yes',
-                'neg' => 'No',
-                'call' => 'associate',
-                'action' => '/client/associate/'
-            ]
+            'associate' => ['id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Associate existing users?", 'call' => 'associate', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/client/associate/', 'button' => 'Associate Users']
 
         ];
 
@@ -163,7 +151,7 @@ class Client
             }
         }
         if ($relocate) {
-          //  reLocate($this->home);
+            //  reLocate($this->home);
         }
     }
 }

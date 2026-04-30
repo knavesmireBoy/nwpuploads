@@ -1,6 +1,7 @@
 <h1><?= $pagehead; ?></h1>
 <?php
 if (isset($template)) {
+	dump($template);
 	ob_start();
 }
 include TEMPLATE . '_call.html.php';
