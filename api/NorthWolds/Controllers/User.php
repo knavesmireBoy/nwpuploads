@@ -9,6 +9,7 @@ class User
     public function __construct(private DatabaseTable $table, private DatabaseTable $clienttable, private string $home) {}
     private function getCustomVars($key, $data)
     {
+        return [];
     }
 
     private function displayer($priv, $customVars = [], $owner = [])
