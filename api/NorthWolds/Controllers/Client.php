@@ -66,7 +66,7 @@ class Client
 
             'confirm' => ['id' => $id],
 
-            'delete' => ['id' => $id, 'template' => 'associate.html.php', 'title' => 'Prompt', 'prompt' => "Associate existing users?", 'call' => 'associate', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/client/associate/', 'button' => 'Associate Users']
+            'delete' => ['id' => $id, 'template' => 'prompt.html.php',  'pagehead' => 'Edit Client', 'pagetitle' => 'Prompt', 'prompt' => "Associate existing users?", 'call' => 'associate', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/client/associate/', 'button' => 'Associate Users']
 
         ];
 
@@ -151,8 +151,10 @@ class Client
                 $this->load('delete', ['id' => $client->id]);
             }
         }
+        /*
         if ($relocate) {
               reLocate($this->home);
         }
+              */
     }
 }
