@@ -342,7 +342,7 @@ class Uploader
 
        // $setcookie = doSetCookie(true);
        // $setcookie('sort', 'tt');
-
+        $this->sort = $_COOKIE['sort'] ?? 'tt';
         foreach ($sorter as $k => $v) {
             if ($k == $this->sort) break;
         }
@@ -402,9 +402,6 @@ class Uploader
         //sub sort by time or file only involves one table `upload`
         $all = $this->table->findAll($order, 0, 0, \PDO::FETCH_ASSOC);
         $contenders = $this->prepFileForDisplay($all, $cb);
-        if ($order) {
-            // $all = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
-        }
         //but sub sort by `user` can only be achieved with a JOIN which we are not supporting in this ORM version
         //https://stackoverflow.com/questions/1532218/life-without-joins-understanding-and-common-practices
         if (!$order) {
@@ -568,7 +565,7 @@ class Uploader
         }
     }
 
-    public function nav($s, $p, $first = '', $second = '', $third = '')
+    public function nav($s, $p, $first = '', $second = '', $third = '', $fourth = '')
     {
         $this->start = intval($s);
         $this->pages = intval($p);
@@ -606,12 +603,13 @@ class Uploader
         };
 
         if ($srch) {
-            $payload = [[1, $first], [2, $second], [4, $third]];
+            $payload = [[1, $first], [2, $second], [4, $third], [8, $fourth]];
             foreach ($payload as $data) {
                 $sortargs(...$data);
             }
-            if (empty($args)) {
-                $this->sort = $_COOKIE['sort'] ?? 'tt';
+            if ($args[0] === $first) {
+                dump($first);
+                $this->sort = $args[0];
                 return $this->load();
             }
             return $this->found(...$args);

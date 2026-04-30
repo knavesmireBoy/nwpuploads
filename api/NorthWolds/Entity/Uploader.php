@@ -55,9 +55,6 @@ class Uploader extends Entity
                 return $this->{$prop};
             }
             return ['id' => $res->id, 'name' => $res->name, 'email' => $res->email, 'client_id' => $res->client_id, 'editor' => $_SESSION['username'] == $res->email, 'multi' => $multi];
-
-
-           // $res = $this->table->findAll('userid', $this->userid);
         }
     }
 
