@@ -28,7 +28,7 @@ class Client extends Entity
         $this->usertable->save(['id' => $id, 'client_id' => $this->id]);
     }
 
-    public function checkUserDomains()
+    public function checkUserDomains($flag = false)
     {
         $users = $this->usertable->findAll();
         $domain = $this->domain;
@@ -38,10 +38,13 @@ class Client extends Entity
             $dom = substr($e, $i + 1);
             return !$o->client_id && $dom === $domain;
         };
-        return safeFilter($users, $cb);
-
-        foreach ($domains as $user) {
-         //   $this->usertable->save(['id' => $user->id, 'client_id' => $this->id]);
+        $users = safeFilter($users, $cb);
+        if ($flag) {
+            foreach ($users as $user) {
+                $this->associate(['id' => $user->id, 'client_id' => $this->id]);
+            }
+        } else {
+            return $users;
         }
     }
 }

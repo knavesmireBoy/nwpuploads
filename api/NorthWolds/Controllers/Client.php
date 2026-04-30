@@ -66,7 +66,7 @@ class Client
 
             'confirm' => ['id' => $id],
 
-            'associate' => ['id' => $id, 'template' => 'associate.html.php',  'pagehead' => 'Associate User', 'pagetitle' => 'Associate Users', 'prompt' => "Associate existing users?", 'call' => 'associate', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/client/associate/', 'button' => 'Associate Users', 'clientid' => $id, 'clientname' => $data['name'] ?? '', 'clientdom' => $data['dom'] ?? '']
+            'associate' => ['id' => $id, 'template' => 'associate.html.php',  'pagehead' => 'Associate User', 'pagetitle' => 'Associate Users', 'prompt' => "Associate existing users?", 'call' => 'associate', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/client/associate/', 'button' => 'Associate Users', 'clientid' => $id, 'clientname' => $data['name'] ?? '', 'clientdom' => $data['domain'] ?? '']
 
         ];
 
@@ -112,15 +112,11 @@ class Client
 
     public function associate()
     {
-
-        dump($_POST);
-
-        if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
+        if (isset($_POST['associate']) && $_POST['associate'] === 'Yes') {
+            $client = $this->table->find('id', $_POST['id'])[0];
+            $client->checkUserDomains(true);
         }
-
-        //    $client = $this->table->find('id', $clientId)[0];
-        //   $users = $client->checkUserDomains();
-
+        reLocate($this->home);
     }
 
     public function editSubmit()
