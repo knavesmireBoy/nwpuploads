@@ -14,7 +14,7 @@ class User
     private function displayer($priv, $customVars = [], $owner = [])
     {
 
-        $error = query();
+      //  $error = query();
         $message = $error ?? '';
         $nwproleplay = obtainUserRole();
         $pagehead_role = $nwproleplay && !obtainUserRole(true);
@@ -39,7 +39,8 @@ class User
             'nwproleorder' => ['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'],
             'owner' => $owner,
             'redirects' => ['pwd', 'domainflag', 'domainassoc', 'namechange'],
-            'predicates' => [partial('preg_match', '/^nwp/')]
+            'predicates' => [partial('preg_match', '/^nwp/')],
+            'admin' => isApproved($priv, 'ADMIN')
         ];
 
         $vars = array_merge($defaultVars, $customVars);

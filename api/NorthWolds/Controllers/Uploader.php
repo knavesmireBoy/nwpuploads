@@ -245,11 +245,10 @@ class Uploader
                 } else {
                     $u = $this->usertable->find('id', $row->id)[0];
                     $details = $u->getDetails();
-                    if(empty($details)){
-                        dump($u);
+                    if (!empty($details)) {
+                        $clients[$k]['domain'] = $details['domain'];
+                        $clients[$k]['name'] = $details['clientname'];
                     }
-                    $clients[$k]['domain'] = $details['domain'];
-                    $clients[$k]['name'] = $details['clientname'];
                 }
             }
             array_multisort(array_column($usr, 'name'), SORT_ASC, $usr);
@@ -340,6 +339,7 @@ class Uploader
         $sorter = array('f' => 'filename ASC', 'ff' => 'filename DESC', 'u' => 'name ASC', 'uu' => 'name DESC', 'uf' => 'name ASC, filename ASC', 'uuf' => 'name DESC, filename ASC',  'uff' => 'name ASC, filename DESC',  'uuff' => 'name DESC, filename DESC', 'ut' => 'name ASC, time ASC', 'utt' => 'name ASC, time DESC', 'uut' => 'name DESC, time ASC', 'uutt' => 'name DESC, time DESC', 't' => 'time ASC', 'tt' => 'time DESC');
 
         $setcookie = doSetCookie(true);
+       // $setcookie('sort', 'tt');
 
         foreach ($sorter as $k => $v) {
             if ($k == $_COOKIE['sort']) break;
@@ -399,7 +399,7 @@ class Uploader
         $order =  preg_match('/^name/i', $orderby) ? null : $orderby;
         //sub sort by time or file only involves one table `upload`
         $all = $this->table->findAll($order, 0, 0, \PDO::FETCH_ASSOC);
-        
+        dump([[$all, $order]]);
         $contenders = $this->prepFileForDisplay($all, $cb);
         if ($order) {
             // $all = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
