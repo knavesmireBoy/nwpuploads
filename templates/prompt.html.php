@@ -14,10 +14,9 @@
                 <input type="submit" name="action" value="continue" />
             </div>
         </form>
-    <?php elseif (!isset($clientlist) && !isset($delete)):
+    <?php elseif (isset($call) && !isset($delete)):
         //confirm used by several controllers; review
     ?>
-
         <form action="<?= $action; ?>" method="post" name="choice" class="prompt" id="yesno">
             <input type="hidden" name="ownerid" value="<?= $owner['id'] ?? ''; ?>" />
             <input type="hidden" name="ownername" value="<?= $owner['name'] ?? ''; ?>" />
