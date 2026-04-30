@@ -126,6 +126,9 @@ class Client
 
         dump($_POST);
 
+        if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
+        }
+
         //    $client = $this->table->find('id', $clientId)[0];
         //   $users = $client->checkUserDomains();
 
