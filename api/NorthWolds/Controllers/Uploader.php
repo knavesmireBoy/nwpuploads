@@ -9,7 +9,7 @@ class Uploader
     public function __construct(private DatabaseTable $table, private DatabaseTable $usertable, private int $display, private int $start, private int $pages, private string $home)
     {
         $setcookie = doSetCookie(true);
-        $setcookie('sort', 'tt');
+        $setcookie('sort', 'f');
     }
 
     private function remove($path)
@@ -399,7 +399,6 @@ class Uploader
         $order =  preg_match('/^name/i', $orderby) ? null : $orderby;
         //sub sort by time or file only involves one table `upload`
         $all = $this->table->findAll($order, 0, 0, \PDO::FETCH_ASSOC);
-        dump([[$all, $order]]);
         $contenders = $this->prepFileForDisplay($all, $cb);
         if ($order) {
             // $all = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);

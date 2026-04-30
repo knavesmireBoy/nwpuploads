@@ -16,8 +16,7 @@ class User
 
       //  $error = query();
         $message = $error ?? '';
-        $nwproleplay = obtainUserRole();
-        $pagehead_role = $nwproleplay && !obtainUserRole(true);
+       // $pagehead_role = $nwproleplay && !obtainUserRole(true);
         $predicates = [partial('preg_match', '/^nwp/')];
 
         $defaultVars = [
@@ -31,9 +30,9 @@ class User
             'pageid' => 'admin_user',
             'callroute' => '/user/add/',
             'calltext' => 'Add New User',
-            'nwproleplay' => '',
+            'nwproleplay' => 'Admin',
             'nwp_id' => null,
-            'pagehead_role' => null,
+            'pagehead_role' => 'Admin',
             'error' => '',
             'message' => '',
             'nwproleorder' => ['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'],
