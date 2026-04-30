@@ -6,10 +6,11 @@ use \Ninja\DatabaseTable;
 
 class Uploader
 {
+    private $sort = 'tt';
     public function __construct(private DatabaseTable $table, private DatabaseTable $usertable, private int $display, private int $start, private int $pages, private string $home)
     {
         $setcookie = doSetCookie(true);
-        $setcookie('sort', 'f');
+        $setcookie('sort', 'tt');
     }
 
     private function remove($path)
@@ -61,7 +62,7 @@ class Uploader
             'fhead' => 'f',
             'uhead' => 'u',
             'thead' => 't',
-            'sort' => $_COOKIE['sort']
+            'sort' => $this->sort
         ];
         $vars = array_merge($defaultVars, $customVars);
         if ($vars['searchtext']) {
@@ -324,7 +325,9 @@ class Uploader
     {
         $setcookie = doSetCookie(true);
         $sort = $state ? $state : $_COOKIE['sort'];
+        $this->sort = $sort;
         $setcookie('sort', $sort);
+        var_dump($sort);
         $ufn = qUserHead('u');
         $tfn = qHead('t');
         $ffn = qHead('f', 'u');
@@ -342,9 +345,9 @@ class Uploader
        // $setcookie('sort', 'tt');
 
         foreach ($sorter as $k => $v) {
-            if ($k == $_COOKIE['sort']) break;
+            if ($k == $this->sort) break;
         }
-        switch ($_COOKIE['sort']) {
+        switch ($this->sort) {
             case $k:
                 $order_by = $sorter[$k];
                 break;
@@ -695,6 +698,7 @@ class Uploader
         //reset sort to default if filtering by any criteria
         if (count($records) !== $count) {
             $setcookie('sort', 'tt');
+            $this->sort = 'tt';
         }
         //do we allow for filtering by user type
         $files = $this->prepFileForDisplay($records, $cb);
