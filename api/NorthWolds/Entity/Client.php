@@ -41,7 +41,7 @@ class Client extends Entity
         $users = safeFilter($users, $cb);
         if ($flag) {
             foreach ($users as $user) {
-                $this->associate(['id' => $user->id, 'client_id' => $this->id]);
+                $this->associate($user->id);
             }
         } else {
             return $users;

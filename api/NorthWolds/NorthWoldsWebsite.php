@@ -126,7 +126,7 @@ class NorthWoldsWebsite implements Website
 
     public function getControllerArgs($k): array
     {
-        $lib = ['uploader' => [PAGINATE, 0, 1, '/uploader/load/'], 'client' => ['/client/load/']];
+        $lib = ['uploader' => [PAGINATE, 0, 1, '/uploader/load/'], 'client' => ['/client/load/'], 'user' => ['/user/load/']];
         return $lib[$k] ?? [];
     }
 
