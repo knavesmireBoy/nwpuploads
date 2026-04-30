@@ -60,12 +60,13 @@ class Client
             'choose' => ['id' => $id, 'template' => 'clientform.html.php', 'pagehead' => 'Edit Client', 'calltext' => 'Delete Client', 'callroute' => "/client/delete/$id", 'action' => '/client/edit/',  'button' => 'Update Client', 'selected' => $id, 'name' => $data['name'] ?? '', 'tel' => $data['tel'] ?? '', 'domain' => $data['domain'] ?? ''],
 
             'add' => ['template' => 'clientform.html.php', 'pagetitle' => 'Admin | Client', 'pagehead' => 'New Client', 'calltext' => 'Add Client', 'action' => '/client/edit/', 'button' => 'Add Client'],
-
+            /*
             'delete' => ['id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this client?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/client/confirm/'],
+            */
 
             'confirm' => ['id' => $id],
 
-            'associate' => ['id' => $id, 'template' => 'associate.html.php', 'title' => 'Prompt', 'prompt' => "Associate existing users?", 'call' => 'associate', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/client/associate/', 'button' => 'Associate Users']
+            'delete' => ['id' => $id, 'template' => 'associate.html.php', 'title' => 'Prompt', 'prompt' => "Associate existing users?", 'call' => 'associate', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/client/associate/', 'button' => 'Associate Users']
 
         ];
 
@@ -147,7 +148,7 @@ class Client
             $users = $client->checkUserDomains();
             if (isset($users[0])) {
                 $relocate = false;
-                $this->load('associate', ['id' => $client->id]);
+                $this->load('delete', ['id' => $client->id]);
             }
         }
         if ($relocate) {
