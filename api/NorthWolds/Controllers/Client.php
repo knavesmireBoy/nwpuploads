@@ -119,18 +119,20 @@ class Client
         reLocate($this->home);
     }
 
-    public function associate() {
+    public function associate()
+    {
 
         dump($_POST);
 
-    //    $client = $this->table->find('id', $clientId)[0];
-     //   $users = $client->checkUserDomains();
+        //    $client = $this->table->find('id', $clientId)[0];
+        //   $users = $client->checkUserDomains();
 
     }
 
     public function editSubmit()
     {
         $edit = false;
+        $relocate = true;
         $add = empty($_POST['id']);
         if ($_POST['id']) {
             $res = $this->table->find('id', $_POST['id'], null, 0, 0, \PDO::FETCH_ASSOC);
@@ -150,10 +152,13 @@ class Client
         if ($add) {
             $client = $this->table->find('id', $clientId)[0];
             $users = $client->checkUserDomains();
-            if(isset($users[0])){
+            if (isset($users[0])) {
                 $this->load('associate', ['id' => $client->id]);
+                $relocate = false;
             }
         }
-        reLocate($this->home);
+        if ($relocate) {
+            reLocate($this->home);
+        }
     }
 }
