@@ -31,6 +31,8 @@ class Client
 
         $vars = array_merge($defaultVars, $customVars);
 
+        dump($vars);
+
         return [
             'template' => 'clients.html.php',
             'title' => 'Edit Clients',
@@ -66,7 +68,7 @@ class Client
 
             'confirm' => ['id' => $id],
 
-            'delete' => ['id' => $id, 'template' => 'prompt.html.php',  'pagehead' => 'Edit Client', 'pagetitle' => 'Prompt', 'prompt' => "Associate existing users?", 'call' => 'associate', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/client/associate/', 'button' => 'Associate Users']
+            'associate' => ['id' => $id, 'template' => 'prompt.html.php',  'pagehead' => 'Edit Client', 'pagetitle' => 'Prompt', 'prompt' => "Associate existing users?", 'call' => 'associate', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/client/associate/', 'button' => 'Associate Users', 'calltext' => 'Delete Client', 'callroute' => "/client/delete/$id"]
 
         ];
 
