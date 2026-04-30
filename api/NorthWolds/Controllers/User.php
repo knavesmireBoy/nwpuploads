@@ -16,11 +16,9 @@ class User
 
         $error = query();
         $message = $error ?? '';
-        $nwp_id = $_GET['edit'] ?? null;
         $nwproleplay = obtainUserRole();
         $pagehead_role = $nwproleplay && !obtainUserRole(true);
         $predicates = [partial('preg_match', '/^nwp/')];
-        $redirects = ['pwd', 'domainflag', 'domainassoc', 'namechange'];
 
         $defaultVars = [
             'prompt' => null,
@@ -34,19 +32,21 @@ class User
             'callroute' => '/user/add/',
             'calltext' => 'Add New User',
             'nwproleplay' => '',
-            'nwp_id' => 0,
+            'nwp_id' => null,
             'pagehead_role' => null,
             'error' => '',
             'message' => '',
             'nwproleorder' => ['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'],
-            'owner' => $owner
+            'owner' => $owner,
+            'redirects' => ['pwd', 'domainflag', 'domainassoc', 'namechange'],
+            'predicates' => [partial('preg_match', '/^nwp/')]
         ];
 
         $vars = array_merge($defaultVars, $customVars);
 
         return [
-            'template' => 'clients.html.php',
-            'title' => 'Edit Clients',
+            'template' => 'users.html.php',
+            'title' => 'Edit Users',
             'variables' => $vars
         ];
 
