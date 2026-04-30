@@ -8,9 +8,8 @@ class Client
 {
     public function __construct(private DatabaseTable $table, private DatabaseTable $usertable, private string $home) {}
 
-    private function displayer($priv, $owner = [], $customVars = [])
+    private function displayer($priv, $customVars = [], $owner = [])
     {
-        //list($users, $clients) = $this->presentList($priv, $userId);
         $rows = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
         foreach ($rows as $row) {
             $clients[] = array(

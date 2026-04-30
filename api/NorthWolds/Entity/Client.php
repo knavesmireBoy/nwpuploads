@@ -24,7 +24,8 @@ class Client extends Entity
     could prompt a dialog or just do it
     */
 
-    public function associate($id) {
+    public function associate($id)
+    {
         $this->usertable->save(['id' => $id, 'client_id' => $this->id]);
     }
 
@@ -45,5 +46,4 @@ class Client extends Entity
             $this->usertable->save(['id' => $user->id, 'client_id' => $this->id]);
         }
     }
-
 }
