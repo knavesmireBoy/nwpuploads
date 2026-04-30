@@ -40,6 +40,7 @@ class Client extends Entity
             return !$o->client_id && $dom === $domain;
         };
         $domains = safeFilter($users, $cb);
+        dump($domains);
         return $domains;
 
         foreach ($domains as $user) {
