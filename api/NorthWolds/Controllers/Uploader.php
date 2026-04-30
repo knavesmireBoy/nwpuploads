@@ -338,7 +338,7 @@ class Uploader
     {
         $sorter = array('f' => 'filename ASC', 'ff' => 'filename DESC', 'u' => 'name ASC', 'uu' => 'name DESC', 'uf' => 'name ASC, filename ASC', 'uuf' => 'name DESC, filename ASC',  'uff' => 'name ASC, filename DESC',  'uuff' => 'name DESC, filename DESC', 'ut' => 'name ASC, time ASC', 'utt' => 'name ASC, time DESC', 'uut' => 'name DESC, time ASC', 'uutt' => 'name DESC, time DESC', 't' => 'time ASC', 'tt' => 'time DESC');
 
-        $setcookie = doSetCookie(true);
+       // $setcookie = doSetCookie(true);
        // $setcookie('sort', 'tt');
 
         foreach ($sorter as $k => $v) {
@@ -350,7 +350,7 @@ class Uploader
                 break;
             default:
                 $order_by = 'time DESC';
-                $setcookie('sort', 'tt');
+               // $setcookie('sort', 'tt');
                 break;
         }
         return $order_by;

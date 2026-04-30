@@ -23,6 +23,7 @@ class User
         $defaultVars = [
             'prompt' => null,
             'users' => [],
+            'usercount' => 0,
             'denied' => false,
             'usercount' => 0,
             'selected' => null,
