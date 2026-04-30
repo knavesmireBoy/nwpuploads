@@ -9,8 +9,8 @@ class Uploader
     private $sort = 'tt';
     public function __construct(private DatabaseTable $table, private DatabaseTable $usertable, private int $display, private int $start, private int $pages, private string $home)
     {
-        $setcookie = doSetCookie(true);
-        $setcookie('sort', 'tt');
+       // $setcookie = doSetCookie(true);
+       // $setcookie('sort', 'tt');
     }
 
     private function remove($path)
