@@ -611,6 +611,7 @@ class Uploader
                 $sortargs(...$data);
             }
             if (empty($args)) {
+                $this->sort = $_COOKIE['sort'] ?? 'tt';
                 return $this->load();
             }
             return $this->found(...$args);
