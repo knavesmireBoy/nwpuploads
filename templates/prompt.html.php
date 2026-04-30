@@ -1,5 +1,6 @@
 <section id=prompt>
     <?php
+    dump([$call ?? 'call', $delete ?? 'del', $clientlist ?? 'bolt']);
     //$clientlist from admin not upload
     if (isset($clientlist)): ?>
         <form action="." method="post" name="clientform" class="prompt">
