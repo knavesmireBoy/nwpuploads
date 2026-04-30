@@ -396,6 +396,7 @@ class Uploader
         $orderby = $this->sorter();
         $order =  preg_match('/^name/i', $orderby) ? null : $orderby;
         //sub sort by time or file only involves one table `upload`
+        $all = $this->table->findAll($order, 0, 0, \PDO::FETCH_ASSOC);
         $contenders = $this->prepFileForDisplay($all, $cb);
         if ($order) {
             // $all = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);

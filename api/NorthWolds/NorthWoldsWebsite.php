@@ -106,7 +106,7 @@ class NorthWoldsWebsite implements Website
     {
         $defaultArgs = [
             'logger' => [$this->authentication],
-            'user' => [$this->userTable],
+            'user' => [$this->userTable, $this->clientTable],
             'client' => [$this->clientTable, $this->userTable],
             'uploader' => [$this->uploadTable, $this->userTable]
         ];

@@ -34,7 +34,7 @@ class User extends Entity
   private function getRole()
   {
     $res = $this->fetch('userroletable', 'userid', $this->id);
-    return $res->roleid ? $res->roleid : null;
+    return nullify($res->roleid);
   }
 
   public function hasPermission(array $allowed)
