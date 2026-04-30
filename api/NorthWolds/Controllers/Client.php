@@ -60,9 +60,9 @@ class Client
             'choose' => ['id' => $id, 'template' => 'clientform.html.php', 'pagehead' => 'Edit Client', 'calltext' => 'Delete Client', 'callroute' => "/client/delete/$id", 'action' => '/client/edit/',  'button' => 'Update Client', 'selected' => $id, 'name' => $data['name'] ?? '', 'tel' => $data['tel'] ?? '', 'domain' => $data['domain'] ?? ''],
 
             'add' => ['template' => 'clientform.html.php', 'pagetitle' => 'Admin | Client', 'pagehead' => 'New Client', 'calltext' => 'Add Client', 'action' => '/client/edit/', 'button' => 'Add Client'],
-            /*
+            
             'delete' => ['id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this client?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/client/confirm/'],
-            */
+            
 
             'confirm' => ['id' => $id],
 
@@ -151,10 +151,9 @@ class Client
                 $this->load('delete', ['id' => $client->id]);
             }
         }
-        /*
+        
         if ($relocate) {
               reLocate($this->home);
         }
-              */
     }
 }
