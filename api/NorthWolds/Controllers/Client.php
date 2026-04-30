@@ -37,7 +37,7 @@ class Client
             'variables' => $vars
         ];
     }
-
+    //when calling load don't forget RETURN $this->load(),lost a morning because of missing return ($this->load())
     public function load(string $key = '', array $vars = [])
     {
         if (!isset($_SESSION['username'])) {
@@ -66,7 +66,7 @@ class Client
 
             'confirm' => ['id' => $id],
 
-            'associate' => ['id' => $id, 'template' => 'prompt.html.php',  'pagehead' => 'Edit Client', 'pagetitle' => 'Prompt', 'prompt' => "Associate existing users?", 'call' => 'associate', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/client/associate/', 'button' => 'Associate Users', 'calltext' => 'Delete Client', 'callroute' => "/client/delete/$id"]
+            'associate' => ['id' => $id, 'template' => 'associate.html.php',  'pagehead' => 'Associate User', 'pagetitle' => 'Associate Users', 'prompt' => "Associate existing users?", 'call' => 'associate', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/client/associate/', 'button' => 'Associate Users', 'clientid' => $id, 'clientname' => $data['name'] ?? '', 'clientdom' => $data['dom'] ?? '']
 
         ];
 
@@ -148,7 +148,7 @@ class Client
             $users = $client->checkUserDomains();
             if (isset($users[0])) {
                 $relocate = false;
-                return $this->load('associate', ['id' => $client->id]);
+                return $this->load('associate', ['id' => $client->id, 'name' => $client->name, 'domain' => $client->domain]);
             }
         }
 
