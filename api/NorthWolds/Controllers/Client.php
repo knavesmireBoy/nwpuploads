@@ -146,12 +146,12 @@ class Client
             $client = $this->table->find('id', $clientId)[0];
             $users = $client->checkUserDomains();
             if (isset($users[0])) {
-                $this->load('associate', ['id' => $client->id]);
                 $relocate = false;
+                $this->load('associate', ['id' => $client->id]);
             }
         }
         if ($relocate) {
-            //  reLocate($this->home);
+              reLocate($this->home);
         }
     }
 }
