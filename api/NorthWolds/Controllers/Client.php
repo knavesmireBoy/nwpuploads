@@ -148,7 +148,7 @@ class Client
             $users = $client->checkUserDomains();
             if (isset($users[0])) {
                 $relocate = false;
-                return $this->load('delete', ['id' => $client->id]);
+                return $this->load('associate', ['id' => $client->id]);
             }
         }
 
