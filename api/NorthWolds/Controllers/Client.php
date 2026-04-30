@@ -49,18 +49,8 @@ class Client
         $details = $user->getDetails();
         $priv = $details['role'];
         $customVars = $this->getCustomVars($key, $vars);
-
-        $owner = [];
-
-        if (isset($vars['id'])) {
-            $client = $this->table->find('id', $vars['id'])[0];
-            $owner['id'] = $vars['id'];
-            $owner['name'] = $client->name;
-            $owner['domain'] = $client->domain;
-        }
-
-
-        return $this->displayer($priv, $owner, $customVars);
+        $owner = []; //prompt.html.php expects this from Uploader Controller
+        return $this->displayer($priv, $customVars, $owner);
     }
 
     private function getCustomVars($key, $data)
@@ -71,15 +61,22 @@ class Client
         $lib = [
             'choose' => ['id' => $id, 'template' => 'clientform.html.php', 'pagehead' => 'Edit Client', 'calltext' => 'Delete Client', 'callroute' => "/client/delete/$id", 'action' => '/client/edit/',  'button' => 'Update Client', 'selected' => $id, 'name' => $data['name'] ?? '', 'tel' => $data['tel'] ?? '', 'domain' => $data['domain'] ?? ''],
 
-            'associate' => [
-
-            ],
-
             'add' => ['template' => 'clientform.html.php', 'pagetitle' => 'Admin | Client', 'pagehead' => 'New Client', 'calltext' => 'Add Client', 'action' => '/client/edit/', 'button' => 'Add Client'],
 
             'delete' => ['id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this client?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/client/confirm/'],
 
             'confirm' => ['id' => $id],
+
+            'associate' => [
+                'id' => $id,
+                'template' => 'prompt.html.php',
+                'title' => 'Prompt',
+                'prompt' => "Associate existing users?",
+                'button' => 'Associate Users',
+                'pos' => 'Yes',
+                'neg' => 'No',
+                'action' => '/client/associate/'
+            ]
 
         ];
 
@@ -123,6 +120,15 @@ class Client
         reLocate($this->home);
     }
 
+    public function associate() {
+
+        dump($_POST);
+
+    //    $client = $this->table->find('id', $clientId)[0];
+     //   $users = $client->checkUserDomains();
+
+    }
+
     public function editSubmit()
     {
         $edit = false;
@@ -141,15 +147,12 @@ class Client
                 }
             }
         }
-        $client = $this->table->save($values, $add);
+        $clientId = $this->table->save($values, $add);
         if ($add) {
-            $client = $this->table->find('id', $client)[0];
+            $client = $this->table->find('id', $clientId)[0];
             $users = $client->checkUserDomains();
-
-
-            if($users !== []){
-                
-                return $this->load('associate');
+            if(isset($users[0])){
+                $this->load('associate', ['id' => $client->id]);
             }
         }
         reLocate($this->home);

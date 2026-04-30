@@ -20,21 +20,30 @@ class Client extends Entity
         }
     }
 
+    /*sync check if creating client AFTER creating an "employee" assign the newly created client_id to any "employees"
+    could prompt a dialog or just do it
+    */
+
+    public function associate($id) {
+        $this->usertable->save(['id' => $id, 'client_id' => $this->id]);
+    }
+
     public function checkUserDomains()
     {
-        //slaterclark.co.uk
-        $domains = [];
         $users = $this->usertable->findAll();
         $domain = $this->domain;
         $cb = function ($o) use ($domain) {
             $e = $o->email;
             $i = strrpos($e, '@');
             $dom = substr($e, $i + 1);
-            return $dom === $domain && !$o->client_id;
+            return !$o->client_id && $dom === $domain;
         };
         $domains = safeFilter($users, $cb);
+        return $domains;
+
         foreach ($domains as $user) {
             $this->usertable->save(['id' => $user->id, 'client_id' => $this->id]);
         }
     }
+
 }

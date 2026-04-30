@@ -481,6 +481,11 @@ function docompose($a, $b)
     }, 'identity');
 }
 
+function docomp($f2, $f1, $seed){
+    $p = $f2($seed);
+    return composer($p, $f1)($seed);
+}
+
 
 function reduceroo($result, $item)
 {

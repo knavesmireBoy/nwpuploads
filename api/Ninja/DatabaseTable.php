@@ -23,7 +23,6 @@ class DatabaseTable
     private function insert(array $values)
     {
         //make sure no spaces in table name: `user `
-
         $query = 'INSERT INTO `' . $this->table . '` (';
         //$query = "INSERT INTO $tbl (";
         foreach ($values as $key => $value) {
@@ -44,7 +43,7 @@ class DatabaseTable
         }
         $stmt = $this->pdo->prepare($query);
         $stmt->execute($values);
-        // $res = doPreparedQuery($stmt, $values);
+        //$res = doPreparedQuery($stmt, $values);
         return $this->pdo->lastInsertId();
     }
 
@@ -94,13 +93,11 @@ class DatabaseTable
 
     public function delete($field, $v)
     {
-
         $query = 'DELETE FROM `' . $this->table . '` WHERE `' . $field . '` = :value';
         if (DBSYSTEM === 'postgres') {
             $query = preg_replace('/`/', '', $query);
         }
         $stmt = $this->pdo->prepare($query);
-
         $values = [
             ':value' => $v
         ];
@@ -215,17 +212,10 @@ class DatabaseTable
         }
         return $entity;
     }
-
+    //give access to functionality without an actual record
     public function getEntity()
     {
         return new $this->className(...$this->constructorArgs);
-    }
-
-    public function setMinToNull1($table, $colname, $colval)
-    {
-        $query = "UPDATE $table INNER JOIN (SELECT min(id) AS target from $table where $colname = $colval) AS tmp ON tmp.target = id SET $colname = NULL";
-        $stmt = $this->pdo->prepare($query);
-        $stmt->execute();
     }
 
     public function setMinToNull($colname, $colval)
