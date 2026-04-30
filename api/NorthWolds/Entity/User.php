@@ -34,6 +34,7 @@ class User extends Entity
   private function getRole()
   {
     $res = $this->fetch('userroletable', 'userid', $this->id);
+    dump([$res,$this->id]);
     return nullify($res->roleid);
   }
 
