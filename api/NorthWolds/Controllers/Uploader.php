@@ -327,7 +327,6 @@ class Uploader
         $sort = $state ? $state : $_COOKIE['sort'];
         $this->sort = $sort;
         $setcookie('sort', $sort);
-        var_dump($sort);
         $ufn = qUserHead('u');
         $tfn = qHead('t');
         $ffn = qHead('f', 'u');
@@ -399,7 +398,6 @@ class Uploader
             }
         }
         $orderby = $this->sorter();
-        var_dump($orderby);
         $order =  preg_match('/^name/i', $orderby) ? null : $orderby;
         //sub sort by time or file only involves one table `upload`
         $all = $this->table->findAll($order, 0, 0, \PDO::FETCH_ASSOC);
