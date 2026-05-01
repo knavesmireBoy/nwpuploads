@@ -88,7 +88,7 @@ class User extends Presenter
         $details = $this->grabPriv();
         $customVars = $this->getCustomVars($key, $vars);
         $owner = []; //prompt.html.php expects this from Uploader Controller
-        return $this->displayer($details['role'], $customVars, $owner);
+        return $this->displayer($details, $customVars, $owner);
     }
 
     public function add()
