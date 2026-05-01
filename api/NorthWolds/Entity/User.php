@@ -32,7 +32,7 @@ class User extends Entity
   }
 
 
-  private function fetchAllRoles($keys = [], $selectedRoles = [])
+  private function fetchAllRoles(array $keys = [], array $selectedRoles = [])
   {
     //Build the list of all roles
     $rows = $this->roletable->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
@@ -53,8 +53,8 @@ class User extends Entity
 
   public function getRoles()
   {
-    $role = $this->getRole();
-    return $this->fetchAllRoles([], [$role->roleid]);
+    $roleID = $this->getRole();
+    return $this->fetchAllRoles([], [$roleID]);
   }
 
   public function hasPermission(array $allowed)

@@ -37,7 +37,6 @@ class User extends Presenter
 
     private function displayer($details, $customVars = [], $owner = [])
     {
-
         //  $error = query();
         $message = $error ?? '';
         // $pagehead_role = $nwproleplay && !obtainUserRole(true);
