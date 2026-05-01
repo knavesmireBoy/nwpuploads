@@ -611,7 +611,7 @@ class Uploader
                 $sortargs(...$data);
             }
             if (end($args) === $first) {
-                $this->sort = $args[0];
+                $this->sort = $first;
                 return $this->load();
             }
             return $this->found(...$args);
