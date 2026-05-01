@@ -31,11 +31,30 @@ class User extends Entity
     $this->clienttable = $client;
   }
 
+
+  private function fetchAllRoles($keys = [], $selectedRoles = [])
+  {
+    //Build the list of all roles
+    $rows = $this->roletable->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
+    if ($keys !== []) {
+      // $rows = reAssoc($rows, $keys, 'id', 'description', [], 0, 0);
+    }
+    foreach ($rows as $row) {
+      $roles[] = ['id' => $row['id'], 'description' => $row['description'], 'selected' => in_array($row['id'], $selectedRoles)];
+    }
+    return $roles;
+  }
+
   private function getRole()
   {
     $res = $this->fetch('userroletable', 'userid', $this->id);
-   // dump([$res->roleid, $this->id]);
     return $res->roleid ?? null;
+  }
+
+  public function getRoles()
+  {
+    $role = $this->getRole();
+    return $this->fetchAllRoles([], [$role->roleid]);
   }
 
   public function hasPermission(array $allowed)
@@ -75,7 +94,7 @@ class User extends Entity
       if ($this->client_id) {
         $client = $this->fetch('clienttable', 'id', $this->client_id);
       }
-      return ['ownerid' => $this->id, 'name' => $this->name, 'email' => $this->email, 'role' => $role,  'client_id' => $this->client_id, 'clientname' => $client->name ?? '', 'tel' => $client->tel ?? '', 'domain' => $client->domain ?? ''];
+      return ['ownerid' => $this->id, 'id' => $this->id, 'name' => $this->name, 'email' => $this->email, 'role' => $role,  'client_id' => $this->client_id, 'clientname' => $client->name ?? '', 'tel' => $client->tel ?? '', 'domain' => $client->domain ?? ''];
     }
     return [];
   }

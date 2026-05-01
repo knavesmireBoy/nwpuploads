@@ -32,7 +32,7 @@ class User extends Presenter
         }
         $user = $this->table->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
-        return $details['role'];
+        return $details;
     }
 
     private function displayer($priv, $customVars = [], $owner = [])
@@ -146,12 +146,21 @@ class User extends Presenter
 
     public function edit($id)
     {
-
+        $details = $this->grabPriv();
+        $admin = isApproved($details['priv'], 'ADMIN');
         $user = $this->table->find('id', $id)[0];
+        $roleorder = ['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'];
+
+        dump($user->getRoles());
+
+
         return [
             'template' => 'userform.html.php',
             'title' => 'Edit User',
             'variables' => [
+                'admin' => $admin,
+                'priv' => $details['priv'],
+                'editor' => $user->id == $details['id'],
                 'pagehead' => 'Edit User',
                 'action' => '/user/edit/',
                 'legend' => '',
