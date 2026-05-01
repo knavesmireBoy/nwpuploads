@@ -136,8 +136,10 @@ class User
         $message = $error ?? '';
         // $pagehead_role = $nwproleplay && !obtainUserRole(true);
         $predicates = [partial('preg_match', '/^nwp/')];
-        $clients = isApproved($priv, 'ADMIN') ? $this->presentClientList($priv, 'domain') : [];
+       // $clients = isApproved($priv, 'ADMIN') ? $this->presentClientList($priv, 'domain') : [];
         list($users, $clients) = $this->presentList($priv, null, $this->table);
+
+        dump($users);
 
         $defaultVars = [
             'prompt' => null,

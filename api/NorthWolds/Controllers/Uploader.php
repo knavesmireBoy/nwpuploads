@@ -605,21 +605,17 @@ class Uploader
             }
         };
 
-
-       
         if ($srch) {
             $payload = [[1, $first], [2, $second], [4, $third], [8, $fourth]];
             foreach ($payload as $data) {
                 $sortargs(...$data);
             }
-            dump([end($args), $fourth]);
-            if (end($args) === $fourth) {
+            if (end($args) === $first) {
                 $this->sort = $args[0];
                 return $this->load();
             }
             return $this->found(...$args);
         }
-
         return $this->load();
     }
 
