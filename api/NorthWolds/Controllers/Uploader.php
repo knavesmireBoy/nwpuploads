@@ -403,7 +403,7 @@ class Uploader
         $orderby = $this->sorter();
         $order =  preg_match('/^name/i', $orderby) ? null : $orderby;
 
-        if($order !== 'tt'){
+        if($order !== 'time DESC'){
             dump($order);
         }
         //sub sort by time or file only involves one table `upload`
