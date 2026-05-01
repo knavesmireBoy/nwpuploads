@@ -577,6 +577,8 @@ class Uploader
         $args = [];
         $hold = [];
 
+        dump(func_get_args());
+
         /* DOOZY
         the alternative to persistence in the QUERY_STRING (which can get ugly) is to pass data via function params OR cookies
         $empty = ''; $int = 47;
