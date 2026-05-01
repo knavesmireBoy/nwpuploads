@@ -607,15 +607,14 @@ class Uploader
         };
 
 
-
+        dump([$srch, $_COOKIE]);
         if ($srch) {
             $payload = [[1, $first], [2, $second], [4, $third], [8, $fourth]];
             foreach ($payload as $data) {
                 $sortargs(...$data);
             }
 
-            dump($args);
-            if ($args[0] === $first) {
+            if (end($args) === $fourth) {
                 $this->sort = $args[0];
                 return $this->load();
             }
