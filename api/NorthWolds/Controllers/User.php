@@ -128,7 +128,6 @@ class User extends Presenter
     public function selectSubmit()
     {
         $key = '';
-        dump(is_numeric($_POST['user']));
         if (isset($_POST['user']) && is_numeric($_POST['user'])) {
             $user = $this->table->find('id', $_POST['user']);
             $user = $user[0] ?? null;
@@ -139,6 +138,8 @@ class User extends Presenter
                 return $this->load($key, $data);
             }
         }
-        reLocate($this->home);
+        else {
+            reLocate($this->home);
+        }
     }
 }
