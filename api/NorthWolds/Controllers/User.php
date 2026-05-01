@@ -150,9 +150,6 @@ class User extends Presenter
         $user = $this->table->find('id', $id)[0];
         $roleorder = ['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'];
 
-        dump($user->getRoles());
-
-
         return [
             'template' => 'userform.html.php',
             'title' => 'Edit User',
