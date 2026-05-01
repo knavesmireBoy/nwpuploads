@@ -18,7 +18,6 @@ class Client
                 'domain' => $row['domain']
             );
         }
-
         $defaultVars = [
             'priv' => $priv,
             'pagehead' => 'Manage Clients',
@@ -109,7 +108,7 @@ class Client
     {
         if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
             $client = $this->table->find('id', $_POST['id'])[0];
-            $client->checkUserDomains(true);
+            $client->syncWithUsers(true);
         }
         reLocate($this->home);
     }
@@ -136,7 +135,7 @@ class Client
         $clientId = $this->table->save($values, $add);
         if ($add) {
             $client = $this->table->find('id', $clientId)[0];
-            $users = $client->checkUserDomains();
+            $users = $client->syncWithUsers();
             if (isset($users[0])) {
                 $relocate = false;
                 return $this->load('associate', ['id' => $client->id, 'name' => $client->name, 'domain' => $client->domain]);

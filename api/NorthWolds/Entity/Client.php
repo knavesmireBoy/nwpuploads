@@ -19,17 +19,14 @@ class Client extends Entity
             return $this->fetch('TABLE', 'domain', $arg, 'name');
         }
     }
-    /*
-    sync check if creating client AFTER creating an "employee" assign the newly created client_id to any "employees"
-    could prompt a dialog or just do it
-    */
-
+    
+    //sync check if creating client AFTER creating an "employee" assign the newly created client_id to any "employees"
     public function associate(int $id)
     {
         $this->usertable->save(['id' => $id, 'client_id' => $this->id]);
     }
 
-    public function checkUserDomains($flag = false)
+    public function syncWithUsers($flag = false)
     {
         $users = $this->usertable->findAll();
         $domain = $this->domain;

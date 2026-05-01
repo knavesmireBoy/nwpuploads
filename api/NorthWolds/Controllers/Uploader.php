@@ -4,7 +4,7 @@ namespace NorthWolds\Controllers;
 
 use \Ninja\DatabaseTable;
 
-class Uploader
+class Uploader extends Presenter
 {
     private $sort = 'tt';
     public function __construct(private DatabaseTable $table, private DatabaseTable $usertable, private int $display, private int $start, private int $pages, private string $home)
@@ -232,47 +232,6 @@ class Uploader
         return $ret;
     }
 
-    private function presentList($role, $userId, $table)
-    {
-        $clients = [];
-        $usr = [];
-        $all = $table->findAll();
-        if (isApproved($role, 'ADMIN')) {
-            foreach ($all as $k => $row) {
-                if (empty($row->client_id)) {
-                    $usr[$k]['name'] =  $row->name;
-                    $usr[$k]['id'] = $row->id;
-                } else {
-                    $u = $table->find('id', $row->id)[0];
-                    $details = $u->getDetails();
-                    if (!empty($details)) {
-                        $clients[$k]['domain'] = $details['domain'];
-                        $clients[$k]['name'] = $details['clientname'];
-                    }
-                }
-            }
-            array_multisort(array_column($usr, 'name'), SORT_ASC, $usr);
-            array_multisort(array_column($clients, 'name'), SORT_ASC, $clients);
-            $users = toKeyValue($usr, 'id', 'name');
-            $client = toKeyValue($clients, 'domain', 'name');
-            return [$users, $client];
-        } else {
-            $user = $table->find('id', $userId);
-            $user = $user[0] ?? null;
-            if (isset($user)) {
-                $users = $user->getUserIds();
-                if (isset($users[1])) {
-                    foreach ($users as $k => $v) {
-                        $u = $table->find('id', $v)[0];
-                        $usr[$u->id] = $u->name;
-                    }
-                }
-                return [$usr, []];
-            }
-        }
-        return [[], []];
-    }
-
     private function validateFile($priv, $cid, $userid)
     {
         if (isApproved($priv, 'ADMIN')) {
@@ -308,13 +267,8 @@ class Uploader
             // reLocate(BBC);
         }
         $filedata = file_get_contents($filepath);
-        // $disposition = $_GET['action'] == 'download' ? 'attachment' : 'inline';
-        //$mimetype = 'application/x-unknown'; application/octet-stream
-        //Content-type must come before Content-disposition
         header("Content-type: $mimetype");
-        //this works..
         header('Content-disposition: ' . $disposition . '; filename=' . '"' . $filename . '"');
-        //header("Content-Transfer-Encoding: binary");
         header('Content-length:' . strlen($filedata));
         echo $filedata;
         exit();
@@ -338,26 +292,10 @@ class Uploader
     private function sorter()
     {
         $lib = array('f' => 'filename ASC', 'ff' => 'filename DESC', 'u' => 'name ASC', 'uu' => 'name DESC', 'uf' => 'name ASC, filename ASC', 'uuf' => 'name DESC, filename ASC',  'uff' => 'name ASC, filename DESC',  'uuff' => 'name DESC, filename DESC', 'ut' => 'name ASC, time ASC', 'utt' => 'name ASC, time DESC', 'uut' => 'name DESC, time ASC', 'uutt' => 'name DESC, time DESC', 't' => 'time ASC', 'tt' => 'time DESC');
-
-       // $setcookie = doSetCookie(true);
-       // $setcookie('sort', 'tt');
-       // $this->sort = $_COOKIE['sort'] ?? 'tt';
         foreach ($lib as $k => $v) {
             if ($k == $this->sort) break;
         }
-        /*
-        switch ($this->sort) {
-            case $k:
-                $order = $lib[$k];
-                break;
-            default:
-                $order = 'time DESC';
-               // $setcookie('sort', 'tt');
-                break;
-        }
-                */
-
-        return $lib[$k];
+        return $lib[$k] ?? 'time DESC';
     }
 
     public function load(string $key = '', array $vars = [])
