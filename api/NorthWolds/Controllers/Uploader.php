@@ -573,11 +573,9 @@ class Uploader
     {
         $this->start = intval($s);
         $this->pages = intval($p);
-        $srch = intval($_COOKIE['searched'] ?? 0);
+        $srch = intval($_COOKIE['searched'] ?? 8);
         $args = [];
         $hold = [];
-
-        dump(func_get_args());
 
         /* DOOZY
         the alternative to persistence in the QUERY_STRING (which can get ugly) is to pass data via function params OR cookies
@@ -608,18 +606,21 @@ class Uploader
             }
         };
 
+
+
         if ($srch) {
             $payload = [[1, $first], [2, $second], [4, $third], [8, $fourth]];
             foreach ($payload as $data) {
                 $sortargs(...$data);
             }
+
+            dump($args);
             if ($args[0] === $first) {
                 $this->sort = $args[0];
                 return $this->load();
             }
             return $this->found(...$args);
         }
-        dump($args);
 
         return $this->load();
     }
@@ -714,7 +715,7 @@ class Uploader
         if ($ext) {
             $srch += 4;
         }
-        // $srch += 8; //sort
+         $srch += 8; //sort
         $setcookie('searched', $srch);
         $this->pages = $this->setPages(count($files));
         $displayFiles = array_slice(toObject($files, true), $this->start, $this->display);
