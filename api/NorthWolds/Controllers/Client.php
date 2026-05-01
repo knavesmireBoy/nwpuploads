@@ -69,7 +69,7 @@ class Client
         }
         return $ret;
     }
-    public function select()
+    public function selectSubmit()
     {
         if (empty($_POST['client'])) {
             reLocate($this->home);

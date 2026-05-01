@@ -1,6 +1,5 @@
 <?php
-
-$single = $_SESSION['extent'] <= 1;
+$single = isset($_SESSION['extent'])  && $_SESSION['extent'] <= 1;
 $k = $single && ($priv === 'Client Admin') ? 'Client' : $priv;
 //could be failed attempt to edit form from a TEAM member
 $k = !$single ? 'Client Admin' : $k;

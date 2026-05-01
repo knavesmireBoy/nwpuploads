@@ -42,4 +42,4 @@ if (isset($prompt) && isset($obstart)) {
 }
 ?>
 <?php
-include "_footer.html.php";
+include "adminfooter.html.php";

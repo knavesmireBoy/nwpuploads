@@ -70,6 +70,7 @@ class User extends Presenter
             'redirects' => ['pwd', 'domainflag', 'domainassoc', 'namechange'],
             'predicates' => [partial('preg_match', '/^nwp/')],
             'admin' => $admin,
+            'priv' => $priv,
             'pages' => 1
         ];
 
@@ -131,7 +132,6 @@ class User extends Presenter
         if (isset($_POST['user']) && is_numeric($_POST['user'])) {
             $user = $this->table->find('id', $_POST['user']);
             $user = $user[0] ?? null;
-            dump($user);
             if ($user) {
                 $key = 'edit';
                 $data = ['name' => $user->name, 'email' => $user->email, 'employer' => false, 'override' => ''];
@@ -141,5 +141,9 @@ class User extends Presenter
         else {
             reLocate($this->home);
         }
+    }
+
+    public function editSubmit() {
+        
     }
 }
