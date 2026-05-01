@@ -25,17 +25,17 @@ class User extends Presenter
         return $ret;
     }
 
-    private function grabPriv()
+    private function grabPriv($prop = '')
     {
         if (!isset($_SESSION['username'])) {
             reLocate(REG);
         }
         $user = $this->table->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
-        return $details;
+        return $prop ? $details[$prop] : $details;
     }
 
-    private function displayer($priv, $customVars = [], $owner = [])
+    private function displayer($details, $customVars = [], $owner = [])
     {
 
         //  $error = query();
@@ -43,10 +43,12 @@ class User extends Presenter
         // $pagehead_role = $nwproleplay && !obtainUserRole(true);
         $predicates = [partial('preg_match', '/^nwp/')];
         // $clients = isApproved($priv, 'ADMIN') ? $this->presentClientList($priv, 'domain') : [];
-        list($users, $clients) = $this->presentList($priv, null, $this->table);
-        $admin = isApproved($priv, 'ADMIN');
+        list($users, $clients) = $this->presentList($details['priv'], $details['id'], $this->table);
+        $admin = isApproved($details['priv'], 'ADMIN');
 
         $defaultVars = [
+            'admin' => $admin,
+            'priv' => $details['priv'],
             'prompt' => null,
             'users' => $users,
             'clients' => $clients,
@@ -69,8 +71,6 @@ class User extends Presenter
             'owner' => $owner,
             'redirects' => ['pwd', 'domainflag', 'domainassoc', 'namechange'],
             'predicates' => [partial('preg_match', '/^nwp/')],
-            'admin' => $admin,
-            'priv' => $priv,
             'pages' => 1
         ];
 
@@ -85,10 +85,10 @@ class User extends Presenter
 
     public function load(string $key = '', array $vars = [])
     {
-        $priv = $this->grabPriv();
+        $details = $this->grabPriv();
         $customVars = $this->getCustomVars($key, $vars);
         $owner = []; //prompt.html.php expects this from Uploader Controller
-        return $this->displayer($priv, $customVars, $owner);
+        return $this->displayer($details['priv'], $customVars, $owner);
     }
 
     public function add()
