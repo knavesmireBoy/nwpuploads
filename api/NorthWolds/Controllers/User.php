@@ -148,7 +148,6 @@ class User extends Presenter
         $details = $this->grabPriv();
         $admin = isApproved($details['role'], 'ADMIN');
         $user = $this->table->find('id', $id)[0];
-        $roleorder = ['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'];
 
         return [
             'template' => 'userform.html.php',
