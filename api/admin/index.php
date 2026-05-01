@@ -242,6 +242,7 @@ function filterUsers($key, $pagetitle, $error = '')
   doPreparedQuery($st, "Unable to identify domain");
   $rows = $st->fetchAll(PDO::FETCH_ASSOC);
   $pagehead = "Manage User";
+  
   if (!empty($rows)) {
     $selected = true;
     $pagehead = "Manage Team";

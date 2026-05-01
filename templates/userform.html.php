@@ -1,4 +1,5 @@
 <?php
+/*
 include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/includes/helpers.inc.php';
 include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/config.php';
 include TEMPLATE . 'head.html.php';
@@ -19,6 +20,7 @@ foreach (get_defined_vars() as $k => $v) {
   unset($i);
   unset($L);
   unset($fail);
+*/
 $selected = true;
 $domain = false;
 ?>

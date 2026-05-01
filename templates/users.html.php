@@ -1,10 +1,3 @@
-<?php
-/*
-include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/includes/helpers.inc.php';
-include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/config.php';
-include_once TEMPLATE . 'head.html.php';
-*/
-?>
 <h1><?= $pagehead; ?></h1>
 <p class='error'><?= $error; ?></p>
 <?php
@@ -18,7 +11,7 @@ if ($admin || isset($editor)) {
 <?php
 if (empty($selected)):
 ?>
-	<form action="" method="post" name="userform" class="choose">
+	<form action="/user/select/" method="post" name="userform" class="choose">
 		<label for="user"></label><select id="user" name="user">
 			<option value="">Select one</option>
 			<?php if ($optgroup) {

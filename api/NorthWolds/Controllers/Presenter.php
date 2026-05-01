@@ -7,7 +7,7 @@ use \Ninja\DatabaseTable;
 class Presenter
 {
 
-    protected function presentList($role, $userId, $table)
+    protected function presentList(string $role, mixed $userId, \Ninja\DatabaseTable $table)
     {
         $clients = [];
         $usr = [];
@@ -47,5 +47,18 @@ class Presenter
         }
         return [[], []];
     }
+
+    protected function idFromDomain(\Ninja\DatabaseTable $table, string $domain, int $permission, mixed $index = false)
+    {
+        $user = $table->getEntity();
+        $client = $user->fromDomain($domain);
+        $usrs = $table->find('client_id', $client->id, 'id');
+        if ($permission) {
+            $users = safeFilter($usrs, fn($usr) => $usr->checkPermission($permission));
+        }
+        $users = empty($users) ? $usrs : $users;
+        return is_int($index) ? $users[$index]->id : $users;
+    }
+
 
 }

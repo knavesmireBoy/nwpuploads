@@ -15,7 +15,8 @@ class User extends Presenter
         $id = $data['id'] ?? '';
 
         $lib = [
-            'add' => ['pagehead' => 'New User', 'template' => 'userform.html.php', 'route' => 'Add', 'action' => '/user/edit/', 'button' => 'Add User', 'legend' => null, 'override' => null, 'email' => '']
+            'add' => ['pagehead' => 'New User', 'template' => 'userform.html.php', 'route' => 'Add', 'action' => '/user/edit/', 'button' => 'Add User', 'legend' => null, 'override' => null, 'email' => ''],
+            'edit' => ['pagehead' => 'Edit User', 'template' => 'userform.html.php', 'action' => 'user/edit/', 'id' => $id, 'button' => 'Edit User', 'route' => 'Edit', 'name' => $data['name'] ?? '', 'email' => $data['email'] ?? '', 'override' => $data['override'] ?? '', 'employer' => $data['employer'] ?? '', 'legend' => '']
         ];
 
         if ($key && isset($lib[$key])) {
@@ -41,7 +42,7 @@ class User extends Presenter
         $message = $error ?? '';
         // $pagehead_role = $nwproleplay && !obtainUserRole(true);
         $predicates = [partial('preg_match', '/^nwp/')];
-       // $clients = isApproved($priv, 'ADMIN') ? $this->presentClientList($priv, 'domain') : [];
+        // $clients = isApproved($priv, 'ADMIN') ? $this->presentClientList($priv, 'domain') : [];
         list($users, $clients) = $this->presentList($priv, null, $this->table);
         $admin = isApproved($priv, 'ADMIN');
 
@@ -122,5 +123,20 @@ class User extends Presenter
         exit();
         */
         return $this->load('add');
+    }
+
+    public function select()
+    {
+        $key = '';
+        if (is_numeric($_POST['user'])) {
+            $user = $this->table->find('id', $_POST['user']);
+            $user = $user[0] ?? null;
+            if ($user) {
+                $key = 'edit';
+                $data = ['name' => $user->name, 'email' => $user->email, 'employer' => false, 'override' => ''];
+                return $this->load($key, $data);
+            }
+        }
+        return $this->load();
     }
 }

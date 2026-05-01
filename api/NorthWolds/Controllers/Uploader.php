@@ -415,18 +415,6 @@ class Uploader extends Presenter
         }
     }
 
-    private function idFromDomain(string $domain, int $permission, mixed $index = false)
-    {
-        $user = $this->usertable->getEntity();
-        $client = $user->fromDomain($domain);
-        $usrs = $this->usertable->find('client_id', $client->id, 'id');
-        if ($permission) {
-            $users = safeFilter($usrs, fn($usr) => $usr->checkPermission($permission));
-        }
-        $users = empty($users) ? $usrs : $users;
-        return is_int($index) ? $users[$index]->id : $users;
-    }
-
     public function uploadSubmit()
     {
         list($uploadfile, $uploadname, $filename, $realname) = $this->getUploadedFile();
@@ -438,7 +426,7 @@ class Uploader extends Presenter
         } else {
             $userid = $_POST['key'];
             if ($_POST['user']) {
-                $userid = $this->idFromDomain($_POST['user'], 0, 0);
+                $userid = $this->idFromDomain($this->usertable, $_POST['user'], 0, 0);
             }
             $description = isset($_POST['desc']) ? $_POST['desc'] : '';
             $dofile = function ($arg) {
