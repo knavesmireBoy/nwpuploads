@@ -1,26 +1,4 @@
 <?php
-/*
-include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/includes/helpers.inc.php';
-include_once $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/config.php';
-include TEMPLATE . 'head.html.php';
-foreach (get_defined_vars() as $k => $v) {
-    $i = 0;
-    $fail = false;
-    $L = count($predicates);
-    for ($i; $i < $L; $i++) {
-      $fail = $predicates[$i]($k);
-      if ($fail) {
-        unset($$k);
-        break;
-      }
-    }
-  }
-  unset($k);
-  unset($v);
-  unset($i);
-  unset($L);
-  unset($fail);
-*/
 $selected = true;
 $domain = false;
 ?>
@@ -47,14 +25,14 @@ if (($admin || $editor) && !empty($id)) {
 		<label for="email">Email</label><input type="email" id="email" name="email" value="<?= $email ?? ''; ?>" required autocomplete="off" />
 		<label for="password">Password</label><input id="password" type="password" name="password" />
 		<input type="hidden" name="employed" autocomplete="new-password"
-            value="<?= $employer ?? ''; ?>" />
+			value="<?= $employer ?? ''; ?>" />
 	</div>
-	<?php include TEMPLATE . '_roles.html.php'; 
-	 include  TEMPLATE . '_clientlist.html.php'; ?>
+	<?php include TEMPLATE . '_roles.html.php';
+	include  TEMPLATE . '_clientlist.html.php'; ?>
 	<input type="hidden" name="id" value="<?= $id ?? ''; ?>" />
 	<input type="hidden" name="action" value="<?= $route; ?>" />
 	<input type="hidden" name="override" value="<?= $override ?? ''; ?>" />
 	<input type="submit" value="<?= $button; ?>" />
 </form>
 <?php
-include "_footer.html.php";
+include "adminfooter.html.php";

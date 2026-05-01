@@ -128,7 +128,9 @@ class User extends Presenter
     public function select()
     {
         $key = '';
-        if (is_numeric($_POST['user'])) {
+
+        dump($_POST);
+        if (isset($_POST['user']) && is_numeric($_POST['user'])) {
             $user = $this->table->find('id', $_POST['user']);
             $user = $user[0] ?? null;
             if ($user) {
