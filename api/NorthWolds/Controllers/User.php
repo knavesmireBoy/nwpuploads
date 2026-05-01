@@ -7,9 +7,31 @@ use \Ninja\DatabaseTable;
 class User
 {
     public function __construct(private DatabaseTable $table, private DatabaseTable $clienttable, private string $home) {}
+
     private function getCustomVars($key, $data)
     {
-        return [];
+        //if($key === 'confirm') dump($data);
+        $ret = [];
+        $id = $data['id'] ?? '';
+
+        $lib = [
+            'add' => ['pagehead' => 'New User', 'template' => 'userform.html.php', 'route' => 'Add', 'action' => '/user/edit/', 'button' => 'Add User', 'legend' => null, 'override' => null, 'email' => '']
+        ];
+
+        if ($key && isset($lib[$key])) {
+            $ret = $lib[$key];
+        }
+        return $ret;
+    }
+
+    private function grabPriv()
+    {
+        if (!isset($_SESSION['username'])) {
+            reLocate(REG);
+        }
+        $user = $this->table->find('email', $_SESSION['username'])[0];
+        $details = $user->getDetails();
+        return $details['role'];
     }
 
 
@@ -154,12 +176,7 @@ class User
 
     public function load(string $key = '', array $vars = [])
     {
-        if (!isset($_SESSION['username'])) {
-            reLocate(REG);
-        }
-        $user = $this->table->find('email', $_SESSION['username'])[0];
-        $details = $user->getDetails();
-        $priv = $details['role'];
+        $priv = $this->grabPriv();
         $customVars = $this->getCustomVars($key, $vars);
         $owner = []; //prompt.html.php expects this from Uploader Controller
         return $this->displayer($priv, $customVars, $owner);
@@ -167,6 +184,36 @@ class User
 
     public function add()
     {
-        dump('add');
+        $priv = $this->grabPriv();
+        $admin = isApproved($priv, 'ADMIN');
+
+        if (!$admin) {
+            //  header("Location: ./?addno");
+            exit();
+        }
+        /*
+        $roles = fetchAllRoles($pdo, $nwproleorder);
+        if ($nwpadmin) {
+            $clientlist = presentClientList($priv);
+        }
+
+        if (isApproved($priv, 'Client Admin') && !$nwpadmin) {
+            unset($clientlist);
+            $st = $pdo->prepare(queryClient('email'));
+            $st->bindValue(":aux", $_SESSION['email']);
+            doPreparedQuery($st, "Error fetching client details");
+            $row = $st->fetch(PDO::FETCH_ASSOC);
+            $employer = nullify($row['employer']);
+            $email = $row['email'];
+            $email = preg_replace("/[^@]+(@.+)/", "$1", $email);
+            $roles = safeFilter($roles, $nwpRolesCallback);
+        }
+
+
+        $admin = $nwpadmin;
+        include 'userform.html.php';
+        exit();
+        */
+        return $this->load('add');
     }
 }
