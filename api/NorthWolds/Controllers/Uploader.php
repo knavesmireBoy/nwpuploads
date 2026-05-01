@@ -36,7 +36,7 @@ class Uploader
 
     private function displayer($userId, $priv, $displayfiles, $searchText, $owner = [], $customVars = [], $error = '')
     {
-        list($users, $clients) = $this->presentList($priv, $userId);
+        list($users, $clients) = $this->presentList($priv, $userId, $this->usertable);
 
         $defaultVars = [
             'files' => $displayfiles,
@@ -232,19 +232,18 @@ class Uploader
         return $ret;
     }
 
-    private function presentList($role, $userId)
+    private function presentList($role, $userId, $table)
     {
         $clients = [];
         $usr = [];
-        $all = $this->usertable->findAll();
-
+        $all = $table->findAll();
         if (isApproved($role, 'ADMIN')) {
             foreach ($all as $k => $row) {
                 if (empty($row->client_id)) {
                     $usr[$k]['name'] =  $row->name;
                     $usr[$k]['id'] = $row->id;
                 } else {
-                    $u = $this->usertable->find('id', $row->id)[0];
+                    $u = $table->find('id', $row->id)[0];
                     $details = $u->getDetails();
                     if (!empty($details)) {
                         $clients[$k]['domain'] = $details['domain'];
@@ -258,13 +257,13 @@ class Uploader
             $client = toKeyValue($clients, 'domain', 'name');
             return [$users, $client];
         } else {
-            $user = $this->usertable->find('id', $userId);
+            $user = $table->find('id', $userId);
             $user = $user[0] ?? null;
             if (isset($user)) {
                 $users = $user->getUserIds();
                 if (isset($users[1])) {
                     foreach ($users as $k => $v) {
-                        $u = $this->usertable->find('id', $v)[0];
+                        $u = $table->find('id', $v)[0];
                         $usr[$u->id] = $u->name;
                     }
                 }
@@ -607,13 +606,13 @@ class Uploader
         };
 
 
-        dump([$srch, $_COOKIE]);
+       
         if ($srch) {
             $payload = [[1, $first], [2, $second], [4, $third], [8, $fourth]];
             foreach ($payload as $data) {
                 $sortargs(...$data);
             }
-
+            dump([end($args), $fourth]);
             if (end($args) === $fourth) {
                 $this->sort = $args[0];
                 return $this->load();
