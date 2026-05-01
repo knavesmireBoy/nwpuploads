@@ -147,7 +147,7 @@ class User extends Presenter
     public function edit($id)
     {
         $details = $this->grabPriv();
-        $admin = isApproved($details['priv'], 'ADMIN');
+        $admin = isApproved($details['role'], 'ADMIN');
         $user = $this->table->find('id', $id)[0];
         $roleorder = ['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'];
 
@@ -159,7 +159,7 @@ class User extends Presenter
             'title' => 'Edit User',
             'variables' => [
                 'admin' => $admin,
-                'priv' => $details['priv'],
+                'priv' => $details['role'],
                 'editor' => $user->id == $details['id'],
                 'pagehead' => 'Edit User',
                 'action' => '/user/edit/',
