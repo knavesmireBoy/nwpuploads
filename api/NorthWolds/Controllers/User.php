@@ -119,7 +119,7 @@ class User
 
         $defaultVars = [
             'prompt' => null,
-            'users' => $clients,
+            'users' => $users,
             'clients' => $clients,
             'usercount' => 0,
             'denied' => false,
