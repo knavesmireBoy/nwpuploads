@@ -14,7 +14,7 @@ if (($admin || $editor) && !empty($id)) {
 <form action="?<?= $action; ?>" method="post" name="usersform" class="<?= empty($class) ? 'details' : $class; ?>">
 	<?php
 	if (isset($class) && preg_match("/override/", $class)) { ?>
-		<a href="./?cancel" class="cancel">X</a>
+		<a href="/user/load/" class="cancel">X</a>
 	<?php }
 	if ($legend != '') { ?>
 		<p><?= $legend ?? ''; ?></p>

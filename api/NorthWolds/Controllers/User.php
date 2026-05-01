@@ -16,7 +16,7 @@ class User extends Presenter
 
         $lib = [
             'add' => ['pagehead' => 'New User', 'template' => 'userform.html.php', 'route' => 'Add', 'action' => '/user/edit/', 'button' => 'Add User', 'legend' => null, 'override' => null, 'email' => ''],
-            'edit' => ['pagehead' => 'Edit User', 'template' => 'userform.html.php', 'action' => 'user/edit/', 'id' => $id, 'button' => 'Edit User', 'route' => 'Edit', 'name' => $data['name'] ?? '', 'email' => $data['email'] ?? '', 'override' => $data['override'] ?? '', 'employer' => $data['employer'] ?? '', 'legend' => '']
+            'edit' => ['pagehead' => 'Edit User', 'template' => 'userform.html.php', 'action' => '/user/edit/', 'id' => $id, 'button' => 'Edit User', 'route' => 'Edit', 'name' => $data['name'] ?? '', 'email' => $data['email'] ?? '', 'override' => $data['override'] ?? '', 'employer' => $data['employer'] ?? '', 'legend' => '', 'selected' => true, 'roles' => []]
         ];
 
         if ($key && isset($lib[$key])) {
@@ -144,6 +144,6 @@ class User extends Presenter
     }
 
     public function editSubmit() {
-        
+
     }
 }
