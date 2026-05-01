@@ -97,7 +97,8 @@ class User
             'owner' => $owner,
             'redirects' => ['pwd', 'domainflag', 'domainassoc', 'namechange'],
             'predicates' => [partial('preg_match', '/^nwp/')],
-            'admin' => isApproved($priv, 'ADMIN')
+            'admin' => isApproved($priv, 'ADMIN'),
+            'pages' => 1
         ];
 
         $vars = array_merge($defaultVars, $customVars);
@@ -120,5 +121,10 @@ class User
         $customVars = $this->getCustomVars($key, $vars);
         $owner = []; //prompt.html.php expects this from Uploader Controller
         return $this->displayer($priv, $customVars, $owner);
+    }
+
+    public function add()
+    {
+        dump('add');
     }
 }

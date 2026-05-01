@@ -338,24 +338,27 @@ class Uploader
 
     private function sorter()
     {
-        $sorter = array('f' => 'filename ASC', 'ff' => 'filename DESC', 'u' => 'name ASC', 'uu' => 'name DESC', 'uf' => 'name ASC, filename ASC', 'uuf' => 'name DESC, filename ASC',  'uff' => 'name ASC, filename DESC',  'uuff' => 'name DESC, filename DESC', 'ut' => 'name ASC, time ASC', 'utt' => 'name ASC, time DESC', 'uut' => 'name DESC, time ASC', 'uutt' => 'name DESC, time DESC', 't' => 'time ASC', 'tt' => 'time DESC');
+        $lib = array('f' => 'filename ASC', 'ff' => 'filename DESC', 'u' => 'name ASC', 'uu' => 'name DESC', 'uf' => 'name ASC, filename ASC', 'uuf' => 'name DESC, filename ASC',  'uff' => 'name ASC, filename DESC',  'uuff' => 'name DESC, filename DESC', 'ut' => 'name ASC, time ASC', 'utt' => 'name ASC, time DESC', 'uut' => 'name DESC, time ASC', 'uutt' => 'name DESC, time DESC', 't' => 'time ASC', 'tt' => 'time DESC');
 
        // $setcookie = doSetCookie(true);
        // $setcookie('sort', 'tt');
-        $this->sort = $_COOKIE['sort'] ?? 'tt';
-        foreach ($sorter as $k => $v) {
+       // $this->sort = $_COOKIE['sort'] ?? 'tt';
+        foreach ($lib as $k => $v) {
             if ($k == $this->sort) break;
         }
+        /*
         switch ($this->sort) {
             case $k:
-                $order_by = $sorter[$k];
+                $order = $lib[$k];
                 break;
             default:
-                $order_by = 'time DESC';
+                $order = 'time DESC';
                // $setcookie('sort', 'tt');
                 break;
         }
-        return $order_by;
+                */
+
+        return $lib[$k];
     }
 
     public function load(string $key = '', array $vars = [])
@@ -399,6 +402,10 @@ class Uploader
         }
         $orderby = $this->sorter();
         $order =  preg_match('/^name/i', $orderby) ? null : $orderby;
+
+        if($order !== 'tt'){
+            dump($order);
+        }
         //sub sort by time or file only involves one table `upload`
         $all = $this->table->findAll($order, 0, 0, \PDO::FETCH_ASSOC);
         $contenders = $this->prepFileForDisplay($all, $cb);
@@ -608,12 +615,12 @@ class Uploader
                 $sortargs(...$data);
             }
             if ($args[0] === $first) {
-                dump($first);
                 $this->sort = $args[0];
                 return $this->load();
             }
             return $this->found(...$args);
         }
+        dump($args);
 
         return $this->load();
     }
