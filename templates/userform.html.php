@@ -11,7 +11,7 @@ if (($admin || $editor) && !empty($id)) {
 	include TEMPLATE . '_call.html.php';
 }
 ?>
-<form action="?<?= $action; ?>" method="post" name="usersform" class="<?= empty($class) ? 'details' : $class; ?>">
+<form action="<?= $action; ?>" method="post" name="usersform" class="<?= empty($class) ? 'details' : $class; ?>">
 	<?php
 	if (isset($class) && preg_match("/override/", $class)) { ?>
 		<a href="/user/load/" class="cancel">X</a>
@@ -30,7 +30,6 @@ if (($admin || $editor) && !empty($id)) {
 	<?php include TEMPLATE . '_roles.html.php';
 	include  TEMPLATE . '_clientlist.html.php'; ?>
 	<input type="hidden" name="id" value="<?= $id ?? ''; ?>" />
-	<input type="hidden" name="action" value="<?= $route; ?>" />
 	<input type="hidden" name="override" value="<?= $override ?? ''; ?>" />
 	<input type="submit" value="<?= $button; ?>" />
 </form>

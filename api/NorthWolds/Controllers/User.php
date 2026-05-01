@@ -133,17 +133,39 @@ class User extends Presenter
             $user = $this->table->find('id', $_POST['user']);
             $user = $user[0] ?? null;
             if ($user) {
-                $key = 'edit';
-                $data = ['name' => $user->name, 'email' => $user->email, 'employer' => false, 'override' => ''];
-                return $this->load($key, $data);
+                // $key = 'edit';
+                $id = $user->id;
+                //  $data = ['name' => $user->name, 'email' => $user->email, 'employer' => false, 'override' => ''];
+                reLocate("/user/edit/$id");
             }
-        }
-        else {
+        } else {
             reLocate($this->home);
         }
     }
 
-    public function editSubmit() {
 
+    public function edit($id)
+    {
+
+        $user = $this->table->find('id', $id)[0];
+        return [
+            'template' => 'userform.html.php',
+            'title' => 'Edit User',
+            'variables' => [
+                'pagehead' => 'Edit User',
+                'action' => '/user/edit/',
+                'legend' => '',
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'employer' => false,
+                'override' => '',
+                'button' => 'Edit User',
+                'clientlist' => [],
+                'roles' => []
+            ]
+        ];
     }
+
+    public function editSubmit() {}
 }
