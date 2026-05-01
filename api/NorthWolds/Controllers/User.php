@@ -88,12 +88,12 @@ class User extends Presenter
         $details = $this->grabPriv();
         $customVars = $this->getCustomVars($key, $vars);
         $owner = []; //prompt.html.php expects this from Uploader Controller
-        return $this->displayer($details['priv'], $customVars, $owner);
+        return $this->displayer($details['role'], $customVars, $owner);
     }
 
     public function add()
     {
-        $priv = $this->grabPriv();
+        $priv = $this->grabPriv('role');
         $admin = isApproved($priv, 'ADMIN');
 
         if (!$admin) {
@@ -176,5 +176,7 @@ class User extends Presenter
         ];
     }
 
-    public function editSubmit() {}
+    public function editSubmit() {
+        dump($_POST);
+    }
 }
