@@ -166,7 +166,7 @@ class User extends Presenter
                 'override' => '',
                 'button' => 'Edit User',
                 'clientlist' => [],
-                'roles' => []
+                'roles' => $user->getRoles()
             ]
         ];
     }

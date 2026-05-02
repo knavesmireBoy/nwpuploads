@@ -31,7 +31,6 @@ class User extends Entity
     $this->clienttable = $client;
   }
 
-
   private function fetchAllRoles(array $keys = [], array $selectedRoles = []): array
   {
     //Build the list of all roles
