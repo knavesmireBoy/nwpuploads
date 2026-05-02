@@ -142,12 +142,12 @@ class User extends Presenter
         }
     }
 
-
     public function edit($id)
     {
         $details = $this->grabPriv();
         $admin = isApproved($details['role'], 'ADMIN');
         $user = $this->table->find('id', $id)[0];
+        list($users, $clients) = $this->presentList($details['role'], $user->id, $this->table, 'id');
 
         return [
             'template' => 'userform.html.php',
@@ -165,7 +165,7 @@ class User extends Presenter
                 'employer' => false,
                 'override' => '',
                 'button' => 'Edit User',
-                'clientlist' => [],
+                'clientlist' => $clients,
                 'roles' => $user->getRoles()
             ]
         ];

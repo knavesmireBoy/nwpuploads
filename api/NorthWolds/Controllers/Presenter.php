@@ -7,7 +7,7 @@ use \Ninja\DatabaseTable;
 class Presenter
 {
 
-    protected function presentList(string $role, mixed $userId, \Ninja\DatabaseTable $table)
+    protected function presentList(string $role, mixed $userId, \Ninja\DatabaseTable $table, $prop = 'domain')
     {
         $clients = [];
         $usr = [];
@@ -21,7 +21,7 @@ class Presenter
                     $u = $table->find('id', $row->id)[0];
                     $details = $u->getDetails();
                     if (!empty($details)) {
-                        $clients[$k]['domain'] = $details['domain'];
+                        $clients[$k][$prop] = $details[$prop];
                         $clients[$k]['name'] = $details['clientname'];
                     }
                 }
@@ -29,7 +29,7 @@ class Presenter
             array_multisort(array_column($usr, 'name'), SORT_ASC, $usr);
             array_multisort(array_column($clients, 'name'), SORT_ASC, $clients);
             $users = toKeyValue($usr, 'id', 'name');
-            $client = toKeyValue($clients, 'domain', 'name');
+            $client = toKeyValue($clients, $prop, 'name');
             return [$users, $client];
         } else {
             $user = $table->find('id', $userId);
