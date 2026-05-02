@@ -1,1 +1,1 @@
-<p><a href=".">Return to User List</a></p>
+<p><a href="/user/load/">Return to User List</a></p>

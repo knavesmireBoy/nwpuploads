@@ -1,1 +1,1 @@
-<p><a href="..">Return to Uploads</a></p>
+<p><a href="/uploader/load/">Return to Uploads</a></p>

@@ -12,7 +12,7 @@ if (isset($_GET['edit']) || isset($_GET['add'])) {
 	$route = $routes[$k];
 }
 if ($admin) { ?>
-	<p class="call"><a href="../clients/">Edit Clients</a></p>
+	<p class="call"><a href="/client/load/">Edit Clients</a></p>
 <?php
 }
 include $route;
