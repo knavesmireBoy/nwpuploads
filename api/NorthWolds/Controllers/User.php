@@ -150,14 +150,17 @@ class User extends Presenter
             $user = $user[0] ?? null;
             if ($user) {
                 $id = $user->id;
+                setExtent(1);
                 reLocate("/user/edit/$id");
             }
         } else {
             $client = $this->clienttable->find('domain', $_POST['user']);
             $users = $this->table->find('client_id', $client[0]->id);
             $usrs = [];
+            $i = count($users);
+            setExtent($i);
 
-            if (count($users) > 1) {
+            if ($i > 1) {
                 foreach ($users as $usr) {
                     $usrs[$usr->id] = $usr->name;
                 }
