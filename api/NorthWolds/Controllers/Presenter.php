@@ -30,7 +30,6 @@ class Presenter
             array_multisort(array_column($clients, 'name'), SORT_ASC, $clients);
             $users = toKeyValue($usr, 'id', 'name');
             $client = toKeyValue($clients, $prop, 'name');
-        // if($prop == 'id') dump($client);
             return [$users, $client];
         } else {
             $user = $table->find('id', $userId);
