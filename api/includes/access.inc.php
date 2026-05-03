@@ -103,7 +103,7 @@ function email($em, $id)
 
 function setExtent($count)
 {
-    session_start();
+    startSession();
     if (is_int($count)) {
         $_SESSION['extent'] = $count;
     } else if (isset($_SESSION['extent'])) {

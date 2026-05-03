@@ -159,7 +159,6 @@ class User extends Presenter
             $usrs = [];
             $i = count($users);
             setExtent($i);
-
             if ($i > 1) {
                 foreach ($users as $usr) {
                     $usrs[$usr->id] = $usr->name;
