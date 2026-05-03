@@ -20,7 +20,6 @@ class Presenter
                 } else {
                     $u = $table->find('id', $row->id)[0];
                     $details = $u->getDetails();
-                   if($prop == 'id') dump($details);
                     if (!empty($details)) {
                         $clients[$k][$prop] = $details[$prop];
                         $clients[$k]['name'] = $details['clientname'];
@@ -31,6 +30,8 @@ class Presenter
             array_multisort(array_column($clients, 'name'), SORT_ASC, $clients);
             $users = toKeyValue($usr, 'id', 'name');
             $client = toKeyValue($clients, $prop, 'name');
+            if($prop == 'id') dump($client);
+
             return [$users, $client];
         } else {
             $user = $table->find('id', $userId);
