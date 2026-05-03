@@ -90,7 +90,7 @@ class User extends Presenter
         ];
 
         $vars = array_merge($defaultVars, $customVars);
-
+        dump($vars);
         return [
             'template' => 'users.html.php',
             'title' => 'Edit Users',
@@ -154,14 +154,11 @@ class User extends Presenter
         } else {
             $client = $this->clienttable->find('domain', $_POST['user']);
             $users = $this->table->find('client_id', $client[0]->id);
-
-            dump([$_POST, $users]);
             $usrs = [];
 
             foreach ($users as $usr) {
                 $usrs[$usr->id] = $usr->name;
             }
-
             return $this->load('selected', $usrs);
             // reLocate($this->home);
         }
