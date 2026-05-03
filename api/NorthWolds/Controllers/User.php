@@ -154,6 +154,8 @@ class User extends Presenter
         } else {
             $client = $this->clienttable->find('domain', $_POST['user']);
             $users = $this->table->find('client_id', $client[0]->id);
+
+            dump([$_POST, $users]);
             $usrs = [];
 
             foreach ($users as $usr) {
