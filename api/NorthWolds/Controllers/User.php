@@ -178,6 +178,10 @@ class User extends Presenter
         $user = $this->table->find('id', $id)[0];
         list($_, $clients) = $this->presentList($details['role'], $user->id, $this->table, 'id');
 
+        $roles = $user->getRoles();
+
+        dump([$user->client_id,$roles]);
+
         return [
             'template' => 'userform.html.php',
             'title' => 'Edit User',
@@ -195,7 +199,7 @@ class User extends Presenter
                 'override' => '',
                 'button' => 'Edit User',
                 'clientlist' => $clients,
-                'roles' => $user->getRoles()
+                'roles' => $roles
             ]
         ];
     }
