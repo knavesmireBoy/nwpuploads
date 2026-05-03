@@ -16,6 +16,7 @@ class User extends Presenter
         $users = $key === 'selected' ? $data : [];
 
         $lib = [
+            /*
             'add' => ['pagehead' => 'New User', 'template' => 'userform.html.php', 'route' => 'Add', 'action' => '/user/edit/', 'button' => 'Add User', 'legend' => null, 'override' => null, 'email' => ''],
             'edit' => [
                 'pagehead' => 'Edit User',
@@ -27,11 +28,11 @@ class User extends Presenter
                 'name' => $data['name'] ?? '',
                 'email' => $data['email'] ?? '',
                 'override' => $data['override'] ?? '',
-                'employer' => $data['employer'] ?? '',
                 'legend' => '',
                 'selected' => true,
                 'roles' => []
             ],
+            */
             'selected' => ['pagehead' => 'Select User', 'selected' => true, 'clients' => [], 'users' => $users]
         ];
 
@@ -179,9 +180,6 @@ class User extends Presenter
         list($_, $clients) = $this->presentList($details['role'], $user->id, $this->table, 'id');
 
         $roles = $user->getRoles();
-
-        dump([$user->client_id,$roles]);
-
         return [
             'template' => 'userform.html.php',
             'title' => 'Edit User',

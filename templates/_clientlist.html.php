@@ -1,5 +1,5 @@
 <?php 
-
+dump([$clientlist[0], $employer]);
 if (!empty($clientlist)) : ?>
     <fieldset>
             <legend>Assign to Client</legend>
