@@ -177,7 +177,7 @@ class User extends Presenter
         $details = $this->grabPriv();
         $admin = isApproved($details['role'], 'ADMIN');
         $user = $this->table->find('id', $id)[0];
-        list($_, $clients) = $this->presentList($details['role'], $user->id, $this->table, 'id');
+        list($_, $clients) = $this->presentList($details['role'], $user->id, $this->table, 'client_id');
 
         dump($clients);
 
