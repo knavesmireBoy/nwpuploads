@@ -179,8 +179,6 @@ class User extends Presenter
         $user = $this->table->find('id', $id)[0];
         list($_, $clients) = $this->presentList($details['role'], $user->id, $this->table, 'client_id');
 
-        dump($clients);
-
         $roles = $user->getRoles();
         return [
             'template' => 'userform.html.php',
