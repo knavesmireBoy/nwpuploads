@@ -212,7 +212,7 @@ class Uploader extends Presenter
     {
         $ret = [];
         $callback = function (array $file, \NorthWolds\Entity\User $user) {
-            $details = $user->getDetails();
+            $details = $user->getDetails('owner');
             $name = $details['name'];
             unset($details['id']);
             unset($details['role']);
@@ -331,7 +331,7 @@ class Uploader extends Presenter
                 $user = $this->usertable->find('id', $file->userid)[0];
                 $data = $file->getData($_SESSION['username']);
                 if ($user->client_id) {
-                    $owner = [...$data, ...$user->getDetails()];
+                    $owner = [...$data, ...$user->getDetails('owner')];
                 } else {
                     $owner = $data;
                 }

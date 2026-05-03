@@ -58,7 +58,7 @@ class User extends Presenter
         // $pagehead_role = $nwproleplay && !obtainUserRole(true);
         $predicates = [partial('preg_match', '/^nwp/')];
         // $clients = isApproved($priv, 'ADMIN') ? $this->presentClientList($priv, 'domain') : [];
-        list($users, $clients) = $this->presentList($details['role'], $details['ownerid'], $this->table);
+        list($users, $clients) = $this->presentList($details['role'], $details['id'], $this->table);
         $admin = isApproved($details['role'], 'ADMIN');
 
         $defaultVars = [
@@ -184,7 +184,7 @@ class User extends Presenter
             'variables' => [
                 'admin' => $admin,
                 'priv' => $details['role'],
-                'editor' => $user->id == $details['ownerid'],
+                'editor' => $user->id == $details['id'],
                 'pagehead' => 'Edit User',
                 'action' => '/user/edit/',
                 'legend' => '',
