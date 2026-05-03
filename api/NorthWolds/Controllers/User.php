@@ -90,7 +90,6 @@ class User extends Presenter
         ];
 
         $vars = array_merge($defaultVars, $customVars);
-        dump($vars);
         return [
             'template' => 'users.html.php',
             'title' => 'Edit Users',
@@ -102,6 +101,8 @@ class User extends Presenter
     {
         $details = $this->grabPriv();
         $customVars = $this->getCustomVars($key, $vars);
+        if($key === 'selected') dump($customVars);
+
         $owner = []; //prompt.html.php expects this from Uploader Controller
         return $this->displayer($details, $customVars, $owner);
     }
