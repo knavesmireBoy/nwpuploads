@@ -20,6 +20,7 @@ class Presenter
                 } else {
                     $u = $table->find('id', $row->id)[0];
                     $details = $u->getDetails();
+                   if($prop == 'id') dump($details);
                     if (!empty($details)) {
                         $clients[$k][$prop] = $details[$prop];
                         $clients[$k]['name'] = $details['clientname'];
