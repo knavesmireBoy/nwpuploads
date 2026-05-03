@@ -101,7 +101,7 @@ class User extends Presenter
     {
         $details = $this->grabPriv();
         $customVars = $this->getCustomVars($key, $vars);
-      //  if ($key === 'selected') dump($customVars);
+        //  if ($key === 'selected') dump($customVars);
 
         $owner = []; //prompt.html.php expects this from Uploader Controller
         return $this->displayer($details, $customVars, $owner);
@@ -157,11 +157,15 @@ class User extends Presenter
             $users = $this->table->find('client_id', $client[0]->id);
             $usrs = [];
 
-            foreach ($users as $usr) {
-                $usrs[$usr->id] = $usr->name;
+            if (count($users) > 1) {
+                foreach ($users as $usr) {
+                    $usrs[$usr->id] = $usr->name;
+                }
+                return $this->load('selected', $usrs);
+            } else {
+                $id = $users[0]->id;
+                reLocate("/user/edit/$id");
             }
-            return $this->load('selected', $usrs);
-            // reLocate($this->home);
         }
     }
 
@@ -170,7 +174,7 @@ class User extends Presenter
         $details = $this->grabPriv();
         $admin = isApproved($details['role'], 'ADMIN');
         $user = $this->table->find('id', $id)[0];
-        list($users, $clients) = $this->presentList($details['role'], $user->id, $this->table, 'id');
+        list($_, $clients) = $this->presentList($details['role'], $user->id, $this->table, 'id');
 
         return [
             'template' => 'userform.html.php',
