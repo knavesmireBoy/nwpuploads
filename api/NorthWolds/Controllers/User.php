@@ -13,10 +13,26 @@ class User extends Presenter
         //if($key === 'confirm') dump($data);
         $ret = [];
         $id = $data['id'] ?? '';
+        $users = $key === 'selected' ? $data : [];
 
         $lib = [
             'add' => ['pagehead' => 'New User', 'template' => 'userform.html.php', 'route' => 'Add', 'action' => '/user/edit/', 'button' => 'Add User', 'legend' => null, 'override' => null, 'email' => ''],
-            'edit' => ['pagehead' => 'Edit User', 'template' => 'userform.html.php', 'action' => '/user/edit/', 'id' => $id, 'button' => 'Edit User', 'route' => 'Edit', 'name' => $data['name'] ?? '', 'email' => $data['email'] ?? '', 'override' => $data['override'] ?? '', 'employer' => $data['employer'] ?? '', 'legend' => '', 'selected' => true, 'roles' => []]
+            'edit' => [
+                'pagehead' => 'Edit User',
+                'template' => 'userform.html.php',
+                'action' => '/user/edit/',
+                'id' => $id,
+                'button' => 'Edit User',
+                'route' => 'Edit',
+                'name' => $data['name'] ?? '',
+                'email' => $data['email'] ?? '',
+                'override' => $data['override'] ?? '',
+                'employer' => $data['employer'] ?? '',
+                'legend' => '',
+                'selected' => true,
+                'roles' => [],
+                'selected' => ['selected' => true, 'clients' => [], 'users' => $users]
+            ]
         ];
 
         if ($key && isset($lib[$key])) {
@@ -42,7 +58,7 @@ class User extends Presenter
         // $pagehead_role = $nwproleplay && !obtainUserRole(true);
         $predicates = [partial('preg_match', '/^nwp/')];
         // $clients = isApproved($priv, 'ADMIN') ? $this->presentClientList($priv, 'domain') : [];
-        list($users, $clients) = $this->presentList($details['role'], $details['id'], $this->table);
+        list($users, $clients) = $this->presentList($details['role'], $details['ownerid'], $this->table);
         $admin = isApproved($details['role'], 'ADMIN');
 
         $defaultVars = [
@@ -132,13 +148,20 @@ class User extends Presenter
             $user = $this->table->find('id', $_POST['user']);
             $user = $user[0] ?? null;
             if ($user) {
-                // $key = 'edit';
                 $id = $user->id;
-                //  $data = ['name' => $user->name, 'email' => $user->email, 'employer' => false, 'override' => ''];
                 reLocate("/user/edit/$id");
             }
         } else {
-            reLocate($this->home);
+            $client = $this->clienttable->find('domain', $_POST['user']);
+            $users = $this->table->find('client_id', $client[0]->id);
+            $usrs = [];
+
+            foreach ($users as $usr) {
+                $usrs[$usr->id] = $usr->name;
+            }
+
+            return $this->load('selected', $usrs);
+            // reLocate($this->home);
         }
     }
 
@@ -155,14 +178,14 @@ class User extends Presenter
             'variables' => [
                 'admin' => $admin,
                 'priv' => $details['role'],
-                'editor' => $user->id == $details['id'],
+                'editor' => $user->id == $details['ownerid'],
                 'pagehead' => 'Edit User',
                 'action' => '/user/edit/',
                 'legend' => '',
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'employer' => false,
+                'employer' => $user->client_id,
                 'override' => '',
                 'button' => 'Edit User',
                 'clientlist' => $clients,
@@ -171,7 +194,8 @@ class User extends Presenter
         ];
     }
 
-    public function editSubmit() {
+    public function editSubmit()
+    {
         dump($_POST);
     }
 }

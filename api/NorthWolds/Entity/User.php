@@ -93,7 +93,7 @@ class User extends Entity
       if ($this->client_id) {
         $client = $this->fetch('clienttable', 'id', $this->client_id);
       }
-      return ['ownerid' => $this->id, 'id' => $this->id, 'name' => $this->name, 'email' => $this->email, 'role' => $role,  'client_id' => $this->client_id, 'clientname' => $client->name ?? '', 'tel' => $client->tel ?? '', 'domain' => $client->domain ?? ''];
+      return ['ownerid' => $this->id, 'name' => $this->name, 'email' => $this->email, 'role' => $role,  'client_id' => $this->client_id, 'clientname' => $client->name ?? '', 'tel' => $client->tel ?? '', 'domain' => $client->domain ?? ''];
     }
     return [];
   }

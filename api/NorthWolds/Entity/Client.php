@@ -19,6 +19,10 @@ class Client extends Entity
             return $this->fetch('TABLE', 'domain', $arg, 'name');
         }
     }
+
+    public function getUsers(){
+        
+    }
     
     //sync check if creating client AFTER creating an "employee" assign the newly created client_id to any "employees"
     public function associate(int $id)
