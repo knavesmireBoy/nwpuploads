@@ -214,8 +214,11 @@ class User extends Presenter
     {
         $id = nullify($_POST['id']);
         $data = $_POST['data'];
-        $db = [...['id' => $id], ...$data];
-        $this->table->save($db, empty($id));
+       // $db = [...['id' => $id], ...$data];
+        if ($id) {
+        } else {
+            $this->table->save($data, empty($id));
+        }
     }
 
     public function delete($id)
@@ -233,7 +236,7 @@ class User extends Presenter
 
     public function destroy($id)
     {
-        // $this->table->delete('id', $id);
+        $this->table->delete('id', $id);
         reLocate($this->home);
     }
 }
