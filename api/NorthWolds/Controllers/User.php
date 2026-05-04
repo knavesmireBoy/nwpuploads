@@ -219,8 +219,8 @@ class User extends Presenter
         } else {
             $client_id = $_POST['employer'] ?? $_POST['employed'];
             $userId = $this->table->save([...$data, 'client_id' => nullify($client_id)], empty($id));
-            dump($userId);
             $role = $_POST['roles'][0] ?? 'Browser';
+            dump($role);
         }
     }
 
