@@ -215,7 +215,7 @@ class Uploader extends Presenter
             $details = $user->getDetails();
 
             if(!isset($details['name'])){
-                dump($file);
+                var_dump($file);
             }
             $name = $details['name'];
             unset($details['id']);
