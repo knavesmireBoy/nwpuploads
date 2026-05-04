@@ -21,9 +21,9 @@ if (($admin || $editor) && !empty($id)) {
 	<?php	}
 	?>
 	<div>
-		<label for="name">Name</label><input id="name" type="text" name="name" value="<?= $name ?? ''; ?>" required autocomplete="off" />
-		<label for="email">Email</label><input type="email" id="email" name="email" value="<?= $email ?? ''; ?>" required autocomplete="off" />
-		<label for="password">Password</label><input id="password" type="password" name="password" />
+		<label for="name">Name</label><input id="name" type="text" name="data[name]" value="<?= $name ?? ''; ?>" required autocomplete="off" />
+		<label for="email">Email</label><input type="email" id="email" name="data[email]" value="<?= $email ?? ''; ?>" required autocomplete="off" />
+		<label for="password">Password</label><input id="password" type="password" name="data[password]" />
 		<input type="hidden" name="employed" autocomplete="new-password"
 			value="<?= $employer ?? ''; ?>" />
 	</div>

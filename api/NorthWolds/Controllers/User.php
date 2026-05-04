@@ -116,7 +116,7 @@ class User extends Presenter
         $priv = $this->grabPriv('role');
         $admin = isApproved($priv, 'ADMIN');
 
-       
+
         if (!$admin) {
             reLocate($this->home);
         }
@@ -193,17 +193,17 @@ class User extends Presenter
                 'admin' => $admin,
                 'priv' => $details['role'],
                 'editor' => $id == $details['id'],
-                'pagehead' => 'Edit User',
-                'action' => '/user/edit/',
                 'legend' => '',
+                'override' => '',
+                'pagehead' => $id ? 'Edit User' : 'Add User',
+                'action' => '/user/edit/',
                 'id' => $id,
                 'name' => $user->name ?? '',
                 'email' => $user->email ?? '',
                 'employer' => $user->client_id ?? '',
-                'override' => '',
-                'button' => 'Edit User',
-                'calltext' => 'Delete User',
-                'callroute' => "/user/delete/$id",
+                'button' => $id ? 'Edit User' : 'Add User',
+                'calltext' => $id ? 'Delete User' : null,
+                'callroute' => $id ? "/user/delete/$id" : null,
                 'clientlist' => $clients,
                 'roles' => $roles
             ]
@@ -212,7 +212,10 @@ class User extends Presenter
 
     public function editSubmit()
     {
-        dump($_POST);
+        $id = nullify($_POST['id']);
+        $data = $_POST['data'];
+        $db = [...['id' => $id], ...$data];
+        $this->table->save($db, empty($id));
     }
 
     public function delete($id)
@@ -230,7 +233,7 @@ class User extends Presenter
 
     public function destroy($id)
     {
-       // $this->table->delete('id', $id);
+        // $this->table->delete('id', $id);
         reLocate($this->home);
     }
 }
