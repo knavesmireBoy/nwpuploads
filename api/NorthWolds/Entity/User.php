@@ -56,6 +56,13 @@ class User extends Entity
     return $this->fetchAllRoles(['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'], [$roleID]);
   }
 
+  public function setRole(string $role)
+  {
+    if (!empty($this->roletable->find('id', $role))) {
+      $this->roletable->save(['userid' => $this->id, 'roleid' => $role]);
+    }
+  }
+
   public function hasPermission(array $allowed)
   {
     $role = $this->getRole();
@@ -88,10 +95,9 @@ class User extends Entity
     $key = 'id';
     $client = null;
     if (!empty($role)) {
-      if($prop === 'owner'){
+      if ($prop === 'owner') {
         $key = 'ownerid';
-      }
-      else if ($prop) {
+      } else if ($prop) {
         return isset($this->{$prop}) ? $this->{$prop} : [];
       }
       if ($this->client_id) {
