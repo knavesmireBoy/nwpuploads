@@ -179,13 +179,11 @@ class User extends Presenter
     {
         $details = $this->grabPriv();
         $admin = isApproved($details['role'], 'ADMIN');
-        $user = $id ? $this->table->find('id', $id) : null;
-
-        $user = $user[0] ?? null;
+        $user = $id ? $this->table->find('id', $id)[0] : $this->table->getEntity();
         $id = $user->id ?? null;
         list($_, $clients) = $this->presentList($details['role'], $id, $this->table, 'client_id');
 
-        $roles = isset($user) ? $user->getRoles() : [];
+        $roles = $user->getRoles();
         return [
             'template' => 'userform.html.php',
             'title' => 'Edit User',
@@ -214,10 +212,12 @@ class User extends Presenter
     {
         $id = nullify($_POST['id']);
         $data = $_POST['data'];
+        dump($_POST);
        // $db = [...['id' => $id], ...$data];
         if ($id) {
+            $user = $this->table->save([...['id' => $id], ...$data]);
         } else {
-            $this->table->save($data, empty($id));
+            $userId = $this->table->save($data, empty($id));
         }
     }
 
