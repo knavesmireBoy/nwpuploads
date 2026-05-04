@@ -34,7 +34,7 @@ class User extends Presenter
             ],
             */
             'edit' => ['calltext' => 'Delete User', 'callroute' => "/user/delete/$id"],
-            'delete' => ['id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this user?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/client/confirm/'],
+            'delete' => ['id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this user?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/user/confirm/'],
             'confirm' => ['id' => $id],
             'selected' => ['pagehead' => 'Select User', 'selected' => true, 'clients' => [], 'users' => $users]
         ];
@@ -185,7 +185,7 @@ class User extends Presenter
         $id = $user->id ?? null;
         list($_, $clients) = $this->presentList($details['role'], $id, $this->table, 'client_id');
 
-        $roles = $user->getRoles() ?? [];
+        $roles = isset($user) ? $user->getRoles() : [];
         return [
             'template' => 'userform.html.php',
             'title' => 'Edit User',
@@ -230,7 +230,7 @@ class User extends Presenter
 
     public function destroy($id)
     {
-        $this->table->delete('id', $id);
+       // $this->table->delete('id', $id);
         reLocate($this->home);
     }
 }
