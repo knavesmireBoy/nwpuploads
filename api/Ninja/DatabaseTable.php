@@ -23,6 +23,7 @@ class DatabaseTable
     private function insert(array $values)
     {
         //make sure no spaces in table name: `user `
+        $seq = null;
         $query = 'INSERT INTO `' . $this->table . '` (';
         //$query = "INSERT INTO $tbl (";
         foreach ($values as $key => $value) {
@@ -40,18 +41,14 @@ class DatabaseTable
 
         if (DBSYSTEM === 'postgres') {
             $query = preg_replace('/`/', '', $query);
+            $seq = $this->table . '_' > $this->primaryKey . '_seq';
         }
         $stmt = $this->pdo->prepare($query);
         $stmt->execute($values);
-        //$res = doPreparedQuery($stmt, $values);
-        try {
-            return $this->pdo->lastInsertId();
+        if ($seq) {
+            return $this->pdo->lastInsertId($seq);
         }
-        catch(\Exception $e){
-            dump($e);
-            return null;
-        }
-        
+        return $this->pdo->lastInsertId();
     }
 
     private function updatejoin(array $values, $oldkey)
