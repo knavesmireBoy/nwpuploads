@@ -42,12 +42,14 @@ class DatabaseTable
         if (DBSYSTEM === 'postgres') {
             $query = preg_replace('/`/', '', $query);
             $query .= ' RETURNING ' . $this->primaryKey;
-           // $seq = $this->table . '_' . $this->primaryKey . '_seq';
+            $seq = $this->table . '_' . $this->primaryKey . '_seq';
         }
         $stmt = $this->pdo->prepare($query);
-        return $stmt->execute($values);
-        if (!$seq) {
-         //   return $this->pdo->lastInsertId();
+        if ($seq) {
+            return $stmt->execute($values);
+        } else {
+            $stmt->execute($values);
+            return $this->pdo->lastInsertId();
         }
     }
 
