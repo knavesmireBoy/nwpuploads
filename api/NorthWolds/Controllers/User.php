@@ -116,34 +116,10 @@ class User extends Presenter
         $priv = $this->grabPriv('role');
         $admin = isApproved($priv, 'ADMIN');
 
-
         if (!$admin) {
             reLocate($this->home);
         }
         return $this->edit();
-
-        /*
-        $roles = fetchAllRoles($pdo, $nwproleorder);
-        if ($nwpadmin) {
-            $clientlist = presentClientList($priv);
-        }
-
-        if (isApproved($priv, 'Client Admin') && !$nwpadmin) {
-            unset($clientlist);
-            $st = $pdo->prepare(queryClient('email'));
-            $st->bindValue(":aux", $_SESSION['email']);
-            doPreparedQuery($st, "Error fetching client details");
-            $row = $st->fetch(PDO::FETCH_ASSOC);
-            $employer = nullify($row['employer']);
-            $email = $row['email'];
-            $email = preg_replace("/[^@]+(@.+)/", "$1", $email);
-            $roles = safeFilter($roles, $nwpRolesCallback);
-        }
-        $admin = $nwpadmin;
-        include 'userform.html.php';
-        exit();
-        return $this->load('add');
-         */
     }
 
     public function selectSubmit()
@@ -182,7 +158,6 @@ class User extends Presenter
         $user = $id ? $this->table->find('id', $id)[0] : $this->table->getEntity();
         $id = $user->id ?? null;
         list($_, $clients) = $this->presentList($details['role'], $id, $this->table, 'client_id');
-
         $roles = $user->getRoles();
         return [
             'template' => 'userform.html.php',
@@ -214,12 +189,24 @@ class User extends Presenter
         $data = $_POST['data'];
         $role = $_POST['roles'][0] ?? 'Browser';
         if ($id) {
-            $user = $this->table->save(['id' => $id, ...$data]);
+            if ($data['password'] !== '') {
+                $user = $this->table->save(['id' => $id, ...$data]);
+                $user->updatePassword($data['password']);
+            }
         } else {
+            $essentials = array_filter($data, function ($item) {
+                return $item;
+            });
+
+            if (count($essentials) < 3) {
+                reLocate($this->home . "/");
+            }
+
             $client_id = $_POST['employer'] ?? $_POST['employed'];
-            $userId = $this->table->save([...$data, 'client_id' => nullify($client_id)], empty($id));
+            $userId = $this->table->save([...$data, 'client_id' => nullify($client_id)], true);
             $user = $this->table->find('id', $userId)[0];
         }
+        //only 'admin' can set
         $user->setRole($role);
     }
 

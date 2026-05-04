@@ -65,6 +65,11 @@ class User extends Entity
     }
   }
 
+  public function updatePassword($password)
+  {
+    $this->table->save(['id' => $this->id, 'password' => md5($password . 'uploads')]);
+  }
+
   public function hasPermission(array $allowed)
   {
     $role = $this->getRole();
