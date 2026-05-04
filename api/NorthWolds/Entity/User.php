@@ -16,6 +16,7 @@ class User extends Entity
   protected $roletable;
   protected $userroletable;
   protected $clienttable;
+  protected $roles = ['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'];
   //public $permissions;
   public $password;
   public $id;
@@ -53,13 +54,13 @@ class User extends Entity
   public function getRoles()
   {
     $roleID = $this->getRole();
-    return $this->fetchAllRoles(['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'], [$roleID]);
+    return $this->fetchAllRoles($this->roles, [$roleID]);
   }
 
   public function setRole(string $role)
   {
     if (empty($this->userroletable->find('userid', $this->id))) {
-      if (!empty($this->roletable->find('id', $role))) {
+      if (in_array($role, $this->roles)) {
         $this->userroletable->save(['userid' => $this->id, 'roleid' => $role], true);
       }
     }

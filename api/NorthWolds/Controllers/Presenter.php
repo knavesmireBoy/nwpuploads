@@ -60,5 +60,9 @@ class Presenter
         return is_int($index) ? $users[$index]->id : $users;
     }
 
+    public function getRoute($role){
+
+    }
+
 
 }
