@@ -213,6 +213,7 @@ class Uploader extends Presenter
         $ret = [];
         $callback = function (array $file, \NorthWolds\Entity\User $user) {
             $details = $user->getDetails('owner');
+            dump($details);
             $name = $details['name'];
             unset($details['id']);
             unset($details['role']);
