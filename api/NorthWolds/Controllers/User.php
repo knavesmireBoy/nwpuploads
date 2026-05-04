@@ -33,6 +33,8 @@ class User extends Presenter
                 'roles' => []
             ],
             */
+            'delete' => ['id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this user?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/client/confirm/'],
+            'confirm' => ['id' => $id],
             'selected' => ['pagehead' => 'Select User', 'selected' => true, 'clients' => [], 'users' => $users]
         ];
 
@@ -113,10 +115,12 @@ class User extends Presenter
         $priv = $this->grabPriv('role');
         $admin = isApproved($priv, 'ADMIN');
 
+       
         if (!$admin) {
-            //  header("Location: ./?addno");
-            exit();
+            reLocate($this->home);
         }
+        return $this->edit();
+
         /*
         $roles = fetchAllRoles($pdo, $nwproleorder);
         if ($nwpadmin) {
@@ -134,13 +138,11 @@ class User extends Presenter
             $email = preg_replace("/[^@]+(@.+)/", "$1", $email);
             $roles = safeFilter($roles, $nwpRolesCallback);
         }
-
-
         $admin = $nwpadmin;
         include 'userform.html.php';
         exit();
-        */
         return $this->load('add');
+         */
     }
 
     public function selectSubmit()
@@ -172,28 +174,31 @@ class User extends Presenter
         }
     }
 
-    public function edit($id)
+    public function edit($id = null)
     {
         $details = $this->grabPriv();
         $admin = isApproved($details['role'], 'ADMIN');
-        $user = $this->table->find('id', $id)[0];
-        list($_, $clients) = $this->presentList($details['role'], $user->id, $this->table, 'client_id');
+        $user = $this->table->find('id', $id);
 
-        $roles = $user->getRoles();
+        $user = $user[0] ?? null;
+        $id = $user->id ?? null;
+        list($_, $clients) = $this->presentList($details['role'], $id, $this->table, 'client_id');
+
+        $roles = $user->getRoles() ?? [];
         return [
             'template' => 'userform.html.php',
             'title' => 'Edit User',
             'variables' => [
                 'admin' => $admin,
                 'priv' => $details['role'],
-                'editor' => $user->id == $details['id'],
+                'editor' => $id == $details['id'],
                 'pagehead' => 'Edit User',
                 'action' => '/user/edit/',
                 'legend' => '',
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'employer' => $user->client_id,
+                'id' => $id,
+                'name' => $user->name ?? '',
+                'email' => $user->email ?? '',
+                'employer' => $user->client_id ?? '',
                 'override' => '',
                 'button' => 'Edit User',
                 'clientlist' => $clients,
@@ -205,5 +210,24 @@ class User extends Presenter
     public function editSubmit()
     {
         dump($_POST);
+    }
+
+    public function delete($id)
+    {
+        return $this->load('delete', ['id' => $id]);
+    }
+
+    public function confirm()
+    {
+        if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
+            return $this->destroy($_POST['id']);
+        }
+        reLocate($this->home);
+    }
+
+    public function destroy($id)
+    {
+        $this->table->delete('id', $id);
+        reLocate($this->home);
     }
 }
