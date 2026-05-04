@@ -8,7 +8,7 @@ class User extends Presenter
 {
     public function __construct(private DatabaseTable $table, private DatabaseTable $clienttable, private string $home) {}
 
-    private function getCustomVars($key, $data)
+    protected function getCustomVars($key, $data)
     {
         //if($key === 'confirm') dump($data);
         $ret = [];
@@ -45,7 +45,7 @@ class User extends Presenter
         return $ret;
     }
 
-    private function grabPriv($prop = '')
+    protected function grabPriv($prop = '')
     {
         if (!isset($_SESSION['username'])) {
             reLocate(REG);
@@ -55,7 +55,7 @@ class User extends Presenter
         return $prop ? $details[$prop] : $details;
     }
 
-    private function displayer($details, $customVars = [], $owner = [])
+    protected function displayer($details, $customVars = [], $owner = [])
     {
         //  $error = query();
         $message = $error ?? '';

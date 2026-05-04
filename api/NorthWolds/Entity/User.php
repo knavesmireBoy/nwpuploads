@@ -31,7 +31,7 @@ class User extends Entity
     $this->clienttable = $client;
   }
 
-  private function fetchAllRoles(array $keys = [], array $selectedRoles = []): array
+  protected function fetchAllRoles(array $keys = [], array $selectedRoles = []): array
   {
     //Build the list of all roles
     $rows = $this->roletable->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
@@ -44,7 +44,7 @@ class User extends Entity
     return $roles;
   }
 
-  private function getRole(): ?string
+  protected function getRole(): ?string
   {
     $res = $this->fetch('userroletable', 'userid', $this->id);
     return $res->roleid ?? null;
@@ -59,7 +59,7 @@ class User extends Entity
   public function setRole(string $role)
   {
     if (!empty($this->roletable->find('id', $role))) {
-      $this->userroletable->save(['userid' => $this->id, 'roleid' => $role]);
+      $this->userroletable->save(['userid' => $this->id, 'roleid' => $role], true);
     }
   }
 
