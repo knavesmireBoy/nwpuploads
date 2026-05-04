@@ -537,8 +537,10 @@ if (isset($_POST['action']) && $_POST['action'] === 'Add') {
     $st->bindValue(':cid', intval($employerid));
     doPreparedQuery($st, 'Error fetching domain.');
     $nwprow = $st->fetch(PDO::FETCH_ASSOC);
+
     list($dom, $com) = parseEmail($nwprow['email']);
     updateUserDomain("$dom.$com", $dbdom, $nwpInsertID);
+    
   }
   resetRoles($priv, $roles, $nwpInsertID);
   header('Location: .');

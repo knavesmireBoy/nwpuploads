@@ -65,6 +65,25 @@ class User extends Entity
     }
   }
 
+  //domain would change if updating client, but not the users email
+function updateUserDomain($olddom, $newdom, $id = 0)
+{
+  if (($olddom && $newdom) && ($olddom !== $newdom)) {
+
+
+   
+    //$concat = replaceStrPos($new, DBSYSTEM);
+
+    //update email of employees IF the domain of client changes
+   // $sql = "UPDATE usr SET email = $concat WHERE email LIKE '%$old'";
+    //but restrict to a specific employee (eg leaving)
+
+    if ($id) {
+    //  $sql .= " AND id=$id";
+    }
+  }
+}
+
   public function updatePassword($password)
   {
     $this->table->save(['id' => $this->id, 'password' => md5($password . 'uploads')]);

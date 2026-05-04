@@ -188,9 +188,18 @@ class User extends Presenter
         $id = nullify($_POST['id']);
         $data = $_POST['data'];
         $role = $_POST['roles'][0] ?? 'Browser';
+        $client_id = $_POST['employer'] ?? $_POST['employed'];
         if ($id) {
+
+            $getExt = composer(partial('substr', 0), curry2('strstr')('@'));
+
+            dump($getExt($data['email']));
             if ($data['password'] !== '') {
                 $user = $this->table->save(['id' => $id, ...$data]);
+
+              
+
+            //    $user->upddateDom();
                 $user->updatePassword($data['password']);
             }
         } else {
@@ -202,7 +211,7 @@ class User extends Presenter
                 reLocate($this->home . "/");
             }
 
-            $client_id = $_POST['employer'] ?? $_POST['employed'];
+            
             $userId = $this->table->save([...$data, 'client_id' => nullify($client_id)], true);
             $user = $this->table->find('id', $userId)[0];
         }
