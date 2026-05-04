@@ -212,7 +212,7 @@ class User extends Presenter
     {
         $id = nullify($_POST['id']);
         $data = $_POST['data'];
-        dump($_POST);
+        //dump($_POST);
        // $db = [...['id' => $id], ...$data];
         if ($id) {
             $user = $this->table->save([...['id' => $id], ...$data]);
