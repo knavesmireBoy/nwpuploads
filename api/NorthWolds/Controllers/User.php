@@ -213,13 +213,12 @@ class User extends Presenter
         $id = nullify($_POST['id']);
         $data = $_POST['data'];
         //dump($_POST);
-       // $db = [...['id' => $id], ...$data];
+        // $db = [...['id' => $id], ...$data];
         if ($id) {
             $user = $this->table->save([...['id' => $id], ...$data]);
         } else {
-            $client_id = $_POST['employer'] ?? $_POST['employed'] ?? null;
-            dump(is_null($client_id), nullify($_POST['employer']));
-
+            $client_id = $_POST['employer'] ? $_POST['employer'] : ($_POST['employed'] ? $_POST['employed'] : null);
+            dump([$data, is_null($client_id), is_null(nullify($_POST['employer']))]);
             $userId = $this->table->save([...$data, 'client_id' => $client_id], empty($id));
             $role = $_POST['roles'][0] ?? 'Browser';
         }
