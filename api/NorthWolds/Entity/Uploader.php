@@ -50,11 +50,15 @@ class Uploader extends Entity
         $res = $this->table->find('userid', $this->userid);
         $multi = count($res) > 1;
         $res = $this->fetch('usertable', 'id', $this->userid);
+        $key = 'id';
+
         if (!empty($res)) {
-            if ($prop) {
-                return $this->{$prop};
-            }
-            return ['id' => $res->id, 'name' => $res->name, 'email' => $res->email, 'client_id' => $res->client_id, 'editor' => $_SESSION['username'] == $res->email, 'multi' => $multi];
+            if ($prop === 'owner') {
+                $key = 'ownerid';
+              } else if ($prop) {
+                return isset($this->{$prop}) ? $this->{$prop} : [];
+              }
+            return [$key => $res->id, 'name' => $res->name, 'email' => $res->email, 'client_id' => $res->client_id, 'editor' => $_SESSION['username'] == $res->email, 'multi' => $multi];
         }
     }
 
