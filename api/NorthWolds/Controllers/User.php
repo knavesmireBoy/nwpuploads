@@ -212,18 +212,15 @@ class User extends Presenter
     {
         $id = nullify($_POST['id']);
         $data = $_POST['data'];
-        //dump($_POST);
-        // $db = [...['id' => $id], ...$data];
+        $role = $_POST['roles'][0] ?? 'Browser';
         if ($id) {
-            $user = $this->table->save([...['id' => $id], ...$data]);
+            $user = $this->table->save(['id' => $id, ...$data]);
         } else {
             $client_id = $_POST['employer'] ?? $_POST['employed'];
             $userId = $this->table->save([...$data, 'client_id' => nullify($client_id)], empty($id));
-            $role = $_POST['roles'][0] ?? 'Browser';
             $user = $this->table->find('id', $userId)[0];
-            dump($role);
-            $user->setRole($role);
         }
+        $user->setRole($role);
     }
 
     public function delete($id)
