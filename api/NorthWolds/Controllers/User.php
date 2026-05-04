@@ -33,6 +33,7 @@ class User extends Presenter
                 'roles' => []
             ],
             */
+            'edit' => ['calltext' => 'Delete User', 'callroute' => "/user/delete/$id"],
             'delete' => ['id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this user?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/client/confirm/'],
             'confirm' => ['id' => $id],
             'selected' => ['pagehead' => 'Select User', 'selected' => true, 'clients' => [], 'users' => $users]
@@ -178,7 +179,7 @@ class User extends Presenter
     {
         $details = $this->grabPriv();
         $admin = isApproved($details['role'], 'ADMIN');
-        $user = $this->table->find('id', $id);
+        $user = $id ? $this->table->find('id', $id) : null;
 
         $user = $user[0] ?? null;
         $id = $user->id ?? null;
@@ -201,6 +202,8 @@ class User extends Presenter
                 'employer' => $user->client_id ?? '',
                 'override' => '',
                 'button' => 'Edit User',
+                'calltext' => 'Delete User',
+                'callroute' => "/user/delete/$id",
                 'clientlist' => $clients,
                 'roles' => $roles
             ]
