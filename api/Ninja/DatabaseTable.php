@@ -46,9 +46,12 @@ class DatabaseTable
         $stmt = $this->pdo->prepare($query);
         $stmt->execute($values);
         if ($seq) {
+            dump($seq);
             return $this->pdo->lastInsertId($seq);
         }
-        return $this->pdo->lastInsertId();
+        else {
+            return $this->pdo->lastInsertId();
+        }
     }
 
     private function updatejoin(array $values, $oldkey)
