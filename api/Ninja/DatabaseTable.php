@@ -45,9 +45,9 @@ class DatabaseTable
            // $seq = $this->table . '_' . $this->primaryKey . '_seq';
         }
         $stmt = $this->pdo->prepare($query);
-        $stmt->execute($values);
+        return $stmt->execute($values);
         if (!$seq) {
-            return $this->pdo->lastInsertId();
+         //   return $this->pdo->lastInsertId();
         }
     }
 
