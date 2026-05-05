@@ -66,7 +66,7 @@ class User extends Entity
   }
 
   //domain would change if updating client, but not the users email
-  public function updateUserDomain($cid, $dbrecord, $insertID)
+  public function updateUserDomain($cid, $dbrecord, $insertID = 0)
   {
     $e = $this->email;
     $f = composer(partial('substr', $e, 0), curry2('strpos')('@'));

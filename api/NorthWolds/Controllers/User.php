@@ -212,11 +212,13 @@ class User extends Presenter
                 reLocate($this->home . "/");
             }
             $userId = $this->table->save([...$data, 'client_id' => nullify($client_id)], true);
+
+            dump($userId);
             $user = $this->table->find('id', $userId)[0];
             $values = $this->table->find('id', $userId, null, 0, 0, \PDO::FETCH_ASSOC)[0];
             $relocate = $user->updateUserDomain(nullify($_POST['employer']), $values, $userId);
         }
-        dump($_POST['roles']);
+       
         //only 'admin' can set
         // $role = !isset($_POST['roles']) ? null : ($_POST['roles'][0] ? $_POST['roles'][0] : 'Browser');
         // $user->setRole($role);
