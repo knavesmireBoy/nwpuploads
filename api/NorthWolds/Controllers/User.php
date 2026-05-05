@@ -187,38 +187,38 @@ class User extends Presenter
     {
         $id = nullify($_POST['id']);
         $data = $_POST['data'];
-        $role = $_POST['roles'][0] ?? 'Browser';
         $client_id = $_POST['employer'] ?? $_POST['employed'];
+        $keys = ['id', 'name', 'email', 'client_id'];
+        $values = [];
+        $j = count($keys);
         $required = array_filter($data, function ($item) {
             return $item;
         });
         if ($id) {
             $user = $this->table->find('id', $id)[0];
             $details = $user->getDetails();
-            $record = ['id', 'name', 'email', 'client_id'];
-            $values = [];
-            $j = count($record);
-            for($i = 0; $i < $j; $i++){
-                if(isset($details[$record[$i]])){
-                   $values[$record[$i]] = $details[$record[$i]];
+            for ($i = 0; $i < $j; $i++) {
+                if (isset($details[$keys[$i]])) {
+                    $values[$keys[$i]] = $details[$keys[$i]];
                 }
             }
-
-            dump($values);
-            $data = [...$record, ...$required];
+            $data = [...$values, ...$required];
             $user = $this->table->save($data);
             if (isset($data['password']) &&  $data['password'] !== '') {
                 $user->updatePassword($data['password']);
             }
-            $user->updateUserDomain(nullify($_POST['employer']), $record);
+            $user->updateUserDomain(nullify($_POST['employer']), $values);
         } else {
             if (count($required) < 3) {
                 reLocate($this->home . "/");
             }
             $userId = $this->table->save([...$data, 'client_id' => nullify($client_id)], true);
             $user = $this->table->find('id', $userId)[0];
+            $values = $this->table->find('id', $userId, null, 0, 0, \PDO::FETCH_ASSOC)[0];
+            $user->updateUserDomain(nullify($_POST['employer']), $values, $userId);
         }
         //only 'admin' can set
+        $role = !isset($_POST['roles']) ? null : ($_POST['roles'][0] ? $_POST['roles'][0] : 'Browser');
         $user->setRole($role);
     }
 

@@ -67,7 +67,7 @@ class User extends Entity
 
 
   //domain would change if updating client, but not the users email
-  public function updateUserDomain($cid, $dbrecord)
+  public function updateUserDomain($cid, $dbrecord, $insertID)
   {
     $e = $this->email;
     $f = composer(partial('substr', $e, 0), curry2('strpos')('@'));
@@ -95,8 +95,14 @@ class User extends Entity
         $data = ['id' => $this->id, 'email' => "$name@$postdom", 'client_id' => null];
       } else {
         //if so revert; leaving client_id as is
-        $libkey = 'mover';
-        $data = ['id' => $this->id, 'email' => $dbrecord['email']];
+        if($insertID){
+          $libkey = 'impostor';
+          $this->table->delete('id', $insertID);
+        }
+        else {
+          $libkey = 'mover';
+          $data = ['id' => $this->id, 'email' => $dbrecord['email']];
+        }
       }
       $this->table->save($data);
     }
