@@ -212,7 +212,10 @@ class User extends Presenter
                 reLocate($this->home . "/");
             }
             $userId = $this->table->save([...$data, 'client_id' => nullify($client_id)], true);
-
+            if(!is_int($userId)){
+                $all = array_map(fn($o) => $o->id, $this->table->findAll());
+                $userId = max($all);
+            }
             dump($userId);
             $user = $this->table->find('id', $userId)[0];
             $values = $this->table->find('id', $userId, null, 0, 0, \PDO::FETCH_ASSOC)[0];
