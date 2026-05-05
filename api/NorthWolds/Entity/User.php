@@ -76,7 +76,7 @@ class User extends Entity
     $postdom = "$dom.$com";
     $details = $this->getDetails();
     $domain = $details['domain'];
-    $libkey = 'freelancer';
+    $libkey =  null;
     if ($cid) {
       $client = $this->clienttable->find('id', $cid)[0];
       if (!$domain || $cid !== $details['client_id']) { //moving
@@ -87,14 +87,15 @@ class User extends Entity
     } else {
       if ($domain) { ///if leaving employ
         $client = $this->clienttable->find('domain', $domain)[0];
-        $libkey = 'leaver';
       } else {
         $client = $this->clienttable->getEntity();
       }
-      //check domain not in use
+      //going freelance? check domain not in use
       if ($client->validateDomain($postdom)) {
         $data = ['id' => $this->id, 'email' => "$name@$postdom", 'client_id' => null];
       } else {
+        //if so revert; leaving client_id as is
+        $libkey = 'mover';
         $data = ['id' => $this->id, 'email' => $dbrecord['email']];
       }
       $this->table->save($data);
