@@ -7,6 +7,7 @@ use \Ninja\DatabaseTable;
 class Presenter
 {
 
+    protected $table;
     protected function presentList(string $role, mixed $userId, \Ninja\DatabaseTable $table, $prop = 'domain')
     {
         $clients = [];
@@ -60,9 +61,14 @@ class Presenter
         return is_int($index) ? $users[$index]->id : $users;
     }
 
-    public function getRoute($role){
+    public function getRoute($role) {}
 
+    protected function getLastInsertId($id)
+    {
+        if (!is_int($id)) {
+            $all = array_map(fn($o) => $o->id, $this->table->findAll());
+            return max($all);
+        }
+        return $id;
     }
-
-
 }
