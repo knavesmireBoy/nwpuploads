@@ -79,7 +79,7 @@ class User extends Entity
     $libkey = 'freelancer';
     if ($cid) {
       $client = $this->clienttable->find('id', $cid)[0];
-      if (!$domain || $cid !== $details['client_id']) {//moving
+      if (!$domain || $cid !== $details['client_id']) { //moving
         $domain = $client->domain;
       }
       $data = ['id' => $this->id, 'email' => "$name@$domain", 'client_id' => $cid];
@@ -94,10 +94,10 @@ class User extends Entity
       //check domain not in use
       if ($client->validateDomain($postdom)) {
         $data = ['id' => $this->id, 'email' => "$name@$postdom", 'client_id' => null];
-        $this->table->save($data);
       } else {
-        $data = ['id' => $this->id, 'email' => $dbrecord['email'], 'client_id' => null];
+        $data = ['id' => $this->id, 'email' => $dbrecord['email']];
       }
+      $this->table->save($data);
     }
   }
 

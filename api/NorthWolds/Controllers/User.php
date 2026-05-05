@@ -193,13 +193,15 @@ class User extends Presenter
             return $item;
         });
         if ($id) {
-            $values = $this->table->find('id', $id, null, 0, 0, \PDO::FETCH_ASSOC)[0];
-            $data = [...$values, ...$required];
+            $user = $this->table->find('id', $id)[0];
+            $details = $user->getDetails();
+            $record = ['id' => $details['id'], 'name' => $details['name'], 'email' => $details['email'], 'client_id' => $details['client_id']];
+            $data = [...$record, ...$required];
             $user = $this->table->save($data);
             if ($data['password'] !== '') {
                 $user->updatePassword($data['password']);
             }
-            $user->updateUserDomain(nullify($_POST['employer']), $values);
+            $user->updateUserDomain(nullify($_POST['employer']), $record);
         } else {
             if (count($required) < 3) {
                 reLocate($this->home . "/");
