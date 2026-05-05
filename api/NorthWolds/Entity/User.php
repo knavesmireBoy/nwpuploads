@@ -74,6 +74,7 @@ class User extends Entity
     list($dom, $com) = parseEmail($e);
     $postdom = "$dom.$com";
     $details = $this->getDetails();
+    dump($details);
     $domain = $details['domain'];
     $libkey =  null;
     if ($cid) {

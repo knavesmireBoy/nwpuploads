@@ -196,6 +196,9 @@ class User extends Presenter
         $required = array_filter($data, function ($item) {
             return $item;
         });
+
+        dump(isset($_POST['roles']));
+        $role = !isset($_POST['roles']) ? null : ($_POST['roles'][0] ? $_POST['roles'][0] : 'Browser');
         if ($id) {
             $user = $this->table->find('id', $id)[0];
             $values = $this->table->find('id', $id, null, 0, 0, \PDO::FETCH_ASSOC)[0];
@@ -223,11 +226,9 @@ class User extends Presenter
             $user = $this->table->find('id', $userId)[0];
             $values = $this->table->find('id', $userId, null, 0, 0, \PDO::FETCH_ASSOC)[0];
             $user->updateUserDomain(nullify($_POST['employer']), $values, $userId);
+            $user->setRole($role);
         }
-
-        //only 'admin' can set
-        $role = !isset($_POST['roles']) ? null : ($_POST['roles'][0] ? $_POST['roles'][0] : 'Browser');
-        $user->setRole($role);
+    
     }
 
     public function delete($id)
