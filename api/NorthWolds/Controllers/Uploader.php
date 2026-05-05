@@ -9,8 +9,8 @@ class Uploader extends Presenter
     private $sort = 'tt';
     public function __construct(private DatabaseTable $table, private DatabaseTable $usertable, private int $display, private int $start, private int $pages, private string $home)
     {
-       // $setcookie = doSetCookie(true);
-       // $setcookie('sort', 'tt');
+        // $setcookie = doSetCookie(true);
+        // $setcookie('sort', 'tt');
     }
 
     private function remove($path)
@@ -635,7 +635,7 @@ class Uploader extends Presenter
         if ($ext) {
             $srch += 4;
         }
-         $srch += 8; //sort
+        $srch += 8; //sort
         $setcookie('searched', $srch);
         $this->pages = $this->setPages(count($files));
         $displayFiles = array_slice(toObject($files, true), $this->start, $this->display);

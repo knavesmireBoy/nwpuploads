@@ -65,7 +65,6 @@ class User extends Entity
     }
   }
 
-
   //domain would change if updating client, but not the users email
   public function updateUserDomain($cid, $dbrecord, $insertID)
   {
