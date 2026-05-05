@@ -25,9 +25,12 @@ class Client extends Entity
     public function validateDomain($domain)
     {
         $all = $this->table->findAll();
-        list($dom, $com) = parseEmail($domain);
-        $doms = array_map(fn($item) => parseEmail($item->domain), $all);
-        dump($doms);
+        list($dom) = parseEmail($domain);
+        $doms = array_map(function ($item) {
+            list($edom) = parseEmail($item->domain);
+            return $edom;
+        }, $all);
+        dump(safeFilter($doms, fn($domain) => $domain === $dom));
     }
 
     //sync check if creating client AFTER creating an "employee" assign the newly created client_id to any "employees"
