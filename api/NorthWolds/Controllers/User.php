@@ -191,10 +191,10 @@ class User extends Presenter
         $client_id = $_POST['employer'] ?? $_POST['employed'];
         if ($id) {
 
-            $f= composer(partial('substr', 0), 'intval', curry2('strpos')('@'));
-
-
-            dump($f($data['email']));
+            $f = composer(partial('substr', $data['email'], 0), 'intval', curry2('strpos')('@'));
+            $name = $f($data['email']);
+            dump([$name, parseEmail($data['email'])]);
+            
             if ($data['password'] !== '') {
                 $user = $this->table->save(['id' => $id, ...$data]);
 
