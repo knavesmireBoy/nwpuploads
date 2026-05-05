@@ -189,26 +189,21 @@ class User extends Presenter
         $data = $_POST['data'];
         $role = $_POST['roles'][0] ?? 'Browser';
         $client_id = $_POST['employer'] ?? $_POST['employed'];
-        $essentials = array_filter($data, function ($item) {
+        $required = array_filter($data, function ($item) {
             return $item;
         });
         if ($id) {
             $values = $this->table->find('id', $id, null, 0, 0, \PDO::FETCH_ASSOC)[0];
-            $data = [...$values, ...$essentials];
+            $data = [...$values, ...$required];
             $user = $this->table->save($data);
             if ($data['password'] !== '') {
                 $user->updatePassword($data['password']);
             }
             $user->updateUserDomain(nullify($_POST['employer']));
-
         } else {
-           
-
-            if (count($essentials) < 3) {
+            if (count($required) < 3) {
                 reLocate($this->home . "/");
             }
-
-
             $userId = $this->table->save([...$data, 'client_id' => nullify($client_id)], true);
             $user = $this->table->find('id', $userId)[0];
         }

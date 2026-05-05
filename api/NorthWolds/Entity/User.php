@@ -71,6 +71,7 @@ class User extends Entity
     if($this->client_id !== $cid){
       $domain = $this->getDetails('domain');
     }
+    dump([$cid, $domain]);
     $f = composer(partial('substr', $e, 0), curry2('strpos')('@'));
     $name = $f($e);
     list($dom, $com) = parseEmail($e);
