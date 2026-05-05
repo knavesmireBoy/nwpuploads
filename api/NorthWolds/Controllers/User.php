@@ -191,6 +191,7 @@ class User extends Presenter
         $data = $_POST['data'];
         $client_id = $_POST['employer'] ?? $_POST['employed'];
         $editor = $id === $this->getPrivilege('id');
+        dump($editor);
         $values = [];
         $required = array_filter($data, function ($item) {
             return $item;
@@ -204,7 +205,6 @@ class User extends Presenter
             $user = $this->table->save($data);
 
             if (isset($data['password']) &&  $data['password'] !== '') {
-
                 $user->updatePassword($data['password']);
             }
             $user->setRole($role);//UPDATE role here
