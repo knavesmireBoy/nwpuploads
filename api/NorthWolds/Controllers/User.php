@@ -62,9 +62,10 @@ class User extends Presenter
         // $pagehead_role = $nwproleplay && !obtainUserRole(true);
         $predicates = [partial('preg_match', '/^nwp/')];
         // $clients = isApproved($priv, 'ADMIN') ? $this->presentClientList($priv, 'domain') : [];
+
+        dump([$details, $this->table->findAll()]);
         list($users, $clients) = $this->presentList($details['role'], $details['id'], $this->table);
         $admin = isApproved($details['role'], 'ADMIN');
-        dump($users);
         $defaultVars = [
             'admin' => $admin,
             'priv' => $details['role'],
@@ -106,7 +107,6 @@ class User extends Presenter
         $details = $this->grabPriv();
         $customVars = $this->getCustomVars($key, $vars);
         //  if ($key === 'selected') dump($customVars);
-
         $owner = []; //prompt.html.php expects this from Uploader Controller
         return $this->displayer($details, $customVars, $owner);
     }
