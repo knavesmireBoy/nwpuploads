@@ -198,6 +198,7 @@ class User extends Presenter
         });
         if ($id) {
             $user = $this->table->find('id', $id)[0];
+            dump($user, $this->table->find('id', $id,null,0,0,2)[0]);
             $details = $user->getDetails();
             for ($i = 0; $i < $j; $i++) {
                 if (isset($details[$keys[$i]])) {
@@ -205,7 +206,7 @@ class User extends Presenter
                 }
             }
             $data = [...$values, ...$required];
-            dump([$values, $details]);
+            
             $user = $this->table->save($data);
             if (isset($data['password']) &&  $data['password'] !== '') {
                 $user->updatePassword($data['password']);
