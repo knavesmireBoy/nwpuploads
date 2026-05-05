@@ -198,20 +198,21 @@ class User extends Presenter
         });
         if ($id) {
             $user = $this->table->find('id', $id)[0];
-            dump($user, $this->table->find('id', $id,null,0,0,2)[0]);
+            //$values = $this->table->find('id', $id,null,0,0,2)[0];
             $details = $user->getDetails();
+
             for ($i = 0; $i < $j; $i++) {
                 if (isset($details[$keys[$i]])) {
                     $values[$keys[$i]] = $details[$keys[$i]];
                 }
             }
             $data = [...$values, ...$required];
-            
+
             $user = $this->table->save($data);
             if (isset($data['password']) &&  $data['password'] !== '') {
                 $user->updatePassword($data['password']);
             }
-           //$user->updateUserDomain(nullify($_POST['employer']), $values);
+            $user->updateUserDomain(nullify($_POST['employer']), $values);
         } else {
             if (count($required) < 3) {
                 reLocate($this->home . "/");
@@ -220,7 +221,7 @@ class User extends Presenter
 
             $user = $this->table->find('id', $userId)[0];
             $values = $this->table->find('id', $userId, null, 0, 0, \PDO::FETCH_ASSOC)[0];
-            //$user->updateUserDomain(nullify($_POST['employer']), $values, $userId);
+            $user->updateUserDomain(nullify($_POST['employer']), $values, $userId);
         }
 
         //only 'admin' can set
