@@ -189,9 +189,12 @@ class User extends Presenter
         $data = $_POST['data'];
         $role = $_POST['roles'][0] ?? 'Browser';
         $client_id = $_POST['employer'] ?? $_POST['employed'];
+        $essentials = array_filter($data, function ($item) {
+            return $item;
+        });
         if ($id) {
             $values = $this->table->find('id', $id, null, 0, 0, \PDO::FETCH_ASSOC)[0];
-            $data = [...$values, ...$data];
+            $data = [...$values, ...$essentials];
 
             dump($data);
 
@@ -201,9 +204,7 @@ class User extends Presenter
                 $user->updatePassword($data['password']);
             }
         } else {
-            $essentials = array_filter($data, function ($item) {
-                return $item;
-            });
+           
 
             if (count($essentials) < 3) {
                 reLocate($this->home . "/");
