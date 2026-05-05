@@ -195,10 +195,17 @@ class User extends Presenter
         if ($id) {
             $user = $this->table->find('id', $id)[0];
             $details = $user->getDetails();
-            $record = ['id' => $details['id'], 'name' => $details['name'], 'email' => $details['email'], 'client_id' => $details['client_id']];
+            $record = ['id', 'name', 'email', 'client_id'];
+            foreach($details as $k => $v){
+                if($record[$k]){
+                    $record[$k] = $v;
+                }
+            }
+
+            dump($record);
             $data = [...$record, ...$required];
             $user = $this->table->save($data);
-            if ($data['password'] !== '') {
+            if (isset($data['password']) &&  $data['password'] !== '') {
                 $user->updatePassword($data['password']);
             }
             $user->updateUserDomain(nullify($_POST['employer']), $record);
