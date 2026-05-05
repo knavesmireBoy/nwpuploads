@@ -30,7 +30,7 @@ class Client extends Entity
             list($edom) = parseEmail($item->domain);
             return $edom;
         }, $all);
-        dump(safeFilter($doms, fn($domain) => $domain === $dom));
+        return safeFilter($doms, fn($domain) => $domain === $dom) === [];
     }
 
     //sync check if creating client AFTER creating an "employee" assign the newly created client_id to any "employees"

@@ -199,7 +199,7 @@ class User extends Presenter
             if ($data['password'] !== '') {
                 $user->updatePassword($data['password']);
             }
-            $user->updateUserDomain(nullify($_POST['employer']));
+            $user->updateUserDomain(nullify($_POST['employer']), $values);
         } else {
             if (count($required) < 3) {
                 reLocate($this->home . "/");

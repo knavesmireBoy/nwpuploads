@@ -67,7 +67,7 @@ class User extends Entity
 
 
   //domain would change if updating client, but not the users email
-  public function updateUserDomain($cid)
+  public function updateUserDomain($cid, $dbrecord)
   {
     $e = $this->email;
     $f = composer(partial('substr', $e, 0), curry2('strpos')('@'));
@@ -75,6 +75,7 @@ class User extends Entity
     list($dom, $com) = parseEmail($e);
     $postdom = "$dom.$com";
     $details = $this->getDetails();
+    $libkey = 'freelancer';
     if ($cid) {
       if (!$details['domain']) {
         $client = $this->clienttable->find('id', $cid)[0];
@@ -82,18 +83,20 @@ class User extends Entity
       }
       $data = ['id' => $this->id, 'email' => "$name.$domain", 'client_id' => $cid];
       $this->table->save($data);
-    }
-    else {
-
-      if($details['domain']){
+    } else {
+      if ($details['domain']) { ///if leaving employ
         $client = $this->clienttable->find('domain', $details['domain'])[0];
-     //   $data = ['id' => $this->id, 'email' => "$name.$domain", 'client_id' => $cid];
-      }
-      else {
+        $libkey = 'leaver';
+      } else {
         $client = $this->clienttable->getEntity();
       }
-      $client->validateDomain($postdom);
-
+      //check domain not in use
+      if ($client->validateDomain($postdom)) {
+        $data = ['id' => $this->id, 'email' => "$name.$postdom", 'client_id' => null];
+        $this->table->save($data);
+      } else {
+        $data = ['id' => $this->id, 'email' => $dbrecord['email'], 'client_id' => null];
+      }
     }
   }
 
