@@ -205,7 +205,7 @@ class User extends Presenter
                 }
             }
             $data = [...$values, ...$required];
-            dump($data);
+            dump([$values, $details]);
             $user = $this->table->save($data);
             if (isset($data['password']) &&  $data['password'] !== '') {
                 $user->updatePassword($data['password']);
