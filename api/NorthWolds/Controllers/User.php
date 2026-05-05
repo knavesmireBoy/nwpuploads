@@ -190,8 +190,7 @@ class User extends Presenter
         $id = nullify($_POST['id']);
         $data = $_POST['data'];
         $client_id = $_POST['employer'] ?? $_POST['employed'];
-        $editor = $id == $this->getPrivilege('id');
-        dump([$id, $this->getPrivilege('id')]);
+        $editor = intval($id) === $this->getPrivilege('id');
         $values = [];
         $required = array_filter($data, function ($item) {
             return $item;
