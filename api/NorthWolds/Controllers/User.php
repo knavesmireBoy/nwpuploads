@@ -199,7 +199,7 @@ class User extends Presenter
                 $user = $this->table->save($values);
                 $user->updatePassword($data['password']);
             }
-            $user->upddateDom(nullify($_POST['employer']));
+            $user->updateUserDomain(nullify($_POST['employer']));
 
         } else {
            
