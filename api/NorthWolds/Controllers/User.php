@@ -196,13 +196,15 @@ class User extends Presenter
             $user = $this->table->find('id', $id)[0];
             $details = $user->getDetails();
             $record = ['id', 'name', 'email', 'client_id'];
-            foreach($details as $k => $v){
-                if($record[$k]){
-                    $record[$k] = $v;
+            $values = [];
+            $j = count($record);
+            for($i = 0; $i < $j; $j++){
+                if(isset($details[$record[$i]])){
+                   $values[$record[$i]] = $details[$record[$i]];
                 }
             }
 
-            dump($record);
+            dump($values);
             $data = [...$record, ...$required];
             $user = $this->table->save($data);
             if (isset($data['password']) &&  $data['password'] !== '') {
