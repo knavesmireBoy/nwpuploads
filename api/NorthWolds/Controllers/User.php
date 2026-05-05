@@ -198,14 +198,15 @@ class User extends Presenter
         });
         if ($id) {
             $user = $this->table->find('id', $id)[0];
-            //$values = $this->table->find('id', $id,null,0,0,2)[0];
-            $details = $user->getDetails();
-
+            $values = $this->table->find('id', $id, null, 0, 0, \PDO::FETCH_ASSOC)[0];
+            //$details = $user->getDetails();
+            /*
             for ($i = 0; $i < $j; $i++) {
                 if (isset($details[$keys[$i]])) {
                     $values[$keys[$i]] = $details[$keys[$i]];
                 }
             }
+                */
             $data = [...$values, ...$required];
 
             $user = $this->table->save($data);
