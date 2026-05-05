@@ -7,7 +7,7 @@ use \Ninja\DatabaseTable;
 class Uploader extends Presenter
 {
     private $sort = 'tt';
-    public function __construct(private DatabaseTable $table, private DatabaseTable $usertable, private int $display, private int $start, private int $pages, private string $home)
+    public function __construct(protected DatabaseTable $table, private DatabaseTable $usertable, private int $display, private int $start, private int $pages, private string $home)
     {
         // $setcookie = doSetCookie(true);
         // $setcookie('sort', 'tt');
