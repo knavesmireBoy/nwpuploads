@@ -97,6 +97,7 @@ class User extends Entity
         if($insertID){
           $libkey = 'impostor';
           $this->table->delete('id', $insertID);
+          return true;
         }
         else {
           $libkey = 'mover';
@@ -105,6 +106,7 @@ class User extends Entity
       }
       $this->table->save($data);
     }
+    return false;
   }
 
   public function updatePassword($password)

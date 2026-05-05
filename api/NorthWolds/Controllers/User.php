@@ -63,7 +63,6 @@ class User extends Presenter
         $predicates = [partial('preg_match', '/^nwp/')];
         // $clients = isApproved($priv, 'ADMIN') ? $this->presentClientList($priv, 'domain') : [];
 
-        dump([$details, $this->table->findAll()]);
         list($users, $clients) = $this->presentList($details['role'], $details['id'], $this->table);
         $admin = isApproved($details['role'], 'ADMIN');
         $defaultVars = [
@@ -215,11 +214,13 @@ class User extends Presenter
             $userId = $this->table->save([...$data, 'client_id' => nullify($client_id)], true);
             $user = $this->table->find('id', $userId)[0];
             $values = $this->table->find('id', $userId, null, 0, 0, \PDO::FETCH_ASSOC)[0];
-            $user->updateUserDomain(nullify($_POST['employer']), $values, $userId);
+            $relocate = $user->updateUserDomain(nullify($_POST['employer']), $values, $userId);
         }
+        dump($_POST['roles']);
         //only 'admin' can set
-        $role = !isset($_POST['roles']) ? null : ($_POST['roles'][0] ? $_POST['roles'][0] : 'Browser');
-        $user->setRole($role);
+        // $role = !isset($_POST['roles']) ? null : ($_POST['roles'][0] ? $_POST['roles'][0] : 'Browser');
+        // $user->setRole($role);
+       // reLocate($this->home);
     }
 
     public function delete($id)
