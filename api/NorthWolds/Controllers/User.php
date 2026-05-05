@@ -195,14 +195,12 @@ class User extends Presenter
         if ($id) {
             $values = $this->table->find('id', $id, null, 0, 0, \PDO::FETCH_ASSOC)[0];
             $data = [...$values, ...$essentials];
-
-            dump($data);
-
             if ($data['password'] !== '') {
-                $user = $this->table->save(['id' => $id, ...$data]);
-                //$user->upddateDom();
+                $user = $this->table->save($values);
                 $user->updatePassword($data['password']);
             }
+            $user->upddateDom(nullify($_POST['employer']));
+
         } else {
            
 

@@ -65,15 +65,18 @@ class User extends Entity
     }
   }
   //domain would change if updating client, but not the users email
-  public function updateUserDomain($email, $newdom, $id = 0)
+  public function updateUserDomain($cid)
   {
-
-    $f = composer(partial('substr', $email, 0), 'intval', curry2('strpos')('@'));
-    $name = $f($email);
-    list($dom, $com) = parseEmail($email);
+    $e = $this->email;
+    if($this->client_id !== $cid){
+      $domain = $this->getDetails('domain');
+    }
+    $f = composer(partial('substr', $e, 0), curry2('strpos')('@'));
+    $name = $f($e);
+    list($dom, $com) = parseEmail($e);
     $olddom = "$dom.$com";
-    if (($olddom && $newdom) && ($olddom !== $newdom)) {
-      $this->table->save(['id' => $id, 'email' => "$name.$newdom"]);
+    if (($domain) && ($olddom !== $domain)) {
+      $this->table->save(['id' => $this->id, 'email' => "$name.$domain", 'client_id' => $cid]);
     }
   }
 
