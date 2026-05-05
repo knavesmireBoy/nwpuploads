@@ -198,7 +198,7 @@ class User extends Presenter
             $record = ['id', 'name', 'email', 'client_id'];
             $values = [];
             $j = count($record);
-            for($i = 0; $i < $j; $j++){
+            for($i = 0; $i < $j; $i++){
                 if(isset($details[$record[$i]])){
                    $values[$record[$i]] = $details[$record[$i]];
                 }
