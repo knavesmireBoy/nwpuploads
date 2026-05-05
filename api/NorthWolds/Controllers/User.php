@@ -190,7 +190,6 @@ class User extends Presenter
         $id = nullify($_POST['id']);
         $data = $_POST['data'];
         $client_id = $_POST['employer'] ?? $_POST['employed'];
-        $keys = ['id', 'name', 'email', 'client_id'];
         $values = [];
         $required = array_filter($data, function ($item) {
             return $item;
@@ -198,24 +197,22 @@ class User extends Presenter
         $role = $_POST['roles'][0] ?? 'Browser';
         if ($id) {
             $user = $this->table->find('id', $id)[0];
-
-            dump(toObject($user, true));
-            $values = $this->table->find('id', $id, null, 0, 0, \PDO::FETCH_ASSOC)[0];
+            $values = toObject($user, true);
             $data = [...$values, ...$required];
             $user = $this->table->save($data);
             if (isset($data['password']) &&  $data['password'] !== '') {
                 $user->updatePassword($data['password']);
             }
-            $user->setRole($role);
+            $user->setRole($role);//UPDATE role here
             $user->updateUserDomain(nullify($_POST['employer']), $values);
         } else {
             if (count($required) < 3) {
                 reLocate($this->home . "/");
             }
             $userId = $this->getLastInsertId($this->table->save([...$data, 'client_id' => nullify($client_id)], true));
-
             $user = $this->table->find('id', $userId)[0];
             $values = $this->table->find('id', $userId, null, 0, 0, \PDO::FETCH_ASSOC)[0];
+            //role must be set BEFORE "updateUserDomain" no user can navigate the site without an assigned role
             $user->setRole($role);
             $user->updateUserDomain(nullify($_POST['employer']), $values, $userId);
         }
