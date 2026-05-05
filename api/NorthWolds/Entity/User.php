@@ -93,7 +93,6 @@ class User extends Entity
       if ($client->validateDomain($postdom)) {
         $data = ['id' => $this->id, 'email' => "$name@$postdom", 'client_id' => null];
       } else {
-        //if so revert; leaving client_id as is
         if($insertID){
           $libkey = 'impostor';
           $this->table->delete('id', $insertID);

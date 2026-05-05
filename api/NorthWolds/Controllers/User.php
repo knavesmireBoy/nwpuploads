@@ -159,10 +159,8 @@ class User extends Presenter
         $admin = isApproved($details['role'], 'ADMIN');
         $user = $id ? $this->table->find('id', $id)[0] : $this->table->getEntity();
         $id = $user->id ?? null;
-        $editor = $id === $this->getPrivilege('id');
         list($_, $clients) = $this->presentList($details['role'], $id, $this->table, 'client_id');
         $roles = $user->getRoles();
-        dump($editor);
         return [
             'template' => 'userform.html.php',
             'title' => 'Edit User',
@@ -192,6 +190,7 @@ class User extends Presenter
         $id = nullify($_POST['id']);
         $data = $_POST['data'];
         $client_id = $_POST['employer'] ?? $_POST['employed'];
+        $editor = $id === $this->getPrivilege('id');
         $values = [];
         $required = array_filter($data, function ($item) {
             return $item;
