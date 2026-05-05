@@ -7,7 +7,10 @@ use \Ninja\DatabaseTable;
 class Presenter
 {
 
-    protected $table;
+    public function __construct(protected DatabaseTable $table)
+    {
+        
+    }
     protected function presentList(string $role, mixed $userId, \Ninja\DatabaseTable $table, $prop = 'domain')
     {
         $clients = [];

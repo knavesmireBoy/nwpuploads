@@ -6,7 +6,10 @@ use \Ninja\DatabaseTable;
 
 class User extends Presenter
 {
-    public function __construct(protected DatabaseTable $table, private DatabaseTable $clienttable, private string $home) {}
+    public function __construct(protected DatabaseTable $table, private DatabaseTable $clienttable, private string $home)
+    {
+        parent::__construct($table);
+    }
 
     protected function getCustomVars($key, $data)
     {
