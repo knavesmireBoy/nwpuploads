@@ -190,17 +190,14 @@ class User extends Presenter
         $role = $_POST['roles'][0] ?? 'Browser';
         $client_id = $_POST['employer'] ?? $_POST['employed'];
         if ($id) {
+            $values = $this->table->find('id', $id, null, 0, 0, \PDO::FETCH_ASSOC)[0];
+            $data = [...$values, ...$data];
 
-            $f = composer(partial('substr', $data['email'], 0), 'intval', curry2('strpos')('@'));
-            $name = $f($data['email']);
-            dump([$name, parseEmail($data['email'])]);
-            
+            dump($data);
+
             if ($data['password'] !== '') {
                 $user = $this->table->save(['id' => $id, ...$data]);
-
-              
-
-            //    $user->upddateDom();
+                //$user->upddateDom();
                 $user->updatePassword($data['password']);
             }
         } else {
@@ -212,7 +209,7 @@ class User extends Presenter
                 reLocate($this->home . "/");
             }
 
-            
+
             $userId = $this->table->save([...$data, 'client_id' => nullify($client_id)], true);
             $user = $this->table->find('id', $userId)[0];
         }
