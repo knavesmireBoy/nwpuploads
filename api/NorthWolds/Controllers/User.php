@@ -196,9 +196,7 @@ class User extends Presenter
         $required = array_filter($data, function ($item) {
             return $item;
         });
-
-        dump(isset($_POST['roles']));
-        $role = !isset($_POST['roles']) ? null : ($_POST['roles'][0] ? $_POST['roles'][0] : 'Browser');
+        $role = $_POST['roles'][0] ?? 'Browser';
         if ($id) {
             $user = $this->table->find('id', $id)[0];
             $values = $this->table->find('id', $id, null, 0, 0, \PDO::FETCH_ASSOC)[0];
