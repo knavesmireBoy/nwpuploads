@@ -191,9 +191,8 @@ class User extends Presenter
         $client_id = $_POST['employer'] ?? $_POST['employed'];
         if ($id) {
 
-            $getExt = composer(partial('substr', 0), curry2('strpos')('@'));
+            $f= composer(partial('substr', 0), 'intval', curry2('strpos')('@'));
 
-            $f = curry2('strpos')('@');
 
             dump($f($data['email']));
             if ($data['password'] !== '') {
