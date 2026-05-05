@@ -84,11 +84,16 @@ class User extends Entity
       $this->table->save($data);
     }
     else {
+
       if($details['domain']){
         $client = $this->clienttable->find('domain', $details['domain'])[0];
-        $client->validateDomain($postdom);
      //   $data = ['id' => $this->id, 'email' => "$name.$domain", 'client_id' => $cid];
       }
+      else {
+        $client = $this->clienttable->getEntity();
+      }
+      $client->validateDomain($postdom);
+
     }
   }
 
