@@ -216,11 +216,9 @@ class User extends Presenter
             }
             $userId = $this->getLastInsertId($this->table->save([...$data, 'client_id' => nullify($client_id)], true));
 
-            dump($userId);
-
             $user = $this->table->find('id', $userId)[0];
             $values = $this->table->find('id', $userId, null, 0, 0, \PDO::FETCH_ASSOC)[0];
-            $relocate = $user->updateUserDomain(nullify($_POST['employer']), $values, $userId);
+            $user->updateUserDomain(nullify($_POST['employer']), $values, $userId);
         }
 
         //only 'admin' can set
