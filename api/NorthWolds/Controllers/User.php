@@ -48,7 +48,7 @@ class User extends Presenter
         return $ret;
     }
 
-    protected function grabPriv($prop = '')
+    protected function getPrivilege($prop = '')
     {
         if (!isset($_SESSION['username'])) {
             reLocate(REG);
@@ -106,7 +106,7 @@ class User extends Presenter
 
     public function load(string $key = '', array $vars = [])
     {
-        $details = $this->grabPriv();
+        $details = $this->getPrivilege();
         $customVars = $this->getCustomVars($key, $vars);
         //  if ($key === 'selected') dump($customVars);
         $owner = []; //prompt.html.php expects this from Uploader Controller
@@ -115,7 +115,7 @@ class User extends Presenter
 
     public function add()
     {
-        $priv = $this->grabPriv('role');
+        $priv = $this->getPrivilege('role');
         $admin = isApproved($priv, 'ADMIN');
 
         if (!$admin) {
@@ -155,12 +155,14 @@ class User extends Presenter
 
     public function edit($id = null)
     {
-        $details = $this->grabPriv();
+        $details = $this->getPrivilege();
         $admin = isApproved($details['role'], 'ADMIN');
         $user = $id ? $this->table->find('id', $id)[0] : $this->table->getEntity();
         $id = $user->id ?? null;
+        $editor = $id === $this->getPrivilege('id');
         list($_, $clients) = $this->presentList($details['role'], $id, $this->table, 'client_id');
         $roles = $user->getRoles();
+        dump($editor);
         return [
             'template' => 'userform.html.php',
             'title' => 'Edit User',
@@ -199,8 +201,11 @@ class User extends Presenter
             $user = $this->table->find('id', $id)[0];
             $values = toObject($user, true);
             $data = [...$values, ...$required];
+
             $user = $this->table->save($data);
+
             if (isset($data['password']) &&  $data['password'] !== '') {
+
                 $user->updatePassword($data['password']);
             }
             $user->setRole($role);//UPDATE role here
