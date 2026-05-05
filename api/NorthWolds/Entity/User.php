@@ -64,20 +64,31 @@ class User extends Entity
       $this->userroletable->save(['userid' => $this->id, 'roleid' => $role], $action);
     }
   }
+
+
   //domain would change if updating client, but not the users email
   public function updateUserDomain($cid)
   {
     $e = $this->email;
-    if($this->client_id !== $cid){
-      $domain = $this->getDetails('domain');
-    }
-    dump([$cid, $domain]);
     $f = composer(partial('substr', $e, 0), curry2('strpos')('@'));
     $name = $f($e);
     list($dom, $com) = parseEmail($e);
-    $olddom = "$dom.$com";
-    if (($domain) && ($olddom !== $domain)) {
-      $this->table->save(['id' => $this->id, 'email' => "$name.$domain", 'client_id' => $cid]);
+    $postdom = "$dom.$com";
+    $details = $this->getDetails();
+    if ($cid) {
+      if (!$details['domain']) {
+        $client = $this->clienttable->find('id', $cid)[0];
+        $domain = $client->domain;
+      }
+      $data = ['id' => $this->id, 'email' => "$name.$domain", 'client_id' => $cid];
+      $this->table->save($data);
+    }
+    else {
+      if($details['domain']){
+        $client = $this->clienttable->find('domain', $details['domain'])[0];
+        $client->validateDomain($postdom);
+     //   $data = ['id' => $this->id, 'email' => "$name.$domain", 'client_id' => $cid];
+      }
     }
   }
 

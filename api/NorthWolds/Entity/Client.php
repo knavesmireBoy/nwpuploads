@@ -20,10 +20,16 @@ class Client extends Entity
         }
     }
 
-    public function getUsers(){
-        
+    public function getUsers() {}
+
+    public function validateDomain($domain)
+    {
+        $all = $this->table->findAll();
+        list($dom, $com) = parseEmail($domain);
+        $doms = array_map(fn($item) => parseEmail($item->domain), $all);
+        dump($doms);
     }
-    
+
     //sync check if creating client AFTER creating an "employee" assign the newly created client_id to any "employees"
     public function associate(int $id)
     {
