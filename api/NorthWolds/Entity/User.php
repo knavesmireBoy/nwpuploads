@@ -81,7 +81,7 @@ class User extends Entity
         $client = $this->clienttable->find('id', $cid)[0];
         $domain = $client->domain;
       }
-      $data = ['id' => $this->id, 'email' => "$name.$domain", 'client_id' => $cid];
+      $data = ['id' => $this->id, 'email' => "$name@$domain", 'client_id' => $cid];
       $this->table->save($data);
     } else {
       if ($details['domain']) { ///if leaving employ
@@ -92,7 +92,7 @@ class User extends Entity
       }
       //check domain not in use
       if ($client->validateDomain($postdom)) {
-        $data = ['id' => $this->id, 'email' => "$name.$postdom", 'client_id' => null];
+        $data = ['id' => $this->id, 'email' => "$name@$postdom", 'client_id' => null];
         $this->table->save($data);
       } else {
         $data = ['id' => $this->id, 'email' => $dbrecord['email'], 'client_id' => null];
