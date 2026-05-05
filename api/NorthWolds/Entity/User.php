@@ -75,17 +75,18 @@ class User extends Entity
     list($dom, $com) = parseEmail($e);
     $postdom = "$dom.$com";
     $details = $this->getDetails();
+    $domain = $details['domain'];
     $libkey = 'freelancer';
     if ($cid) {
-      if (!$details['domain']) {
-        $client = $this->clienttable->find('id', $cid)[0];
+      $client = $this->clienttable->find('id', $cid)[0];
+      if (!$domain || $cid !== $details['client_id']) {//moving
         $domain = $client->domain;
       }
       $data = ['id' => $this->id, 'email' => "$name@$domain", 'client_id' => $cid];
       $this->table->save($data);
     } else {
-      if ($details['domain']) { ///if leaving employ
-        $client = $this->clienttable->find('domain', $details['domain'])[0];
+      if ($domain) { ///if leaving employ
+        $client = $this->clienttable->find('domain', $domain)[0];
         $libkey = 'leaver';
       } else {
         $client = $this->clienttable->getEntity();
