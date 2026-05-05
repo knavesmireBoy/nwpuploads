@@ -192,19 +192,21 @@ class User extends Presenter
         $client_id = $_POST['employer'] ?? $_POST['employed'];
         $keys = ['id', 'name', 'email', 'client_id'];
         $values = [];
-        $j = count($keys);
         $required = array_filter($data, function ($item) {
             return $item;
         });
         $role = $_POST['roles'][0] ?? 'Browser';
         if ($id) {
             $user = $this->table->find('id', $id)[0];
+
+            dump(toObject($user, true));
             $values = $this->table->find('id', $id, null, 0, 0, \PDO::FETCH_ASSOC)[0];
             $data = [...$values, ...$required];
             $user = $this->table->save($data);
             if (isset($data['password']) &&  $data['password'] !== '') {
                 $user->updatePassword($data['password']);
             }
+            $user->setRole($role);
             $user->updateUserDomain(nullify($_POST['employer']), $values);
         } else {
             if (count($required) < 3) {
@@ -217,7 +219,6 @@ class User extends Presenter
             $user->setRole($role);
             $user->updateUserDomain(nullify($_POST['employer']), $values, $userId);
         }
-    
     }
 
     public function delete($id)
