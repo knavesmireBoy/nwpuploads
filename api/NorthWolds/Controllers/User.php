@@ -205,11 +205,12 @@ class User extends Presenter
                 }
             }
             $data = [...$values, ...$required];
+            dump($data);
             $user = $this->table->save($data);
             if (isset($data['password']) &&  $data['password'] !== '') {
                 $user->updatePassword($data['password']);
             }
-            $user->updateUserDomain(nullify($_POST['employer']), $values);
+           //$user->updateUserDomain(nullify($_POST['employer']), $values);
         } else {
             if (count($required) < 3) {
                 reLocate($this->home . "/");
