@@ -17,7 +17,7 @@ if (($admin || $editor) && !empty($id)) {
 	if (isset($class) && preg_match("/override/", $class)) {
 		$email = preg_match('/@/', $override) ? $override : $email;
 	?>
-		<a href="/user/load/cancel" class="cancel">X</a>
+		<a href="/user/load/email" class="cancel">X</a>
 	<?php }
 	if ($legend != '') { ?>
 		<p><?= $legend; ?></p>
