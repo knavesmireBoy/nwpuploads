@@ -238,6 +238,7 @@ class User extends Presenter
         }
         $userId = $this->getLastInsertId($this->table->save([...$data, 'client_id' => nullify($client_id)], true));
         $user = $this->table->find('id', $userId)[0];
+        $user->updatePassword($data['password']);
         //role must be set BEFORE "updateUserDomain" no user can navigate the site without an assigned role
         $user->setRole($role);
         $user->updateUserDomain(nullify($_POST['employer']), get_object_vars($user), $userId);
