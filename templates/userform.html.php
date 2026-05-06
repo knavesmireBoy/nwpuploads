@@ -2,6 +2,7 @@
 $selected = true;
 $domain = false;
 $setcookie = doSetCookie(false);
+$load = '/user/load/';
 ?>
 <h1><?= $pagehead; ?></h1>
 <?php if (!empty($message)) { ?>
@@ -15,7 +16,7 @@ if (($admin || $editor) && !empty($id)) {
 <form action="<?= $action; ?>" method="post" name="usersform" class="<?= empty($class) ? 'details' : $class; ?>">
 	<?php
 	if (isset($class) && preg_match("/override/", $class)) {
-		$load = '/user/load/';
+		
 		$cookies = vercelCookies($_COOKIE);
 		if (array_key_exists("email", $cookies)) {
 			$load .= 'email';

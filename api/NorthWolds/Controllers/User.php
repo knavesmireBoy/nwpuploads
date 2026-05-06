@@ -13,7 +13,11 @@ class User extends Presenter
 
     private function hasChanged($db, $post, $prop)
     {
-        return isset($post[$prop]) && $db[$prop] !== $post[$prop];
+        $ret = [];
+        if (isset($post[$prop]) && $db[$prop] !== $post[$prop]) {
+            $ret[] = $prop;
+        }
+        return $ret;
     }
 
     protected function getCustomVars($key, $data)
@@ -97,7 +101,7 @@ class User extends Presenter
     {
         $details = $this->getPrivilege();
         $customVars = $this->getCustomVars($key, $vars);
-        //  if ($key === 'selected') dump($customVars);
+        //if ($key === 'selected') dump($customVars);
         $owner = []; //prompt.html.php expects this from Uploader Controller
         return $this->displayer($details, $customVars, $owner);
     }
@@ -170,6 +174,7 @@ class User extends Presenter
             'id' => $id,
             'name' => $user->name ?? '',
             'email' => $_COOKIE['email'] ?? $user->email ?? '',
+            'password' => $_COOKIE['password'] ?? '',
             'employer' => $user->client_id ?? '',
             'button' => 'Edit User',
             'calltext' => 'Delete User',
@@ -220,8 +225,10 @@ class User extends Presenter
         //exclude password from update unless requested...
         $data = [...$values, ...$required];
         $change = $this->hasChanged($values, $required, 'email');
-        if ($change && $editor && empty($_POST['override'])) {
-            $setcookie('email', $data['email']);
+        if ($change  !== [] && $editor && empty($_POST['override'])) {
+            foreach ($change as $prop) {
+                $setcookie($prop, $data[$prop]);
+            }
             return $this->load('change', ['id' => $id]);
         }
         unset($values['password']);
