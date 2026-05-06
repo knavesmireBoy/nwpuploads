@@ -228,6 +228,7 @@ class User extends Presenter
         $role = $_POST['roles'][0] ?? 'Browser';
         $user = $this->table->find('id', $id)[0];
         $values = get_object_vars($user);
+        unset($values['password']);
         //exclude password from update unless requested...
         $data = [...$values, ...$required];
         $change = $this->hasChanged($values, $required, ['email', 'password']);
@@ -238,12 +239,7 @@ class User extends Presenter
             }
             return $this->load('change', ['id' => $id]);
         }
-        if(!empty($_POST['override'])){
-            dump([$values, $required]);
-        }
-        unset($values['password']);
         $user = $this->table->save($data);
-
         if (isset($data['password']) && $data['password'] !== '') {
             $user->updatePassword($data['password']);
         }
