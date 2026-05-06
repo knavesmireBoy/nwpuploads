@@ -836,7 +836,6 @@ function toObject($o, $arg = false)
 
 function vercelCookies($current)
 {
-    
     $sesh = $_COOKIE['PHPSESSID'];
     $cookies = ["__vercel_toolbar" =>  "1", "resolution" =>  "1280", "searched" => "8", "_vercel_session" =>  "25087941d8881d86824f48b851", "sort" => "tt", "PHPSESSID" => $sesh];
     return array_diff_assoc($current, $cookies);

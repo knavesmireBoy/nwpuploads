@@ -11,16 +11,30 @@ class User extends Presenter
         parent::__construct($table);
     }
 
-    private function hasChanged($db, $post, $props)
+    private function hasChanged($db, $post, $props, $optionals)
     {
         $ret = [];
+        $opt = [];
 
         foreach ($props as $prop) {
             if (isset($post[$prop]) && $db[$prop] !== $post[$prop]) {
                 $ret[] = $prop;
             }
         }
-        return $ret;
+        foreach ($optionals as $prop) {
+            if (isset($post[$prop]) && $db[$prop] !== $post[$prop]) {
+                $opt[] = $prop;
+            }
+        }
+        return [$ret, $opt];
+    }
+
+    private function setCookie($data, $props, bool $flag = false)
+    {
+        $setcookie = doSetCookie($flag);
+        foreach ($props as $prop) {
+            $setcookie($prop, $data[$prop]);
+        }
     }
 
     protected function getCustomVars($key, $data)
@@ -158,7 +172,6 @@ class User extends Presenter
     public function edit($id, $args = [])
     {
         $details = $this->getPrivilege();
-        $setcookie = doSetCookie(false);
         $admin = isApproved($details['role'], 'ADMIN');
         $user = $id ? $this->table->find('id', $id)[0] : $this->table->getEntity();
         $id = $user->id ?? null;
@@ -175,7 +188,7 @@ class User extends Presenter
             'pagehead' => 'Edit User',
             'action' => '/user/edit/',
             'id' => $id,
-            'name' => $user->name ?? '',
+            'name' => $_COOKIE['name'] ?? $user->name ?? '',
             'email' => $_COOKIE['email'] ?? $user->email ?? '',
             'password' => $_COOKIE['password'] ?? '',
             'employer' => $user->client_id ?? '',
@@ -186,8 +199,7 @@ class User extends Presenter
             'roles' => $roles
         ];
 
-            $setcookie('email');
-            $setcookie('password');
+        $this->setCookie($_COOKIE, ['name', 'email', 'password'], false);
 
         return [
             'template' => 'userform.html.php',
@@ -217,7 +229,6 @@ class User extends Presenter
 
     public function editSubmit()
     {
-        $setcookie = doSetCookie(true);
         $id = nullify($_POST['id']);
         $data = $_POST['data'];
         $editor = intval($id) === $this->getPrivilege('id');
@@ -228,20 +239,19 @@ class User extends Presenter
         $role = $_POST['roles'][0] ?? 'Browser';
         $user = $this->table->find('id', $id)[0];
         $values = get_object_vars($user);
-        unset($values['password']);
         //exclude password from update unless requested...
         $data = [...$values, ...$required];
-        $change = $this->hasChanged($values, $required, ['email', 'password']);
 
+        list($change, $optional) = $this->hasChanged($values, $required, ['email', 'password'], ['name']);
         if ($change !== [] && $editor && empty($_POST['override'])) {
-            foreach ($change as $prop) {
-                $setcookie($prop, $data[$prop]);
-            }
+            $this->setCookie($data, [...$change, ...$optional], true);
             return $this->load('change', ['id' => $id]);
         }
         $user = $this->table->save($data);
-        if (isset($data['password']) && $data['password'] !== '') {
+        if (isset($required['password']) && $required['password'] !== '') {
             $user->updatePassword($data['password']);
+        } else {
+            unset($data['password']);
         }
         $user->setRole($role); //UPDATE role here
         $user->updateUserDomain(nullify($_POST['employer']), $values);
