@@ -11,11 +11,14 @@ class User extends Presenter
         parent::__construct($table);
     }
 
-    private function hasChanged($db, $post, $prop)
+    private function hasChanged($db, $post, $props)
     {
         $ret = [];
-        if (isset($post[$prop]) && $db[$prop] !== $post[$prop]) {
-            $ret[] = $prop;
+
+        foreach ($props as $prop) {
+            if (isset($post[$prop]) && $db[$prop] !== $post[$prop]) {
+                $ret[] = $prop;
+            }
         }
         return $ret;
     }
@@ -224,8 +227,10 @@ class User extends Presenter
         $values = get_object_vars($user);
         //exclude password from update unless requested...
         $data = [...$values, ...$required];
-        $change = $this->hasChanged($values, $required, 'email');
-        if ($change  !== [] && $editor && empty($_POST['override'])) {
+        $change = $this->hasChanged($values, $required, ['email', 'password']);
+
+        dump($change);
+        if ($change !== [] && $editor && empty($_POST['override'])) {
             foreach ($change as $prop) {
                 $setcookie($prop, $data[$prop]);
             }
