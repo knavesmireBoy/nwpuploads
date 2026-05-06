@@ -238,6 +238,9 @@ class User extends Presenter
             }
             return $this->load('change', ['id' => $id]);
         }
+        if(!empty($_POST['override'])){
+            dump([$values, $required]);
+        }
         unset($values['password']);
         $user = $this->table->save($data);
 
