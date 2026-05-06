@@ -99,6 +99,11 @@ class User extends Presenter
         $customVars = $this->getCustomVars($key, $vars);
         //  if ($key === 'selected') dump($customVars);
         $owner = []; //prompt.html.php expects this from Uploader Controller
+        $setcookie = doSetCookie(false);
+        if(isset($_COOKIE[$key])){
+            $setcookie($key);
+        }
+
         return $this->displayer($details, $customVars, $owner);
     }
 
@@ -178,7 +183,7 @@ class User extends Presenter
             'clientlist' => $clients,
             'roles' => $roles
         ];
-        setcookie('email');
+        $setcookie('email');
 
         return [
             'template' => 'userform.html.php',

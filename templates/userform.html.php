@@ -1,6 +1,7 @@
 <?php
 $selected = true;
 $domain = false;
+//$setcookie = doSetCookie(false);
 ?>
 <h1><?= $pagehead; ?></h1>
 <?php if (!empty($message)) { ?>
@@ -13,11 +14,10 @@ if (($admin || $editor) && !empty($id)) {
 ?>
 <form action="<?= $action; ?>" method="post" name="usersform" class="<?= empty($class) ? 'details' : $class; ?>">
 	<?php
-	if (isset($class) && preg_match("/override/", $class)) { 
+	if (isset($class) && preg_match("/override/", $class)) {
 		$email = preg_match('/@/', $override) ? $override : $email;
-		?>
-		<a href="/user/load/" class="cancel">X</a>
-		$email 
+	?>
+		<a href="/user/load/cancel" class="cancel">X</a>
 	<?php }
 	if ($legend != '') { ?>
 		<p><?= $legend; ?></p>
@@ -26,7 +26,7 @@ if (($admin || $editor) && !empty($id)) {
 	<div>
 		<label for="name">Name</label><input id="name" type="text" name="data[name]" value="<?= $name ?? ''; ?>" required autocomplete="off" />
 		<label for="email">Email</label><input type="email" id="email" name="data[email]" value="<?= $email ?? ''; ?>" required autocomplete="off" />
-		<label for="password">Password</label><input id="password" type="password" name="data[password]" autocomplete="new-password"/>
+		<label for="password">Password</label><input id="password" type="password" name="data[password]" autocomplete="new-password" />
 		<input type="hidden" name="employed" value="<?= $employer ?? ''; ?>" />
 	</div>
 	<?php include TEMPLATE . '_roles.html.php';
