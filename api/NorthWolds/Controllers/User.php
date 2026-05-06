@@ -222,6 +222,7 @@ class User extends Presenter
         $role = $_POST['roles'][0] ?? 'Browser';
         $user = $this->table->find('id', $id)[0];
         $values = toObject($user, true);
+        //exclude password from update unless requested...
         unset($values['password']);
         $data = [...$values, ...$required];
 
