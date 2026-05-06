@@ -33,7 +33,8 @@ class User extends Presenter
     {
         $setcookie = doSetCookie($flag);
         foreach ($props as $prop) {
-            $setcookie($prop, $data[$prop]);
+            $arg = isset($data[$prop]) && $flag ? $data[$prop] : '';
+            $setcookie($prop, $arg);
         }
     }
 
