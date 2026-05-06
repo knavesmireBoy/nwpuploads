@@ -11,6 +11,23 @@ class User extends Presenter
         parent::__construct($table);
     }
 
+    private function hasChanged($db, $post, $prop)
+    {
+        return $post[$prop] && $db[$prop] !== $post[$prop];
+    }
+
+    private function foo()
+    {
+        $title = "Prompt";
+        $prompt = "Changing your email will log you out of the current session. Proceed?";
+        $call = "change";
+        $pos = "Yes";
+        $neg = "No";
+        $action = '';
+        $formname = 'changedetailsform';
+        $template = 'confirm.html.php';
+    }
+
     protected function getCustomVars($key, $data)
     {
         //if($key === 'confirm') dump($data);
@@ -159,38 +176,6 @@ class User extends Presenter
         }
     }
 
-    public function edit1($id = null)
-    {
-        $details = $this->getPrivilege();
-        $admin = isApproved($details['role'], 'ADMIN');
-        $user = $id ? $this->table->find('id', $id)[0] : $this->table->getEntity();
-        $id = $user->id ?? null;
-        list($_, $clients) = $this->presentList($details['role'], $id, $this->table, 'client_id');
-        $roles = $user->getRoles();
-        return [
-            'template' => 'userform.html.php',
-            'title' => 'Edit User',
-            'variables' => [
-                'admin' => $admin,
-                'priv' => $details['role'],
-                'editor' => $id == $details['id'],
-                'legend' => '',
-                'override' => '',
-                'pagehead' => $id ? 'Edit User' : 'Add User',
-                'action' => '/user/edit/',
-                'id' => $id,
-                'name' => $user->name ?? '',
-                'email' => $user->email ?? '',
-                'employer' => $user->client_id ?? '',
-                'button' => $id ? 'Edit User' : 'Add User',
-                'calltext' => $id ? 'Delete User' : null,
-                'callroute' => $id ? "/user/delete/$id" : null,
-                'clientlist' => $clients,
-                'roles' => $roles
-            ]
-        ];
-    }
-
     public function edit($id, $args = [])
     {
         $details = $this->getPrivilege();
@@ -228,7 +213,6 @@ class User extends Presenter
     {
         $data = $_POST['data'];
         $client_id = $_POST['employer'] ?? $_POST['employed'];
-        $values = [];
         $required = array_filter($data, function ($item) {
             return $item;
         });
@@ -255,10 +239,15 @@ class User extends Presenter
         });
         $role = $_POST['roles'][0] ?? 'Browser';
         $user = $this->table->find('id', $id)[0];
-        $values =  get_object_vars($user);
+        $values = get_object_vars($user);
         //exclude password from update unless requested...
-        unset($values['password']);
         $data = [...$values, ...$required];
+
+        $change = $this->hasChanged($values, $required, 'password');
+
+        if ($change && $editor) {
+        }
+        unset($values['password']);
         $user = $this->table->save($data);
 
         if (isset($data['password']) &&  $data['password'] !== '') {
