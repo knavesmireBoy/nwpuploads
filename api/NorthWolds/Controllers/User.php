@@ -121,7 +121,7 @@ class User extends Presenter
         if (!$admin) {
             reLocate($this->home);
         }
-        return $this->edit();
+        return $this->edit(0, ['action' => 'user/add/']);
     }
 
     public function selectSubmit()
@@ -153,7 +153,7 @@ class User extends Presenter
         }
     }
 
-    public function edit($id = null)
+    public function edit($id, $args)
     {
         $details = $this->getPrivilege();
         $admin = isApproved($details['role'], 'ADMIN');
@@ -161,28 +161,35 @@ class User extends Presenter
         $id = $user->id ?? null;
         list($_, $clients) = $this->presentList($details['role'], $id, $this->table, 'client_id');
         $roles = $user->getRoles();
+        $vars = [
+            'admin' => $admin,
+            'priv' => $details['role'],
+            'editor' => $id == $details['id'],
+            'legend' => '',
+            'override' => '',
+            'pagehead' => $id ? 'Edit User' : 'Add User',
+            'action' => '/user/edit/',
+            'id' => $id,
+            'name' => $user->name ?? '',
+            'email' => $user->email ?? '',
+            'employer' => $user->client_id ?? '',
+            'button' => $id ? 'Edit User' : 'Add User',
+            'calltext' => $id ? 'Delete User' : null,
+            'callroute' => $id ? "/user/delete/$id" : null,
+            'clientlist' => $clients,
+            'roles' => $roles
+        ];
         return [
             'template' => 'userform.html.php',
             'title' => 'Edit User',
-            'variables' => [
-                'admin' => $admin,
-                'priv' => $details['role'],
-                'editor' => $id == $details['id'],
-                'legend' => '',
-                'override' => '',
-                'pagehead' => $id ? 'Edit User' : 'Add User',
-                'action' => '/user/edit/',
-                'id' => $id,
-                'name' => $user->name ?? '',
-                'email' => $user->email ?? '',
-                'employer' => $user->client_id ?? '',
-                'button' => $id ? 'Edit User' : 'Add User',
-                'calltext' => $id ? 'Delete User' : null,
-                'callroute' => $id ? "/user/delete/$id" : null,
-                'clientlist' => $clients,
-                'roles' => $roles
-            ]
+            'variables' => [...$vars, ...$args]
         ];
+    }
+
+    public function addSubmit() {
+
+
+        dump($_POST);
     }
 
     public function editSubmit()
@@ -199,6 +206,7 @@ class User extends Presenter
         if ($id) {
             $user = $this->table->find('id', $id)[0];
             $values = toObject($user, true);
+            unset($values['password']);
             $data = [...$values, ...$required];
 
             $user = $this->table->save($data);
@@ -206,7 +214,7 @@ class User extends Presenter
             if (isset($data['password']) &&  $data['password'] !== '') {
                 $user->updatePassword($data['password']);
             }
-            $user->setRole($role);//UPDATE role here
+            $user->setRole($role); //UPDATE role here
             $user->updateUserDomain(nullify($_POST['employer']), $values);
         } else {
             if (count($required) < 3) {
