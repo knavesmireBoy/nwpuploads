@@ -13,7 +13,7 @@ class User extends Presenter
 
     private function hasChanged($db, $post, $prop)
     {
-        return $post[$prop] && $db[$prop] !== $post[$prop];
+        return isset($post[$prop]) && $db[$prop] !== $post[$prop];
     }
 
     private function foo()
@@ -227,7 +227,7 @@ class User extends Presenter
         $values = get_object_vars($user);
         //exclude password from update unless requested...
         $data = [...$values, ...$required];
-        $change = $this->hasChanged($values, $required, 'password');
+        $change = $this->hasChanged($values, $required, 'email');
         if ($change && $editor) {
             return $this->load('change', ['id' => $id]);
         }
