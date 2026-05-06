@@ -121,7 +121,11 @@ class User extends Presenter
         if (!$admin) {
             reLocate($this->home);
         }
-        return $this->edit(0, ['action' => 'user/add/']);
+        return $this->edit(0, ['action' => 'user/add/', 'pagehead' => 'Add User', 'button' => 'Add User', 'calltext' => null,
+            'callroute' =>  null,
+            'name' => '',
+            'email' => '',
+            'employer' => '']);
     }
 
     public function selectSubmit()
@@ -153,12 +157,11 @@ class User extends Presenter
         }
     }
 
-    public function edit($id, $args)
+    public function edit($id, $args = [])
     {
         $details = $this->getPrivilege();
         $admin = isApproved($details['role'], 'ADMIN');
-        $user = $id ? $this->table->find('id', $id)[0] : $this->table->getEntity();
-        $id = $user->id ?? null;
+        $user =  $this->table->find('id', $id)[0];
         list($_, $clients) = $this->presentList($details['role'], $id, $this->table, 'client_id');
         $roles = $user->getRoles();
         $vars = [
@@ -167,15 +170,15 @@ class User extends Presenter
             'editor' => $id == $details['id'],
             'legend' => '',
             'override' => '',
-            'pagehead' => $id ? 'Edit User' : 'Add User',
+            'pagehead' => 'Edit User',
             'action' => '/user/edit/',
             'id' => $id,
-            'name' => $user->name ?? '',
-            'email' => $user->email ?? '',
-            'employer' => $user->client_id ?? '',
-            'button' => $id ? 'Edit User' : 'Add User',
-            'calltext' => $id ? 'Delete User' : null,
-            'callroute' => $id ? "/user/delete/$id" : null,
+            'name' => $user->name,
+            'email' => $user->email,
+            'employer' => $user->client_id,
+            'button' => 'Edit User',
+            'calltext' => 'Delete User',
+            'callroute' => "/user/delete/$id",
             'clientlist' => $clients,
             'roles' => $roles
         ];
@@ -200,10 +203,7 @@ class User extends Presenter
         }
         $userId = $this->getLastInsertId($this->table->save([...$data, 'client_id' => nullify($client_id)], true));
         $user = $this->table->find('id', $userId)[0];
-
-
         $values = toObject($user, true);
-
         dump([$values, get_object_vars($user)]);
         //role must be set BEFORE "updateUserDomain" no user can navigate the site without an assigned role
         $user->setRole($role);
