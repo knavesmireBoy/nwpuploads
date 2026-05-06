@@ -238,11 +238,9 @@ class User extends Presenter
         }
         $userId = $this->getLastInsertId($this->table->save([...$data, 'client_id' => nullify($client_id)], true));
         $user = $this->table->find('id', $userId)[0];
-        $values = toObject($user, true);
-        dump([$values, get_object_vars($user)]);
         //role must be set BEFORE "updateUserDomain" no user can navigate the site without an assigned role
         $user->setRole($role);
-        $user->updateUserDomain(nullify($_POST['employer']), $values, $userId);
+        $user->updateUserDomain(nullify($_POST['employer']), get_object_vars($user), $userId);
     }
 
     public function editSubmit()
@@ -256,11 +254,10 @@ class User extends Presenter
         });
         $role = $_POST['roles'][0] ?? 'Browser';
         $user = $this->table->find('id', $id)[0];
-        $values = toObject($user, true);
+        $values =  get_object_vars($user);
         //exclude password from update unless requested...
         unset($values['password']);
         $data = [...$values, ...$required];
-
         $user = $this->table->save($data);
 
         if (isset($data['password']) &&  $data['password'] !== '') {
