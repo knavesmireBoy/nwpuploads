@@ -481,7 +481,8 @@ function docompose($a, $b)
     }, 'identity');
 }
 
-function docomp($f2, $f1, $seed){
+function docomp($f2, $f1, $seed)
+{
     $p = $f2($seed);
     return composer($p, $f1)($seed);
 }
@@ -830,4 +831,11 @@ function reAssoc($roles, $keys, $k, $v, $ret, $i, $j)
 function toObject($o, $arg = false)
 {
     return json_decode(json_encode($o), $arg);
+}
+
+
+function vercelCookies($current)
+{
+    $cookies = ["__vercel_toolbar" =>  "1", "resolution" =>  "1280", "searched" => "8", "_vercel_session" =>  "25087941d8881d86824f48b851", "sort" => "tt", "PHPSESSID" => "b9de735e59bc701193ba3bf4b4cbd8e8"];
+    return array_diff_assoc($current, $cookies);
 }

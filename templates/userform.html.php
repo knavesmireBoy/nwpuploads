@@ -15,8 +15,7 @@ if (($admin || $editor) && !empty($id)) {
 <form action="<?= $action; ?>" method="post" name="usersform" class="<?= empty($class) ? 'details' : $class; ?>">
 	<?php
 	if (isset($class) && preg_match("/override/", $class)) {
-
-		dump($_COOKIE);
+		dump(vercelCookies($_COOKIE));
 		$email = preg_match('/@/', $override) ? $override : $email;
 	?>
 		<a href="/user/load/email" class="cancel">X</a>
