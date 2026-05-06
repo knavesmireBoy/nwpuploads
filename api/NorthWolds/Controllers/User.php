@@ -228,7 +228,7 @@ class User extends Presenter
         //exclude password from update unless requested...
         $data = [...$values, ...$required];
         $change = $this->hasChanged($values, $required, 'email');
-        if ($change && $editor) {
+        if ($change && $editor && empty($_POST['override'])) {
             return $this->load('change', ['id' => $id]);
         }
         unset($values['password']);
@@ -257,7 +257,7 @@ class User extends Presenter
     public function changeSubmit()
     {
         if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
-            return $this->edit($_POST['id']);
+            return $this->edit($_POST['id'], ['class' => 'details override', 'override' => 'override', 'legend' => 'You may now proceed with your edits']);
         }
         reLocate($this->home);
     }
