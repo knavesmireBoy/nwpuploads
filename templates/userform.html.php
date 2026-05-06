@@ -1,7 +1,7 @@
 <?php
 $selected = true;
 $domain = false;
-//$setcookie = doSetCookie(false);
+$setcookie = doSetCookie(false);
 ?>
 <h1><?= $pagehead; ?></h1>
 <?php if (!empty($message)) { ?>
@@ -15,10 +15,14 @@ if (($admin || $editor) && !empty($id)) {
 <form action="<?= $action; ?>" method="post" name="usersform" class="<?= empty($class) ? 'details' : $class; ?>">
 	<?php
 	if (isset($class) && preg_match("/override/", $class)) {
-		dump(vercelCookies($_COOKIE));
-		$email = preg_match('/@/', $override) ? $override : $email;
+		$load = '/user/load/';
+		$cookies = vercelCookies($_COOKIE);
+		if (array_key_exists("email", $cookies)) {
+			$load .= 'email';
+			$setcookie('email');
+		}
 	?>
-		<a href="/user/load/email" class="cancel">X</a>
+		<a href="<?= $load; ?>" class="cancel">X</a>
 	<?php }
 	if ($legend != '') { ?>
 		<p><?= $legend; ?></p>
