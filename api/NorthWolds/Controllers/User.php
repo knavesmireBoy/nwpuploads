@@ -186,47 +186,52 @@ class User extends Presenter
         ];
     }
 
-    public function addSubmit() {
+    public function addSubmit()
+    {
+        $data = $_POST['data'];
+        $client_id = $_POST['employer'] ?? $_POST['employed'];
+        $values = [];
+        $required = array_filter($data, function ($item) {
+            return $item;
+        });
+        $role = $_POST['roles'][0] ?? 'Browser';
+        if (count($required) < 3) {
+            reLocate($this->home . "/");
+        }
+        $userId = $this->getLastInsertId($this->table->save([...$data, 'client_id' => nullify($client_id)], true));
+        $user = $this->table->find('id', $userId)[0];
 
 
-        dump($_POST);
+        $values = toObject($user, true);
+
+        dump([$values, get_object_vars($user)]);
+        //role must be set BEFORE "updateUserDomain" no user can navigate the site without an assigned role
+        $user->setRole($role);
+        $user->updateUserDomain(nullify($_POST['employer']), $values, $userId);
     }
 
     public function editSubmit()
     {
         $id = nullify($_POST['id']);
         $data = $_POST['data'];
-        $client_id = $_POST['employer'] ?? $_POST['employed'];
         $editor = intval($id) === $this->getPrivilege('id');
         $values = [];
         $required = array_filter($data, function ($item) {
             return $item;
         });
         $role = $_POST['roles'][0] ?? 'Browser';
-        if ($id) {
-            $user = $this->table->find('id', $id)[0];
-            $values = toObject($user, true);
-            unset($values['password']);
-            $data = [...$values, ...$required];
+        $user = $this->table->find('id', $id)[0];
+        $values = toObject($user, true);
+        unset($values['password']);
+        $data = [...$values, ...$required];
 
-            $user = $this->table->save($data);
+        $user = $this->table->save($data);
 
-            if (isset($data['password']) &&  $data['password'] !== '') {
-                $user->updatePassword($data['password']);
-            }
-            $user->setRole($role); //UPDATE role here
-            $user->updateUserDomain(nullify($_POST['employer']), $values);
-        } else {
-            if (count($required) < 3) {
-                reLocate($this->home . "/");
-            }
-            $userId = $this->getLastInsertId($this->table->save([...$data, 'client_id' => nullify($client_id)], true));
-            $user = $this->table->find('id', $userId)[0];
-            $values = $this->table->find('id', $userId, null, 0, 0, \PDO::FETCH_ASSOC)[0];
-            //role must be set BEFORE "updateUserDomain" no user can navigate the site without an assigned role
-            $user->setRole($role);
-            $user->updateUserDomain(nullify($_POST['employer']), $values, $userId);
+        if (isset($data['password']) &&  $data['password'] !== '') {
+            $user->updatePassword($data['password']);
         }
+        $user->setRole($role); //UPDATE role here
+        $user->updateUserDomain(nullify($_POST['employer']), $values);
     }
 
     public function delete($id)
