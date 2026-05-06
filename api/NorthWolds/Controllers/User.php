@@ -158,7 +158,7 @@ class User extends Presenter
     public function edit($id, $args = [])
     {
         $details = $this->getPrivilege();
-
+        $setcookie = doSetCookie(false);
         $admin = isApproved($details['role'], 'ADMIN');
         $user = $id ? $this->table->find('id', $id)[0] : $this->table->getEntity();
         $id = $user->id ?? null;
@@ -185,6 +185,9 @@ class User extends Presenter
             'clientlist' => $clients,
             'roles' => $roles
         ];
+
+            $setcookie('email');
+            $setcookie('password');
 
         return [
             'template' => 'userform.html.php',
@@ -229,7 +232,6 @@ class User extends Presenter
         $data = [...$values, ...$required];
         $change = $this->hasChanged($values, $required, ['email', 'password']);
 
-        dump($change);
         if ($change !== [] && $editor && empty($_POST['override'])) {
             foreach ($change as $prop) {
                 $setcookie($prop, $data[$prop]);
