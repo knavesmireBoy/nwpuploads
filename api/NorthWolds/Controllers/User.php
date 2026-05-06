@@ -20,11 +20,10 @@ class User extends Presenter
     {
         $title = "Prompt";
         $prompt = "Changing your email will log you out of the current session. Proceed?";
-        $call = "change";
+        $call = "confirm";
         $pos = "Yes";
         $neg = "No";
-        $action = '';
-        $formname = 'changedetailsform';
+        $action = '/user/change/';
         $template = 'confirm.html.php';
     }
 
@@ -36,23 +35,6 @@ class User extends Presenter
         $users = $key === 'selected' ? $data : [];
 
         $lib = [
-            /*
-            'add' => ['pagehead' => 'New User', 'template' => 'userform.html.php', 'route' => 'Add', 'action' => '/user/edit/', 'button' => 'Add User', 'legend' => null, 'override' => null, 'email' => ''],
-            'edit' => [
-                'pagehead' => 'Edit User',
-                'template' => 'userform.html.php',
-                'action' => '/user/edit/',
-                'id' => $id,
-                'button' => 'Edit User',
-                'route' => 'Edit',
-                'name' => $data['name'] ?? '',
-                'email' => $data['email'] ?? '',
-                'override' => $data['override'] ?? '',
-                'legend' => '',
-                'selected' => true,
-                'roles' => []
-            ],
-            */
             'edit' => ['calltext' => 'Delete User', 'callroute' => "/user/delete/$id"],
             'delete' => ['id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this user?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/user/confirm/'],
             'confirm' => ['id' => $id],
@@ -184,10 +166,12 @@ class User extends Presenter
         $id = $user->id ?? null;
         list($_, $clients) = $this->presentList($details['role'], $id, $this->table, 'client_id');
         $roles = $user->getRoles();
+
         $vars = [
             'admin' => $admin,
             'priv' => $details['role'],
             'editor' => $id == $details['id'],
+            'class' => '',
             'legend' => '',
             'override' => '',
             'pagehead' => 'Edit User',
@@ -266,6 +250,14 @@ class User extends Presenter
     {
         if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
             return $this->destroy($_POST['id']);
+        }
+        reLocate($this->home);
+    }
+
+    public function changeSubmit()
+    {
+        if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
+            return $this->edit($_POST['id']);
         }
         reLocate($this->home);
     }
