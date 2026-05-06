@@ -39,7 +39,7 @@ class User extends Presenter
             'delete' => ['id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this user?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/user/confirm/'],
             'confirm' => ['id' => $id],
             'selected' => ['pagehead' => 'Select User', 'selected' => true, 'clients' => [], 'users' => $users],
-            'change' => ['id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Changing these details will require you to log in again. Proceed?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/user/change/', 'override' => $data['override'] ?? 'change'],
+            'change' => ['id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Changing these details will require you to log in again. Proceed?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/user/change/'],
         ];
 
         if ($key && isset($lib[$key])) {
@@ -179,7 +179,7 @@ class User extends Presenter
             'action' => '/user/edit/',
             'id' => $id,
             'name' => $user->name ?? '',
-            'email' => $user->email ?? '',
+            'email' => $_COOKIE['email'] ?? $user->email ?? '',
             'employer' => $user->client_id ?? '',
             'button' => 'Edit User',
             'calltext' => 'Delete User',
@@ -215,6 +215,7 @@ class User extends Presenter
 
     public function editSubmit()
     {
+        $setcookie = doSetCookie(true);
         $id = nullify($_POST['id']);
         $data = $_POST['data'];
         $editor = intval($id) === $this->getPrivilege('id');
@@ -229,7 +230,8 @@ class User extends Presenter
         $data = [...$values, ...$required];
         $change = $this->hasChanged($values, $required, 'email');
         if ($change && $editor && empty($_POST['override'])) {
-            return $this->load('change', ['id' => $id, 'override' => $required['email']]);
+            $setcookie('email', $data['email']);
+            return $this->load('change', ['id' => $id]);
         }
         unset($values['password']);
         $user = $this->table->save($data);
