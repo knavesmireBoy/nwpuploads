@@ -16,12 +16,13 @@ if (($admin || $editor) && !empty($id)) {
 <form action="<?= $action; ?>" method="post" name="usersform" class="<?= empty($class) ? 'details' : $class; ?>">
 	<?php
 	if (isset($class) && preg_match("/override/", $class)) {
-		
+		/*
 		$cookies = vercelCookies($_COOKIE);
 		if (array_key_exists("email", $cookies)) {
 			$load .= 'email';
 			$setcookie('email');
 		}
+			*/
 	?>
 		<a href="<?= $load; ?>" class="cancel">X</a>
 	<?php }
