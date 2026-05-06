@@ -39,7 +39,7 @@ class User extends Presenter
             'delete' => ['id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this user?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/user/confirm/'],
             'confirm' => ['id' => $id],
             'selected' => ['pagehead' => 'Select User', 'selected' => true, 'clients' => [], 'users' => $users],
-            'change' => ['id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Changing these details will require you to log in again. Proceed?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/user/change/', 'override' => 'change'],
+            'change' => ['id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Changing these details will require you to log in again. Proceed?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/user/change/', 'override' => $data['override'] ?? 'change'],
         ];
 
         if ($key && isset($lib[$key])) {
@@ -229,7 +229,7 @@ class User extends Presenter
         $data = [...$values, ...$required];
         $change = $this->hasChanged($values, $required, 'email');
         if ($change && $editor && empty($_POST['override'])) {
-            return $this->load('change', ['id' => $id]);
+            return $this->load('change', ['id' => $id, 'override' => $required['email']]);
         }
         unset($values['password']);
         $user = $this->table->save($data);

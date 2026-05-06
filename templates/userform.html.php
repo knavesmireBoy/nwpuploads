@@ -13,11 +13,14 @@ if (($admin || $editor) && !empty($id)) {
 ?>
 <form action="<?= $action; ?>" method="post" name="usersform" class="<?= empty($class) ? 'details' : $class; ?>">
 	<?php
-	if (isset($class) && preg_match("/override/", $class)) { ?>
+	if (isset($class) && preg_match("/override/", $class)) { 
+		$email = preg_match('/@/', $override) ? $override : $email;
+		?>
 		<a href="/user/load/" class="cancel">X</a>
+		$email 
 	<?php }
 	if ($legend != '') { ?>
-		<p><?= $legend ?? ''; ?></p>
+		<p><?= $legend; ?></p>
 	<?php	}
 	?>
 	<div>
