@@ -16,17 +16,6 @@ class User extends Presenter
         return isset($post[$prop]) && $db[$prop] !== $post[$prop];
     }
 
-    private function foo()
-    {
-        $title = "Prompt";
-        $prompt = "Changing your email will log you out of the current session. Proceed?";
-        $call = "confirm";
-        $pos = "Yes";
-        $neg = "No";
-        $action = '/user/change/';
-        $template = 'confirm.html.php';
-    }
-
     protected function getCustomVars($key, $data)
     {
         //if($key === 'confirm') dump($data);
@@ -162,6 +151,8 @@ class User extends Presenter
     public function edit($id, $args = [])
     {
         $details = $this->getPrivilege();
+        $setcookie = doSetCookie(false);
+
         $admin = isApproved($details['role'], 'ADMIN');
         $user = $id ? $this->table->find('id', $id)[0] : $this->table->getEntity();
         $id = $user->id ?? null;
@@ -187,6 +178,8 @@ class User extends Presenter
             'clientlist' => $clients,
             'roles' => $roles
         ];
+        setcookie('email');
+
         return [
             'template' => 'userform.html.php',
             'title' => 'Edit User',
@@ -236,7 +229,7 @@ class User extends Presenter
         unset($values['password']);
         $user = $this->table->save($data);
 
-        if (isset($data['password']) &&  $data['password'] !== '') {
+        if (isset($data['password']) && $data['password'] !== '') {
             $user->updatePassword($data['password']);
         }
         $user->setRole($role); //UPDATE role here
