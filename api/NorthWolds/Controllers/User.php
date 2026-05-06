@@ -121,11 +121,13 @@ class User extends Presenter
         if (!$admin) {
             reLocate($this->home);
         }
-        return $this->edit(0, ['action' => 'user/add/', 'pagehead' => 'Add User', 'button' => 'Add User', 'calltext' => null,
-            'callroute' =>  null,
-            'name' => '',
-            'email' => '',
-            'employer' => '']);
+        return $this->edit(0, [
+            'action' => 'user/add/',
+            'pagehead' => 'Add User',
+            'button' => 'Add User',
+            'calltext' => null,
+            'callroute' =>  null
+        ]);
     }
 
     public function selectSubmit()
@@ -157,11 +159,44 @@ class User extends Presenter
         }
     }
 
+    public function edit1($id = null)
+    {
+        $details = $this->getPrivilege();
+        $admin = isApproved($details['role'], 'ADMIN');
+        $user = $id ? $this->table->find('id', $id)[0] : $this->table->getEntity();
+        $id = $user->id ?? null;
+        list($_, $clients) = $this->presentList($details['role'], $id, $this->table, 'client_id');
+        $roles = $user->getRoles();
+        return [
+            'template' => 'userform.html.php',
+            'title' => 'Edit User',
+            'variables' => [
+                'admin' => $admin,
+                'priv' => $details['role'],
+                'editor' => $id == $details['id'],
+                'legend' => '',
+                'override' => '',
+                'pagehead' => $id ? 'Edit User' : 'Add User',
+                'action' => '/user/edit/',
+                'id' => $id,
+                'name' => $user->name ?? '',
+                'email' => $user->email ?? '',
+                'employer' => $user->client_id ?? '',
+                'button' => $id ? 'Edit User' : 'Add User',
+                'calltext' => $id ? 'Delete User' : null,
+                'callroute' => $id ? "/user/delete/$id" : null,
+                'clientlist' => $clients,
+                'roles' => $roles
+            ]
+        ];
+    }
+
     public function edit($id, $args = [])
     {
         $details = $this->getPrivilege();
         $admin = isApproved($details['role'], 'ADMIN');
-        $user =  $this->table->find('id', $id)[0];
+        $user = $id ? $this->table->find('id', $id)[0] : $this->table->getEntity();
+        $id = $user->id ?? null;
         list($_, $clients) = $this->presentList($details['role'], $id, $this->table, 'client_id');
         $roles = $user->getRoles();
         $vars = [
@@ -173,9 +208,9 @@ class User extends Presenter
             'pagehead' => 'Edit User',
             'action' => '/user/edit/',
             'id' => $id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'employer' => $user->client_id,
+            'name' => $user->name ?? '',
+            'email' => $user->email ?? '',
+            'employer' => $user->client_id ?? '',
             'button' => 'Edit User',
             'calltext' => 'Delete User',
             'callroute' => "/user/delete/$id",
