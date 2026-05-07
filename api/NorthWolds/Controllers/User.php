@@ -304,9 +304,9 @@ class User extends Presenter
         //client
         if($user->client_id && $user->client_id == $clientID){
             //ensure domain remains the same
-            dump($data);
             list($name, $dom, $com) = $user->parseEmail($data['email']);
             $data['email'] = "$name@$dom.$com";
+            dump($data);
             $user = $this->table->save($data);
             reLocate($this->home);
         }
