@@ -58,7 +58,7 @@ class User extends Presenter
             'edit' => ['calltext' => 'Delete User', 'callroute' => "/user/delete/$id"],
             'delete' => ['id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this user?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/user/confirm/'],
             'confirm' => ['id' => $id],
-            'selected' => ['pagehead' => 'Select User', 'selected' => false, 'clients' => [], 'users' => $users],
+            'selected' => ['pagehead' => 'Select User', 'selected' => true, 'clients' => [], 'users' => $users],
             'change' => ['id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Changing these details will require you to log in again. Proceed?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/user/change/'],
         ];
 

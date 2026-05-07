@@ -9,7 +9,7 @@ if ($admin || isset($editor)) {
 }
 ?>
 <?php
-if (empty($selected)):
+if (empty($selected) && preg_match("/^admin/i", $priv)):
 ?>
 	<form action="/user/select/" method="post" name="userform" class="choose">
 		<label for="user"></label><select id="user" name="user">
@@ -21,7 +21,7 @@ if (empty($selected)):
 				$group = $users;
 				include TEMPLATE . '_optgroup.html.php';
 			} else if (!empty($users)) {
-				//$group = $users;
+			//	$group = $users;
 				//include TEMPLATE . '_optgroup.html.php';
 			}
 			?>
