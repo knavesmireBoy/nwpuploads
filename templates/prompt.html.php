@@ -3,7 +3,7 @@
     //$clientlist from admin not upload
 
 
-dump([$call, $delete, $owner, $id]);
+//dump([$call, $delete, $owner, $id]);
 
     if (isset($clientlist)): ?>
         <form action="." method="post" name="clientform" class="prompt">

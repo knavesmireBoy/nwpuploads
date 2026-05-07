@@ -131,8 +131,8 @@ class User extends Presenter
         $customVars = $this->getCustomVars($key, $vars);
         //if ($key === 'selected') dump($customVars);
         $owner = []; //prompt.html.php expects this from Uploader Controller
-        $error = $this->query($key);
-        return $this->displayer($details, $customVars, $owner, $error);
+       // $error = $this->query($key);
+        return $this->displayer($details, $customVars, $owner, $error = '');
     }
 
     public function add()
