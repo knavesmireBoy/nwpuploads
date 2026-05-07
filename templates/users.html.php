@@ -3,9 +3,11 @@
 <?php
 
 if ($admin || isset($editor)) {
+	include TEMPLATE . '_call.html.php';
+}
+if (isset($template)) {
 	ob_start();
 	$obstart = true;
-	include TEMPLATE . '_call.html.php';
 }
 ?>
 <?php
