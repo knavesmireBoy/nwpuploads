@@ -79,6 +79,7 @@ class User extends Presenter
         list($users, $clients) = $this->presentList($details['role'], $details['id'], $this->table);
 
         dump($users);
+        
         $admin = isApproved($details['role'], 'ADMIN');
         $defaultVars = [
             'admin' => $admin,
@@ -155,6 +156,11 @@ class User extends Presenter
             }
         } else {
             $client = $this->clienttable->find('domain', $_POST['user']);
+            $client = $client[0] ?? null;
+            if(!$client){
+                return $this->load('selected', []);
+            }
+
             $users = $this->table->find('client_id', $client[0]->id);
             $usrs = [];
             $i = count($users);
