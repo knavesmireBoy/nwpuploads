@@ -85,7 +85,7 @@ class User extends Presenter
             'prompt' => null,
             'users' => $users,
             'clients' => $clients,
-            'optgroup' => $admin ? 'clients' : '',
+            'optgroup' => $admin ? 'clients' : null,
             'usercount' => 0,
             'denied' => false,
             'usercount' => 0,
@@ -243,6 +243,7 @@ class User extends Presenter
             return $item;
         });
         $role = $_POST['roles'][0] ?? 'Browser';
+        $clientID = $_POST['employer'] ?? $_POST['employed'] ?? null;
         $user = $this->table->find('id', $id)[0];
         $values = get_object_vars($user);
         //exclude password from update unless requested...
@@ -260,7 +261,7 @@ class User extends Presenter
             unset($data['password']);
         }
         $user->setRole($role); //UPDATE role here
-        $user->updateUserDomain(nullify($_POST['employer']), $values);
+        $user->updateUserDomain(nullify($clientID), $values);
     }
 
     public function delete($id)

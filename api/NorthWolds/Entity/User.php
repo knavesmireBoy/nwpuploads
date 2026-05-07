@@ -78,6 +78,8 @@ class User extends Entity
     $libkey =  null;
     if ($cid) {
       $client = $this->clienttable->find('id', $cid)[0];
+
+      dump([$cid, $client->id, $details['client_id']]);
       if (!$domain || $cid !== $details['client_id']) { //moving
         $domain = $client->domain;
       }
@@ -93,12 +95,11 @@ class User extends Entity
       if ($client->validateDomain($postdom)) {
         $data = ['id' => $this->id, 'email' => "$name@$postdom", 'client_id' => null];
       } else {
-        if($insertID){
+        if ($insertID) {
           $libkey = 'impostor';
           $this->table->delete('id', $insertID);
           return true;
-        }
-        else {
+        } else {
           $libkey = 'mover';
           $data = ['id' => $this->id, 'email' => $dbrecord['email']];
         }
