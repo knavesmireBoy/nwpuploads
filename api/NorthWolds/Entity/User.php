@@ -65,8 +65,26 @@ class User extends Entity
     }
   }
 
+  private function validateDom($dbrecord, $name, $postdom, $insertID)
+  {
+    $client = $this->clienttable->getEntity();
+    if ($client->validateDomain($postdom)) {
+      $data = ['id' => $this->id, 'email' => "$name@$postdom", 'client_id' => null];
+    } else {
+      if ($insertID) {
+        $libkey = 'impostor';
+        $this->table->delete('id', $insertID);
+        reLocate('/user/load/impostor');
+      } else {
+        $libkey = 'mover';
+        $data = ['id' => $this->id, 'email' => $dbrecord['email']];
+      }
+    }
+    return $data;
+  }
+
   //domain would change if updating client, but not the users email
-  public function updateUserDomain(?int $cid, array $dbrecord, int $insertID = 0)
+  public function updateUserDomain1(?int $cid, array $dbrecord, int $insertID = 0)
   {
     $e = $this->email;
     $f = composer(partial('substr', $e, 0), curry2('strpos')('@'));
@@ -75,12 +93,11 @@ class User extends Entity
     $postdom = "$dom.$com";
     $details = $this->getDetails();
     $domain = $details['domain'];
+    $moving = $domain && $cid !== $domain;
     $libkey =  null;
     if ($cid) {
       $client = $this->clienttable->find('id', $cid)[0];
-
-      dump([$cid, $client->id, $details['client_id']]);
-      if (!$domain || $cid !== $details['client_id']) { //moving
+      if (!$domain || $moving) { //moving ONLY Admin if here
         $domain = $client->domain;
       }
       $data = ['id' => $this->id, 'email' => "$name@$domain", 'client_id' => $cid];
@@ -92,21 +109,31 @@ class User extends Entity
         $client = $this->clienttable->getEntity();
       }
       //going freelance? check domain not in use
-      if ($client->validateDomain($postdom)) {
-        $data = ['id' => $this->id, 'email' => "$name@$postdom", 'client_id' => null];
-      } else {
-        if ($insertID) {
-          $libkey = 'impostor';
-          $this->table->delete('id', $insertID);
-          return true;
-        } else {
-          $libkey = 'mover';
-          $data = ['id' => $this->id, 'email' => $dbrecord['email']];
-        }
+      $data = $this->validateDom($dbrecord, $name, $postdom, $insertID);
+      if ($data) {
+        $this->table->save($data);
       }
-      $this->table->save($data);
     }
     return false;
+  }
+
+  public function updateUserDomain(?int $cid, array $dbrecord, int $insertID = 0)
+  {
+    $e = $this->email;
+    $f = composer(partial('substr', $e, 0), curry2('strpos')('@'));
+    $name = $f($e);
+    list($dom, $com) = parseEmail($e);
+    $postdom = "$dom.$com";
+    $details = $this->getDetails();
+    $domain = $details['domain'];
+    if ($domain && $postdom !== $domain) {
+      reLocate('/user/load/domain');
+    } else {
+      $data = $this->validateDom($dbrecord, $name, $postdom, $insertID);
+      if ($data) {
+        $this->table->save($data);
+      }
+    }
   }
 
   public function updatePassword($password)

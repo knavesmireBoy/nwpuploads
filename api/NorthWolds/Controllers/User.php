@@ -11,6 +11,16 @@ class User extends Presenter
         parent::__construct($table);
     }
 
+
+    private function query($key)
+    {
+        $lib = ['nousers' => "<Unable to find any users", "addnotice" => "Please fill required fields", "selectuser" => "Please select a user for editing", "domainflag" => "Cannot assign this user to a new client", "lastuser" => "To remove this last user, please delete the client instead", "denied" => "You do not have the privileges to delete this user", "deniedbyclient" => "There must be at least one administrator role, please assign another user before removing your credentials from the database", "access" => "You do not have the privileges to add a user", "deniedbyadmin" => "Cannot (re)move a user with a client admin role", "self" => "Only a peer can perform this deletion", "freelancer" => "Cannot assign this domain", 'addno' => 'You do not have the required privilges to add a user', 
+
+        'domain' => 'Only the database administrator can change the domain of an email address', 'impostor' => 'That domain is in use, use the client list drop down to assign a user'];
+
+        return $lib[$key] ?? null;
+    }
+
     private function hasChanged($db, $post, $mandatory, $optionals)
     {
         $ret = [];
@@ -68,7 +78,7 @@ class User extends Presenter
         return $prop ? $details[$prop] : $details;
     }
 
-    protected function displayer($details, $customVars = [], $owner = [])
+    protected function displayer($details, $customVars = [], $owner = [], $error = '')
     {
         //  $error = query();
         $message = $error ?? '';
@@ -77,7 +87,7 @@ class User extends Presenter
         // $clients = isApproved($priv, 'ADMIN') ? $this->presentClientList($priv, 'domain') : [];
 
         list($users, $clients) = $this->presentList($details['role'], $details['id'], $this->table);
-        
+
         $admin = isApproved($details['role'], 'ADMIN');
         $defaultVars = [
             'admin' => $admin,
@@ -98,7 +108,7 @@ class User extends Presenter
             'nwproleplay' => 'Admin',
             'nwp_id' => null,
             'pagehead_role' => 'Admin',
-            'error' => '',
+            'error' => $error,
             'message' => '',
             'nwproleorder' => ['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'],
             'owner' => $owner,
@@ -121,7 +131,8 @@ class User extends Presenter
         $customVars = $this->getCustomVars($key, $vars);
         //if ($key === 'selected') dump($customVars);
         $owner = []; //prompt.html.php expects this from Uploader Controller
-        return $this->displayer($details, $customVars, $owner);
+        $error = $this->query($key);
+        return $this->displayer($details, $customVars, $owner, $error);
     }
 
     public function add()
@@ -155,7 +166,7 @@ class User extends Presenter
         } else {
             $client = $this->clienttable->find('domain', $_POST['user']);
             $client = $client[0] ?? null;
-            if(!$client){
+            if (!$client) {
                 return $this->load('selected', []);
             }
 
