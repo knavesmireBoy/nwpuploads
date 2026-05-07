@@ -1,6 +1,10 @@
 <section id=prompt>
     <?php
     //$clientlist from admin not upload
+
+
+dump([$call, $delete, $owner, $id]);
+
     if (isset($clientlist)): ?>
         <form action="." method="post" name="clientform" class="prompt">
             <div><label for="employer">If existing client:</label>
