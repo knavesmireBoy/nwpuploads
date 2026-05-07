@@ -287,6 +287,7 @@ class User extends Presenter
         $values = get_object_vars($user);
         //exclude password from update unless requested...
         $data = [...$values, ...$required];
+        list($name, $dom, $com) = $user->parseEmail($values['email']);
 
         list($change, $optional) = $this->hasChanged($values, $required, ['email', 'password'], ['name']);
 
@@ -304,9 +305,9 @@ class User extends Presenter
         //client
         if($user->client_id && $user->client_id == $clientID){
             //ensure domain remains the same
-            list($name, $dom, $com) = $user->parseEmail($data['email']);
+            list($name) = $user->parseEmail($data['email']);
+            list($_, $dom, $com) = $user->parseEmail($values['email']);
             $data['email'] = "$name@$dom.$com";
-            dump($data);
             $user = $this->table->save($data);
             reLocate($this->home);
         }
