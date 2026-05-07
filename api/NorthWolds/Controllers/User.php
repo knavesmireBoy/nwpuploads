@@ -87,8 +87,11 @@ class User extends Presenter
         if (!isset($_SESSION['username'])) {
             reLocate(REG);
         }
-        $user = $this->table->find('email', $_SESSION['username'])[0];
-        $details = $user->getDetails();
+        $user = $this->table->find('email', $_SESSION['username']);
+        if (!isset($user[0])) {
+            reLocate(REG);
+        }
+        $details = $user[0]->getDetails();
         return $prop ? $details[$prop] : $details;
     }
 
