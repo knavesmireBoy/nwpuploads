@@ -168,7 +168,7 @@ class User extends Presenter
         //if ($key === 'selected') dump($customVars);
         $owner = []; //prompt.html.php expects this from Uploader Controller
         $error = $this->query($key);
-        if ($details['role'] !== 'Admin' && !$details['domain']) {
+        if ($details['role'] !== 'Admin' && !$details['domain'] && !$details['colleagues']) {
             $id = $details['id'];
             return $this->edit($id);
         }

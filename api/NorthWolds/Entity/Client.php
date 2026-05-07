@@ -20,7 +20,10 @@ class Client extends Entity
         }
     }
 
-    public function getUsers() {}
+    public function getUsers() {
+
+
+    }
 
     public function validateDomain($domain)
     {

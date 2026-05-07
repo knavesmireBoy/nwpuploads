@@ -118,42 +118,6 @@ class User extends Entity
     return $data;
   }
 
-
-
-  //domain would change if updating client, but not the users email
-  public function updateUserDomain1(?int $cid, array $dbrecord, int $insertID = 0)
-  {
-    $e = $this->email;
-    $f = composer(partial('substr', $e, 0), curry2('strpos')('@'));
-    $name = $f($e);
-    list($dom, $com) = parseEmail($e);
-    $postdom = "$dom.$com";
-    $details = $this->getDetails();
-    $domain = $details['domain'];
-    $moving = $domain && $cid !== $domain;
-    $libkey =  null;
-    if ($cid) {
-      $client = $this->clienttable->find('id', $cid)[0];
-      if (!$domain || $moving) { //moving ONLY Admin if here
-        $domain = $client->domain;
-      }
-      $data = ['id' => $this->id, 'email' => "$name@$domain", 'client_id' => $cid];
-      $this->table->save($data);
-    } else {
-      if ($domain) { ///if leaving employ
-        $client = $this->clienttable->find('domain', $domain)[0];
-      } else {
-        $client = $this->clienttable->getEntity();
-      }
-      //going freelance? check domain not in use
-      $data = $this->validateDom($cid, $dbrecord, $name, $postdom, $insertID);
-      if ($data) {
-        $this->table->save($data);
-      }
-    }
-    return false;
-  }
-
   public function parseEmail($e)
   {
     $f = composer(partial('substr', $e, 0), curry2('strpos')('@'));
@@ -216,6 +180,7 @@ class User extends Entity
     $role = $this->getRole();
     $key = 'id';
     $client = null;
+    $uers = [];
     if (!empty($role)) {
       if ($prop === 'owner') {
         $key = 'ownerid';
@@ -224,8 +189,9 @@ class User extends Entity
       }
       if ($this->client_id) {
         $client = $this->fetch('clienttable', 'id', $this->client_id);
+        $users = $this->getUserIds();
       }
-      return [$key => $this->id, 'name' => $this->name, 'email' => $this->email, 'role' => $role,  'client_id' => $this->client_id, 'clientname' => $client->name ?? '', 'tel' => $client->tel ?? '', 'domain' => $client->domain ?? ''];
+      return [$key => $this->id, 'name' => $this->name, 'email' => $this->email, 'role' => $role,  'client_id' => $this->client_id, 'clientname' => $client->name ?? '', 'tel' => $client->tel ?? '', 'domain' => $client->domain ?? '', 'colleagues' => count($users) > 1];
     }
     return [];
   }
