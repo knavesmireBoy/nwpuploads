@@ -61,7 +61,6 @@ class Client
             'delete' => ['id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this client?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/client/confirm/'],
             'confirm' => ['id' => $id],
             'associate' => ['id' => $id, 'template' => 'associate.html.php',  'pagehead' => 'Associate User', 'pagetitle' => 'Associate Users', 'prompt' => "Associate existing users?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/client/associate/', 'button' => 'Associate Users', 'clientid' => $id, 'clientname' => $data['name'] ?? '', 'clientdom' => $data['domain'] ?? '']
-
         ];
 
         if ($key && isset($lib[$key])) {

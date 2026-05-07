@@ -180,7 +180,7 @@ class User extends Entity
     $role = $this->getRole();
     $key = 'id';
     $client = null;
-    $uers = [];
+    $users = [];
     if (!empty($role)) {
       if ($prop === 'owner') {
         $key = 'ownerid';
