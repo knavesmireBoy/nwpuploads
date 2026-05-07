@@ -263,10 +263,9 @@ class User extends Presenter
 
         if ($change !== [] && $editor && empty($_POST['override'])) {
             $this->setCookie($data, [...$change, ...$optional], true);
-
-            dump(999);
             return $this->load('change', ['id' => $id]);
         }
+        /*
         $user = $this->table->save($data);
         if (isset($required['password']) && $required['password'] !== '') {
             $user->updatePassword($data['password']);
@@ -275,6 +274,7 @@ class User extends Presenter
         }
         $user->setRole($role); //UPDATE role here
         $user->updateUserDomain(nullify($clientID), $values);
+        */
     }
 
     public function delete($id)
