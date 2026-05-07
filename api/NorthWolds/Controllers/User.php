@@ -12,14 +12,15 @@ class User extends Presenter
     }
 
 
-    private function updateUserDomainFactory($user, $cid, $data, $values, $userID = '')
+    private function updateUserDomainFactory($admin, $user, $cid, $data, $values, $userID = '')
     {
         if ($user->client_id && $user->client_id == $cid) {
-            return function () use ($user, $data, $values) {
+            return function () use ($admin, $user, $data, $values) {
                 //ensure domain remains the same
                 list($name, $_dom, $_com) = $user->parseEmail($data['email']);
                 list($_, $dom, $com) = $user->parseEmail($values['email']);
                 $key = "$_dom.$_com" !== "$dom.$com" ? 'domain' : '';
+                $key = $key && $admin ? '_domain' : $key;
                 $data['email'] = "$name@$dom.$com";
                 $user = $this->table->save($data);
                 reLocate($this->home . "$key");
@@ -48,6 +49,7 @@ class User extends Presenter
             'addno' => 'You do not have the required privilges to add a user',
 
             'domain' => 'Only the database administrator can change the domain of an email address',
+            '_domain' => 'Operation not permitted; change the domain of the client instead',
             'impostor' => 'That domain is in use, use the client list drop down to assign a user'
         ];
 
@@ -296,9 +298,6 @@ class User extends Presenter
         $values = get_object_vars($user);
         //exclude password from update unless requested...
         $data = [...$values, ...$required];
-
-        list($name, $dom, $com) = $user->parseEmail($values['email']);
-
         list($change, $optional) = $this->hasChanged($values, $required, ['email', 'password'], ['name']);
 
         if ($change !== [] && $editor && empty($_POST['override'])) {
@@ -312,7 +311,7 @@ class User extends Presenter
         unset($data['password']);
         $user = $this->table->save($data);
         $user->setRole($role); //UPDATE role here
-        $updateUserDomain = $this->updateUserDomainFactory($user, nullify($clientID), $data, $values);
+        $updateUserDomain = $this->updateUserDomainFactory($_POST['employer'] ?? '', $user, nullify($clientID), $data, $values);
         return $updateUserDomain();
         /*
         //client
