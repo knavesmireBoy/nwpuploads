@@ -133,7 +133,7 @@ class User extends Presenter
         $owner = []; //prompt.html.php expects this from Uploader Controller
        $error = $this->query($key);
 
-       dump([$details, $customVars]);
+       if($key) dump([$details, $customVars]);
         return $this->displayer($details, $customVars, $owner, $error = '');
     }
 
