@@ -12,6 +12,17 @@ class User extends Presenter
     }
 
 
+    private function updateUserDomainFactory($user, ?int $cid, array $data, $userID = '')
+    {
+
+        if ($user->client_id) {
+            return 'identity';
+        }
+
+        return $user->updateUserDomain($cid, $data, $userID);
+    }
+
+
     private function query($key)
     {
         $lib = [
@@ -260,6 +271,7 @@ class User extends Presenter
         $user->updateUserDomain(nullify($_POST['employer']), get_object_vars($user), $userId);
     }
 
+
     public function editSubmit()
     {
         $id = nullify($_POST['id']);
@@ -282,15 +294,25 @@ class User extends Presenter
             $this->setCookie($data, [...$change, ...$optional], true);
             return $this->load('change', ['id' => $id]);
         }
-        $user = $this->table->save($data);
+
         if (isset($required['password']) && $required['password'] !== '') {
             $user->updatePassword($data['password']);
-        } else {
-            unset($data['password']);
         }
+        unset($data['password']);
+        $user = $this->table->save($data);
         $user->setRole($role); //UPDATE role here
+        //client
+        if($user->client_id && $user->client_id == $clientID){
+            //ensure domain remains the same
+            dump($data);
+            list($name, $dom, $com) = $user->parseEmail($data['email']);
+            $data['email'] = "$name@$dom.$com";
+            $user = $this->table->save($data);
+            reLocate($this->home);
+        }
         $user->updateUserDomain(nullify($clientID), $values);
     }
+
 
     public function delete($id)
     {

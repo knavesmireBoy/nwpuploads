@@ -65,9 +65,10 @@ class User extends Entity
     }
   }
 
-  private function validateDom($dbrecord, $name, $postdom, $insertID)
+  private function validateDom1($dbrecord, $name, $postdom, $insertID)
   {
     $client = $this->clienttable->find('domain', $postdom);
+
     if (isset($client[0])) {
       $client = $client[0];
       if ($client->domain !== $postdom) {
@@ -91,6 +92,34 @@ class User extends Entity
     }
     return $data;
   }
+
+  private function validateDom($cid, $dbrecord, $name, $postdom, $insertID)
+  {
+
+    $client = $this->clienttable->find('id', $cid);
+    //admin moving or switching a user to a client
+    if (isset($client[0])) {
+      $postdom = $client[0]->domain;
+      $data = ['id' => $this->id, 'email' => "$name@$postdom", 'client_id' => $client[0]->id];
+    } else {
+      $client = $this->clienttable->getEntity();
+      if ($client->validateDom($postdom)) {
+        $data = ['id' => $this->id, 'email' => "$name@$postdom", 'client_id' => null];
+      } else {
+        if ($insertID) { // a new
+          $this->table->delete('id', $insertID);
+          reLocate('/user/load/impostor');
+        } else { //or existing user (freelancer) attempting to set a blacklisted domain
+          //silently revert, or send a message
+          $libkey = 'mover';
+          $data = ['id' => $this->id, 'email' => $dbrecord['email']];
+        }
+      }
+    }
+    return $data;
+  }
+
+
 
   //domain would change if updating client, but not the users email
   public function updateUserDomain1(?int $cid, array $dbrecord, int $insertID = 0)
@@ -118,7 +147,7 @@ class User extends Entity
         $client = $this->clienttable->getEntity();
       }
       //going freelance? check domain not in use
-      $data = $this->validateDom($dbrecord, $name, $postdom, $insertID);
+      $data = $this->validateDom($cid, $dbrecord, $name, $postdom, $insertID);
       if ($data) {
         $this->table->save($data);
       }
@@ -126,20 +155,25 @@ class User extends Entity
     return false;
   }
 
-  public function updateUserDomain(?int $cid, array $dbrecord, int $insertID = 0)
+  public function parseEmail($e)
   {
-    $e = $this->email;
     $f = composer(partial('substr', $e, 0), curry2('strpos')('@'));
     $name = $f($e);
     list($dom, $com) = parseEmail($e);
+    return [$name, $dom, $com];
+  }
+
+  public function updateUserDomain(?int $cid, array $dbrecord, int $insertID = 0)
+  {
+    list($name, $dom, $com) = $this->parseEmail($this->email);
     $postdom = "$dom.$com";
     $details = $this->getDetails();
     $domain = $details['domain'];
+    $data = $this->validateDom($cid, $dbrecord, $name, $postdom, $insertID);
 
     if ($domain && $postdom !== $domain) {
       reLocate('/user/load/domain');
     } else {
-      $data = $this->validateDom($dbrecord, $name, $postdom, $insertID);
       if ($data) {
         $this->table->save($data);
         reLocate('/user/load/');
