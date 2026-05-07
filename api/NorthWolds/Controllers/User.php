@@ -11,12 +11,11 @@ class User extends Presenter
         parent::__construct($table);
     }
 
-    private function hasChanged($db, $post, $props, $optionals)
+    private function hasChanged($db, $post, $mandatory, $optionals)
     {
         $ret = [];
         $opt = [];
-
-        foreach ($props as $prop) {
+        foreach ($mandatory as $prop) {
             if (isset($post[$prop]) && $db[$prop] !== $post[$prop]) {
                 $ret[] = $prop;
             }
@@ -29,10 +28,10 @@ class User extends Presenter
         return [$ret, $opt];
     }
 
-    private function setCookie($data, $props, bool $flag = false)
+    private function setCookie($data, $mandatory, bool $flag = false)
     {
         $setcookie = doSetCookie($flag);
-        foreach ($props as $prop) {
+        foreach ($mandatory as $prop) {
             $arg = isset($data[$prop]) && $flag ? $data[$prop] : '';
             $setcookie($prop, $arg);
         }
@@ -78,6 +77,8 @@ class User extends Presenter
         // $clients = isApproved($priv, 'ADMIN') ? $this->presentClientList($priv, 'domain') : [];
 
         list($users, $clients) = $this->presentList($details['role'], $details['id'], $this->table);
+
+        dump($users);
         $admin = isApproved($details['role'], 'ADMIN');
         $defaultVars = [
             'admin' => $admin,
