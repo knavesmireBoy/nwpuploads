@@ -12,7 +12,7 @@ class User extends Presenter
     }
 
 
-    private function updateUserDomainFactory($admin, $user, $cid, $data, $values, $userID = '')
+    private function updateUserDomainFactory($admin, $user, $cid, $data, $values, $userID = 0)
     {
         if ($user->client_id && $user->client_id == $cid) {
             return function () use ($admin, $user, $data, $values) {
