@@ -69,17 +69,21 @@ class User extends Entity
   {
 
     $client = $this->clienttable->find('domain', $postdom);
-    if (isset($client[0])) {
-      $data = ['id' => $this->id, 'email' => "$name@$postdom", 'client_id' => null];
+    if (isset($client[0]) && $client[0]->domain === $postdom) {
+      $data = ['id' => $this->id, 'email' => "$name@$postdom", 'client_id' => $client[0]->id];
     } else {
       $client = $this->clienttable->getEntity();
-      if ($insertID) {
-        $libkey = 'impostor';
-        $this->table->delete('id', $insertID);
-        reLocate('/user/load/impostor');
+      if ($client->validateDom($postdom)) {
+        $data = ['id' => $this->id, 'email' => "$name@$postdom", 'client_id' => null];
       } else {
-        $libkey = 'mover';
-        $data = ['id' => $this->id, 'email' => $dbrecord['email']];
+        if ($insertID) {
+          $libkey = 'impostor';
+          $this->table->delete('id', $insertID);
+          reLocate('/user/load/impostor');
+        } else {
+          $libkey = 'mover';
+          $data = ['id' => $this->id, 'email' => $dbrecord['email']];
+        }
       }
     }
     return $data;
