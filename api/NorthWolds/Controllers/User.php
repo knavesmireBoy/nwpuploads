@@ -286,7 +286,7 @@ class User extends Presenter
             unset($data['password']);
         }
         $user->setRole($role); //UPDATE role here
-       // $user->updateUserDomain(nullify($clientID), $values);
+        $user->updateUserDomain(nullify($clientID), $values);
     }
 
     public function delete($id)

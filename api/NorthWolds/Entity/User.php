@@ -132,6 +132,7 @@ class User extends Entity
       $data = $this->validateDom($dbrecord, $name, $postdom, $insertID);
       if ($data) {
         $this->table->save($data);
+        reLocate('/user/load/');
       }
     }
   }
