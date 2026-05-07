@@ -11,7 +11,6 @@ class User extends Presenter
         parent::__construct($table);
     }
 
-
     private function updateUserDomainFactory($admin, $user, $cid, $data, $values, $userID = 0)
     {
         if ($user->client_id && $user->client_id == $cid) {
@@ -26,11 +25,10 @@ class User extends Presenter
                 reLocate($this->home . "$key");
             };
         }
-        return function () use($user, $cid, $data, $userID) {
+        return function () use ($user, $cid, $data, $userID) {
             return $user->updateUserDomain($cid, $data, $userID);
         };
     }
-
 
     private function query($key)
     {
@@ -170,6 +168,10 @@ class User extends Presenter
         //if ($key === 'selected') dump($customVars);
         $owner = []; //prompt.html.php expects this from Uploader Controller
         $error = $this->query($key);
+        if ($details['role'] !== 'Admin' && !$details['domain']) {
+            $id = $details['id'];
+            return $this->edit($id);
+        }
         return $this->displayer($details, $customVars, $owner, $error);
     }
 

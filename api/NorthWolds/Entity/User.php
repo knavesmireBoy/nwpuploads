@@ -95,7 +95,6 @@ class User extends Entity
 
   private function validateDom($cid, $dbrecord, $name, $postdom, $insertID)
   {
-
     $client = $this->clienttable->find('id', $cid);
     //admin moving or switching a user to a client
     if (isset($client[0])) {
