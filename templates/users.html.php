@@ -1,7 +1,7 @@
 <h1><?= $pagehead; ?></h1>
 <p class='error'><?= $error; ?></p>
 <?php
-
+dump($editor);
 if ($admin || isset($editor)) {
 	ob_start();
 	$obstart = true;
