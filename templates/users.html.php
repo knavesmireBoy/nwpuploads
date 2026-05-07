@@ -21,8 +21,8 @@ if (empty($selected)):
 				$group = $users;
 				include TEMPLATE . '_optgroup.html.php';
 			} else if (!empty($users)) {
-				$group = $users;
-				include TEMPLATE . '_optgroup.html.php';
+				//$group = $users;
+				//include TEMPLATE . '_optgroup.html.php';
 			}
 			?>
 		</select>
