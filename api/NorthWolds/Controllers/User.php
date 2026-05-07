@@ -260,10 +260,11 @@ class User extends Presenter
         $data = [...$values, ...$required];
 
         list($change, $optional) = $this->hasChanged($values, $required, ['email', 'password'], ['name']);
-        dump([$change, $editor, $_POST['override']]);
 
         if ($change !== [] && $editor && empty($_POST['override'])) {
             $this->setCookie($data, [...$change, ...$optional], true);
+
+            dump(999);
             return $this->load('change', ['id' => $id]);
         }
         $user = $this->table->save($data);
