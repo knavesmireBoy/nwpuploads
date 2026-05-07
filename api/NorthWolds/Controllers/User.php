@@ -170,7 +170,7 @@ class User extends Presenter
                 return $this->load('selected', []);
             }
 
-            $users = $this->table->find('client_id', $client[0]->id);
+            $users = $this->table->find('client_id', $client->id);
             $usrs = [];
             $i = count($users);
             setExtent($i);
@@ -261,7 +261,6 @@ class User extends Presenter
         $data = [...$values, ...$required];
 
         list($change, $optional) = $this->hasChanged($values, $required, ['email', 'password'], ['name']);
-        dump([$change, $editor]);
 
         if ($change !== [] && $editor && empty($_POST['override'])) {
             $this->setCookie($data, [...$change, ...$optional], true);

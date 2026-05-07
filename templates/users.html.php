@@ -20,9 +20,6 @@ if (empty($selected) && preg_match("/^admin/i", $priv)):
 				$optgroup = 'users';
 				$group = $users;
 				include TEMPLATE . '_optgroup.html.php';
-			} else if (!empty($users)) {
-			//	$group = $users;
-				//include TEMPLATE . '_optgroup.html.php';
 			}
 			?>
 		</select>
