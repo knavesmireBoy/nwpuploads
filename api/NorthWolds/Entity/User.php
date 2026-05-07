@@ -67,10 +67,13 @@ class User extends Entity
 
   private function validateDom($dbrecord, $name, $postdom, $insertID)
   {
-
     $client = $this->clienttable->find('domain', $postdom);
-    if (isset($client[0]) && $client[0]->domain === $postdom) {
-      $data = ['id' => $this->id, 'email' => "$name@$postdom", 'client_id' => $client[0]->id];
+    if (isset($client[0])) {
+      $client = $client[0];
+      if ($client->domain !== $postdom) {
+        reLocate('/user/load/domain');
+      }
+      $data = ['id' => $this->id, 'email' => "$name@$postdom", 'client_id' => $client->id];
     } else {
       $client = $this->clienttable->getEntity();
       if ($client->validateDom($postdom)) {
