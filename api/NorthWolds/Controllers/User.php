@@ -12,14 +12,22 @@ class User extends Presenter
     }
 
 
-    private function updateUserDomainFactory($user, ?int $cid, array $data, $userID = '')
+    private function updateUserDomainFactory($user, $cid, $data, $values, $userID = '')
     {
-
-        if ($user->client_id) {
-            return 'identity';
+        if ($user->client_id && $user->client_id == $cid) {
+            return function () use ($user, $data, $values) {
+                //ensure domain remains the same
+                list($name, $_dom, $_com) = $user->parseEmail($data['email']);
+                list($_, $dom, $com) = $user->parseEmail($values['email']);
+                $key = "$_dom.$_com" !== "$dom.$com" ? 'domain' : '';
+                $data['email'] = "$name@$dom.$com";
+                $user = $this->table->save($data);
+                reLocate($this->home . "$key");
+            };
         }
-
-        return $user->updateUserDomain($cid, $data, $userID);
+        return function () use($user, $cid, $data, $userID) {
+            return $user->updateUserDomain($cid, $data, $userID);
+        };
     }
 
 
@@ -268,7 +276,8 @@ class User extends Presenter
         $user->updatePassword($data['password']);
         //role must be set BEFORE "updateUserDomain" no user can navigate the site without an assigned role
         $user->setRole($role);
-        $user->updateUserDomain(nullify($_POST['employer']), get_object_vars($user), $userId);
+        $updateUserDomain = $this->updateUserDomainFactory($user, nullify($_POST['employer']), get_object_vars($user), [], $userId);
+        return $updateUserDomain();
     }
 
 
@@ -287,6 +296,7 @@ class User extends Presenter
         $values = get_object_vars($user);
         //exclude password from update unless requested...
         $data = [...$values, ...$required];
+
         list($name, $dom, $com) = $user->parseEmail($values['email']);
 
         list($change, $optional) = $this->hasChanged($values, $required, ['email', 'password'], ['name']);
@@ -302,17 +312,21 @@ class User extends Presenter
         unset($data['password']);
         $user = $this->table->save($data);
         $user->setRole($role); //UPDATE role here
+        $updateUserDomain = $this->updateUserDomainFactory($user, nullify($clientID), $data, $values);
+        return $updateUserDomain();
+        /*
         //client
-        if($user->client_id && $user->client_id == $clientID){
+        if ($user->client_id && $user->client_id == $clientID) {
             //ensure domain remains the same
             list($name, $_dom, $_com) = $user->parseEmail($data['email']);
             list($_, $dom, $com) = $user->parseEmail($values['email']);
-            $key = "$_dom.$com" !== "$dom.$com" ? 'domain' : '';
+            $key = "$_dom.$_com" !== "$dom.$com" ? 'domain' : '';
             $data['email'] = "$name@$dom.$com";
             $user = $this->table->save($data);
             reLocate($this->home . "$key");
         }
         $user->updateUserDomain(nullify($clientID), $values);
+        */
     }
 
 
