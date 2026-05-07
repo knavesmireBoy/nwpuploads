@@ -14,9 +14,23 @@ class User extends Presenter
 
     private function query($key)
     {
-        $lib = ['nousers' => "<Unable to find any users", "addnotice" => "Please fill required fields", "selectuser" => "Please select a user for editing", "domainflag" => "Cannot assign this user to a new client", "lastuser" => "To remove this last user, please delete the client instead", "denied" => "You do not have the privileges to delete this user", "deniedbyclient" => "There must be at least one administrator role, please assign another user before removing your credentials from the database", "access" => "You do not have the privileges to add a user", "deniedbyadmin" => "Cannot (re)move a user with a client admin role", "self" => "Only a peer can perform this deletion", "freelancer" => "Cannot assign this domain", 'addno' => 'You do not have the required privilges to add a user', 
+        $lib = [
+            'nousers' => "<Unable to find any users",
+            "addnotice" => "Please fill required fields",
+            "selectuser" => "Please select a user for editing",
+            "domainflag" => "Cannot assign this user to a new client",
+            "lastuser" => "To remove this last user, please delete the client instead",
+            "denied" => "You do not have the privileges to delete this user",
+            "deniedbyclient" => "There must be at least one administrator role, please assign another user before removing your credentials from the database",
+            "access" => "You do not have the privileges to add a user",
+            "deniedbyadmin" => "Cannot (re)move a user with a client admin role",
+            "self" => "Only a peer can perform this deletion",
+            "freelancer" => "Cannot assign this domain",
+            'addno' => 'You do not have the required privilges to add a user',
 
-        'domain' => 'Only the database administrator can change the domain of an email address', 'impostor' => 'That domain is in use, use the client list drop down to assign a user'];
+            'domain' => 'Only the database administrator can change the domain of an email address',
+            'impostor' => 'That domain is in use, use the client list drop down to assign a user'
+        ];
 
         return $lib[$key] ?? null;
     }
@@ -59,7 +73,7 @@ class User extends Presenter
             'delete' => ['id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this user?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/user/confirm/'],
             'confirm' => ['id' => $id],
             'selected' => ['pagehead' => 'Select User', 'selected' => true, 'clients' => [], 'users' => $users],
-            'change' => ['id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Changing these details will require you to log in again. Proceed?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/user/change/'],
+            'change' => ['id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Changing these details will require you to log in again. Proceed?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'editor' => $id, 'action' => '/user/change/'],
         ];
 
         if ($key && isset($lib[$key])) {
@@ -131,10 +145,8 @@ class User extends Presenter
         $customVars = $this->getCustomVars($key, $vars);
         //if ($key === 'selected') dump($customVars);
         $owner = []; //prompt.html.php expects this from Uploader Controller
-       $error = $this->query($key);
-
-       if($key) dump([$details, $customVars]);
-        return $this->displayer($details, $customVars, $owner, $error = '');
+        $error = $this->query($key);
+        return $this->displayer($details, $customVars, $owner, $error);
     }
 
     public function add()
@@ -267,7 +279,7 @@ class User extends Presenter
             $this->setCookie($data, [...$change, ...$optional], true);
             return $this->load('change', ['id' => $id]);
         }
-        
+
         $user = $this->table->save($data);
         if (isset($required['password']) && $required['password'] !== '') {
             $user->updatePassword($data['password']);
@@ -276,7 +288,6 @@ class User extends Presenter
         }
         $user->setRole($role); //UPDATE role here
         $user->updateUserDomain(nullify($clientID), $values);
-        
     }
 
     public function delete($id)
