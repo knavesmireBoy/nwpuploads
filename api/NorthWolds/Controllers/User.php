@@ -146,7 +146,6 @@ class User extends Presenter
         //if ($key === 'selected') dump($customVars);
         $owner = []; //prompt.html.php expects this from Uploader Controller
         $error = $this->query($key);
-        //if($key) dump($customVars);
         return $this->displayer($details, $customVars, $owner, $error);
     }
 
@@ -280,7 +279,6 @@ class User extends Presenter
             $this->setCookie($data, [...$change, ...$optional], true);
             return $this->load('change', ['id' => $id]);
         }
-
         $user = $this->table->save($data);
         if (isset($required['password']) && $required['password'] !== '') {
             $user->updatePassword($data['password']);
@@ -288,7 +286,7 @@ class User extends Presenter
             unset($data['password']);
         }
         $user->setRole($role); //UPDATE role here
-        $user->updateUserDomain(nullify($clientID), $values);
+       // $user->updateUserDomain(nullify($clientID), $values);
     }
 
     public function delete($id)
