@@ -89,7 +89,7 @@ class NorthWoldsWebsite implements Website
         $this->pdo = $pdo;
 
         $schema = function($t, $s = 'uploads') {
-            return "$t.$s";
+            return "$s.$t";
         };
 
         $this->userRoleTable = new DatabaseTable($this->pdo, $schema('userrole'), 'userid');
