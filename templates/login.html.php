@@ -2,9 +2,9 @@
 $pagetitle = isset($pagetitle) ? $pagetitle :  "Log In";
 $e = $loginerror ?? $_GET['loginerror'] ?? '';
 ?>
-<h1>Login</h1>
-<p>Please log in to upload or download files</p>
-<h2><?= $e; ?></h2>
+<h1>Log In</h1>
+<h2>Please log in to upload or download files</h2>
+<h3><?= $e; ?></h3>
 <form action="<?= $action; ?>" method="post" name="loginform" class="details">
 	<label for="email">Email</label>
 	<input id="email" type="email" name="email" autocomplete="off" required/>
@@ -18,5 +18,4 @@ if (isset($ret)) { ?>
 	<p><a href="<?= $ret; ?>">Return to uploads</a></p>
 <?php }   ?>
 </body>
-
 </html>
