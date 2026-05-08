@@ -1,9 +1,8 @@
 <?php
-//include_once 'head.html.php';
 $pagetitle = isset($pagetitle) ? $pagetitle :  "Log In";
 $e = $loginerror ?? $_GET['loginerror'] ?? '';
 ?>
-<h1>Log In</h1>
+<h1>Login</h1>
 <p>Please log in to upload or download files</p>
 <h2><?= $e; ?></h2>
 <form action="<?= $action; ?>" method="post" name="loginform" class="details">
