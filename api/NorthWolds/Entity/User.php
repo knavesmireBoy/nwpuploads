@@ -154,9 +154,8 @@ class User extends Entity
       }
       if ($this->client_id) {
         $client = $this->fetch('clienttable', 'id', $this->client_id);
-        $users = $this->table->find('client_id', $this->client_id);
-        dump($users);
-       // $users = $this->getUserIds();
+        $users = $this->table->find('client_id', $this->client_id, null, 0, 0, 2);
+        // $users = $this->getUserIds();
       }
 
       return [
