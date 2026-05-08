@@ -7,7 +7,7 @@ try {
         $pwd = $matches[1] ?? null;
         $connect = $matches[2] ?? null;
 
-        $connect .= '/uploads?sslmode=require&channel_binding=require';
+        $connect .= '/uploads?sslmode=verify-full';
 
         //neondb?sslmode=require&channel_binding=require'
         if (!$pwd) {
