@@ -153,10 +153,10 @@ class User extends Entity
         return isset($this->{$prop}) ? $this->{$prop} : [];
       }
       if ($this->client_id) {
+        $client = $this->fetch('clienttable', 'id', $this->client_id);
         $users = $this->table->find('client_id', $this->client_id);
-        //$client = $this->fetch('clienttable', 'id', $this->client_id);
-        $client = $this->clienttable->find('id', $this->client_id)[0];
-        $users = $this->getUserIds();
+        dump($users);
+       // $users = $this->getUserIds();
       }
 
       return [
