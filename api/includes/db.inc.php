@@ -22,10 +22,11 @@ try {
             $params['password']
         );
 
-        $db = 'pgsql://neondb_owner:npg_njmU0gaYvNV4@ep-rough-term-abqfwn54-pooler.eu-west-2.aws.neon.tech/uploads?sslmode=require';
+        //$db = 'pgsql://neondb_owner:npg_njmU0gaYvNV4@ep-rough-term-abqfwn54-pooler.eu-west-2.aws.neon.tech/uploads?sslmode=require';
         $pdo = new PDO($db);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $pdo->exec('SET search_path TO uploads');
+        //$pdo->exec('ALTER USER user SET search_path TO uploads');
     } else {
         $pdo = new \PDO(
             "mysql:host=localhost;dbname=$dbname;charset=utf8mb4",
