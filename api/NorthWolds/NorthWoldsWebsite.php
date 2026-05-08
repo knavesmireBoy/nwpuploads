@@ -94,7 +94,7 @@ class NorthWoldsWebsite implements Website
         $this->roleTable = new DatabaseTable($this->pdo, $schema('role'), 'id');
         $this->userRoleTable = new DatabaseTable($this->pdo, $schema('userrole'), 'userid');
         $this->clientTable = new DatabaseTable($this->pdo, $schema('client'), 'id', '\NorthWolds\Entity\Client', [&$this->clientTable, &$this->userTable]);
-        $this->userTable = new DatabaseTable($this->pdo, $schema('usr'), 'id', '\NorthWolds\Entity\User', [&$this->userTable, $this->clientTable, $this->userRoleTable, $this->roleTable]);
+        $this->userTable = new DatabaseTable($this->pdo, 'uploads.usr', 'id', '\NorthWolds\Entity\User', [&$this->userTable, $this->clientTable, $this->userRoleTable, $this->roleTable]);
         $this->uploadTable = new DatabaseTable($this->pdo, $schema('upload'), 'id', '\NorthWolds\Entity\Uploader', [&$this->uploadTable, $this->userTable]);
         $this->authentication = new Authentication($this->userTable, 'email', 'password');
         //$this->authentication = new \stdClass();
