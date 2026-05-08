@@ -12,14 +12,15 @@ try {
         }
         //note cannot get postgres drivers to work in home environment
         $params = ['host' => '127.0.0.1', 'port' => 5432, 'database' => 'uploads', 'user' => 'andrewjsykes', 'password' => 'covid19krauq'];
-        $params = ['host' => $connect, 'port' => 5432, 'database' => 'uploads', 'user' => 'neondb_owner', 'password' => $pwd];
+        $params = ['host' => $connect, 'port' => 5432, 'database' => 'uploads', 'user' => 'neondb_owner', 'password' => $pwd, 'sslmode' => 'require'];
         $db = sprintf(
             "pgsql:host=%s;port=%d;dbname=%s;user=%s;password=%s",
             $params['host'],
             $params['port'],
             $params['database'],
             $params['user'],
-            $params['password']
+            $params['password'],
+            $params['sslmode']
         );
 
         //$db = 'pgsql://neondb_owner:npg_njmU0gaYvNV4@ep-rough-term-abqfwn54-pooler.eu-west-2.aws.neon.tech/uploads?sslmode=require';
