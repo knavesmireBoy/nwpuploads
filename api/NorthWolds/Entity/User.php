@@ -65,33 +65,6 @@ class User extends Entity
     }
   }
 
-  private function validateDom1($dbrecord, $name, $postdom, $insertID)
-  {
-    $client = $this->clienttable->find('domain', $postdom);
-
-    if (isset($client[0])) {
-      $client = $client[0];
-      if ($client->domain !== $postdom) {
-        reLocate('/user/load/domain');
-      }
-      $data = ['id' => $this->id, 'email' => "$name@$postdom", 'client_id' => $client->id];
-    } else {
-      $client = $this->clienttable->getEntity();
-      if ($client->validateDom($postdom)) {
-        $data = ['id' => $this->id, 'email' => "$name@$postdom", 'client_id' => null];
-      } else {
-        if ($insertID) {
-          $libkey = 'impostor';
-          $this->table->delete('id', $insertID);
-          reLocate('/user/load/impostor');
-        } else {
-          $libkey = 'mover';
-          $data = ['id' => $this->id, 'email' => $dbrecord['email']];
-        }
-      }
-    }
-    return $data;
-  }
 
   private function validateDom($cid, $dbrecord, $name, $postdom, $insertID)
   {
@@ -165,16 +138,6 @@ class User extends Entity
     return $int & $permission;
   }
 
-  public function canEdit()
-  {
-    // return $this->permissions >= 2;
-  }
-
-  public function getPermission()
-  {
-    //return $this->permissions;
-  }
-
   public function getDetails($prop = '')
   {
     $role = $this->getRole();
@@ -188,9 +151,21 @@ class User extends Entity
         return isset($this->{$prop}) ? $this->{$prop} : [];
       }
       if ($this->client_id) {
-        $client = $this->fetch('clienttable', 'id', $this->client_id);
-        $users = $this->getUserIds();
+      //  $client = $this->fetch('clienttable', 'id', $this->client_id);
+      //  $users = $this->getUserIds();
       }
+      return [
+        'id' => $this->id,
+        'name' => $this->name,
+        'email' => $this->email,
+        'role' => 'Admin',
+        'client_id' => $this->client_id,
+        'clientname' => '',
+        'tel' => '',
+        'domain' => '',
+        'colleagues' => false
+      ];
+
       return [$key => $this->id, 'name' => $this->name, 'email' => $this->email, 'role' => $role,  'client_id' => $this->client_id, 'clientname' => $client->name ?? '', 'tel' => $client->tel ?? '', 'domain' => $client->domain ?? '', 'colleagues' => count($users) > 1];
     }
     return [];
