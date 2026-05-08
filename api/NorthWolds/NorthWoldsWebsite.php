@@ -88,11 +88,11 @@ class NorthWoldsWebsite implements Website
         include CONNECT;
         $this->pdo = $pdo;
 
-        $schema = function($t, $s = 'uploads') {
-            return "$s.$t";
+        $schema = function($t, $s = '') {
+            return $s ? "$s.$t" : $t;
         };
 
-        $this->userRoleTable = new DatabaseTable($this->pdo, $schema('userrole'), 'userid');
+        $this->userRoleTable = new DatabaseTable($this->pdo, $schema('userrol'), 'userid');
         $this->roleTable = new DatabaseTable($this->pdo, $schema('role'), 'id');
         $this->clientTable = new DatabaseTable($this->pdo, $schema('client'), 'id', '\NorthWolds\Entity\Client', [&$this->clientTable, &$this->userTable]);
         $this->userTable = new DatabaseTable($this->pdo, $schema('usr'), 'id', '\NorthWolds\Entity\User', [&$this->userTable, $this->clientTable, $this->userRoleTable, $this->roleTable]);
