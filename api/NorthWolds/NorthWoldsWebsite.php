@@ -88,11 +88,15 @@ class NorthWoldsWebsite implements Website
         include CONNECT;
         $this->pdo = $pdo;
 
-        $this->userRoleTable = new DatabaseTable($this->pdo, 'userrole', 'userid');
-        $this->roleTable = new DatabaseTable($this->pdo, 'role', 'id');
-        $this->clientTable = new DatabaseTable($this->pdo, 'client', 'id', '\NorthWolds\Entity\Client', [&$this->clientTable, &$this->userTable]);
-        $this->userTable = new DatabaseTable($this->pdo, 'usr', 'id', '\NorthWolds\Entity\User', [&$this->userTable, $this->clientTable, $this->userRoleTable, $this->roleTable]);
-        $this->uploadTable = new DatabaseTable($this->pdo, 'upload', 'id', '\NorthWolds\Entity\Uploader', [&$this->uploadTable, $this->userTable]);
+        $schema = function($t, $s = 'uploads') {
+            return "$t.$s";
+        };
+
+        $this->userRoleTable = new DatabaseTable($this->pdo, $schema('userrole'), 'userid');
+        $this->roleTable = new DatabaseTable($this->pdo, $schema('role'), 'id');
+        $this->clientTable = new DatabaseTable($this->pdo, $schema('client'), 'id', '\NorthWolds\Entity\Client', [&$this->clientTable, &$this->userTable]);
+        $this->userTable = new DatabaseTable($this->pdo, $schema('usr'), 'id', '\NorthWolds\Entity\User', [&$this->userTable, $this->clientTable, $this->userRoleTable, $this->roleTable]);
+        $this->uploadTable = new DatabaseTable($this->pdo, $schema('upload'), 'id', '\NorthWolds\Entity\Uploader', [&$this->uploadTable, $this->userTable]);
         $this->authentication = new Authentication($this->userTable, 'email', 'password');
         //$this->authentication = new \stdClass();
     }
