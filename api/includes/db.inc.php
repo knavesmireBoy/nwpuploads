@@ -6,10 +6,7 @@ try {
         preg_match('/[^:]+:\/\/[^:]+:([^@]+)@(.+)/', $env['DATABASE_URL'] ?? '', $matches);
         $pwd = $matches[1] ?? null;
         $connect = $matches[2] ?? null;
-
-        $connect .= '/uploads?sslmode=verify-full';
-
-        //neondb?sslmode=require&channel_binding=require'
+        
         if (!$pwd) {
             throw new Exception('Unable to connect to the database server');
         }
@@ -24,6 +21,8 @@ try {
             $params['user'],
             $params['password']
         );
+
+        $db = 'postgresql://neondb_owner:npg_njmU0gaYvNV4@ep-rough-term-abqfwn54-pooler.eu-west-2.aws.neon.tech/uploads?sslmode=require';
         $pdo = new PDO($db);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $pdo->exec('SET search_path TO uploads');
