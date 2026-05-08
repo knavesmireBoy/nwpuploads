@@ -47,7 +47,8 @@ class User extends Entity
 
   protected function getRole(): ?string
   {
-    $res = $this->fetch('userroletable', 'userid', $this->id);
+    //$res = $this->fetch('userroletable', 'userid', $this->id);
+    $res = $this->userroletable->find('userid', $this->id)[0];
     return $res->roleid ?? null;
   }
 
@@ -155,19 +156,19 @@ class User extends Entity
         $client = $this->fetch('clienttable', 'id', $this->client_id);
         $users = $this->getUserIds();
       }
-      /*
+      
       return [
         'id' => $this->id,
         'name' => $this->name,
         'email' => $this->email,
-        'role' => 'Admin',
+        'role' => $role,
         'client_id' => $this->client_id,
         'clientname' => '',
         'tel' => '',
         'domain' => '',
         'colleagues' => false
       ];
-*/
+
       return [$key => $this->id, 'name' => $this->name, 'email' => $this->email, 'role' => $role,  'client_id' => $this->client_id, 'clientname' => $client->name ?? '', 'tel' => $client->tel ?? '', 'domain' => $client->domain ?? '', 'colleagues' => count($users) > 1];
     }
     return [];
