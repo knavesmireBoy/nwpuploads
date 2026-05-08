@@ -141,8 +141,8 @@ class User extends Entity
 
   public function getDetails($prop = '')
   {
-    // $role = $this->getRole();
-    $role = 'Admin';
+    $role = $this->getRole();
+    //$role = 'Admin';
     $key = 'id';
     $client = null;
     $users = [];
@@ -155,20 +155,7 @@ class User extends Entity
       if ($this->client_id) {
         $client = $this->fetch('clienttable', 'id', $this->client_id);
         $users = $this->table->find('client_id', $this->client_id, null, 0, 0, 2);
-        // $users = $this->getUserIds();
       }
-
-      return [
-        'id' => $this->id,
-        'name' => $this->name,
-        'email' => $this->email,
-        'role' => $role,
-        'client_id' => $this->client_id,
-        'clientname' => '',
-        'tel' => '',
-        'domain' => '',
-        'colleagues' => false
-      ];
 
       return [$key => $this->id, 'name' => $this->name, 'email' => $this->email, 'role' => $role,  'client_id' => $this->client_id, 'clientname' => $client->name ?? '', 'tel' => $client->tel ?? '', 'domain' => $client->domain ?? '', 'colleagues' => count($users) > 1];
     }
