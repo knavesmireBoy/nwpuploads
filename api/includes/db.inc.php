@@ -7,6 +7,8 @@ try {
         $pwd = $matches[1] ?? null;
         $connect = $matches[2] ?? null;
 
+        $connect .= '/uploads?sslmode=require&channel_binding=require';
+
         //neondb?sslmode=require&channel_binding=require'
         if (!$pwd) {
             throw new Exception('Unable to connect to the database server');
@@ -22,7 +24,6 @@ try {
             $params['user'],
             $params['password']
         );
-        dump($db);
         $pdo = new PDO($db);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $pdo->exec('SET search_path TO uploads');
