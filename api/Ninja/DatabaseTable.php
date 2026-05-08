@@ -183,6 +183,7 @@ class DatabaseTable
             $query .= ' OFFSET ' . $offset;
         }
         $stmt = $this->pdo->prepare($query);
+        dump($stmt);
         $stmt->execute($parameters);
         if ($mode === \PDO::FETCH_CLASS) {
             return $stmt->fetchAll(\PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, $this->className, $this->constructorArgs);
