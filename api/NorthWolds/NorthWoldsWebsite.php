@@ -91,11 +91,11 @@ class NorthWoldsWebsite implements Website
         $schema = function($t, $s = '') {
             return $s ? "$s.$t" : $t;
         };
-        $this->roleTable = new DatabaseTable($this->pdo, 'uploads.role', 'id');
-        $this->userRoleTable = new DatabaseTable($this->pdo, 'uploads.userrole', 'userid');
-        $this->clientTable = new DatabaseTable($this->pdo, 'uploads.client', 'id', '\NorthWolds\Entity\Client', [&$this->clientTable, &$this->userTable]);
-        $this->userTable = new DatabaseTable($this->pdo, 'uploads.usr', 'id', '\NorthWolds\Entity\User', [&$this->userTable, $this->clientTable, $this->userRoleTable, $this->roleTable]);
-        $this->uploadTable = new DatabaseTable($this->pdo, 'uploads.upload', 'id', '\NorthWolds\Entity\Uploader', [&$this->uploadTable, $this->userTable]);
+        $this->roleTable = new DatabaseTable($this->pdo, 'role', 'id');
+        $this->userRoleTable = new DatabaseTable($this->pdo, 'userrole', 'userid');
+        $this->clientTable = new DatabaseTable($this->pdo, 'client', 'id', '\NorthWolds\Entity\Client', [&$this->clientTable, &$this->userTable]);
+        $this->userTable = new DatabaseTable($this->pdo, 'usr', 'id', '\NorthWolds\Entity\User', [&$this->userTable, $this->clientTable, $this->userRoleTable, $this->roleTable]);
+        $this->uploadTable = new DatabaseTable($this->pdo, 'upload', 'id', '\NorthWolds\Entity\Uploader', [&$this->uploadTable, $this->userTable]);
         $this->authentication = new Authentication($this->userTable, 'email', 'password');
         //$this->authentication = new \stdClass();
     }
