@@ -23,7 +23,7 @@ try {
         );
         $pdo = new PDO($db);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $pdo->exec('SET search_path TO uploads');
+       // $pdo->exec('SET search_path TO uploads');
     } else {
         $pdo = new \PDO(
             "mysql:host=localhost;dbname=$dbname;charset=utf8mb4",
