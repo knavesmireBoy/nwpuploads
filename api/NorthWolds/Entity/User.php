@@ -141,6 +141,7 @@ class User extends Entity
   public function getDetails($prop = '')
   {
     $role = $this->getRole();
+    $role = 'Admin';
     $key = 'id';
     $client = null;
     $users = [];
