@@ -313,7 +313,7 @@ class User extends Presenter
 
         unset($data['password']);
 
-        dump($_SESSION, $_POST['employer'], isset($_POST['employer']), empty($_POST['employer']));
+        dump([$_SESSION['role'], $_POST['employer'], isset($_POST['employer']), empty($_POST['employer'])]);
 
         $user = $this->table->save($data);
         //$user->setRole($role); //UPDATE role here

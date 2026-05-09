@@ -43,33 +43,18 @@ class Authentication
         return $st->fetch(\PDO::FETCH_ASSOC);
     }
 
-    public function login1(string $username, string $password): bool
-    {
-        $user = $this->find($this->usernameColumn, $username);
-        if ($user) {
-            $user = $user[0];
-            $role = $user->getDetails('role');
-            if (!empty($user) && password_verify($password, $user->{$this->passwordColumn})) {
-                session_regenerate_id();
-                $_SESSION['username'] = $username;
-                $_SESSION['password'] = $user->{$this->passwordColumn};
-                $_SESSION['role'] = $role;
-                return true;
-            }
-        }
-        return false;
-    }
-
     public function login(string $username, string $password): bool
     {
         $user = $this->find($this->usernameColumn, $username);
         $password = md5($password . 'uploads');
         if ($user) {
             $user = $user[0];
+            $role = $user->getDetails('role');
             if (!empty($user) && ($password == $user->{$this->passwordColumn})) {
                 session_regenerate_id();
                 $_SESSION['username'] = $username;
                 $_SESSION['password'] = $user->{$this->passwordColumn};
+                $_SESSION['role'] = $role;
                 return true;
             }
         }
