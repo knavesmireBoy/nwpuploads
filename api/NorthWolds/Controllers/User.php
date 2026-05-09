@@ -315,7 +315,6 @@ class User extends Presenter
 
         $user = $this->table->save($data);
         $user->setRole($role); //UPDATE role here
-        dump($data);
         $updateUserDomain = $this->updateUserDomainFactory($_SESSION['role'] === 'Admin', $user, nullify($clientID), $data, $values);
         return $updateUserDomain();
         /*
