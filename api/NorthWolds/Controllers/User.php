@@ -314,7 +314,6 @@ class User extends Presenter
         unset($data['password']);
 
         $user = $this->table->save($data);
-        dump($data);
         $user->setRole($role); //UPDATE role here
         dump($data);
         $updateUserDomain = $this->updateUserDomainFactory($_SESSION['role'] === 'Admin', $user, nullify($clientID), $data, $values);
