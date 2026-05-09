@@ -78,6 +78,7 @@ class Authentication
     {
         unset($_SESSION['username']);
         unset($_SESSION['password']);
+        unset($_SESSION['role']);
         unset($_SESSION['filestore']);
         session_regenerate_id();
     }
