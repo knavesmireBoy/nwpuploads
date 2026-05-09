@@ -49,7 +49,7 @@ class Authentication
         $password = md5($password . 'uploads');
         if ($user) {
             $user = $user[0];
-            $role = $user->getDetails('role');
+            $role = $user->getDetails('roleid');
             if (!empty($user) && ($password == $user->{$this->passwordColumn})) {
                 session_regenerate_id();
                 $_SESSION['username'] = $username;
