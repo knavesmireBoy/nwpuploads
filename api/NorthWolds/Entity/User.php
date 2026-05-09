@@ -49,7 +49,9 @@ class User extends Entity
   {
     //$res = $this->fetch('userroletable', 'userid', $this->id);
     $res = $this->userroletable->find('userid', $this->id);
+    dump($res);
     $this->roleid = nullify($res[0]);
+    dump($this->roleid);
     return $this->roleid;
   }
 
@@ -64,6 +66,7 @@ class User extends Entity
     $action = empty($this->userroletable->find('userid', $this->id));
     if (in_array($role, $this->roles)) {
       $this->userroletable->save(['userid' => $this->id, 'roleid' => $role], $action);
+      $this->roleid = $role;
     }
   }
 
