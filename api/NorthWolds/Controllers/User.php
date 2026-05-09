@@ -311,10 +311,11 @@ class User extends Presenter
             $user->updatePassword($data['password']);
         }
         unset($data['password']);
+        dump($data);
         $user = $this->table->save($data);
-        $user->setRole($role); //UPDATE role here
+        //$user->setRole($role); //UPDATE role here
         $updateUserDomain = $this->updateUserDomainFactory($_POST['employer'] ?? '', $user, nullify($clientID), $data, $values);
-        return $updateUserDomain();
+       // return $updateUserDomain();
         /*
         //client
         if ($user->client_id && $user->client_id == $clientID) {
