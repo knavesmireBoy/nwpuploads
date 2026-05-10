@@ -299,17 +299,12 @@ class User extends Presenter
         $user = $this->table->find('id', $id)[0];
         $editor = intval($id) === $this->getPrivilege('id');
 
-
-        if ((preg_match('/admin/i ', $_SESSION['role'] || $editor))) {
-
-            dump(111);
-
+        if ((preg_match('/admin/i ', $_SESSION['role']) || $editor)) {
             $values = get_object_vars($user);
             $required = array_filter($data, function ($item) {
                 return $item;
             });
         }
-        dump(isset($values));
         if (!isset($values)) {
             reLocate($this->home . 'editno');
         }
