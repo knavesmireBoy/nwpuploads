@@ -48,8 +48,7 @@ class User extends Entity
   protected function getRole(): ?string
   {
     //$res = $this->fetch('userroletable', 'userid', $this->id);
-    $res = $this->userroletable->find('userid', $this->id);
-    dump($res);
+    $res = $this->userroletable->find('userid', $this->id)[0];
     $this->roleid = $res->roleid;
     return $this->roleid;
   }
@@ -57,16 +56,12 @@ class User extends Entity
   public function getRoles()
   {
     $this->roleid = $this->getRole();
-    $roles = $this->fetchAllRoles($this->roles, [$this->roleid]);
-
-    $f = composer(negate(curry2('equals')('Admin')), curry2('getter')('id'));
-    $cb = preg_match('/client/i', $this->roleid) ? $f : 'identity';
-
-    dump([$this->roleid, $this->id]);
-
     if (!preg_match('/admin/', $this->roleid)) {
       return [];
     }
+    $roles = $this->fetchAllRoles($this->roles, [$this->roleid]);
+    $f = composer(negate(curry2('equals')('Admin')), curry2('getter')('id'));
+    $cb = preg_match('/client/i', $this->roleid) ? $f : 'identity';
     return safeFilter($roles, $cb);
   }
 

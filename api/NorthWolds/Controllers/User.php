@@ -228,15 +228,16 @@ class User extends Presenter
     public function edit($id, $args = [])
     {
         $details = $this->getPrivilege();
-        $admin = isApproved($details['role'], 'ADMIN');
+        $admin = isApproved($_SESSION['role'], 'ADMIN');
+        list($_, $clients) = $this->presentList($_SESSION['role'], $id, $this->table, 'client_id');
+        $roles = $this->table->find('id', $details['id'])[0]->getRoles();
+
         $user = $id ? $this->table->find('id', $id)[0] : $this->table->getEntity();
         $id = $user->id ?? null;
-        list($_, $clients) = $this->presentList($details['role'], $id, $this->table, 'client_id');
-        $roles = $user->getRoles();
-
+       
         $vars = [
             'admin' => $admin,
-            'priv' => $details['role'],
+            'priv' => $_SESSION['role'],
             'editor' => $id == $details['id'],
             'class' => '',
             'legend' => '',
