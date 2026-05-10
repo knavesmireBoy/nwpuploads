@@ -5,12 +5,12 @@ $k = $single && ($priv === 'Client Admin') ? 'Client' : $priv;
 $k = !$single ? 'Client Admin' : $k;
 $routes = ['Client' => '_return2uploads.html.php', 'Client Admin' => '_return2list.html.php', 'Admin' => '_return2list.html.php'];
 
-if (isset($_GET['edit']) || isset($_GET['add'])) {
-	$route = $routes[$k];
-} else {
-	$k = $selected && $admin ? 'Admin' : 'Client';
-	$route = $routes[$k];
+
+if (isset($editor)) {
+	$k = $admin ? 'Admin' : 'Client';
 }
+$route = $routes[$k];
+
 if ($admin) { ?>
 	<p class="call"><a href="/client/load/">Edit Clients</a></p>
 <?php
