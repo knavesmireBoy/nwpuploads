@@ -49,7 +49,7 @@ class User extends Entity
   {
     //$res = $this->fetch('userroletable', 'userid', $this->id);
     $res = $this->userroletable->find('userid', $this->id)[0];
-    $this->roleid = nullify($res->roleid);
+    $this->roleid = $res->roleid;
     return $this->roleid;
   }
 
@@ -61,7 +61,7 @@ class User extends Entity
     $f = composer(negate(curry2('equals')('Admin')), curry2('getter')('id'));
     $cb = preg_match('/client/i', $this->roleid) ? $f : 'identity';
 
-    dump([safeFilter($roles, $cb), $this->id]);
+    dump([$this->roleid, $this->id]);
 
     if (!preg_match('/admin/', $this->roleid)) {
       return [];
