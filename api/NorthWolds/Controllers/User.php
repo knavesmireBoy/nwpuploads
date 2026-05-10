@@ -298,6 +298,9 @@ class User extends Presenter
         $clientID = $_POST['employer'] ?? $_POST['employed'] ?? null;
         $user = $this->table->find('id', $id)[0];
         $editor = intval($id) === $this->getPrivilege('id');
+
+        dump([$id, intval($id) === $this->getPrivilege('id')]);
+
         if ((preg_match('/admin/i ', $_SESSION['role'] || $editor))) {
             $values = get_object_vars($user);
             $required = array_filter($data, function ($item) {
