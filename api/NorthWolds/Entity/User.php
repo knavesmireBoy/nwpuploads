@@ -48,7 +48,8 @@ class User extends Entity
   protected function getRole(): ?string
   {
     //$res = $this->fetch('userroletable', 'userid', $this->id);
-    $res = $this->userroletable->find('userid', $this->id)[0];
+    $res = $this->userroletable->find('userid', $this->id);
+    dump($res);
     $this->roleid = $res->roleid;
     return $this->roleid;
   }
