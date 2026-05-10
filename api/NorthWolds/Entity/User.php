@@ -56,7 +56,12 @@ class User extends Entity
   public function getRoles()
   {
     $this->roleid = $this->getRole();
-    return $this->fetchAllRoles($this->roles, [$this->roleid]);
+    if (!preg_match('/admin/', $this->roleid)) {
+      return [];
+    }
+    $roles = $this->fetchAllRoles($this->roles, [$this->roleid]);
+    $cb = preg_match('/client/i', $this->roleid) ? composer(negate(curry2('equals')('Admin')), curry2('getter')('id')) : 'identity';
+    return safeFilter($roles, $cb);
   }
 
   public function setRole(string $role)
@@ -67,7 +72,6 @@ class User extends Entity
       $this->roleid = $role;
     }
   }
-
 
   private function validateDom($cid, $dbrecord, $name, $postdom, $insertID)
   {
@@ -109,7 +113,6 @@ class User extends Entity
     $details = $this->getDetails();
     $domain = $details['domain'];
     $data = $this->validateDom($cid, $dbrecord, $name, $postdom, $insertID);
-
     if ($domain && $postdom !== $domain) {
       reLocate('/user/load/domain');
     } else {
