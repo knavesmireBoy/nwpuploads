@@ -56,11 +56,16 @@ class User extends Entity
   public function getRoles()
   {
     $this->roleid = $this->getRole();
+    $roles = $this->fetchAllRoles($this->roles, [$this->roleid]);
+
+    $f = composer(negate(curry2('equals')('Admin')), curry2('getter')('id'));
+
+    dump([$roles, $this->roleid]);
+
     if (!preg_match('/admin/', $this->roleid)) {
       return [];
     }
-    $roles = $this->fetchAllRoles($this->roles, [$this->roleid]);
-    $cb = preg_match('/client/i', $this->roleid) ? composer(negate(curry2('equals')('Admin')), curry2('getter')('id')) : 'identity';
+    $cb = preg_match('/client/i', $this->roleid) ? $f : 'identity';
     return safeFilter($roles, $cb);
   }
 
