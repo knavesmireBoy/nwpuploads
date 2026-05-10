@@ -11,6 +11,9 @@ class User extends Presenter
         parent::__construct($table);
     }
 
+
+    private function save() {}
+
     private function updateUserDomainFactory($admin, $user, $cid, $data, $values, $userID = 0)
     {
         if ($user->client_id && $user->client_id == $cid) {
@@ -45,6 +48,7 @@ class User extends Presenter
             "self" => "Only a peer can perform this deletion",
             "freelancer" => "Cannot assign this domain",
             'addno' => 'You do not have the required privilges to add a user',
+            'editno' => 'You do not have the required privilges to edit this user details',
 
             'domain' => 'Only the database administrator can change the domain of an email address',
             '_domain' => 'Operation not permitted; change the domain of the client instead',
@@ -234,7 +238,7 @@ class User extends Presenter
 
         $user = $id ? $this->table->find('id', $id)[0] : $this->table->getEntity();
         $id = $user->id ?? null;
-       
+
         $vars = [
             'admin' => $admin,
             'priv' => $_SESSION['role'],
@@ -290,15 +294,21 @@ class User extends Presenter
     {
         $id = nullify($_POST['id']);
         $data = $_POST['data'];
-        $editor = intval($id) === $this->getPrivilege('id');
-        $values = [];
-        $required = array_filter($data, function ($item) {
-            return $item;
-        });
         $role = $_POST['roles'][0] ?? 'Browser';
         $clientID = $_POST['employer'] ?? $_POST['employed'] ?? null;
         $user = $this->table->find('id', $id)[0];
-        $values = get_object_vars($user);
+        $editor = intval($id) === $this->getPrivilege('id');
+        if ((preg_match('/admin/i ', $_SESSION['role'] || $editor))) {
+            $values = get_object_vars($user);
+            $required = array_filter($data, function ($item) {
+                return $item;
+            });
+        }
+
+        if (!isset($values)) {
+            reLocate($this->home . 'editno');
+        }
+
         //exclude password from update unless requested...
         $data = [...$values, ...$required];
         list($change, $optional) = $this->hasChanged($values, $required, ['email', 'password'], ['name']);
@@ -311,26 +321,11 @@ class User extends Presenter
         if (isset($required['password']) && $required['password'] !== '') {
             $user->updatePassword($data['password']);
         }
-
         unset($data['password']);
-
         $user = $this->table->save($data);
         $user->setRole($role); //UPDATE role here
         $updateUserDomain = $this->updateUserDomainFactory($_SESSION['role'] === 'Admin', $user, nullify($clientID), $data, $values);
         return $updateUserDomain();
-        /*
-        //client
-        if ($user->client_id && $user->client_id == $clientID) {
-            //ensure domain remains the same
-            list($name, $_dom, $_com) = $user->parseEmail($data['email']);
-            list($_, $dom, $com) = $user->parseEmail($values['email']);
-            $key = "$_dom.$_com" !== "$dom.$com" ? 'domain' : '';
-            $data['email'] = "$name@$dom.$com";
-            $user = $this->table->save($data);
-            reLocate($this->home . "$key");
-        }
-        $user->updateUserDomain(nullify($clientID), $values);
-        */
     }
 
 

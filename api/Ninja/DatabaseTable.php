@@ -193,6 +193,9 @@ class DatabaseTable
     public function save(array $record, mixed $arg = null)
     {
         $entity = new $this->className(...$this->constructorArgs);
+        if (empty($record)) {
+            return $entity;
+        }
         //force insert
         if ($arg && is_bool($arg)) {
             return $this->insert($record);
