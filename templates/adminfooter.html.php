@@ -7,7 +7,10 @@ $routes = ['Client' => '_return2uploads.html.php', 'Client Admin' => '_return2li
 
 
 if (isset($editor)) {
-	$k = $admin ? 'Admin' : 'Client';
+	$k = $admin ? 'Admin' : $k;
+}
+else {
+	$k = 'Client';
 }
 $route = $routes[$k];
 
