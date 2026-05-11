@@ -116,7 +116,7 @@ if (count($files) > 0): ?>
                     </form>
                 </td>
                 <?php
-                if ($priv !== 'Browser') : ?>
+                if (!$disabled) : ?>
                     <td title="delete">
                         <form action="/uploader/delete/" method="post" name="<?= $id; ?>">
                             <div><input type="hidden" name="action" value="delete" />

@@ -11,20 +11,21 @@ class User extends Presenter
         parent::__construct($table);
     }
 
-
-    private function save() {}
-
-    private function updateUserDomainFactory($admin, $user, $cid, $data, $values, $userID = 0)
+    private function updateUserDomainFactory($admin, $user, $cid, $data, $dbrecord, $userID = 0)
     {
         if ($user->client_id && $user->client_id == $cid) {
-            return function () use ($admin, $user, $data, $values) {
+            return function () use ($admin, $user, $data, $dbrecord) {
                 //ensure domain remains the same
-                list($name, $_dom, $_com) = $user->parseEmail($data['email']);
-                list($_, $dom, $com) = $user->parseEmail($values['email']);
+                list($_name, $_dom, $_com) = $user->parseEmail($data['email']);
+                list($name, $dom, $com) = $user->parseEmail($dbrecord['email']);
+
                 $key = "$_dom.$_com" !== "$dom.$com" ? 'domain' : '';
+
                 $key = $key && $admin ? '_domain' : $key;
                 $data['email'] = "$name@$dom.$com";
+
                 $user = $this->table->save($data);
+
                 reLocate($this->home . "$key");
             };
         }
@@ -324,9 +325,6 @@ class User extends Presenter
     }
 
 
-    public function exitSubmit() {}
-
-
     public function editSubmit()
     {
         $id = nullify($_POST['id']);
@@ -336,15 +334,14 @@ class User extends Presenter
         $user = $this->table->find('id', $id)[0];
         $editor = intval($id) === $this->getPrivilege('id');
 
-        if ((preg_match('/admin/i', $_SESSION['role']) || $editor)) {
-            $values = get_object_vars($user);
-            $required = array_filter($data, function ($item) {
-                return $item;
-            });
-        }
-        if (!isset($values)) {
-            reLocate($this->home . 'editno');
-        }
+        $values = get_object_vars($user);
+        $required = array_filter($data, function ($item) {
+            return $item;
+        });
+
+        $updateUserDomain = $this->updateUserDomainFactory($_SESSION['role'] === 'Admin', $user, nullify($clientID), $data, $values);
+
+        $res = $updateUserDomain();
 
         //exclude password from update unless requested...
         $data = [...$values, ...$required];
@@ -361,7 +358,6 @@ class User extends Presenter
         unset($data['password']);
         $user = $this->table->save($data);
         $user->setRole($role); //UPDATE role here
-        $updateUserDomain = $this->updateUserDomainFactory($_SESSION['role'] === 'Admin', $user, nullify($clientID), $data, $values);
         return $updateUserDomain();
     }
 
