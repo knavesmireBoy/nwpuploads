@@ -382,13 +382,12 @@ class User extends Presenter
 
     public function delete($id)
     {
-
         $user = $this->table->find('id', $id)[0];
         $msg = $user->validateDelete();
         if ($msg) {
-            return $this->load('delete', ['id' => $id]);
+            return reLocate($this->home . $msg);
         }
-        return reLocate($this->home . $msg);
+        return $this->load('delete', ['id' => $id]);
     }
 
     public function confirm()

@@ -9,7 +9,7 @@ $load = '/user/load/';
 	<p><?= $message; ?></p>
 <?php
 }
-if (($admin || $editor) && !empty($id)) {
+if (($admin || $cadmin || $editor) && !empty($id)) {
 	include TEMPLATE . '_call.html.php';
 }
 ?>
