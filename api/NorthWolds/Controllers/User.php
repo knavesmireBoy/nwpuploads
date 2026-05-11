@@ -13,32 +13,26 @@ class User extends Presenter
 
     private function updateUserDomainFactory($admin, $user, $cid, $data, $dbrecord, $userID = 0)
     {
-        if (isset($user->client_id) && $user->client_id === $cid) {
+        if (isset($user->client_id) && $user->client_id == $cid) {
             return function () use ($admin, $cid, $user, $data, $dbrecord) {
                 //ensure domain remains the same
                 list($_name, $_dom, $_com) = $user->parseEmail($data['email']);
-
-                if(isset($dbrecord['email'])){
+                if(isset($dbrecord['email'])){//existing
                     list($name, $dom, $com) = $user->parseEmail($dbrecord['email']);
                     $key = "$_dom.$_com" !== "$dom.$com" ? 'domain' : '';
                     $key = $key && $admin ? '_domain' : $key;
                     if ($key) {
                         reLocate($this->home . "$key");
                     }
-                    //return $_name !== $name;
                      $data['email'] = "$name@$dom.$com";
                      return $data;
-                    // $user = $this->table->save($data);
                 }
-                else {
+                else {//new
                     $client = $this->clienttable->find('id', $cid)[0];
                     $domain = $client->domain;
                     $data['email'] = "$_name@$domain";
                     return $data;
                 }
-
-              
-
             };
         }
         return function () use ($user, $cid, $data, $userID) {
