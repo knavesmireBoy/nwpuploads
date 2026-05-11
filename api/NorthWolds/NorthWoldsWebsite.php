@@ -182,7 +182,7 @@ class NorthWoldsWebsite implements Website
             $name = $flag ? $flag : $route[0];
             $action = $route[1];
             //$acceslevel will determine the feedback message supplied to acccessdenied.html.php
-            $args = "!$action/$acceslevel";
+            $args = "$action/$acceslevel";
             //CRUCIAL set $route to lowercase otherwise it falls foul of EntryPoint::checkUri
             $route = strtolower($name . '/message/' . $args);
             reLocate("/$route", '../');

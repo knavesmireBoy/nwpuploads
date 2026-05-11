@@ -119,9 +119,26 @@ class User extends Presenter
         return $prop ? $details[$prop] : $details;
     }
 
-    public function message()
+    protected function getAccess($key)
     {
-        dump(func_get_args());
+        $lib = ['load' => 'This page is restricted to Account Administrators'];
+        return $lib[$key] ?? '';
+    }
+
+    public function message($action = '', $i = 0)
+    {
+        if ($action) {
+            return [
+                'template' => 'accessdenied.html.php',
+                'variables' => [
+                    'error' => $this->getAccess($action),
+                    'route' => '/upload/load',
+                    'submitted' => false
+                ]
+            ];
+        } else {
+            reLocate(REG);
+        }
     }
 
     protected function displayer($details, $customVars = [], $owner = [], $error = '')

@@ -2,7 +2,6 @@
 <p class='error'><?= $error; ?></p>
 <?php
 
-dump([$priv, preg_match("/client/i", $priv), $selected]);
 
 if ($admin || isset($editor)) {
 	include TEMPLATE . '_call.html.php';
