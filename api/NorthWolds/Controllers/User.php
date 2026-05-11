@@ -17,17 +17,16 @@ class User extends Presenter
             return function () use ($admin, $cid, $user, $data, $dbrecord) {
                 //ensure domain remains the same
                 list($_name, $_dom, $_com) = $user->parseEmail($data['email']);
-                if(isset($dbrecord['email'])){//existing
+                if (isset($dbrecord['email'])) { //existing
                     list($name, $dom, $com) = $user->parseEmail($dbrecord['email']);
                     $key = "$_dom.$_com" !== "$dom.$com" ? 'domain' : '';
                     $key = $key && $admin ? '_domain' : $key;
                     if ($key) {
                         reLocate($this->home . "$key");
                     }
-                     $data['email'] = "$name@$dom.$com";
-                     return $data;
-                }
-                else {//new
+                    $data['email'] = "$name@$dom.$com";
+                    return $data;
+                } else { //new
                     $client = $this->clienttable->find('id', $cid)[0];
                     $domain = $client->domain;
                     $data['email'] = "$_name@$domain";
@@ -47,7 +46,7 @@ class User extends Presenter
             "addnotice" => "Please fill required fields",
             "selectuser" => "Please select a user for editing",
             "domainflag" => "Cannot assign this user to a new client",
-            "lastuser" => "To remove this last user, please delete the client instead",
+            
             "denied" => "You do not have the privileges to delete this user",
             "deniedbyclient" => "There must be at least one administrator role, please assign another user before removing your credentials from the database",
             "access" => "You do not have the privileges to add a user",
@@ -58,6 +57,9 @@ class User extends Presenter
             'editno' => 'You do not have the required privilges to edit this user details',
             'read' => 'You may view but not edit this user details',
 
+            "lasteditor" => "There must be at least one administrator role, please assign another user before removing your credentials from the database",
+            'last' => "Only the database administrator can delete this user",
+            '_last' => "To remove this final user, please delete the client instead",
             'domain' => 'Only the database administrator can change the domain of an email address',
             '_domain' => 'Operation not permitted; change the domain of the client instead',
             'impostor' => 'That domain is in use, use the client list drop down to assign a user'
@@ -329,11 +331,11 @@ class User extends Presenter
         $userId = $this->getLastInsertId($this->table->save([...$data, 'client_id' => nullify($client_id)], true));
         $user = $this->table->find('id', $userId)[0];
 
-       
+
         $user->updatePassword($data['password']);
         //role must be set BEFORE "updateUserDomain" no user can navigate the site without an assigned role
         $user->setRole($role);
-        
+
         $updateUserDomain = $this->updateUserDomainFactory($admin, $user, nullify($client_id), get_object_vars($user), [], $userId);
         $data = $updateUserDomain();
         $this->table->save($data);
@@ -380,11 +382,13 @@ class User extends Presenter
 
     public function delete($id)
     {
-       
-        $user = $this->table->find('id', $id)[0];
-        $user->delboy();
 
-       // return $this->load('delete', ['id' => $id]);
+        $user = $this->table->find('id', $id)[0];
+        $msg = $user->validateDelete();
+        if ($msg) {
+            return $this->load('delete', ['id' => $id]);
+        }
+        return reLocate($this->home . $msg);
     }
 
     public function confirm()

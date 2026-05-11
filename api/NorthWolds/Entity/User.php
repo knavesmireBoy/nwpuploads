@@ -32,16 +32,26 @@ class User extends Entity
     $this->clienttable = $client;
   }
 
-  function delboy()
+  public function validateDelete()
   {
     $ids = $this->getUserIds();
+    if (empty($ids)) {
+      return '';
+    }
+    $admin = isApproved($_SESSION['role'], 'ADMIN');
     $cb = partial([$this, 'find'], 'userroletable', 'userid');
     $roles = array_map($cb, $ids);
     $roles = array_map('get_object_vars', $roles);
-    if(count($roles) > 1){}
+    if (count($roles) === 1) {
+      return $admin ? '_last' : 'last';
+    }
     $cb = composer(partial('equals', 'Client Admin'), curry2('getter')('roleid'));
     $adminroles = safeFilter($roles, $cb);
-    dump($adminroles);
+    if (count($adminroles) === 1) {
+      $ids = array_column($adminroles, 'userid');
+      $key = in_array($this->id, $ids) ? 'lasteditor' : 'lastadmin';
+      return $admin ? '_last' : $key;
+    }
   }
 
   protected function fetchAllRoles(array $keys = [], array $selectedRoles = []): array
