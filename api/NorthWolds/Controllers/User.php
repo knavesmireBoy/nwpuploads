@@ -208,23 +208,21 @@ class User extends Presenter
         return $this->displayer($details, $customVars, $owner, $error);
     }
 
-    public function add($cid = '')
+    public function add()
     {
-        $priv = $this->getPrivilege('role');
-        $admin = isApproved($priv, 'admin');
+        $admin = isApproved($_SESSION['role'], 'admin');
         $details = $this->getPrivilege();
-        $id = $details['client_id'] ?? 0;
 
         if (!$admin) {
             reLocate($this->home);
         }
         return $this->edit(0, [
-            'action' => "user/add/$id",
+            'action' => "user/add/",
             'pagehead' => 'Add User',
             'button' => 'Add User',
             'calltext' => null,
             'callroute' =>  null,
-            'employer' => $cid
+            'employer' => $details['client_id'] ?? 0
         ]);
     }
 
