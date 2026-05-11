@@ -13,7 +13,7 @@ class User extends Presenter
 
     private function updateUserDomainFactory($admin, $user, $cid, $data, $dbrecord, $userID = 0)
     {
-        if ($user->client_id && $user->client_id == $cid) {
+        if (isset($user->client_id) && $user->client_id == $cid) {
             return function () use ($admin, $user, $data, $dbrecord) {
                 //ensure domain remains the same
                 list($_name, $_dom, $_com) = $user->parseEmail($data['email']);
@@ -327,7 +327,7 @@ class User extends Presenter
         //role must be set BEFORE "updateUserDomain" no user can navigate the site without an assigned role
         $user->setRole($role);
         
-        $updateUserDomain = $this->updateUserDomainFactory($user, nullify($_POST['employer']), get_object_vars($user), [], $userId);
+        $updateUserDomain = $this->updateUserDomainFactory($user, nullify($_POST['employer'] ?? null), get_object_vars($user), [], $userId);
         $data = $updateUserDomain();
         dump($data);
         $this->table->save($data);
