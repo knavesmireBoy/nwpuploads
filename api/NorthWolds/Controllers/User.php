@@ -151,12 +151,15 @@ class User extends Presenter
         // $pagehead_role = $nwproleplay && !obtainUserRole(true);
         $predicates = [partial('preg_match', '/^nwp/')];
         // $clients = isApproved($priv, 'ADMIN') ? $this->presentClientList($priv, 'domain') : [];
+        $cadmin = isApproved($_SESSION['role'], 'admin');
+
+        //if ($cadmin || ($id != $details['id'])).
 
         list($users, $clients) = $this->presentList($details['role'], $details['id'], $this->table);
-
         $admin = isApproved($details['role'], 'ADMIN');
         $defaultVars = [
             'admin' => $admin,
+            'cadmin' => $cadmin,
             'priv' => $details['role'],
             'prompt' => null,
             'users' => $users,

@@ -3,7 +3,7 @@
 <?php
 
 
-if ($admin || isset($editor)) {
+if ($cadmin || isset($editor)) {
 	include TEMPLATE . '_call.html.php';
 }
 if (isset($template)) {
