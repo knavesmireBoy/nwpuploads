@@ -2,7 +2,7 @@
 <p class='error'><?= $error; ?></p>
 <?php
 
-dump(get_defined_vars());
+//dump(get_defined_vars());
 
 if ($admin || isset($editor)) {
 	include TEMPLATE . '_call.html.php';
