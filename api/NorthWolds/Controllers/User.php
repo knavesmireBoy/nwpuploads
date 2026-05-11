@@ -119,6 +119,11 @@ class User extends Presenter
         return $prop ? $details[$prop] : $details;
     }
 
+    public function message()
+    {
+        dump(func_get_args());
+    }
+
     protected function displayer($details, $customVars = [], $owner = [], $error = '')
     {
         //  $error = query();
@@ -238,12 +243,12 @@ class User extends Presenter
         $action = '/user/edit/';
         $msg = '';
         $class = '';
-        if(!$cadmin && ($id != $details['id'])){
+        if (!$cadmin && ($id != $details['id'])) {
             $action = '/user/load/read';
             $class = 'details override';
             $msg = 'You may view this users details but cannot edit';
         }
-        
+
         list($_, $clients) = $this->presentList($_SESSION['role'], $id, $this->table, 'client_id');
         $roles = $this->table->find('id', $details['id'])[0]->getRoles();
 
@@ -302,9 +307,7 @@ class User extends Presenter
     }
 
 
-    public function exitSubmit(){
-
-    }
+    public function exitSubmit() {}
 
 
     public function editSubmit()

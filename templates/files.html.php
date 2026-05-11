@@ -1,5 +1,4 @@
 <?php
-
 foreach (get_defined_vars() as $k => $v) {
     $i = 0;
     $fail = false;
@@ -56,6 +55,7 @@ if (!$qpass) {
 }
 
 $query = preg_match("/error/", $query) ? decode($query) : ($query ? $failedsearch : '');
+
 //$d = 'j, n, Y';
 ?>
 <h1>File Uploads</h1>
@@ -66,7 +66,6 @@ if (isset($template)) {
     ob_start();
 }
 echo $error; ?>
-
 <p><a href="<?= $upload; ?>">Upload A File</a></p>
 
 <?php
