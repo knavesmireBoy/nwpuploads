@@ -259,7 +259,7 @@ class User extends Presenter
         $details = $this->getPrivilege();
         $admin = isApproved($_SESSION['role'], 'ADMIN');
         $cadmin = isApproved($_SESSION['role'], 'admin');
-        $action = '/user/edit/';
+        $action = '';
         $msg = '';
         $class = '';
         if (!$cadmin && ($id != $details['id'])) {
