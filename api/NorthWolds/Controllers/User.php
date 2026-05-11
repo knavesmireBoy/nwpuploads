@@ -23,8 +23,9 @@ class User extends Presenter
                 if ($key) {
                     reLocate($this->home . "$key");
                 }
-                return $_name !== $name;
-                // $data['email'] = "$name@$dom.$com";
+                //return $_name !== $name;
+                 $data['email'] = "$name@$dom.$com";
+                 return $data;
                 // $user = $this->table->save($data);
 
 
@@ -321,10 +322,10 @@ class User extends Presenter
         $user->updatePassword($data['password']);
         //role must be set BEFORE "updateUserDomain" no user can navigate the site without an assigned role
         $user->setRole($role);
+        
         $updateUserDomain = $this->updateUserDomainFactory($user, nullify($_POST['employer']), get_object_vars($user), [], $userId);
         return $updateUserDomain();
     }
-
 
     public function editSubmit()
     {
