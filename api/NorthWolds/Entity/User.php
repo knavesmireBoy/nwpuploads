@@ -36,10 +36,11 @@ class User extends Entity
   {
     $ids = $this->getUserIds();
   
-    $cb = partial([$this, 'find'], 'userroletable', 'userid', null, 0, 0, 2);
+    $cb = partial([$this, 'find'], 'userroletable', 'userid');
 
     $roles = array_map($cb, $ids);
-    dump([$roles, $ids]);
+    dump([$roles, array_map('get_object_vars', $roles)]);
+    $roles = get_object_vars($roles);
     $cb = composer(partial('equals', 'Client Admin'), curry2('getter')('roleid'));
     $adminroles = safeFilter($roles, $cb);
     dump($adminroles);
