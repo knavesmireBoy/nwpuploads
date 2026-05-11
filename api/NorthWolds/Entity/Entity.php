@@ -17,4 +17,10 @@ class Entity
         }
         return empty($ret) ? null : $ret[0];
     }
+
+    public function find(...$args)
+    {
+     return $this->fetch(...$args);
+    }
+  
 }
