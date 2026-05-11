@@ -18,15 +18,16 @@ class User extends Presenter
                 //ensure domain remains the same
                 list($_name, $_dom, $_com) = $user->parseEmail($data['email']);
                 list($name, $dom, $com) = $user->parseEmail($dbrecord['email']);
-
                 $key = "$_dom.$_com" !== "$dom.$com" ? 'domain' : '';
-
                 $key = $key && $admin ? '_domain' : $key;
-                $data['email'] = "$name@$dom.$com";
+                if ($key) {
+                    reLocate($this->home . "$key");
+                }
+                return $_name !== $name;
+                // $data['email'] = "$name@$dom.$com";
+                // $user = $this->table->save($data);
 
-                $user = $this->table->save($data);
 
-                reLocate($this->home . "$key");
             };
         }
         return function () use ($user, $cid, $data, $userID) {
@@ -340,9 +341,7 @@ class User extends Presenter
         });
 
         $updateUserDomain = $this->updateUserDomainFactory($_SESSION['role'] === 'Admin', $user, nullify($clientID), $data, $values);
-
-        $res = $updateUserDomain();
-
+        $updateUserDomain();
         //exclude password from update unless requested...
         $data = [...$values, ...$required];
         list($change, $optional) = $this->hasChanged($values, $required, ['email', 'password'], ['name']);
