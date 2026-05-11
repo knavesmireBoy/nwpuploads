@@ -2,7 +2,7 @@
 <p class='error'><?= $error; ?></p>
 <?php
 
-//dump(get_defined_vars());
+dump([$priv, preg_match("/client/i", $priv), $selected]);
 
 if ($admin || isset($editor)) {
 	include TEMPLATE . '_call.html.php';
@@ -13,7 +13,7 @@ if (isset($template)) {
 }
 ?>
 <?php
-if (empty($selected) && preg_match("/^admin/i", $priv)):
+if (empty($selected) && $admin):
 ?>
 	<form action="/user/select/" method="post" name="userform" class="choose">
 		<label for="user"></label><select id="user" name="user">

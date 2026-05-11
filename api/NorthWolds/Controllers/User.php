@@ -128,7 +128,7 @@ class User extends Presenter
         // $clients = isApproved($priv, 'ADMIN') ? $this->presentClientList($priv, 'domain') : [];
 
         list($users, $clients) = $this->presentList($details['role'], $details['id'], $this->table);
-        
+
         $admin = isApproved($details['role'], 'ADMIN');
         $defaultVars = [
             'admin' => $admin,
