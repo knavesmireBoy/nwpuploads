@@ -384,7 +384,7 @@ class User extends Presenter
         $user = $this->table->find('id', $id)[0];
         $user->delboy();
 
-        return $this->load('delete', ['id' => $id]);
+       // return $this->load('delete', ['id' => $id]);
     }
 
     public function confirm()
