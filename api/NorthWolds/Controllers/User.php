@@ -380,6 +380,10 @@ class User extends Presenter
 
     public function delete($id)
     {
+       
+        $user = $this->table->find('id', $id)[0];
+        $user->delboy();
+
         return $this->load('delete', ['id' => $id]);
     }
 

@@ -32,6 +32,17 @@ class User extends Entity
     $this->clienttable = $client;
   }
 
+
+  function delboy()
+  {
+    $ids = $this->getUserIds();
+    $cb = partial([$this, 'fetch'], 'userroletable', 'userid');
+    $roles = array_map($cb, $ids);
+    $cb = composer(partial('equals', 'Client Admin'), curry2('getter')('roleid'));
+    $adminroles = safeFilter($roles, $cb);
+    dump($adminroles);
+  }
+
   protected function fetchAllRoles(array $keys = [], array $selectedRoles = []): array
   {
     //Build the list of all roles
@@ -45,10 +56,10 @@ class User extends Entity
     return $roles;
   }
 
-  protected function getRole(): ?string
+  protected function getRole($id = 0): ?string
   {
-    //$res = $this->fetch('userroletable', 'userid', $this->id);
-    $res = $this->userroletable->find('userid', $this->id)[0];
+    $id = $id ? $id : $this->id;
+    $res = $this->fetch('userroletable', 'userid', $id);
     $this->roleid = $res->roleid;
     return $this->roleid;
   }
@@ -56,12 +67,9 @@ class User extends Entity
   public function getRoles()
   {
     $this->roleid = $this->getRole();
-
-
     if (!preg_match('/admin/i', $this->roleid)) {
       return [];
     }
-
     $roles = $this->fetchAllRoles($this->roles, [$this->roleid]);
     $f = composer(negate(curry2('equals')('Admin')), curry2('getter')('id'));
     $cb = preg_match('/client/i', $this->roleid) ? $f : 'identity';
@@ -116,7 +124,7 @@ class User extends Entity
     $postdom = "$dom.$com";
     $details = $this->getDetails();
     $domain = $details['domain'];
-    
+
     $data = $this->validateDom($cid, $dbrecord, $name, $postdom, $insertID);
 
     if ($domain && $postdom !== $domain) {
