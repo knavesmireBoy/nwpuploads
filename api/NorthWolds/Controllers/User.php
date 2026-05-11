@@ -49,6 +49,7 @@ class User extends Presenter
             "freelancer" => "Cannot assign this domain",
             'addno' => 'You do not have the required privilges to add a user',
             'editno' => 'You do not have the required privilges to edit this user details',
+            'read' => 'You may view but not edit this user details',
 
             'domain' => 'Only the database administrator can change the domain of an email address',
             '_domain' => 'Operation not permitted; change the domain of the client instead',
@@ -233,6 +234,16 @@ class User extends Presenter
     {
         $details = $this->getPrivilege();
         $admin = isApproved($_SESSION['role'], 'ADMIN');
+        $cadmin = isApproved($_SESSION['role'], 'admin');
+        $action = '/user/edit/';
+        $msg = '';
+        $class = '';
+        if(!$cadmin && ($id != $details['id'])){
+            $action = '/user/load/read';
+            $class = 'details override';
+            $msg = 'You may view this users details but cannot edit';
+        }
+        
         list($_, $clients) = $this->presentList($_SESSION['role'], $id, $this->table, 'client_id');
         $roles = $this->table->find('id', $details['id'])[0]->getRoles();
 
@@ -243,11 +254,12 @@ class User extends Presenter
             'admin' => $admin,
             'priv' => $_SESSION['role'],
             'editor' => $id == $details['id'],
-            'class' => '',
+            'class' => $class,
             'legend' => '',
             'override' => '',
             'pagehead' => 'Edit User',
-            'action' => '/user/edit/',
+            'message' => $msg,
+            'action' => $action,
             'id' => $id,
             'name' => $_COOKIE['name'] ?? $user->name ?? '',
             'email' => $_COOKIE['email'] ?? $user->email ?? '',
@@ -290,6 +302,11 @@ class User extends Presenter
     }
 
 
+    public function exitSubmit(){
+
+    }
+
+
     public function editSubmit()
     {
         $id = nullify($_POST['id']);
@@ -299,7 +316,7 @@ class User extends Presenter
         $user = $this->table->find('id', $id)[0];
         $editor = intval($id) === $this->getPrivilege('id');
 
-        if ((preg_match('/admin/i ', $_SESSION['role']) || $editor)) {
+        if ((preg_match('/admin/i', $_SESSION['role']) || $editor)) {
             $values = get_object_vars($user);
             $required = array_filter($data, function ($item) {
                 return $item;
