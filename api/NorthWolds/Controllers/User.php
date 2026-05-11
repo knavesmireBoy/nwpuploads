@@ -327,7 +327,7 @@ class User extends Presenter
         //role must be set BEFORE "updateUserDomain" no user can navigate the site without an assigned role
         $user->setRole($role);
         
-        $updateUserDomain = $this->updateUserDomainFactory($user, nullify($_POST['employer'] ?? null), get_object_vars($user), [], $userId);
+        $updateUserDomain = $this->updateUserDomainFactory($user, nullify($client_id), get_object_vars($user), [], $userId);
         $data = $updateUserDomain();
         dump($data);
         $this->table->save($data);

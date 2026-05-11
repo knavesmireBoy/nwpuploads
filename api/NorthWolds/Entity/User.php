@@ -116,7 +116,9 @@ class User extends Entity
     $postdom = "$dom.$com";
     $details = $this->getDetails();
     $domain = $details['domain'];
+    
     $data = $this->validateDom($cid, $dbrecord, $name, $postdom, $insertID);
+
     if ($domain && $postdom !== $domain) {
       reLocate('/user/load/domain');
     } else {
