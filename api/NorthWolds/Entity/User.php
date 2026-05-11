@@ -136,7 +136,7 @@ class User extends Entity
   {
     $role = $this->getRole();
     $found = array_search($role, $allowed);
-    return is_numeric($found) ? $found : null;
+    return is_numeric($found) ? true : null;
   }
 
   public function checkPermission(int $permission)

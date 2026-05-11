@@ -163,7 +163,7 @@ class NorthWoldsWebsite implements Website
         return isset($lookup[$key]) ? $lookup[$key] : ['title' => $title, 'klas' => $klas, 'user' => $user->name ?? '', 'adminpage' => !$klas];
     }
     //needs to be public method because use of partial 1st line of checkLogin which uses call_user_func_array
-    public function reroute($uri, int $acceslevel, string $flag = '')
+    public function reroute1($uri, int $acceslevel, string $flag = '')
     {
         $route = explode('/', $uri);
         $name = $flag ? $flag : $route[0];
@@ -174,6 +174,20 @@ class NorthWoldsWebsite implements Website
         $route = strtolower($name . '/message/' . $args);
         reLocate("/$route", '../');
     }
+
+        //needs to be public method because use of partial 1st line of checkLogin which uses call_user_func_array
+        public function reroute($uri, int $acceslevel, string $flag = '')
+        {
+            $route = explode('/', $uri);
+            $name = $flag ? $flag : $route[0];
+            $action = $route[1];
+            //$acceslevel will determine the feedback message supplied to acccessdenied.html.php
+            $args = "!$action/$acceslevel";
+            //CRUCIAL set $route to lowercase otherwise it falls foul of EntryPoint::checkUri
+            $route = strtolower($name . '/message/' . $args);
+            reLocate("/$route", '../');
+        }
+    
 
     public function checkLogin(string $uri): array
     {
@@ -247,7 +261,7 @@ class NorthWoldsWebsite implements Website
         } else {
             $permit = isset($actions[$uri]) && $user->hasPermission($actions[$uri]);
             if (isset($actions[$uri]) && !$permit) {
-                $reroute($actions[$uri], 'user');
+                $reroute(count($actions[$uri]), 'user');
                 exit;
             }
         }
