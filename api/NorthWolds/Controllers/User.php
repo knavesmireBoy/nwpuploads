@@ -224,7 +224,7 @@ class User extends Presenter
             'button' => 'Add User',
             'calltext' => null,
             'callroute' =>  null,
-            'employed' => $cid
+            'employer' => $cid
         ]);
     }
 
