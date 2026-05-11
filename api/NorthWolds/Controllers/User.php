@@ -287,6 +287,7 @@ class User extends Presenter
 
         $vars = [
             'admin' => $admin,
+            'cadmin' => $cadmin,
             'priv' => $_SESSION['role'],
             'editor' => $id == $details['id'],
             'class' => $class,
