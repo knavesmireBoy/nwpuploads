@@ -211,7 +211,7 @@ class User extends Presenter
     public function add()
     {
         $priv = $this->getPrivilege('role');
-        $admin = isApproved($priv, 'ADMIN');
+        $admin = isApproved($priv, 'admin');
 
         if (!$admin) {
             reLocate($this->home);
@@ -327,7 +327,9 @@ class User extends Presenter
         $user->setRole($role);
         
         $updateUserDomain = $this->updateUserDomainFactory($user, nullify($_POST['employer']), get_object_vars($user), [], $userId);
-        return $updateUserDomain();
+        $data = $updateUserDomain();
+        dump($data);
+        $this->table->save($data);
     }
 
     public function editSubmit()
