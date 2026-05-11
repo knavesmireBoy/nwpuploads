@@ -35,8 +35,11 @@ class User extends Entity
   function delboy()
   {
     $ids = $this->getUserIds();
+  
     $cb = partial([$this, 'find'], 'userroletable', 'userid', null, 0, 0, 2);
+
     $roles = array_map($cb, $ids);
+    dump([$roles, $ids]);
     $cb = composer(partial('equals', 'Client Admin'), curry2('getter')('roleid'));
     $adminroles = safeFilter($roles, $cb);
     dump($adminroles);
