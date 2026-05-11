@@ -259,7 +259,7 @@ class User extends Presenter
         $details = $this->getPrivilege();
         $admin = isApproved($_SESSION['role'], 'ADMIN');
         $cadmin = isApproved($_SESSION['role'], 'admin');
-        $action = '';
+        $action = 'user/edit/';
         $msg = '';
         $class = '';
         if (!$cadmin && ($id != $details['id'])) {
@@ -360,6 +360,7 @@ class User extends Presenter
         unset($data['password']);
         $user = $this->table->save($data);
         $user->setRole($role); //UPDATE role here
+        reLocate($this->home);
     }
 
 
