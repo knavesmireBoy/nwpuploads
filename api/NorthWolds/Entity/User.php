@@ -69,7 +69,7 @@ class User extends Entity
     return $msg;
   }
 
-  public function validateRole($role)
+  private function validateRole($role)
   {
     $details = $this->getDetails();
     $admin = isApproved($details['role'], 'ADMIN');
@@ -86,7 +86,6 @@ class User extends Entity
         $j = array_search($this->roleid, $this->roles);
 
         if (($i < $j) && preg_match('/admin/i', $this->roleid)) { //demotion
-
           if (count($roles) === 1) {
             $key = in_array($this->id, $ids) ? 'lasteditor' : 'lastadmin';
             return $admin ? '_last' : $key;
@@ -137,10 +136,12 @@ class User extends Entity
     }
 
     $role = $this->validateRole($role);
+
     if (in_array($role, $this->roles)) {
       $this->userroletable->save(['userid' => $this->id, 'roleid' => $role], $action);
       $this->roleid = $userid ? null : $role;
     }
+    dump($role);
     return $role;
   }
 
