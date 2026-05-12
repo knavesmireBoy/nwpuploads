@@ -32,6 +32,22 @@ class User extends Entity
     $this->clienttable = $client;
   }
 
+  //convert ids into table structure [userid, roleid]
+  private function getAllRoles($ids)
+  {
+    if (empty($ids)) {
+      return [];
+    }
+    $cb = partial([$this, 'find'], 'userroletable', 'userid');
+    $roles = array_map($cb, $ids);
+    return array_map('get_object_vars', $roles);
+  }
+  private function getAdminRoles($roles = [])
+  {
+    $cb = composer(partial('equals', 'Client Admin'), curry2('getter')('roleid'));
+    return !empty($roles) ? safeFilter($roles, $cb) : $roles;
+  }
+
   public function validateDelete()
   {
     $ids = $this->getUserIds();
@@ -40,20 +56,40 @@ class User extends Entity
       return $msg;
     }
     $admin = isApproved($_SESSION['role'], 'ADMIN');
-    $cb = partial([$this, 'find'], 'userroletable', 'userid');
-    $roles = array_map($cb, $ids);
-    $roles = array_map('get_object_vars', $roles);
+    $roles = $this->getAllRoles($ids);
     if (count($roles) === 1) {
       $msg = $admin ? '_last' : 'last';
     }
-    $cb = composer(partial('equals', 'Client Admin'), curry2('getter')('roleid'));
-    $adminroles = safeFilter($roles, $cb);
-    if (count($adminroles) === 1) {
+    $adminroles = $this->getAdminRoles($roles);
+    if (!$msg && count($adminroles) === 1) {
       $ids = array_column($adminroles, 'userid');
       $key = in_array($this->id, $ids) ? 'lasteditor' : 'lastadmin';
       $msg = $admin ? '_last' : $key;
     }
     return $msg;
+  }
+
+  public function validateRole($role)
+  {
+    $admin = isApproved($_SESSION['role'], 'admin');
+    $ids = $this->getUserIds();
+    if (in_array($role, $this->roles)) {
+      $roles = $this->getAllRoles($ids);
+      $roles = $admin ? $roles : $this->getAdminRoles($roles);
+      if (!empty($roles)) {
+        $i = array_search($role, $this->roles);
+        $j = array_search($this->roleid, $this->roles);
+
+        if (($i < $j) && preg_match('/admin/i', $this->roleid)) { //demotion
+
+          if (count($roles) === 1) {
+            $key = in_array($this->id, $ids) ? 'lasteditor' : 'lastadmin';
+            return $admin ? '_last' : $key;
+          }
+        }
+      }
+      return $role;
+    }
   }
 
   protected function fetchAllRoles(array $keys = [], array $selectedRoles = []): array
@@ -94,10 +130,13 @@ class User extends Entity
     } else {
       $action = empty($this->userroletable->find('userid', $this->id));
     }
+
+    $role = $this->validateRole($role);
     if (in_array($role, $this->roles)) {
       $this->userroletable->save(['userid' => $this->id, 'roleid' => $role], $action);
       $this->roleid = $userid ? null : $role;
     }
+    return $role;
   }
 
   private function validateDom($cid, $dbrecord, $name, $postdom, $insertID)
