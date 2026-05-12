@@ -80,7 +80,7 @@ class User extends Entity
   //could be admin obtaining a user role for displaying in the form
   public function getRoles(int $userid = 0)
   {
-    if (!preg_match('/admin/i', $this->roleid ?? '')) {
+    if ($this->roleid && !preg_match('/admin/i', $this->roleid)) {
       return [];
     }
 
