@@ -364,7 +364,6 @@ class User extends Presenter
         //will exit here if domain doesn't validate
         $updateUserDomain();
 
-        dump(666);
         //exclude password from update unless requested...
         $data = [...$values, ...$required];
         list($change, $optional) = $this->hasChanged($values, $required, ['email', 'password'], ['name']);
@@ -380,7 +379,7 @@ class User extends Presenter
         unset($data['password']);
         $user = $this->table->save($data);
         $key = $user->setRole($role); //UPDATE role here
-        reLocate($this->home . $key);
+        reLocate($this->home);
     }
 
     public function delete($id)
