@@ -146,29 +146,23 @@ class User extends Entity
     $client = $cid ? $this->clienttable->find('id', $cid) : [];
     //admin moving or switching a user to a client
     if (isset($client[0])) {
-     // dump(1);
       $postdom = $client[0]->domain;
       $data = ['id' => $this->id, 'email' => "$name@$postdom", 'client_id' => $client[0]->id];
     } else {
-     // dump(2);
       $client = $this->clienttable->getEntity();
       if ($client->validateDomain($postdom)) {
         $data = ['id' => $this->id, 'email' => "$name@$postdom", 'client_id' => null];
       } else {
-      //  dump(3);
         if ($insertID) { // a new
-        //  dump(4);
           $this->table->delete('id', $insertID);
           reLocate('/user/load/impostor');
         } else { //or existing user (freelancer) attempting to set a blacklisted domain
           //silently revert, or send a message
           $libkey = 'mover';
-        //  dump(5);
           $data = ['id' => $this->id, 'email' => $dbrecord['email']];
         }
       }
     }
-   // dump([$data, $dbrecord]);
     return $data ? $data : $dbrecord;
   }
 
@@ -188,7 +182,6 @@ class User extends Entity
     $domain = $details['domain'];
 
     $data = $this->validateDom($cid, $dbrecord, $name, $postdom, $insertID);
-dump([11,$data]);
     if ($domain && $postdom !== $domain) {
       reLocate('/user/load/domain');
     } else {
