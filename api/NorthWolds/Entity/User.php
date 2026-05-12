@@ -166,7 +166,6 @@ class User extends Entity
           //silently revert, or send a message
           $libkey = 'mover';
           $data = $dbrecord;
-          //  $data = ['id' => $this->id, 'email' => $dbrecord['email']];
         }
       }
     }
