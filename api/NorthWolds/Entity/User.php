@@ -88,7 +88,7 @@ class User extends Entity
     if ($userid) {
       $roleid = $this->getRole($userid);
     } else {
-      $roleid = $this->getRole($userid);
+      $roleid = $this->getRole($this->id);
       $this->roleid = $roleid;
     }
     $selected[] = $roleid;
