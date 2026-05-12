@@ -87,8 +87,7 @@ class User extends Entity
 
         if (($i < $j) && preg_match('/admin/i', $this->roleid)) { //demotion
           if (count($roles) === 1) {
-            $key = in_array($this->id, $ids) ? 'lasteditor' : 'lastadmin';
-            return $admin ? '_last' : $key;
+            return $admin ? '_last' : 'lastadmin';
           }
         }
       }
@@ -134,9 +133,7 @@ class User extends Entity
     } else {
       $action = empty($this->userroletable->find('userid', $this->id));
     }
-
     $role = $this->validateRole($role);
-
     if (in_array($role, $this->roles)) {
       $this->userroletable->save(['userid' => $this->id, 'roleid' => $role], $action);
       $this->roleid = $userid ? null : $role;

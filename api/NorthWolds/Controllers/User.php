@@ -58,6 +58,7 @@ class User extends Presenter
             'read' => 'You may view but not edit this user details',
 
             "lasteditor" => "There must be at least one administrator role, please assign another user before removing your credentials from the database",
+            "lastadmin" => "There must be at least one administrator role, please promote another user to the admin role before demoting your role",
             'last' => "Only the database administrator can delete this user",
             '_last' => "To remove this final user, please delete the client instead",
             'domain' => 'Only the database administrator can change the domain of an email address',
@@ -348,6 +349,7 @@ class User extends Presenter
     public function editSubmit()
     {
         $id = nullify($_POST['id']);
+        $key = '';
         $data = $_POST['data'];
         $role = $_POST['roles'][0] ?? 'Browser';
         $clientID = $_POST['employer'] ?? $_POST['employed'] ?? null;
@@ -376,7 +378,7 @@ class User extends Presenter
         }
         unset($data['password']);
         $user = $this->table->save($data);
-        
+
         $key = $user->setRole($role); //UPDATE role here
         reLocate($this->home . $key);
     }
