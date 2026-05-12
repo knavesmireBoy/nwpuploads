@@ -339,7 +339,6 @@ class User extends Presenter
         $user->updatePassword($data['password']);
         //role must be set BEFORE "updateUserDomain" no user can navigate the site without an assigned role
         $user->setRole($role);
-        dump($client_id);
         $updateUserDomain = $this->updateUserDomainFactory($admin, $user, nullify($client_id), get_object_vars($user), [], $userId);
         $data = $updateUserDomain();
         $this->table->save($data);
@@ -378,8 +377,9 @@ class User extends Presenter
         }
         unset($data['password']);
         $user = $this->table->save($data);
-
         $key = $user->setRole($role); //UPDATE role here
+
+        dump([$data, $key]);
         reLocate($this->home . $key);
     }
 
