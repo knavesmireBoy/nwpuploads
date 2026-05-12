@@ -163,7 +163,7 @@ class User extends Entity
         }
       }
     }
-    return $data;
+    return $data ? $data : $dbrecord;
   }
 
   public function parseEmail($e)
