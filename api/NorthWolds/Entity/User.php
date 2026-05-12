@@ -119,13 +119,14 @@ class User extends Entity
   //should only be called by admin
   public function getRoles(int $userid, string $roleid)
   {
-    $f = composer(negate(curry2('equals')('Admin')), curry2('getter')('id'));
+    /*
     $cb = preg_match('/client/i', $roleid) ? $f : 'identity';
     $admin = $roleid === 'Admin';
+    */
+    $f = composer(negate(curry2('equals')('Admin')), curry2('getter')('id'));
+    //$cb = preg_match('/^Admin/', $roleid) ? 'identity' : $f;
     $roleid = $this->getRole($userid);
-    if($admin){
-      $cb = !preg_match('/^Admin/', $roleid) ? $f : 'identity';
-    }
+    $cb = preg_match('/^Admin/', $roleid) ? 'identity' : $f;
     $roles = $this->fetchAllRoles($this->roles, [$roleid]);
     return safeFilter($roles, $cb ?? 'identity');
   }
