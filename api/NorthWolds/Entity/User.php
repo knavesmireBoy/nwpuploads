@@ -144,34 +144,33 @@ class User extends Entity
   private function validateDom($cid, $dbrecord, $name, $postdom, $insertID)
   {
     
-    dump($cid);
-    $client = $this->clienttable->find('id', $cid);
-    dump($client);
+
+    $client = $cid ? $this->clienttable->find('id', $cid) : [];
     //admin moving or switching a user to a client
     if (isset($client[0])) {
-      dump(1);
+     // dump(1);
       $postdom = $client[0]->domain;
       $data = ['id' => $this->id, 'email' => "$name@$postdom", 'client_id' => $client[0]->id];
     } else {
-      dump(2);
+     // dump(2);
       $client = $this->clienttable->getEntity();
       if ($client->validateDom($postdom)) {
         $data = ['id' => $this->id, 'email' => "$name@$postdom", 'client_id' => null];
       } else {
-        dump(3);
+      //  dump(3);
         if ($insertID) { // a new
-          dump(4);
+        //  dump(4);
           $this->table->delete('id', $insertID);
           reLocate('/user/load/impostor');
         } else { //or existing user (freelancer) attempting to set a blacklisted domain
           //silently revert, or send a message
           $libkey = 'mover';
-          dump(5);
+        //  dump(5);
           $data = ['id' => $this->id, 'email' => $dbrecord['email']];
         }
       }
     }
-    dump([$data, $dbrecord]);
+   // dump([$data, $dbrecord]);
     return $data ? $data : $dbrecord;
   }
 
