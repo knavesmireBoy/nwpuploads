@@ -77,26 +77,14 @@ class User extends Entity
     return $res->roleid;
   }
 
-  //could be admin obtaining a user role for displaying in the form
-  public function getRoles(int $userid = 0)
+  //should only be called by admin
+  public function getRoles(int $userid = 0, int $adminid = 0)
   {
-    if ($this->roleid && !preg_match('/admin/i', $this->roleid)) {
-      return [];
-    }
-
-    $selected = [];
-    if ($userid) {
-      $roleid = $this->getRole($userid);
-    } else {
-      $roleid = $this->getRole($this->id);
-      $this->roleid = $roleid;
-    }
-    $selected[] = $roleid;
-    $roles = $this->fetchAllRoles($this->roles, $selected);
     $f = composer(negate(curry2('equals')('Admin')), curry2('getter')('id'));
-    //could just splice/slice array to exclude 'Admin'
-    $cb = preg_match('/client/i', $this->roleid) ? $f : 'identity';
-    return safeFilter($roles, $cb);
+    $cb = preg_match('/client/i', $adminid) ? $f : 'identity';
+    $roleid = $this->getRole($userid);
+    $roles = $this->fetchAllRoles($this->roles, [$roleid]);
+    return safeFilter($roles, $cb ?? 'identity');
   }
 
   public function setRole(string $role, int $userid = 0)
