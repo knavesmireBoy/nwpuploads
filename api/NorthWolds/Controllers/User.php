@@ -378,8 +378,7 @@ class User extends Presenter
         $user = $this->table->save($data);
         
         $key = $user->setRole($role); //UPDATE role here
-        $msg = $this->query($key);
-        reLocate($this->home . $msg);
+        reLocate($this->home . $key);
     }
 
     public function delete($id)

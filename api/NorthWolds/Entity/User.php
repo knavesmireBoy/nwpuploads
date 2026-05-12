@@ -141,7 +141,6 @@ class User extends Entity
       $this->userroletable->save(['userid' => $this->id, 'roleid' => $role], $action);
       $this->roleid = $userid ? null : $role;
     }
-    dump($role);
     return $role;
   }
 
