@@ -117,11 +117,14 @@ class User extends Entity
   }
 
   //should only be called by admin
-  public function getRoles(int $userid = 0, int $adminid = 0)
+  public function getRoles(int $userid, string $roleid)
   {
     $f = composer(negate(curry2('equals')('Admin')), curry2('getter')('id'));
-    $cb = preg_match('/client/i', $adminid) ? $f : 'identity';
+    $cb = 'identity';
     $roleid = $this->getRole($userid);
+    if ($roleid !== 'Admin' || preg_match('/client/i', $roleid)) {
+      $cb = $f;
+    }
     $roles = $this->fetchAllRoles($this->roles, [$roleid]);
     return safeFilter($roles, $cb ?? 'identity');
   }
@@ -133,7 +136,7 @@ class User extends Entity
     } else {
       $action = empty($this->userroletable->find('userid', $this->id));
     }
-    $role = $this->validateRole($role);//A) may return key for query
+    $role = $this->validateRole($role); //A) may return a key for query
     if (in_array($role, $this->roles)) {
       $this->userroletable->save(['userid' => $this->id, 'roleid' => $role], $action);
       $this->roleid = $userid ? null : $role;
