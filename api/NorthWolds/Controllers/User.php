@@ -287,9 +287,10 @@ class User extends Presenter
         if ($cadmin) {
             if ($user) {
                 $roles = $user->getRoles($user->id);
+            } else {
+                $user = $this->table->getEntity();
+                $roles = $user->getRoles($id);
             }
-            $user = $this->table->getEntity();
-            $roles = $user->getRoles($id);
         }
         $id = $user->id ?? null;
         $vars = [
