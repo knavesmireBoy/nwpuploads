@@ -14,6 +14,7 @@ class User extends Presenter
     private function updateUserDomainFactory($admin, $user, $cid, $data, $dbrecord, $userID = 0)
     {
         if (isset($user->client_id) && $user->client_id == $cid) {
+            dump('client');
             return function () use ($admin, $cid, $user, $data, $dbrecord) {
                 //ensure domain remains the same
                 list($_name, $_dom, $_com) = $user->parseEmail($data['email']);
@@ -34,6 +35,7 @@ class User extends Presenter
                 }
             };
         }
+        dump('admin');
         return function () use ($user, $cid, $data, $userID) {
             return $user->updateUserDomain($cid, $data, $userID);
         };
