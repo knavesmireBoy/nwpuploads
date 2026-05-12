@@ -69,36 +69,46 @@ class User extends Entity
     return $roles;
   }
 
-  protected function getRole($id = 0): ?string
+  protected function getRole($userid = null): ?string
   {
-    $id = $id ? $id : $this->id;
+    $id = $userid ? $userid : $this->id;
     $res = $this->fetch('userroletable', 'userid', $id);
-    $this->roleid = $res->roleid;
-    return $this->roleid;
+    $this->roleid = $userid ? null : $res->roleid;
+    return $res->roleid;
   }
 
-  public function getRoles($id = null)
+  //could be admin obtaining a user role for displaying in the form
+  public function getRoles(int $userid = 0)
   {
-    $selected = [];
-    if ($this->id) {
-      $this->roleid = $this->getRole();
-      $selected[] = $this->roleid;
-    }
     if (!preg_match('/admin/i', $this->roleid)) {
       return [];
     }
+
+    $selected = [];
+    if ($userid) {
+      $roleid = $this->getRole($userid);
+    } else {
+      $roleid = $this->getRole($userid);
+      $this->roleid = $roleid;
+    }
+    $selected[] = $roleid;
     $roles = $this->fetchAllRoles($this->roles, $selected);
     $f = composer(negate(curry2('equals')('Admin')), curry2('getter')('id'));
+    //could just splice/slice array to exclude 'Admin'
     $cb = preg_match('/client/i', $this->roleid) ? $f : 'identity';
     return safeFilter($roles, $cb);
   }
 
-  public function setRole(string $role)
+  public function setRole(string $role, int $userid = 0)
   {
-    $action = empty($this->userroletable->find('userid', $this->id));
+    if ($userid) {
+      $action = empty($this->userroletable->find('userid', $userid));
+    } else {
+      $action = empty($this->userroletable->find('userid', $this->id));
+    }
     if (in_array($role, $this->roles)) {
       $this->userroletable->save(['userid' => $this->id, 'roleid' => $role], $action);
-      $this->roleid = $role;
+      $this->roleid = $userid ? null : $role;
     }
   }
 
