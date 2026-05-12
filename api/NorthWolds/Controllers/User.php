@@ -46,7 +46,7 @@ class User extends Presenter
             "addnotice" => "Please fill required fields",
             "selectuser" => "Please select a user for editing",
             "domainflag" => "Cannot assign this user to a new client",
-            
+
             "denied" => "You do not have the privileges to delete this user",
             "deniedbyclient" => "There must be at least one administrator role, please assign another user before removing your credentials from the database",
             "access" => "You do not have the privileges to add a user",
@@ -271,6 +271,7 @@ class User extends Presenter
         $admin = isApproved($_SESSION['role'], 'ADMIN');
         $cadmin = isApproved($_SESSION['role'], 'admin');
         $action = 'user/edit/';
+        $roles = [];
         $msg = '';
         $class = '';
         if (!$cadmin && ($id != $details['id'])) {
@@ -282,14 +283,15 @@ class User extends Presenter
         list($_, $clients) = $this->presentList($_SESSION['role'], $id, $this->table, 'client_id');
 
         $user = $this->table->find('id', $id);
-
-        dump($user);
-        //$this->table->getEntity();
-       /// $roles = $user $this->table->find('id', $details['id'])[0]->getRoles();
-
-
+        $user = $user[0] ?? null;
+        if ($cadmin) {
+            if ($user) {
+                $roles = $user->getRoles();
+            }
+            $user = $this->table->getEntity();
+            $roles = $user->getRoles();
+        }
         $id = $user->id ?? null;
-
         $vars = [
             'admin' => $admin,
             'cadmin' => $cadmin,
