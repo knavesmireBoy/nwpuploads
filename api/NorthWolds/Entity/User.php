@@ -151,7 +151,7 @@ class User extends Entity
     } else {
       $client = $this->clienttable->getEntity();
       if ($client->validateDomain($postdom)) {
-        $data = ['id' => $this->id, 'email' => "$name@$postdom", 'client_id' => null];
+        $data = ['id' => $this->id, 'email' => "$name@$postdom", 'name' => $dbrecord['name'], 'client_id' => null];
       } else {
         if ($insertID) { // a new
           $this->table->delete('id', $insertID);
@@ -159,7 +159,8 @@ class User extends Entity
         } else { //or existing user (freelancer) attempting to set a blacklisted domain
           //silently revert, or send a message
           $libkey = 'mover';
-          $data = ['id' => $this->id, 'email' => $dbrecord['email']];
+          $data = $dbrecord;
+        //  $data = ['id' => $this->id, 'email' => $dbrecord['email']];
         }
       }
     }
@@ -182,10 +183,10 @@ class User extends Entity
     $domain = $details['domain'];
 
     $data = $this->validateDom($cid, $dbrecord, $name, $postdom, $insertID);
-    dump([33,$data]);
     if ($domain && $postdom !== $domain) {
       reLocate('/user/load/domain');
     } else {
+      return $data;
       if ($data) {
         $this->table->save($data);
         reLocate('/user/load/');

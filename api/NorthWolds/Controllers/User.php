@@ -378,7 +378,6 @@ class User extends Presenter
         unset($data['password']);
         $user = $this->table->save($data);
         $key = $user->setRole($role); //UPDATE role here
-
         reLocate($this->home . $key);
     }
 
