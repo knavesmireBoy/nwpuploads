@@ -159,6 +159,7 @@ class User extends Entity
         } else { //or existing user (freelancer) attempting to set a blacklisted domain
           //silently revert, or send a message
           $libkey = 'mover';
+          dump(9999);
           $data = ['id' => $this->id, 'email' => $dbrecord['email']];
         }
       }

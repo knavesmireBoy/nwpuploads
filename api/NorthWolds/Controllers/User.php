@@ -363,7 +363,7 @@ class User extends Presenter
 
         $updateUserDomain = $this->updateUserDomainFactory($_SESSION['role'] === 'Admin', $user, nullify($clientID), $data, $values);
         //will exit here if domain doesn't validate
-       // $updateUserDomain();
+        $updateUserDomain();
         //exclude password from update unless requested...
         $data = [...$values, ...$required];
         list($change, $optional) = $this->hasChanged($values, $required, ['email', 'password'], ['name']);
