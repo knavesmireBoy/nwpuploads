@@ -182,6 +182,7 @@ class User extends Entity
     $domain = $details['domain'];
 
     $data = $this->validateDom($cid, $dbrecord, $name, $postdom, $insertID);
+    dump([33,$data]);
     if ($domain && $postdom !== $domain) {
       reLocate('/user/load/domain');
     } else {

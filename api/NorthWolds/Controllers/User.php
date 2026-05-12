@@ -379,7 +379,6 @@ class User extends Presenter
         $user = $this->table->save($data);
         $key = $user->setRole($role); //UPDATE role here
 
-        dump([$data, $key]);
         reLocate($this->home . $key);
     }
 
