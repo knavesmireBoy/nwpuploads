@@ -133,10 +133,12 @@ class User extends Entity
     } else {
       $action = empty($this->userroletable->find('userid', $this->id));
     }
-    $role = $this->validateRole($role);
+    $role = $this->validateRole($role);//A) may return key for query
     if (in_array($role, $this->roles)) {
       $this->userroletable->save(['userid' => $this->id, 'roleid' => $role], $action);
       $this->roleid = $userid ? null : $role;
+      //B if not set to empty string
+      $role = '';
     }
     return $role;
   }
@@ -160,7 +162,7 @@ class User extends Entity
           //silently revert, or send a message
           $libkey = 'mover';
           $data = $dbrecord;
-        //  $data = ['id' => $this->id, 'email' => $dbrecord['email']];
+          //  $data = ['id' => $this->id, 'email' => $dbrecord['email']];
         }
       }
     }
