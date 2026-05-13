@@ -166,11 +166,11 @@ class User extends Entity
       $client = $this->clienttable->getEntity();
       if ($client->domainAvailable($postdom)) {
         $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'name' => $dbrecord['name'], 'client_id' => null];
-        if (!isset($_COOKIE['leave'])) {
-          $this->setCookie($data, ['name', 'email', 'leave'], true);
+        if (!isset($_COOKIE['email'])) {
+          $this->setCookie($data, ['name', 'email'], true);
           reLocate('/user/loadbridge/leave/'  . $this->id);
         } else {
-          $this->setCookie($data, ['name', 'email', 'leave'], false);
+          $this->setCookie($data, ['name', 'email'], false);
         }
       } else {
         if ($insertID) { // a new

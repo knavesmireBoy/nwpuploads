@@ -18,7 +18,7 @@ if (isset($selected)) {
 } else {
 	$k = 'Client';
 }
-$route = $routes['Client'];
+$route = $routes[$k];
 
 
 if ($admin) { ?>
