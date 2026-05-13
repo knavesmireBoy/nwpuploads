@@ -189,16 +189,16 @@ class User extends Entity
     return [$name, $dom, $com];
   }
 
-  public function updateUserDomain(?int $cid, array $dbrecord, int $insertID = 0)
+  public function updateUserDomain(?int $cid, array $postdata, int $insertID = 0)
   {
-    list($name, $dom, $com) = $this->parseEmail($this->email);
+    list($name, $dom, $com) = $this->parseEmail($postdata['email']);
     $postdom = "$dom.$com";
     $details = $this->getDetails();
     $domain = $details['domain'];
 
-    $data = $this->validateDom($cid, $dbrecord, $name, $postdom, $insertID);
+    $data = $this->validateDom($cid, $postdata, $name, $postdom, $insertID);
 
-    if ($domain && $postdom !== $domain) {
+    if ($cid && $domain && ($postdom !== $domain)) {
       reLocate('/user/load/domain');
     } else {
       return $data;

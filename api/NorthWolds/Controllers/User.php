@@ -354,16 +354,16 @@ class User extends Presenter
         $user = $this->table->find('id', $id)[0];
         $editor = intval($id) === $this->getPrivilege('id');
 
-        $values = get_object_vars($user);
+        $record = get_object_vars($user);
         $required = array_filter($data, function ($item) {
             return $item;
         });
 
-        $updateUserDomain = $this->updateUserDomainFactory($_SESSION['role'] === 'Admin', $user, nullify($clientID), $data, $values);
+        $updateUserDomain = $this->updateUserDomainFactory($_SESSION['role'] === 'Admin', $user, nullify($clientID), $data, $record);
         //will exit here if domain doesn't validate
-        $data = [...$values, ...$required, ...$updateUserDomain()];
+        $data = [...$record, ...$required, ...$updateUserDomain()];
         //exclude password from update unless requested...
-        list($change, $optional) = $this->hasChanged($values, $required, ['email', 'password'], ['name']);
+        list($change, $optional) = $this->hasChanged($record, $required, ['email', 'password'], ['name']);
         if ($editor && $change !== [] && empty($_POST['override'])) {
             $this->setCookie($data, [...$change, ...$optional], true);
             return $this->load('change', ['id' => $id]);
