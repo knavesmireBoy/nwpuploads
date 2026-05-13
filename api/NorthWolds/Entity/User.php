@@ -174,7 +174,7 @@ class User extends Entity
 
           $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'name' => $dbrecord['name'], 'client_id' => null];
           $this->setCookie($data, ['name', 'email'], true);
-          reLocate('/user/load/leave');
+          reLocate('/user/loadbridge/leave/'  . $this->id);
         }
       }
     }

@@ -195,6 +195,11 @@ class User extends Presenter
         ];
     }
 
+    public function loadbridge($key, $id)
+    {
+        return $this->load($key, ['id' => $id]);
+    }
+
     public function load(string $key = '', array $vars = [])
     {
         $details = $this->getPrivilege();
