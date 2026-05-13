@@ -148,7 +148,6 @@ class User extends Entity
   {
     $client = $cid ? $this->clienttable->find('id', $cid) : [];
     $key = '';
-    dump($cid);
     //ADMIN moving or switching a user to a client
     if (isset($client[0])) {
       $details = $this->getDetails();
