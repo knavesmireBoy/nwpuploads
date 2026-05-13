@@ -116,16 +116,13 @@ class User extends Entity
     return $res->roleid;
   }
 
-  //should only be called by admin
+
   public function getRoles(int $userid, string $roleid)
   {
-    /*
-    $cb = preg_match('/client/i', $roleid) ? $f : 'identity';
-    $admin = $roleid === 'Admin';
-    */
     $f = composer(negate(curry2('equals')('Admin')), curry2('getter')('id'));
-    //$cb = preg_match('/^Admin/', $roleid) ? 'identity' : $f;
     $roleid = $this->getRole($userid);
+    //list of roles determined by current user
+    //allow Admin to be listed only if that happens to be one of the few Admin roles
     $cb = preg_match('/^Admin/', $roleid) ? 'identity' : $f;
     $roles = $this->fetchAllRoles($this->roles, [$roleid]);
     return safeFilter($roles, $cb ?? 'identity');
@@ -133,32 +130,31 @@ class User extends Entity
 
   public function setRole(string $role, int $userid = 0)
   {
-    if ($userid) {
-      $action = empty($this->userroletable->find('userid', $userid));
-    } else {
-      $action = empty($this->userroletable->find('userid', $this->id));
-    }
-    $role = $this->validateRole($role);//A) may return a key for query
+    $uid = $userid ? $userid : $this->id;
+    //if $action is true insert otherwise update
+    $action = empty($this->userroletable->find('userid', $uid));
+    //A) if validation fails return a key for query eg 'last' header(Location: /user/load/last)
+    $role = $this->validateRole($role);
     if (in_array($role, $this->roles)) {
       $this->userroletable->save(['userid' => $this->id, 'roleid' => $role], $action);
       $this->roleid = $userid ? null : $role;
-      //B if not set to empty string
+      //B if validation succeeds set to empty string (or success?)
       $role = '';
     }
     return $role;
   }
 
-  private function validateDom($cid, $dbrecord, $name, $postdom, $insertID)
+  private function validateDom($cid, $dbrecord, $ename, $postdom, $insertID, $fart = null, $poop = 1)
   {
     $client = $cid ? $this->clienttable->find('id', $cid) : [];
     //admin moving or switching a user to a client
     if (isset($client[0])) {
       $postdom = $client[0]->domain;
-      $data = ['id' => $this->id, 'email' => "$name@$postdom", 'client_id' => $client[0]->id];
+      $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'client_id' => $client[0]->id];
     } else {
       $client = $this->clienttable->getEntity();
       if ($client->validateDomain($postdom)) {
-        $data = ['id' => $this->id, 'email' => "$name@$postdom", 'name' => $dbrecord['name'], 'client_id' => null];
+        $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'name' => $dbrecord['name'], 'client_id' => null];
       } else {
         if ($insertID) { // a new
           $this->table->delete('id', $insertID);
@@ -166,11 +162,12 @@ class User extends Entity
         } else { //or existing user (freelancer) attempting to set a blacklisted domain
           //silently revert, or send a message
           $libkey = 'mover';
+          dump([$fart, $poop, 'mover']);
           $data = $dbrecord;
         }
       }
     }
-    return $data ? $data : $dbrecord;
+    return $data;
   }
 
   public function parseEmail($e)
