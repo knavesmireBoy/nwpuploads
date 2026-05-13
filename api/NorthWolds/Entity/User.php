@@ -149,7 +149,6 @@ class User extends Entity
     $client = $cid ? $this->clienttable->find('id', $cid) : [];
     $key = '';
     //ADMIN moving or switching a user to a client
-
     if (isset($client[0])) {
       $details = $this->getDetails();
       if (isApproved($details['role'], 'admin')) {
@@ -159,7 +158,7 @@ class User extends Entity
         $key = '_last';
       }
       if ($key) {
-        reLocate('/user/load' . $key);
+        reLocate("/user/load/$key");
       }
       $postdom = $client[0]->domain;
       $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'client_id' => $client[0]->id];
