@@ -42,7 +42,6 @@ class User extends Presenter
         return $lib[$key] ?? '';
     }
 
-
     protected function getCustomVars($key, $data)
     {
         //if($key === 'confirm') dump($data);
@@ -110,16 +109,6 @@ class User extends Presenter
         }
         return [$ret, $opt];
     }
-
-    private function setCookie($data, $mandatory, bool $flag = false)
-    {
-        $setcookie = doSetCookie($flag);
-        foreach ($mandatory as $prop) {
-            $arg = isset($data[$prop]) && $flag ? $data[$prop] : '';
-            $setcookie($prop, $arg);
-        }
-    }
-
 
     protected function getPrivilege($prop = '')
     {

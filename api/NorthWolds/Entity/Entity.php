@@ -18,6 +18,17 @@ class Entity
         return empty($ret) ? null : $ret[0];
     }
 
+
+    protected function setCookie($data, $mandatory, bool $flag = false)
+    {
+        $setcookie = doSetCookie($flag);
+        foreach ($mandatory as $prop) {
+            $arg = isset($data[$prop]) && $flag ? $data[$prop] : '';
+            $setcookie($prop, $arg);
+        }
+    }
+
+
     public function find(...$args)
     {
      return $this->fetch(...$args);

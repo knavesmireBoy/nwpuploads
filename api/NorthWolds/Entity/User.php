@@ -170,8 +170,10 @@ class User extends Entity
         if ($insertID) { // a new
           $this->table->delete('id', $insertID);
           reLocate('/user/load/impostor');
-        } else { //or existing user (freelancer) attempting to set a blacklisted domain
-          $data = ['client_id' => null];
+        } else { //or existing user (freelancer) attempting to leave
+
+          $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'name' => $dbrecord['name'], 'client_id' => null];
+          $this->setCookie($data, ['name', 'email'], true);
         }
       }
     }

@@ -66,6 +66,15 @@ class Presenter
 
     public function getRoute($role) {}
 
+    protected function setCookie($data, $mandatory, bool $flag = false)
+    {
+        $setcookie = doSetCookie($flag);
+        foreach ($mandatory as $prop) {
+            $arg = isset($data[$prop]) && $flag ? $data[$prop] : '';
+            $setcookie($prop, $arg);
+        }
+    }
+
     protected function getLastInsertId($id)
     {
         if (!is_int($id)) {
