@@ -171,7 +171,6 @@ class User extends Entity
           $this->table->delete('id', $insertID);
           reLocate('/user/load/impostor');
         } else { //or existing user (freelancer) attempting to set a blacklisted domain
-          dump(999);
           $data = ['client_id' => null];
         }
       }

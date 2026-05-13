@@ -22,7 +22,7 @@ class User extends Presenter
             "denied" => "You do not have the privileges to delete this user",
             "deniedbyclient" => "There must be at least one administrator role, please assign another user before removing your credentials from the database",
             "access" => "You do not have the privileges to add a user",
-            
+
             "self" => "Only a peer can perform this deletion",
             "freelancer" => "Cannot assign this domain",
             'addno' => 'You do not have the required privilges to add a user',
@@ -40,6 +40,30 @@ class User extends Presenter
         ];
 
         return $lib[$key] ?? '';
+    }
+
+
+    protected function getCustomVars($key, $data)
+    {
+        //if($key === 'confirm') dump($data);
+        $ret = [];
+        $id = $data['id'] ?? '';
+        $users = $key === 'selected' ? $data : [];
+        $prompt = ['pagehead' => 'Edit User', 'id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No'];
+
+        $lib = [
+            'edit' => ['calltext' => 'Delete User', 'callroute' => "/user/delete/$id"],
+            'delete' => [...$prompt, 'prompt' => "Are you sure you want to delete this user?", 'action' => '/user/confirm/'],
+            'confirm' => ['id' => $id],
+            'selected' => ['pagehead' => 'Select User', 'selected' => true, 'clients' => [], 'users' => $users],
+            'change' => ['pagehead' => 'Edit User', 'id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Changing these details will require you to log in again. Proceed?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'editor' => $id, 'action' => '/user/change/'],
+            'leave' => [...$prompt, 'editor' => $id, 'action' => '/user/change/', 'prompt' => "Are you sure you want to disassociate this user from the client?"],
+        ];
+
+        if ($key && isset($lib[$key])) {
+            $ret = $lib[$key];
+        }
+        return $ret;
     }
 
     private function updateUserDomainFactory($admin, $user, $cid, $data, $dbrecord, $userID = 0, $fart = false)
@@ -70,8 +94,6 @@ class User extends Presenter
         };
     }
 
-   
-
     private function hasChanged($db, $post, $mandatory, $optionals)
     {
         $ret = [];
@@ -98,26 +120,6 @@ class User extends Presenter
         }
     }
 
-    protected function getCustomVars($key, $data)
-    {
-        //if($key === 'confirm') dump($data);
-        $ret = [];
-        $id = $data['id'] ?? '';
-        $users = $key === 'selected' ? $data : [];
-
-        $lib = [
-            'edit' => ['calltext' => 'Delete User', 'callroute' => "/user/delete/$id"],
-            'delete' => ['id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Are you sure you want to delete this user?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'action' => '/user/confirm/'],
-            'confirm' => ['id' => $id],
-            'selected' => ['pagehead' => 'Select User', 'selected' => true, 'clients' => [], 'users' => $users],
-            'change' => ['pagehead' => 'Edit User', 'id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Changing these details will require you to log in again. Proceed?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'editor' => $id, 'action' => '/user/change/'],
-        ];
-
-        if ($key && isset($lib[$key])) {
-            $ret = $lib[$key];
-        }
-        return $ret;
-    }
 
     protected function getPrivilege($prop = '')
     {
@@ -368,11 +370,10 @@ class User extends Presenter
         $data = [...$values, ...$required, ...$updateUserDomain()];
         //exclude password from update unless requested...
         list($change, $optional) = $this->hasChanged($values, $required, ['email', 'password'], ['name']);
-        if ($change !== [] && $editor && empty($_POST['override'])) {
+        if ($editor && $change !== [] && empty($_POST['override'])) {
             $this->setCookie($data, [...$change, ...$optional], true);
             return $this->load('change', ['id' => $id]);
         }
-
         if (isset($required['password']) && $required['password'] !== '') {
             $user->updatePassword($data['password']);
         }
