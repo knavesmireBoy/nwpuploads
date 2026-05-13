@@ -11,6 +11,37 @@ class User extends Presenter
         parent::__construct($table);
     }
 
+    private function query($key)
+    {
+        $lib = [
+            'nousers' => "<Unable to find any users",
+            "addnotice" => "Please fill required fields",
+            "selectuser" => "Please select a user for editing",
+            "domainflag" => "Cannot assign this user to a new client",
+
+            "denied" => "You do not have the privileges to delete this user",
+            "deniedbyclient" => "There must be at least one administrator role, please assign another user before removing your credentials from the database",
+            "access" => "You do not have the privileges to add a user",
+            
+            "self" => "Only a peer can perform this deletion",
+            "freelancer" => "Cannot assign this domain",
+            'addno' => 'You do not have the required privilges to add a user',
+            'editno' => 'You do not have the required privilges to edit this user details',
+            'read' => 'You may view but not edit this user details',
+
+            "lasteditor" => "There must be at least one administrator role, please assign another user before removing your credentials from the database",
+            "lastadmin" => "There must be at least one administrator role, please promote another user to the admin role before demoting your role",
+            'last' => "Only the database administrator can delete this user",
+            "_denied" => "Cannot (re)move a user with a client admin role",
+            '_last' => "To remove this final user, please delete the client instead",
+            'domain' => 'Only the database administrator can change the domain of an email address',
+            '_domain' => 'Operation not permitted; change the domain of the client instead',
+            'impostor' => 'That domain is in use, use the client list drop down to assign a user'
+        ];
+
+        return $lib[$key] ?? '';
+    }
+
     private function updateUserDomainFactory($admin, $user, $cid, $data, $dbrecord, $userID = 0, $fart = false)
     {
         if (isset($user->client_id) && $user->client_id == $cid) {
@@ -39,35 +70,7 @@ class User extends Presenter
         };
     }
 
-    private function query($key)
-    {
-        $lib = [
-            'nousers' => "<Unable to find any users",
-            "addnotice" => "Please fill required fields",
-            "selectuser" => "Please select a user for editing",
-            "domainflag" => "Cannot assign this user to a new client",
-
-            "denied" => "You do not have the privileges to delete this user",
-            "deniedbyclient" => "There must be at least one administrator role, please assign another user before removing your credentials from the database",
-            "access" => "You do not have the privileges to add a user",
-            "deniedbyadmin" => "Cannot (re)move a user with a client admin role",
-            "self" => "Only a peer can perform this deletion",
-            "freelancer" => "Cannot assign this domain",
-            'addno' => 'You do not have the required privilges to add a user',
-            'editno' => 'You do not have the required privilges to edit this user details',
-            'read' => 'You may view but not edit this user details',
-
-            "lasteditor" => "There must be at least one administrator role, please assign another user before removing your credentials from the database",
-            "lastadmin" => "There must be at least one administrator role, please promote another user to the admin role before demoting your role",
-            'last' => "Only the database administrator can delete this user",
-            '_last' => "To remove this final user, please delete the client instead",
-            'domain' => 'Only the database administrator can change the domain of an email address',
-            '_domain' => 'Operation not permitted; change the domain of the client instead',
-            'impostor' => 'That domain is in use, use the client list drop down to assign a user'
-        ];
-
-        return $lib[$key] ?? '';
-    }
+   
 
     private function hasChanged($db, $post, $mandatory, $optionals)
     {

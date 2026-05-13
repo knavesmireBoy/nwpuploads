@@ -147,9 +147,21 @@ class User extends Entity
   private function validateDom($cid, $dbrecord, $ename, $postdom, $insertID)
   {
     $client = $cid ? $this->clienttable->find('id', $cid) : [];
-    //admin moving or switching a user to a client
+    $key = '';
+    //ADMIN moving or switching a user to a client
 
     if (isset($client[0])) {
+      $details = $this->getDetails('role');
+      if (isApproved($details['role'], 'admin')) {
+        $key = '_denied';
+      }
+      $adminroles = $this->getUserIds(false);
+      if (count($adminroles) <= 1) {
+        $key = '_last';
+      }
+      if ($key) {
+        reLocate('/user/load' . $key);
+      }
       $postdom = $client[0]->domain;
       $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'client_id' => $client[0]->id];
     } else {
@@ -163,7 +175,7 @@ class User extends Entity
         } else { //or existing user (freelancer) attempting to set a blacklisted domain
           //silently revert, or send a message
           $libkey = 'mover';
-         // dump([$fart, $poop, 'mover']);
+          // dump([$fart, $poop, 'mover']);
           $data = $dbrecord;
         }
       }
@@ -190,7 +202,6 @@ class User extends Entity
 
     if ($domain && $postdom !== $domain) {
       reLocate('/user/load/domain');
-
     } else {
       return $data;
     }
@@ -243,14 +254,18 @@ class User extends Entity
     return $this->clienttable->find('domain', $domain, 'name', 0, 0, $mode)[0];
   }
 
-  public function getUserIds()
+  public function getUserIds($roles = null)
   {
     $details = $this->getDetails();
     if ($details['client_id']) {
       $users = $this->table->find('client_id', $this->client_id);
-      return array_map(fn($o) => $o->id, $users);
+      $res = array_map(fn($o) => $o->id, $users);
     } else {
       return [];
+    }
+    if (is_bool($roles)) {
+      $ret = $this->getAllRoles($res);
+      return $roles ? $ret : $this->getAdminRoles($ret);
     }
   }
 }
