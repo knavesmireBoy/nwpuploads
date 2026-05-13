@@ -144,13 +144,19 @@ class User extends Entity
     return $role;
   }
 
-  private function validateDom($cid, $dbrecord, $ename, $postdom, $insertID, $fart = null, $poop = 1)
+  private function validateDom($cid, $dbrecord, $ename, $postdom, $insertID)
   {
     $client = $cid ? $this->clienttable->find('id', $cid) : [];
     //admin moving or switching a user to a client
+
     if (isset($client[0])) {
-      dump([$fart, $poop, 'revert']);
-      $postdom = $client[0]->domain;
+
+      //swap
+      dump(get_object_vars($client[0]));
+
+    //  $postdom = $insertID ? $postdom : $client[0]->domain;
+
+
       $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'client_id' => $client[0]->id];
     } else {
       $client = $this->clienttable->getEntity();
@@ -187,14 +193,12 @@ class User extends Entity
     $domain = $details['domain'];
 
     $data = $this->validateDom($cid, $dbrecord, $name, $postdom, $insertID);
+
     if ($domain && $postdom !== $domain) {
       reLocate('/user/load/domain');
+
     } else {
       return $data;
-      if ($data) {
-        $this->table->save($data);
-        reLocate('/user/load/');
-      }
     }
   }
 

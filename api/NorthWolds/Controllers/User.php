@@ -11,7 +11,7 @@ class User extends Presenter
         parent::__construct($table);
     }
 
-    private function updateUserDomainFactory($admin, $user, $cid, $data, $dbrecord, $userID = 0, $fart = null)
+    private function updateUserDomainFactory($admin, $user, $cid, $data, $dbrecord, $userID = 0, $fart = false)
     {
         if (isset($user->client_id) && $user->client_id == $cid) {
             return function () use ($admin, $cid, $user, $data, $dbrecord) {
@@ -34,7 +34,6 @@ class User extends Presenter
                 }
             };
         }
-        dump([$fart, $userID, 'cjhange']);
         return function () use ($user, $cid, $data, $userID) {
             return $user->updateUserDomain($cid, $data, $userID);
         };
