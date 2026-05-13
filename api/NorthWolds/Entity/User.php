@@ -148,6 +148,7 @@ class User extends Entity
   {
     $client = $cid ? $this->clienttable->find('id', $cid) : [];
     $key = '';
+    dump($cid);
     //ADMIN moving or switching a user to a client
     if (isset($client[0])) {
       $details = $this->getDetails();
@@ -174,6 +175,7 @@ class User extends Entity
 
           $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'name' => $dbrecord['name'], 'client_id' => null];
           $this->setCookie($data, ['name', 'email'], true);
+          reLocate('/user/load/leave');
         }
       }
     }
