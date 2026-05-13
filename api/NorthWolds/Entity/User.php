@@ -151,7 +151,7 @@ class User extends Entity
     //ADMIN moving or switching a user to a client
 
     if (isset($client[0])) {
-      $details = $this->getDetails();
+      $details = $this->getDetails('role');
       dump($details);
       if (isApproved($details['role'], 'admin')) {
         $key = '_denied';
