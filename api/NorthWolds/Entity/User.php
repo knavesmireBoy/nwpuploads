@@ -148,7 +148,8 @@ class User extends Entity
   {
     $client = $cid ? $this->clienttable->find('id', $cid) : [];
     $key = '';
-    $setcookie = doSetCookie(true);
+    $flag = isset($_COOKIE['leave']) ? false : true;
+    $setcookie = doSetCookie($flag);
     //ADMIN moving or switching a user to a client
     if (isset($client[0])) {
       $details = $this->getDetails();
@@ -167,13 +168,11 @@ class User extends Entity
       $client = $this->clienttable->getEntity();
       if ($client->domainAvailable($postdom)) {
         $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'name' => $dbrecord['name'], 'client_id' => null];
-        if (!isset($_COOKIE['leave'])) {
-          $setcookie = doSetCookie(true);
+        if ($flag) {
           $this->setCookie($data, ['name', 'email'], true);
           $setcookie('leave');
           reLocate('/user/loadbridge/leave/'  . $this->id);
         } else {
-          $setcookie = doSetCookie(true);
           $setcookie('leave');
           $this->setCookie($data, ['name', 'email'], false);
         }
