@@ -174,7 +174,8 @@ class User extends Entity
           //silently revert, or send a message
           $libkey = 'mover';
           // dump([$fart, $poop, 'mover']);
-          $data = $dbrecord;
+          
+          $data = ['client_id' => null];
         }
       }
     }
