@@ -150,13 +150,7 @@ class User extends Entity
     //admin moving or switching a user to a client
 
     if (isset($client[0])) {
-
-      //swap
-      dump(get_object_vars($client[0]));
-
-    //  $postdom = $insertID ? $postdom : $client[0]->domain;
-
-
+      $postdom = $client[0]->domain;
       $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'client_id' => $client[0]->id];
     } else {
       $client = $this->clienttable->getEntity();
