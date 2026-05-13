@@ -173,8 +173,12 @@ class User extends Entity
         } else { //or existing user (freelancer) attempting to leave
 
           $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'name' => $dbrecord['name'], 'client_id' => null];
-         // $this->setCookie($data, ['name', 'email'], true);
-         // reLocate('/user/loadbridge/leave/'  . $this->id);
+          if (!isset($_COOKIE['leave'])) {
+            $this->setCookie($data, ['name', 'email', 'leave'], true);
+            reLocate('/user/loadbridge/leave/'  . $this->id);
+          } else {
+            $this->setCookie($data, ['name', 'email', 'leave'], false);
+          }
         }
       }
     }
@@ -191,7 +195,6 @@ class User extends Entity
 
   public function updateUserDomain(?int $cid, array $postdata, int $insertID = 0)
   {
-    
     $email = $cid ? $this->email : $postdata['email'];
     list($name, $dom, $com) = $this->parseEmail($email);
     $postdom = "$dom.$com";
