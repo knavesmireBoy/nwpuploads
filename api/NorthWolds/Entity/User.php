@@ -165,12 +165,14 @@ class User extends Entity
     } else {
       $client = $this->clienttable->getEntity();
       if ($client->validateDomain($postdom)) {
+        dump(1);
         $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'name' => $dbrecord['name'], 'client_id' => null];
       } else {
         if ($insertID) { // a new
           $this->table->delete('id', $insertID);
           reLocate('/user/load/impostor');
         } else { //or existing user (freelancer) attempting to leave
+          dump(2);
           $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'name' => $dbrecord['name'], 'client_id' => null];
           if (!isset($_COOKIE['leave'])) {
             $this->setCookie($data, ['name', 'email', 'leave'], true);
