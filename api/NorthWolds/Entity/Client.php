@@ -25,7 +25,7 @@ class Client extends Entity
 
     }
 
-    public function validateDomain($domain)
+    public function domainAvailable($domain)
     {
         $all = $this->table->findAll();
         list($edom) = parseEmail($domain);

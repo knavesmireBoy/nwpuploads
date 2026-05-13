@@ -164,22 +164,21 @@ class User extends Entity
       $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'client_id' => $client[0]->id];
     } else {
       $client = $this->clienttable->getEntity();
-      if ($client->validateDomain($postdom)) {
-        dump(1);
+      if ($client->domainAvailable($postdom)) {
         $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'name' => $dbrecord['name'], 'client_id' => null];
+        if (!isset($_COOKIE['leave'])) {
+          $this->setCookie($data, ['name', 'email', 'leave'], true);
+          reLocate('/user/loadbridge/leave/'  . $this->id);
+        } else {
+          $this->setCookie($data, ['name', 'email', 'leave'], false);
+        }
       } else {
         if ($insertID) { // a new
           $this->table->delete('id', $insertID);
           reLocate('/user/load/impostor');
         } else { //or existing user (freelancer) attempting to leave
-          dump(2);
           $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'name' => $dbrecord['name'], 'client_id' => null];
-          if (!isset($_COOKIE['leave'])) {
-            $this->setCookie($data, ['name', 'email', 'leave'], true);
-            reLocate('/user/loadbridge/leave/'  . $this->id);
-          } else {
-            $this->setCookie($data, ['name', 'email', 'leave'], false);
-          }
+         
         }
       }
     }
