@@ -171,7 +171,6 @@ class User extends Entity
           $this->table->delete('id', $insertID);
           reLocate('/user/load/impostor');
         } else { //or existing user (freelancer) attempting to leave
-
           $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'name' => $dbrecord['name'], 'client_id' => null];
           if (!isset($_COOKIE['leave'])) {
             $this->setCookie($data, ['name', 'email', 'leave'], true);

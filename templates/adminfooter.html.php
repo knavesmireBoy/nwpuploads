@@ -13,8 +13,13 @@ else {
 	$k = 'Client';
 }
 	*/
-$k = $admin ? 'Admin' : $k;
-$route = $routes[$k];
+if (isset($selected)) {
+	$k = $admin ? 'Admin' : $k;
+} else {
+	$k = 'Client';
+}
+$route = $routes['Client'];
+
 
 if ($admin) { ?>
 	<p class="call"><a href="/client/load/">Edit Clients</a></p>
