@@ -152,7 +152,7 @@ class User extends Entity
 
     if (isset($client[0])) {
       $details = $this->getDetails('role');
-      if (isApproved($details['role'], 'admin')) {
+      if (isApproved($details['roleid'], 'admin')) {
         $key = '_denied';
       }
       $adminroles = $this->getUserIds(false);
