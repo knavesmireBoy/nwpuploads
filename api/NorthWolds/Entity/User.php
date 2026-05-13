@@ -149,6 +149,7 @@ class User extends Entity
     $client = $cid ? $this->clienttable->find('id', $cid) : [];
     //admin moving or switching a user to a client
     if (isset($client[0])) {
+      dump([$fart, $poop, 'revert']);
       $postdom = $client[0]->domain;
       $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'client_id' => $client[0]->id];
     } else {
@@ -162,7 +163,7 @@ class User extends Entity
         } else { //or existing user (freelancer) attempting to set a blacklisted domain
           //silently revert, or send a message
           $libkey = 'mover';
-          dump([$fart, $poop, 'mover']);
+         // dump([$fart, $poop, 'mover']);
           $data = $dbrecord;
         }
       }
