@@ -70,7 +70,7 @@ class User extends Presenter
     private function updateUserDomainFactory($admin, $user, $cid, $data, $dbrecord, $userID = 0)
     {
        
-       var_dump($user->client_id === $cid);
+       var_dump($user->client_id,$cid);
         if (isset($user->client_id) && $user->client_id == $cid) {
             return function () use ($admin, $cid, $user, $data, $dbrecord) {
                 //ensure domain remains the same

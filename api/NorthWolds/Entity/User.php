@@ -76,7 +76,6 @@ class User extends Entity
     if ($admin && $this->id == $details['id']) {
       return $this->roleid;
     }
-
     $ids = $this->getUserIds();
     if (in_array($role, $this->roles)) {
       $roles = $this->getAllRoles($ids);
@@ -91,8 +90,8 @@ class User extends Entity
           }
         }
       }
-      return $role;
     }
+    return $role;
   }
 
   protected function fetchAllRoles(array $keys = [], array $selectedRoles = []): array
