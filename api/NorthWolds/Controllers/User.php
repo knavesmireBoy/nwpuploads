@@ -23,22 +23,22 @@ class User extends Presenter
             "deniedbyclient" => "There must be at least one administrator role, please assign another user before removing your credentials from the database",
             "access" => "You do not have the privileges to add a user",
 
-            "self" => "Only a peer can perform this deletion",
-            "freelancer" => "Cannot assign this domain",
-            'addno' => 'You do not have the required privilges to add a user',
-            'editno' => 'You do not have the required privilges to edit this user details',
-            'read' => 'You may view but not edit this user details',
+            "self" => "Only a peer can perform this deletion.",
+            "freelancer" => "Cannot assign this domain.",
+            'addno' => 'You do not have the required privilges to add a user.',
+            'editno' => 'You do not have the required privilges to edit this user details.',
+            'read' => 'You may view but not edit this user details.',
 
-            "lasteditor" => "There must be at least one administrator role, please assign another user before removing your credentials from the database",
-            "lastadmin" => "There must be at least one administrator role, please promote another user to the admin role before demoting your role",
-            'last' => "Only the database administrator can delete this user",
-            "_denied" => "Cannot (re)move a user with a client admin role",
-            '_last' => "To remove this final user, please delete the client instead",
-            'domain' => 'Only the database administrator can change the domain of an email address',
-            '_domain' => 'Operation not permitted; change the domain of the client instead',
-            'traitor' => 'To disassociate this user please supply a new email address',
-            '_traitor' => 'Operation not permitted; domain is in use',
-            'impostor' => 'That domain is in use, use the client list drop down to assign a user'
+            "lasteditor" => "There must be at least one administrator role, please assign another user before removing your credentials from the database.",
+            "lastadmin" => "There must be at least one administrator role, please promote another user to the admin role before demoting your role.",
+            'last' => "Only the database administrator can delete this user.",
+            "_denied" => "Cannot (re)move a user with a client admin role.",
+            '_last' => "To remove this final user, please delete the client instead.",
+            'domain' => 'Only the database administrator can change the domain of an email address.',
+            '_domain' => 'Set the drop down menu to empty when changing the domain. Change the domain of the client to update the domain for all members.',
+            'traitor' => 'To disassociate this user please supply a new email address.',
+            '_traitor' => 'To assign to another client use the drop down menu.',
+            'impostor' => 'That domain is in use, use the client list drop down to assign a user.'
         ];
 
         return $lib[$key] ?? '';
@@ -75,15 +75,13 @@ class User extends Presenter
                 list($_name, $_dom, $_com) = $user->parseEmail($data['email']);
                 if (isset($dbrecord['email'])) { //existing
                     list($name, $dom, $com) = $user->parseEmail($dbrecord['email']);
-
                     $key = "$_dom.$_com" !== "$dom.$com" ? 'domain' : '';
                     $key = $key && $admin ? '_domain' : $key;
-
+                    
                     if ($key && $user->domainCheck("$_dom.$_com")) {
                         $key = $admin ? '_traitor' : 'traitor';
                         reLocate($this->home . $key);
                     }
-
                     if ($key) {
                         reLocate($this->home . "$key");
                     }
@@ -359,7 +357,7 @@ class User extends Presenter
         $key = '';
         $data = $_POST['data'];
         $role = $_POST['roles'][0] ?? 'Browser';
-        $admin = !is_null($_POST['employer']);
+      //  $admin = !is_null($_POST['employer']);
 
         $clientID = $_POST['employer'] ?? $_POST['employed'] ?? null;
 
