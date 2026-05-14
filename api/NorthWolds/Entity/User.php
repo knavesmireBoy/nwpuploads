@@ -126,6 +126,9 @@ class User extends Entity
   public function getRoles(int $userid, string $roleid)
   {
     $f = composer(negate(curry2('equals')('Admin')), curry2('getter')('id'));
+
+
+    dump([131,$userid]);
     $roleid = $this->getRole($userid);
     //list of roles determined by current user
     //allow Admin to be listed only if that happens to be one of the few Admin roles
