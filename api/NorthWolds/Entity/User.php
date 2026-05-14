@@ -33,7 +33,7 @@ class User extends Entity
   }
 
   //convert ids into table structure [userid, roleid]
-  private function getAllRoles($ids)
+  private function getAllRoles(array $ids)
   {
     if (empty($ids)) {
       return [];
@@ -42,7 +42,7 @@ class User extends Entity
     $roles = array_map($cb, $ids);
     return array_map('get_object_vars', $roles);
   }
-  private function getAdminRoles($roles = [])
+  private function getAdminRoles(array $roles = [])
   {
     $cb = composer(partial('equals', 'Client Admin'), curry2('getter')('roleid'));
     return !empty($roles) ? safeFilter($roles, $cb) : $roles;
@@ -83,6 +83,7 @@ class User extends Entity
     if (in_array($role, $this->roles)) {
       $roles = $this->getAllRoles($ids);
       $roles = $admin ? $roles : $this->getAdminRoles($roles);
+
       if (!empty($roles)) {
         $i = array_search($role, $this->roles);
         $j = array_search($this->roleid, $this->roles);
@@ -139,6 +140,8 @@ class User extends Entity
     $action = empty($this->userroletable->find('userid', $uid));
     //A) if validation fails return a key for query eg 'last' header(Location: /user/load/last)
     $role = $this->validateRole($role);
+
+    dump([144,$role]);
     if (in_array($role, $this->roles)) {
       $this->userroletable->save(['userid' => $this->id, 'roleid' => $role], $action);
       $this->roleid = $userid ? null : $role;
