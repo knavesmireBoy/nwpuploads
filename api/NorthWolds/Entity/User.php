@@ -194,6 +194,11 @@ class User extends Entity
     return $data;
   }
 
+
+  public function domainCheck($postdom){
+    return $this->find('clienttable', 'domain', $postdom);
+  }
+
   public function parseEmail($e)
   {
     $f = composer(partial('substr', $e, 0), curry2('strpos')('@'));

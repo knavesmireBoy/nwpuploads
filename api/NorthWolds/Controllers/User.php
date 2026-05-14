@@ -37,6 +37,7 @@ class User extends Presenter
             'domain' => 'Only the database administrator can change the domain of an email address',
             '_domain' => 'Operation not permitted; change the domain of the client instead',
             'traitor' => 'To disassociate this user please supply a new email address',
+            '_traitor' => 'Operation not permitted; domain is in use',
             'impostor' => 'That domain is in use, use the client list drop down to assign a user'
         ];
 
@@ -74,8 +75,15 @@ class User extends Presenter
                 list($_name, $_dom, $_com) = $user->parseEmail($data['email']);
                 if (isset($dbrecord['email'])) { //existing
                     list($name, $dom, $com) = $user->parseEmail($dbrecord['email']);
+
                     $key = "$_dom.$_com" !== "$dom.$com" ? 'domain' : '';
                     $key = $key && $admin ? '_domain' : $key;
+
+                    if ($key && $user->domainCheck("$_dom.$_com")) {
+                        $key = $admin ? '_traitor' : 'traitor';
+                        reLocate($this->home . $key);
+                    }
+
                     if ($key) {
                         reLocate($this->home . "$key");
                     }
