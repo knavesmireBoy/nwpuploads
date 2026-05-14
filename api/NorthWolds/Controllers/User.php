@@ -79,7 +79,7 @@ class User extends Presenter
                     $key = $key && $admin ? '_domain' : $key;
                     
                     if ($key && $user->domainCheck("$_dom.$_com")) {
-                        $key = $admin ? '_traitor' : 'traitor';
+                        $key = $admin ? '_domain' : 'domain';
                         reLocate($this->home . $key);
                     }
                     if ($key) {
@@ -356,8 +356,7 @@ class User extends Presenter
         $id = nullify($_POST['id']);
         $key = '';
         $data = $_POST['data'];
-        $role = $_POST['roles'][0] ?? 'Browser';
-      //  $admin = !is_null($_POST['employer']);
+        $role = $_POST['roles'][0] ?? '';
 
         $clientID = $_POST['employer'] ?? $_POST['employed'] ?? null;
 
@@ -383,6 +382,7 @@ class User extends Presenter
         }
         unset($data['password']);
         $user = $this->table->save($data);
+
         $key = $user->setRole($role); //UPDATE role here
         reLocate($this->home . strtolower($key));
     }
