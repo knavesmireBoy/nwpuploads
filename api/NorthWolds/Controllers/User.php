@@ -69,6 +69,8 @@ class User extends Presenter
 
     private function updateUserDomainFactory($admin, $user, $cid, $data, $dbrecord, $userID = 0)
     {
+       
+       var_dump($user->client_id === $cid);
         if (isset($user->client_id) && $user->client_id == $cid) {
             return function () use ($admin, $cid, $user, $data, $dbrecord) {
                 //ensure domain remains the same
@@ -364,9 +366,7 @@ class User extends Presenter
         $editor = intval($id) === $this->getPrivilege('id');
 
         $record = get_object_vars($user);
-        $required = array_filter($data, function ($item) {
-            return $item;
-        });
+        $required = array_filter($data, fn ($item) => $item);
 
         $updateUserDomain = $this->updateUserDomainFactory($_SESSION['role'] === 'Admin', $user, nullify($clientID), $data, $record);
         //will exit here if domain doesn't validate
@@ -377,9 +377,7 @@ class User extends Presenter
             $this->setCookie($data, [...$change, ...$optional], true);
             return $this->load('change', ['id' => $id]);
         }
-        if (isset($required['password']) && $required['password'] !== '') {
-            $user->updatePassword($data['password']);
-        }
+        $user->updatePassword($required['password'] ?? '');
         unset($data['password']);
         $user = $this->table->save($data);
 

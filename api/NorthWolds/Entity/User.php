@@ -195,7 +195,8 @@ class User extends Entity
   }
 
 
-  public function domainCheck($postdom){
+  public function domainCheck($postdom)
+  {
     return $this->find('clienttable', 'domain', $postdom);
   }
 
@@ -224,7 +225,9 @@ class User extends Entity
 
   public function updatePassword($password)
   {
-    $this->table->save(['id' => $this->id, 'password' => md5($password . 'uploads')]);
+    if ($password) {
+      $this->table->save(['id' => $this->id, 'password' => md5($password . 'uploads')]);
+    }
   }
 
   public function hasPermission(array $allowed)
