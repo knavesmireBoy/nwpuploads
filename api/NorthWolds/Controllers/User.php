@@ -230,7 +230,7 @@ class User extends Presenter
             reLocate($this->home);
         }
 
-        $user = $this->table->find('table', 'id', $details['id'])[0];
+        $user = $this->table->find('id', $details['id'])[0];
         $roles = $user->getRoles($user->id, $details['role']);
 
         return $this->edit(0, [
