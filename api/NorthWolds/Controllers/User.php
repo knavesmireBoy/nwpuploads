@@ -36,6 +36,7 @@ class User extends Presenter
             '_last' => "To remove this final user, please delete the client instead",
             'domain' => 'Only the database administrator can change the domain of an email address',
             '_domain' => 'Operation not permitted; change the domain of the client instead',
+            'traitor' => 'To disassociate this user please supply a new email address',
             'impostor' => 'That domain is in use, use the client list drop down to assign a user'
         ];
 

@@ -184,6 +184,9 @@ class User extends Entity
           reLocate('/user/load/impostor');
         } else { //or existing user (freelancer) attempting to leave
           $client = $this->find('clienttable', 'domain', $postdom);
+          $postdom = $client->domain;
+          //silently restore to client as
+          reLocate('/user/load/traitor');
           $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'name' => $dbrecord['name'], 'client_id' => nullify($client->id)];
         }
       }
