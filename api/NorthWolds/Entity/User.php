@@ -40,7 +40,9 @@ class User extends Entity
     }
     $cb = partial([$this, 'find'], 'userroletable', 'userid');
     $roles = array_map($cb, $ids);
-    return array_map('get_object_vars', $roles);
+
+dump([45, $roles]);
+    //return array_map('get_object_vars', $roles);
   }
   private function getAdminRoles(array $roles = [])
   {
