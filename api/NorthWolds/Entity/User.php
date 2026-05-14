@@ -267,6 +267,7 @@ class User extends Entity
   public function getUserIds($roles = null)
   {
     $details = $this->getDetails();
+    $res = [];
     if ($details['client_id']) {
       $users = $this->table->find('client_id', $this->client_id);
       $res = array_map(fn($o) => $o->id, $users);
@@ -277,5 +278,6 @@ class User extends Entity
       $ret = $this->getAllRoles($res);
       return $roles ? $ret : $this->getAdminRoles($ret);
     }
+    return $res;
   }
 }
