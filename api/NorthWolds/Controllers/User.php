@@ -348,7 +348,7 @@ class User extends Presenter
         $user = $this->table->find('id', $userId)[0];
 
         $user->updatePassword($data['password']);
-        dump('rolo');
+
         //role must be set BEFORE "updateUserDomain" no user can navigate the site without an assigned role
         $user->setRole($role);
 
