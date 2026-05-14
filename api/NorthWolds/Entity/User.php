@@ -115,8 +115,8 @@ class User extends Entity
   {
     $id = $userid ? $userid : $this->id;
     $res = $this->fetch('userroletable', 'userid', $id);
-dump([$userid, $res->roleid]);
-    $this->roleid = $userid ? null : $res->roleid;
+    //$this->roleid = $userid ? null : $res->roleid;
+    $this->roleid = $res->roleid;
     return $res->roleid;
   }
 
