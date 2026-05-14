@@ -96,7 +96,6 @@ class User extends Entity
         }
       }
     }
-
     return $role;
   }
 
@@ -118,17 +117,14 @@ class User extends Entity
     $id = $userid ? $userid : $this->id;
     $res = $this->fetch('userroletable', 'userid', $id);
     //$this->roleid = $userid ? null : $res->roleid;
-    $this->roleid = $res->roleid;
-    return $res->roleid;
+    $this->roleid = $res->roleid ?? null;
+    return $this->roleid;
   }
 
 
   public function getRoles(int $userid, string $roleid)
   {
     $f = composer(negate(curry2('equals')('Admin')), curry2('getter')('id'));
-
-
-    dump([131,$userid]);
     $roleid = $this->getRole($userid);
     //list of roles determined by current user
     //allow Admin to be listed only if that happens to be one of the few Admin roles
@@ -144,8 +140,6 @@ class User extends Entity
     $action = empty($this->userroletable->find('userid', $uid));
     //A) if validation fails return a key for query eg 'last' header(Location: /user/load/last)
     $role = $this->validateRole($role);
-
-    dump([144,$role]);
     if (in_array($role, $this->roles)) {
       $this->userroletable->save(['userid' => $this->id, 'roleid' => $role], $action);
       $this->roleid = $userid ? null : $role;
