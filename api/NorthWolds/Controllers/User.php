@@ -231,7 +231,7 @@ class User extends Presenter
         }
 
         $user = $this->table->find('id', $details['id'])[0];
-        $roles = $user->getRoles($user->id, $details['role']);
+        $roles = $user->getRoles($user->id, 'Manager');
 
         return $this->edit(0, [
             'action' => "user/add/",
@@ -350,6 +350,8 @@ class User extends Presenter
         $user->updatePassword($data['password']);
         //role must be set BEFORE "updateUserDomain" no user can navigate the site without an assigned role
         $user->setRole($role);
+
+        dump($user);
         $updateUserDomain = $this->updateUserDomainFactory($admin, $user, nullify($client_id), get_object_vars($user), [], $userId);
         $data = $updateUserDomain();
         $this->table->save($data);
