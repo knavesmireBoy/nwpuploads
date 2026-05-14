@@ -76,7 +76,13 @@ class User extends Entity
   private function validateRole($role)
   {
     $details = $this->getDetails();
+
+    if(empty($details)){
+      return $role;
+    }
+
     $admin = isApproved($details['role'], 'ADMIN');
+
     if ($admin && $this->id == $details['id']) {
       return $this->roleid;
     }
