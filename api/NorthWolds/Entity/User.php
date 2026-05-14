@@ -61,9 +61,12 @@ class User extends Entity
       $msg = $admin ? '_last' : 'last';
     }
     $adminroles = $this->getAdminRoles($roles);
+
     if (!$msg && count($adminroles) === 1) {
       $ids = array_column($adminroles, 'userid');
-      $key = in_array($this->id, $ids) ? 'lasteditor' : 'lastadmin';
+
+      $key = in_array($this->id, $ids) ? 'lasteditor' : '';
+
       $msg = $admin ? '_last' : $key;
     }
     return $msg;
@@ -91,6 +94,7 @@ class User extends Entity
         }
       }
     }
+
     return $role;
   }
 
@@ -111,6 +115,7 @@ class User extends Entity
   {
     $id = $userid ? $userid : $this->id;
     $res = $this->fetch('userroletable', 'userid', $id);
+dump([$userid, $res->roleid]);
     $this->roleid = $userid ? null : $res->roleid;
     return $res->roleid;
   }
