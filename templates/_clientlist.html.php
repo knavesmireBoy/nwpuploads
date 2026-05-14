@@ -10,4 +10,7 @@ if (!empty($clientlist)) : ?>
             </select>
         </fieldset>
 
-<?php endif;
+<?php else: ?>
+    <input type="hidden" name="employed" value="<?= $employer ?? ''; ?>" />
+<?php
+endif;

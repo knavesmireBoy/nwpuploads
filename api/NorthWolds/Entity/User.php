@@ -162,12 +162,13 @@ class User extends Entity
       if ($key) {
         reLocate("/user/load/$key");
       }
-      $postdom = $client[0]->domain;
+      $postdom = $client[0]->domain; //sync
       $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'client_id' => $client[0]->id];
     } else {
       $client = $this->clienttable->getEntity();
       if ($client->domainAvailable($postdom)) {
         $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'name' => $dbrecord['name'], 'client_id' => null];
+        /*
         if ($flag) {
           $this->setCookie($data, ['name', 'email'], true);
           $setcookie('leave');
@@ -176,6 +177,7 @@ class User extends Entity
           $setcookie('leave');
           $this->setCookie($data, ['name', 'email'], false);
         }
+          */
       } else {
         if ($insertID) { // a new
           $this->table->delete('id', $insertID);

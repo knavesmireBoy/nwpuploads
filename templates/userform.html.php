@@ -27,7 +27,6 @@ if (($cadmin || $editor) && !empty($id)) {
 		<label for="name">Name</label><input id="name" type="text" name="data[name]" value="<?= $name ?? ''; ?>" required autocomplete="off" />
 		<label for="email">Email</label><input type="email" id="email" name="data[email]" value="<?= $email ?? ''; ?>" required autocomplete="off" />
 		<label for="password">Password</label><input id="password" type="password" name="data[password]" autocomplete="new-password" />
-		<input type="hidden" name="employed" value="<?= $employer ?? ''; ?>" />
 	</div>
 	<?php include TEMPLATE . '_roles.html.php';
 	include  TEMPLATE . '_clientlist.html.php'; ?>
