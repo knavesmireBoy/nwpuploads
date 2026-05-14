@@ -350,6 +350,9 @@ class User extends Presenter
         $key = '';
         $data = $_POST['data'];
         $role = $_POST['roles'][0] ?? 'Browser';
+        $e = $_POST['employer'];
+        var_dump(is_null($e), empty($e));
+
         $clientID = $_POST['employer'] ?? $_POST['employed'] ?? null;
         $user = $this->table->find('id', $id)[0];
         $editor = intval($id) === $this->getPrivilege('id');
