@@ -69,8 +69,6 @@ class User extends Presenter
 
     private function updateUserDomainFactory($admin, $user, $cid, $data, $dbrecord, $userID = 0)
     {
-       
-       var_dump($user->client_id,$cid);
         if (isset($user->client_id) && $user->client_id == $cid) {
             return function () use ($admin, $cid, $user, $data, $dbrecord) {
                 //ensure domain remains the same
@@ -231,13 +229,18 @@ class User extends Presenter
         if (!$admin) {
             reLocate($this->home);
         }
+
+        $user = $this->table->find('table', 'id', $details['id'])[0];
+        $roles = $user->getRoles($user->id, $details['role']);
+
         return $this->edit(0, [
             'action' => "user/add/",
             'pagehead' => 'Add User',
             'button' => 'Add User',
             'calltext' => null,
             'callroute' =>  null,
-            'employer' => $details['client_id'] ?? 0
+            'employer' => $details['client_id'] ?? 0,
+            'roles' => $roles
         ]);
     }
 
