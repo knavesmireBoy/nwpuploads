@@ -354,7 +354,6 @@ class User extends Presenter
 
         $clientID = $_POST['employer'] ?? $_POST['employed'] ?? null;
 
-        dump($clientID);
         $user = $this->table->find('id', $id)[0];
         $editor = intval($id) === $this->getPrivilege('id');
 
