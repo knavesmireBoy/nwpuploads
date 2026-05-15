@@ -218,7 +218,7 @@ class User extends Presenter
        
         if ($details['role'] !== 'Admin' && !$details['colleagues']) {
             $args = $error ? ['message' => $error] : [];
-            $args['colleagues'] = $details['collegues'];
+            $args['colleagues'] = $details['colleagues'];
             $id = $details['id'];
             return $this->edit($id, $args);
         }
