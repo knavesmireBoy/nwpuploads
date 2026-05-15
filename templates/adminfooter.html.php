@@ -24,12 +24,13 @@ if ($admin) { ?>
 	<p class="call"><a href="/client/load/">Edit Clients</a></p>
 <?php
 }
+var_dump($k);
 include $route;
 ?>
 
 </main>
 <footer>
 	<?php
-	var_dump($selected);
+
 	include TEMPLATE . '_logout.html.php'; ?>
 </footer>
