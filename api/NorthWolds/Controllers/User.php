@@ -214,9 +214,10 @@ class User extends Presenter
         //if ($key === 'selected') dump($customVars);
         $owner = []; //prompt.html.php expects this from Uploader Controller
         $error = $this->query($key);
+        $args = $error ? ['message' => $error] : [];
         if ($details['role'] !== 'Admin' && !$details['colleagues']) {
             $id = $details['id'];
-            return $this->edit($id);
+            return $this->edit($id, $args);
         }
         return $this->displayer($details, $customVars, $owner, $error);
     }
