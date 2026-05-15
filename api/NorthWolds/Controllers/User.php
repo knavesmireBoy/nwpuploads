@@ -169,6 +169,7 @@ class User extends Presenter
             'admin' => $admin,
             'cadmin' => $cadmin,
             'priv' => $details['role'],
+            'colleagues' => $details['colleagues'],
             'prompt' => null,
             'users' => $users,
             'clients' => $clients,
@@ -214,8 +215,10 @@ class User extends Presenter
         //if ($key === 'selected') dump($customVars);
         $owner = []; //prompt.html.php expects this from Uploader Controller
         $error = $this->query($key);
-        $args = $error ? ['message' => $error] : [];
+       
         if ($details['role'] !== 'Admin' && !$details['colleagues']) {
+            $args = $error ? ['message' => $error] : [];
+            $args['colleagues'] = $details['collegues'];
             $id = $details['id'];
             return $this->edit($id, $args);
         }
@@ -304,6 +307,7 @@ class User extends Presenter
         $vars = [
             'admin' => $admin,
             'cadmin' => $cadmin,
+            'colleagues' => '',
             'priv' => $_SESSION['role'],
             'editor' => $id == $details['id'],
             'class' => $class,
