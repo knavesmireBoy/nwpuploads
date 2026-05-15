@@ -28,7 +28,8 @@ if (empty($selected) && $admin):
 		</select>
 		<input type="submit" name="action" value="Choose" />
 	</form>
-<?php elseif (preg_match("/client/i", $priv) || (isset($selected))):
+<?php //elseif (preg_match("/client/i", $priv) || (isset($selected))):
+elseif (!empty($users)):
 ?>
 	<div class="clientgroup">
 		<?php
