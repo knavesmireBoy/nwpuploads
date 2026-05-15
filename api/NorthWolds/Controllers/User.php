@@ -30,7 +30,7 @@ class User extends Presenter
             'read' => 'You may view but not edit this user details.',
 
             "lasteditor" => "There must be at least one administrator role, please assign another user before removing your credentials from the database.",
-            "lastadmin" => "There must be at least one administrator role, please promote another user to the admin role before demoting your role.",
+            "lastadmin" => "There must be at least one administrator role, please promote another user to the admin role.",
             'last' => "Only the database administrator can delete this user.",
             "_denied" => "Cannot (re)move a user with a client admin role.",
             '_last' => "To remove this final user, please delete the client instead.",
@@ -214,6 +214,7 @@ class User extends Presenter
         //if ($key === 'selected') dump($customVars);
         $owner = []; //prompt.html.php expects this from Uploader Controller
         $error = $this->query($key);
+        dump($details);
         if ($details['role'] !== 'Admin' && !isset($details['colleagues'])) {
             $id = $details['id'];
             return $this->edit($id);

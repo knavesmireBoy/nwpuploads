@@ -65,9 +65,7 @@ class User extends Entity
 
     if (!$msg && count($adminroles) === 1) {
       $ids = array_column($adminroles, 'userid');
-
       $key = in_array($this->id, $ids) ? 'lasteditor' : '';
-
       $msg = $admin ? '_last' : $key;
     }
     return $msg;
@@ -80,9 +78,7 @@ class User extends Entity
     if(empty($details)){
       return $role;
     }
-
     $admin = isApproved($details['role'], 'ADMIN');
-
     if ($admin && $this->id == $details['id']) {
       return $this->roleid;
     }

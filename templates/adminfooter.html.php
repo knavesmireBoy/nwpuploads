@@ -15,7 +15,7 @@ else {
 if (isset($selected)) {
 	$k = $admin ? 'Admin' : $k;
 } else {
-	//$k = 'Client';
+	$k = 'Client';
 }
 $route = $routes[$k];
 
