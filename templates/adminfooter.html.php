@@ -24,7 +24,7 @@ if ($admin) { ?>
 	<p class="call"><a href="/client/load/">Edit Clients</a></p>
 <?php
 }
-var_dump($k);
+var_dump($k, $_SESSION['extent'], $priv);
 include $route;
 ?>
 
