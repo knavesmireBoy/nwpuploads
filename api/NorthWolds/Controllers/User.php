@@ -424,7 +424,7 @@ class User extends Presenter
     {
         //andrewsykes@btinternet.com
 
-        dump(99);
+        dump(999);
         $details = $this->getPrivilege();
         // $this->punter->delete($id);
         $role = $this->setPunter($details);
