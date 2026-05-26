@@ -6,7 +6,7 @@ class Admin extends Useroo
 {
     public function __construct() {
 
-        
+
     }
     public function add()
     {
@@ -16,5 +16,10 @@ class Admin extends Useroo
     public function edit()
     {
         dump('Sure I can add, ha!');
+    }
+
+    public function delete()
+    {
+        dump('admin and can delete but...');
     }
 }

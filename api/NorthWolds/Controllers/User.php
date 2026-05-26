@@ -417,6 +417,9 @@ class User extends Presenter
 
     public function delete($id)
     {
+        
+        $this->punter->delete();
+        
         $user = $this->table->find('id', $id)[0];
         $msg = $user->validateDelete($id);
         if ($msg) {

@@ -14,4 +14,9 @@ class Useroo
     {
         dump('no can do');
     }
+
+    public function delete()
+    {
+        dump('cannot delete');
+    }
 }
