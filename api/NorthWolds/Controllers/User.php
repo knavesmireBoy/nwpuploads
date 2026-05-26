@@ -236,7 +236,7 @@ class User extends Presenter
 
     public function add()
     {
-        $admin = isApproved($_SESSION['role'], 'admin');
+        $admin = isApproved($_SESSION['role'] ?? '', 'admin');
         $details = $this->getPrivilege();
 
         $this->punter->add();
