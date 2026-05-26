@@ -433,7 +433,7 @@ class User extends Presenter
        // $this->punter->delete($id);
 
         $user = $this->table->find('id', $id)[0];
-        $punter = $user->getEntity('NorthWolds\Entity\Admin');
+        $punter = $this->table->getEntity('NorthWolds\Entity\Admin');
         $punter->delete($id);
 
         $msg = $user->validateDelete($id);
