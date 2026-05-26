@@ -132,7 +132,7 @@ class User extends Presenter
             reLocate(REG);
         }
         $details = $user[0]->getDetails();
-        $this->punter = new $details['role']();
+        $this->punter = new \NorthWolds\Users\Admin();
         return $prop ? $details[$prop] : $details;
     }
 
