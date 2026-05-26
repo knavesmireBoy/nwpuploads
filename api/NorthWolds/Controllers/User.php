@@ -433,6 +433,7 @@ class User extends Presenter
        // $this->punter->delete($id);
 
         $user = $this->table->find('id', $id)[0];
+        dump($user->getPrivilege());
 
         $msg = $user->validateDelete($id);
         if ($msg) {
