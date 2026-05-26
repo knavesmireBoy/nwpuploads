@@ -20,6 +20,6 @@ class Admin extends User
 
     public function delete($id, $subject){
      
-        dump('me a deleter...');
+        dump('admin deleter...');
     }
 }
