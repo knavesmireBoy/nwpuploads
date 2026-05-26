@@ -2,12 +2,10 @@
 
 namespace NorthWolds\Users;
 
+
+
 class Admin extends Useroo
 {
-    public function __construct() {
-
-
-    }
     public function add()
     {
         dump('Sure I can add, ha!');
@@ -21,5 +19,9 @@ class Admin extends Useroo
     public function delete()
     {
         dump('admin and can delete but...');
+    }
+
+    public function setSubject(private Useroo $subject){
+
     }
 }

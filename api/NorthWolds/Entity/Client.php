@@ -22,7 +22,6 @@ class Client extends Entity
 
     public function getUsers() {
 
-
     }
 
     public function domainAvailable($domain)

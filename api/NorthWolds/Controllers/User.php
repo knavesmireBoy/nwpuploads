@@ -122,6 +122,21 @@ class User extends Presenter
         return [$ret, $opt];
     }
 
+
+    protected function setPunter($details){
+
+        $role = str_replace(' ', '', $details['role']);
+        if (preg_match('/client/', $role)) {
+            if (isset($details['colleague'])) {
+                $role = $details['colleague'] ? $role : 'Solo';
+            } else {
+                $role = preg_match('/admin/', $role) ? 'Admin' : 'Freelancer';
+            }
+        }
+        $str = "NorthWolds\\Users\\$role";
+        $this->punter = new $str($this->home);
+    }
+
     protected function getPrivilege($prop = '')
     {
         if (!isset($_SESSION['username'])) {
@@ -133,17 +148,7 @@ class User extends Presenter
         }
         $details = $user[0]->getDetails();
 
-        $role = str_replace(' ', '', $details['role']);
-
-        if (preg_match('/client/', $role)) {
-            if (isset($details['colleague'])) {
-                $role = $details['colleague'] ? $role : 'Solo';
-            } else {
-                $role = preg_match('/admin/', $role) ? 'Admin' : 'Freelancer';
-            }
-        }
-        $str = "NorthWolds\\Users\\$role";
-        $this->punter = new $str();
+        $this->punter = $this->setPunter($details);
         return $prop ? $details[$prop] : $details;
     }
 
@@ -246,8 +251,7 @@ class User extends Presenter
     {
         $admin = isApproved($_SESSION['role'] ?? '', 'admin');
         $details = $this->getPrivilege();
-
-        $this->punter->add();
+        $this->punter = $this->setPunter($details);
 
         if (!$admin) {
             reLocate($this->home);
@@ -273,6 +277,7 @@ class User extends Presenter
         if (isset($_POST['user']) && is_numeric($_POST['user'])) {
             $user = $this->table->find('id', $_POST['user']);
             $user = $user[0] ?? null;
+
             if ($user) {
                 $id = $user->id;
                 setExtent(1);
@@ -303,8 +308,11 @@ class User extends Presenter
     public function edit($id, $args = [])
     {
         $details = $this->getPrivilege();
+        $this->punter = $this->setPunter($details);
+
         $admin = isApproved($_SESSION['role'], 'ADMIN');
         $cadmin = isApproved($_SESSION['role'], 'admin');
+
         $action = '/user/edit/';
         $roles = [];
         $msg = '';
@@ -320,6 +328,7 @@ class User extends Presenter
 
         $user = $this->table->find('id', $id);
         $user = $user[0] ?? null;
+
         if ($cadmin && $user) {
             $roles = $user->getRoles($user->id, $details['role']);
         }
@@ -417,9 +426,8 @@ class User extends Presenter
 
     public function delete($id)
     {
-        
+        dump($this->punter);
         $this->punter->delete();
-        
         $user = $this->table->find('id', $id)[0];
         $msg = $user->validateDelete($id);
         if ($msg) {
