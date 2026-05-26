@@ -2,7 +2,7 @@
 
 namespace NorthWolds\Users;
 
-class Client extends Useroo
+class Employee extends Useroo
 {
 
 }

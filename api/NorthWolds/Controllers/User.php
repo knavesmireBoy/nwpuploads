@@ -129,11 +129,13 @@ class User extends Presenter
         if (preg_match('/client/', $role)) {
             if (isset($details['colleague'])) {
                 $role = $details['colleague'] ? $role : 'Solo';
+                $role = ($role === 'Client') ? 'Employee' : $role;
             } else {
                 $role = preg_match('/admin/', $role) ? 'Admin' : 'Freelancer';
             }
         }
-        $str = "NorthWolds\\Users\\$role";
+
+        $str = "NorthWolds\\Entity\\$role";
         $this->punter = new $str($this->home);
     }
 
@@ -426,9 +428,12 @@ class User extends Presenter
 
     public function delete($id)
     {
-        dump($this->punter);
-        $this->punter->delete();
+        //andrewsykes@btinternet.com
+       // $this->getPrivilege();
+       // $this->punter->delete($id);
+
         $user = $this->table->find('id', $id)[0];
+
         $msg = $user->validateDelete($id);
         if ($msg) {
             return reLocate($this->home . $msg);
