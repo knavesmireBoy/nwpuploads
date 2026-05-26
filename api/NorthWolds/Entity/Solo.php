@@ -17,4 +17,9 @@ class Solo extends User
             $this->userroletable->save(['userid' => $this->id, 'roleid' => $role]);
         }
     }
+
+
+    public function delete($id){
+        dump('cannot delete clientAdmin');
+    }
 }

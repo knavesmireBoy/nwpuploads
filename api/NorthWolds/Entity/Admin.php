@@ -18,8 +18,8 @@ class Admin extends User
         }
     }
 
-    public function delete($id){
-        var_dump($this->table);
+    public function delete($id, $subject){
+     
         dump('me a deleter...');
     }
 }

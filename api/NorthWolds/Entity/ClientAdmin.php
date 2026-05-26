@@ -17,4 +17,7 @@ class ClientAdmin extends User
             $this->userroletable->save(['userid' => $this->id, 'roleid' => $role]);
         }
     }
+    public function delete($id){
+        dump('me a deleter...');
+    }
 }
