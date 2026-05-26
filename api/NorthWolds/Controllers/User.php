@@ -423,6 +423,8 @@ class User extends Presenter
     public function delete($id)
     {
         //andrewsykes@btinternet.com
+
+        dump(99);
         $details = $this->getPrivilege();
         // $this->punter->delete($id);
         $role = $this->setPunter($details);
