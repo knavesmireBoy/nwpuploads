@@ -132,9 +132,8 @@ class User extends Presenter
             reLocate(REG);
         }
         $details = $user[0]->getDetails();
-        $role = $details['role'];
+        $role = str_replace(' ', '', $details['role']);
         $str = "NorthWolds\\Users\\$role";
-        //$this->punter = new \NorthWolds\Users\Admin();
         $this->punter = new $str();
         return $prop ? $details[$prop] : $details;
     }
