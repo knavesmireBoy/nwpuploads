@@ -427,12 +427,14 @@ class User extends Presenter
         // $this->punter->delete($id);
         $role = $this->setPunter($details);
         $user = $this->table->find('id', $id)[0];
-        $punter = $this->table->getEntity("NorthWolds\\Entity\\$role");
+
+      //  $punter = $this->table->getEntity("NorthWolds\\Entity\\$role");
+
         $details = $user->getDetails();
         $role = $this->setPunter($details);
         dump($role);
         $subject = $this->table->getEntity("NorthWolds\\Entity\\$role");
-        $subject->delete($id);
+       // $subject->delete($id);
 
         $msg = $user->validateDelete($id);
         if ($msg) {
