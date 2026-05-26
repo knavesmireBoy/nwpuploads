@@ -222,8 +222,11 @@ class DatabaseTable
         return $entity;
     }
     //give access to functionality without an actual record
-    public function getEntity()
+    public function getEntity(string $classname = '')
     {
+        if($classname){
+            return new $classname(...$this->constructorArgs);
+        }
         return new $this->className(...$this->constructorArgs);
     }
 

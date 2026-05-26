@@ -433,6 +433,8 @@ class User extends Presenter
        // $this->punter->delete($id);
 
         $user = $this->table->find('id', $id)[0];
+        $punter = $user->getEntity('NorthWolds\Entity\Admin');
+        $punter->delete($id);
         dump($user->getPrivilege());
 
         $msg = $user->validateDelete($id);
