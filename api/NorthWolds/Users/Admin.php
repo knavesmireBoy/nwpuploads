@@ -11,7 +11,7 @@ class Admin extends Useroo
         dump('Sure I can add, ha!');
     }
 
-    public function edit()
+    public function edit($id = 0, $args = [])
     {
         dump('Sure I can add, ha!');
     }
@@ -21,7 +21,7 @@ class Admin extends Useroo
         dump('admin and can delete but...');
     }
 
-    public function setSubject(private Useroo $subject){
+    public function setSubject(Useroo $subject){
 
     }
 }

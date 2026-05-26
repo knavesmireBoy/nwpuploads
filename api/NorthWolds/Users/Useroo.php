@@ -4,6 +4,7 @@ namespace NorthWolds\Users;
 
 class Useroo
 {
+    private $subject;
     public function __construct(private string $home) {}
     public function add()
     {
