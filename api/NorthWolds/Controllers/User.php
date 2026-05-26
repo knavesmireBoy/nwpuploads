@@ -132,7 +132,10 @@ class User extends Presenter
             reLocate(REG);
         }
         $details = $user[0]->getDetails();
-        $this->punter = new \NorthWolds\Users\Admin();
+        $role = $details['role'];
+        $str = "NorthWolds\\Users\\$role";
+        //$this->punter = new \NorthWolds\Users\Admin();
+        $this->punter = new $str();
         return $prop ? $details[$prop] : $details;
     }
 
@@ -175,7 +178,7 @@ class User extends Presenter
             'admin' => $admin,
             'cadmin' => $cadmin,
             'priv' => $details['role'],
-            'colleagues' => $details['colleagues'],
+            'colleagues' => $details['colleagues'] ?? 0,
             'prompt' => null,
             'users' => $users,
             'clients' => $clients,
