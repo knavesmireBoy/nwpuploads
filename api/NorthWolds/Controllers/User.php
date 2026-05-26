@@ -4,6 +4,7 @@ namespace NorthWolds\Controllers;
 
 use \Ninja\DatabaseTable;
 use \NorthWolds\Users\Useroo;
+use \NorthWolds\Users\Admin;
 
 class User extends Presenter
 {
