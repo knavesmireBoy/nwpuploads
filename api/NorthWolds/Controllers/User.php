@@ -125,7 +125,6 @@ class User extends Presenter
 
     protected function setPunter($details)
     {
-
         $role = str_replace(' ', '', $details['role']);
         if (preg_match('/client/i', $role)) {
             if (isset($details['colleague'])) {
@@ -431,6 +430,7 @@ class User extends Presenter
         $punter = $this->table->getEntity("NorthWolds\\Entity\\$role");
         $details = $user->getDetails();
         $role = $this->setPunter($details);
+        dump($role);
         $subject = $this->table->getEntity("NorthWolds\\Entity\\$role");
         $subject->delete($id);
 
