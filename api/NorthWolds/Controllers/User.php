@@ -8,9 +8,9 @@ use \NorthWolds\Users\Admin;
 
 class User extends Presenter
 {
-    
+
     private $punter;
-    
+
     public function __construct(protected DatabaseTable $table, private DatabaseTable $clienttable, private string $home)
     {
         parent::__construct($table);
@@ -82,7 +82,7 @@ class User extends Presenter
                     list($name, $dom, $com) = $user->parseEmail($dbrecord['email']);
                     $key = "$_dom.$_com" !== "$dom.$com" ? 'domain' : '';
                     $key = $key && $admin ? '_domain' : $key;
-                    
+
                     if ($key && $user->domainCheck("$_dom.$_com")) {
                         $key = $admin ? '_domain' : 'domain';
                         reLocate($this->home . $key);
@@ -132,7 +132,16 @@ class User extends Presenter
             reLocate(REG);
         }
         $details = $user[0]->getDetails();
+
         $role = str_replace(' ', '', $details['role']);
+
+        if (preg_match('/client/', $role)) {
+            if (isset($details['colleague'])) {
+                $role = $details['colleague'] ? $role : 'Solo';
+            } else {
+                $role = preg_match('/admin/', $role) ? 'Admin' : 'Freelancer';
+            }
+        }
         $str = "NorthWolds\\Users\\$role";
         $this->punter = new $str();
         return $prop ? $details[$prop] : $details;
@@ -177,7 +186,7 @@ class User extends Presenter
             'admin' => $admin,
             'cadmin' => $cadmin,
             'priv' => $details['role'],
-            'colleagues' => $details['colleagues'] ?? 0,
+            'colleagues' => $details['colleagues'] ?? false,
             'prompt' => null,
             'users' => $users,
             'clients' => $clients,
@@ -223,7 +232,7 @@ class User extends Presenter
         //if ($key === 'selected') dump($customVars);
         $owner = []; //prompt.html.php expects this from Uploader Controller
         $error = $this->query($key);
-       
+
         if ($details['role'] !== 'Admin' && !$details['colleagues']) {
             $args = $error ? ['message' => $error] : [];
             $args['colleagues'] = $details['colleagues'];
@@ -387,7 +396,7 @@ class User extends Presenter
         $editor = intval($id) === $this->getPrivilege('id');
 
         $record = get_object_vars($user);
-        $required = array_filter($data, fn ($item) => $item);
+        $required = array_filter($data, fn($item) => $item);
 
         $updateUserDomain = $this->updateUserDomainFactory($_SESSION['role'] === 'Admin', $user, nullify($clientID), $data, $record);
         //will exit here if domain doesn't validate
@@ -409,7 +418,7 @@ class User extends Presenter
     public function delete($id)
     {
         $user = $this->table->find('id', $id)[0];
-        $msg = $user->validateDelete($id);  
+        $msg = $user->validateDelete($id);
         if ($msg) {
             return reLocate($this->home . $msg);
         }
