@@ -3,9 +3,13 @@
 namespace NorthWolds\Controllers;
 
 use \Ninja\DatabaseTable;
+use \NorthWolds\Users\Useroo;
 
 class User extends Presenter
 {
+    
+    private $punter;
+    
     public function __construct(protected DatabaseTable $table, private DatabaseTable $clienttable, private string $home)
     {
         parent::__construct($table);
@@ -127,6 +131,7 @@ class User extends Presenter
             reLocate(REG);
         }
         $details = $user[0]->getDetails();
+        $this->punter = new $details['role']();
         return $prop ? $details[$prop] : $details;
     }
 
@@ -230,6 +235,8 @@ class User extends Presenter
         $admin = isApproved($_SESSION['role'], 'admin');
         $details = $this->getPrivilege();
 
+        $this->punter->add();
+
         if (!$admin) {
             reLocate($this->home);
         }
@@ -290,6 +297,7 @@ class User extends Presenter
         $roles = [];
         $msg = '';
         $class = '';
+
         if (!$cadmin && ($id != $details['id'])) {
             $action = '/user/load/read';
             $class = 'details override';
