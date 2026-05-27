@@ -17,6 +17,14 @@ class User extends Presenter
         parent::__construct($table);
     }
 
+    protected function getSubUser($id, $user)
+    {
+        $details = $user->getDetails();
+        $entity = $this->getEntity($details);
+        $this->table->setEntity($entity);
+        return $this->table->find('id', $id)[0];
+    }
+
     private function query($key)
     {
         $lib = [
@@ -423,22 +431,14 @@ class User extends Presenter
 
     public function delete($id)
     {
-        //andrewsykes@btinternet.com
         $msg = '';
         $details = $this->getPrivilege();
-        $entity = $this->getEntity($details);
-
         $user = $this->table->find('id', $id)[0];
         $user->setSelf($id == $details['id']);
         if (!$user->getSelf()) {
-            $details = $user->getDetails();
-            $entity = $this->getEntity($details);
-            $this->table->setEntity($entity);
-            $user = $this->table->find('id', $id)[0];
-            //$subject = $this->table->getEntity($entity);
-            $msg = $user->validateDelete();
-        }
-        dump(4);
+            $user = $this->getSubUser($id, $user);
+        } 
+        $msg = $user->validateDelete();
         if ($msg) {
             return reLocate($this->home . $msg);
         }
