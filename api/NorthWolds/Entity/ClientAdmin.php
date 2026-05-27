@@ -24,6 +24,8 @@ class ClientAdmin extends User
 
     public function getUserIds($roles = null)
     {
+        
+        dump($this->client_id);
         $users = $this->table->find('client_id', $this->client_id);
         $res = array_map(fn($o) => $o->id, $users);
         if (is_bool($roles)) {
@@ -37,7 +39,7 @@ class ClientAdmin extends User
     {
         $msg = '';
         $ids = $this->getUserIds();
-        dump($ids);
+       
         $roles = $this->getAllRoles($ids);
         $adminroles = $this->getAdminRoles($roles);
         dump([42, $adminroles]);
