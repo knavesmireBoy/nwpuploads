@@ -21,6 +21,7 @@ class User extends Presenter
     {
         $details = $user->getDetails();
         $entity = $this->getEntity($details);
+        dump($entity);
         $this->table->setEntity($entity);
         return $this->table->find('id', $user->id)[0];
     }
@@ -194,8 +195,8 @@ class User extends Presenter
         $user = $this->table->find('id', $details['id']);
         $user = $user[0] ?? null;
         $user = $this->getSubUser($user);
-        $user->setSelf(true);
-        
+        $user->setSelf(false);
+
         $payload = $user->loadPayload(isset($customVars['selected']));
         list($users, $clients) = $this->presentList($details['role'], $details['id'], $this->table);
         
@@ -250,10 +251,6 @@ class User extends Presenter
 
         $user = $this->table->find('email', $_SESSION['username'])[0];
         $user = $this->getSubUser($user);
-
-
-
-
 
         if($user->edit()){
             $args = $error ? ['message' => $error] : [];
