@@ -38,7 +38,7 @@ class User extends Entity
     $this->self = $bool;
   }
 
-  public function getSelf(bool $bool)
+  public function getSelf()
   {
     return $this->self;
   }
