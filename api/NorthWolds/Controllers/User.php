@@ -21,7 +21,6 @@ class User extends Presenter
     {
         $details = $user->getDetails();
         $entity = $this->getEntity($details);
-        dump($entity);
         $this->table->setEntity($entity);
         return $this->table->find('id', $user->id)[0];
     }
@@ -227,12 +226,11 @@ class User extends Presenter
             'pages' => 1
         ];
 
-        $vars = array_merge($defaultVars, $customVars);
+        $vars = array_merge($defaultVars, $customVars, $payload);
         return [
             'template' => 'users.html.php',
             'title' => 'Edit Users',
-            'variables' => $vars,
-            ...$payload
+            'variables' => $vars
         ];
     }
 
