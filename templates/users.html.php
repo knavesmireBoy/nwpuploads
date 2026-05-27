@@ -2,7 +2,6 @@
 <p class='error'><?= $error; ?></p>
 <?php
 
-
 if (isset($callroute)) {
 	include TEMPLATE . '_call.html.php';
 }
@@ -12,7 +11,7 @@ if (isset($template)) {
 }
 ?>
 <?php
-if (empty($selected) && $admin):
+if (isset($optgroup)):
 ?>
 	<form action="/user/select/" method="post" name="userform" class="choose">
 		<label for="user"></label><select id="user" name="user">

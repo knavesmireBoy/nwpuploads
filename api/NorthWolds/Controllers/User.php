@@ -189,8 +189,6 @@ class User extends Presenter
         $predicates = [partial('preg_match', '/^nwp/')];
         // $clients = isApproved($priv, 'ADMIN') ? $this->presentClientList($priv, 'domain') : [];
         $cadmin = isApproved($_SESSION['role'], 'admin');
-
-        
         $details = $this->getPrivilege();
 
         $user = $this->table->find('id', $details['id']);
@@ -198,8 +196,7 @@ class User extends Presenter
         $user = $this->getSubUser($user);
         $user->setSelf(true);
 
-        $payload = $user->loadPayload();
-
+        $payload = $user->loadPayload(isset($customVars['selected']));
         list($users, $clients) = $this->presentList($details['role'], $details['id'], $this->table);
         
         $admin = isApproved($details['role'], 'ADMIN');
@@ -211,7 +208,6 @@ class User extends Presenter
             'prompt' => null,
             'users' => $users,
             'clients' => $clients,
-            'optgroup' => $admin ? 'clients' : null,
             'usercount' => 0,
             'denied' => false,
             'selected' => null,
