@@ -426,12 +426,15 @@ class User extends Presenter
         //andrewsykes@btinternet.com
         $details = $this->getPrivilege();
         $entity = $this->getEntity($details);
+        dump(1);
         $user = $this->table->find('id', $id)[0];
         $user->setSelf($id == $details['id']);
+        dump(2);
         if (!$user->getSelf()) {
             $details = $user->getDetails();
             $entity = $this->getEntity($details);
             $subject = $this->table->getEntity($entity);
+            dump(3);
             $msg = $subject->validateDelete();
         }
         if ($msg) {
