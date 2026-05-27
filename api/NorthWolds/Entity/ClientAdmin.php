@@ -24,8 +24,6 @@ class ClientAdmin extends User
 
     public function getUserIds($roles = null)
     {
-        
-        dump($this->client_id);
         $users = $this->table->find('client_id', $this->client_id);
         $res = array_map(fn($o) => $o->id, $users);
         if (is_bool($roles)) {

@@ -433,8 +433,10 @@ class User extends Presenter
         if (!$user->getSelf()) {
             $details = $user->getDetails();
             $entity = $this->getEntity($details);
-            $subject = $this->table->getEntity($entity);
-            $msg = $subject->validateDelete();
+            $this->table->setEntity($entity);
+            $user = $this->table->find('id', $id)[0];
+            //$subject = $this->table->getEntity($entity);
+            $msg = $user->validateDelete();
         }
         dump(4);
         if ($msg) {
