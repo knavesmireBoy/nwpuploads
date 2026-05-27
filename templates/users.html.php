@@ -11,7 +11,7 @@ if (isset($template)) {
 }
 ?>
 <?php
-if (isset($optgroup)):
+if (!isset($selected)):
 ?>
 	<form action="/user/select/" method="post" name="userform" class="choose">
 		<label for="user"></label><select id="user" name="user">

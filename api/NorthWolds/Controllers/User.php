@@ -195,7 +195,7 @@ class User extends Presenter
         $user = $user[0] ?? null;
         $user = $this->getSubUser($user);
         $user->setSelf(true);
-
+        
         $payload = $user->loadPayload(isset($customVars['selected']));
         list($users, $clients) = $this->presentList($details['role'], $details['id'], $this->table);
         
