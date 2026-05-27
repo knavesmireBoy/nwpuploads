@@ -426,7 +426,7 @@ class User extends Presenter
         //andrewsykes@btinternet.com
         $details = $this->getPrivilege();
         $entity = $this->getEntity($details);
-        dump(1);
+
         $user = $this->table->find('id', $id)[0];
         $user->setSelf($id == $details['id']);
         dump(2);
