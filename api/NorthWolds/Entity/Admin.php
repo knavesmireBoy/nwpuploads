@@ -50,8 +50,9 @@ class Admin extends User
                 ...$base,
                 'optgroup' => 'clients'
             ];
+        } else {
+            return $base;
         }
-        return $base;
     }
 
     public function getRoles(int $userid, string $roleid)

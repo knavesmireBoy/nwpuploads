@@ -199,7 +199,6 @@ class User extends Presenter
         $payload = $user->loadPayload(isset($customVars['selected']));
         list($users, $clients) = $this->presentList($details['role'], $details['id'], $this->table);
         
-        dump($payload);
         $admin = isApproved($details['role'], 'ADMIN');
         $defaultVars = [
             'admin' => $admin,
