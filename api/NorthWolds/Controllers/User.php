@@ -44,7 +44,7 @@ class User extends Presenter
             'read' => 'You may view but not edit this user details.',
 
             '_admin' => "You cannot delete an administrator.",
-            "lasteditor" => "There must be at least one administrator role, please assign another user before removing your credentials from the database.",
+            "lasteditor" => "There must be at least one administrator role, please assign another user before removing credentials from the database.",
             "lastadmin" => "There must be at least one administrator role, please promote another user to the admin role.",
             'last' => "Only the database administrator can delete this user.",
             "_denied" => "Cannot (re)move a user with a client admin role.",
@@ -190,9 +190,18 @@ class User extends Presenter
         // $clients = isApproved($priv, 'ADMIN') ? $this->presentClientList($priv, 'domain') : [];
         $cadmin = isApproved($_SESSION['role'], 'admin');
 
-        //if ($cadmin || ($id != $details['id'])).
+        
+        $details = $this->getPrivilege();
+
+        $user = $this->table->find('id', $details['id']);
+        $user = $user[0] ?? null;
+        $user = $this->getSubUser($user);
+        $user->setSelf(true);
+
+        $payload = $user->loadPayload();
 
         list($users, $clients) = $this->presentList($details['role'], $details['id'], $this->table);
+        
         $admin = isApproved($details['role'], 'ADMIN');
         $defaultVars = [
             'admin' => $admin,
@@ -205,13 +214,10 @@ class User extends Presenter
             'optgroup' => $admin ? 'clients' : null,
             'usercount' => 0,
             'denied' => false,
-            'usercount' => 0,
             'selected' => null,
             'nwpagency' => null,
             'pagehead' => 'Edit Details',
             'pageid' => 'admin_user',
-            'callroute' => '/user/add/',
-            'calltext' => 'Add New User',
             'nwproleplay' => 'Admin',
             'nwp_id' => null,
             'pagehead_role' => 'Admin',
@@ -228,7 +234,8 @@ class User extends Presenter
         return [
             'template' => 'users.html.php',
             'title' => 'Edit Users',
-            'variables' => $vars
+            'variables' => $vars,
+            ...$payload
         ];
     }
 
@@ -245,7 +252,14 @@ class User extends Presenter
         $owner = []; //prompt.html.php expects this from Uploader Controller
         $error = $this->query($key);
 
-        if ($details['role'] !== 'Admin' && !$details['colleagues']) {
+        $user = $this->table->find('email', $_SESSION['username'])[0];
+        $user = $this->getSubUser($user);
+
+
+
+
+
+        if($user->edit()){
             $args = $error ? ['message' => $error] : [];
             $args['colleagues'] = $details['colleagues'];
             $id = $details['id'];
@@ -313,51 +327,39 @@ class User extends Presenter
 
     public function edit($id, $args = [])
     {
-        $details = $this->getPrivilege();
-
-        $admin = isApproved($_SESSION['role'], 'ADMIN');
-        $cadmin = isApproved($_SESSION['role'], 'admin');
-
-        $action = '/user/edit/';
-        $roles = [];
-        $msg = '';
-        $class = '';
-
-        if (!$cadmin && ($id != $details['id'])) {
-            $action = '/user/load/read';
-            $class = 'details override';
-            $msg = 'You may view this users details but cannot edit';
-        }
-
-        list($_, $clients) = $this->presentList($_SESSION['role'], $id, $this->table, 'client_id');
-
         $user = $this->table->find('id', $id);
         $user = $user[0] ?? null;
+        
+        $details = $this->getPrivilege();
+        $user = $this->getSubUser($user);
+        $user->setSelf($id == $details['id']);
 
-        if ($cadmin && $user) {
+        $payload = $user->editPayload($id);
+
+        $roles = [];
+        $editor = $id == $details['id'];
+        list($_, $clients) = $this->presentList($_SESSION['role'], $id, $this->table, 'client_id');
+
+        if ($user) {
             $roles = $user->getRoles($user->id, $details['role']);
         }
         $id = $user->id ?? null;
         $vars = [
-            'admin' => $admin,
-            'cadmin' => $cadmin,
             'colleagues' => '',
             'priv' => $_SESSION['role'],
-            'editor' => $id == $details['id'],
-            'class' => $class,
+            'editor' => $editor,
+            'class' => '',
             'legend' => '',
             'override' => '',
             'pagehead' => 'Edit User',
-            'message' => $msg,
-            'action' => $action,
+            'message' => '',
+            'action' => '/user/edit/',
             'id' => $id,
             'name' => $_COOKIE['name'] ?? $user->name ?? '',
             'email' => $_COOKIE['email'] ?? $user->email ?? '',
             'password' => $_COOKIE['password'] ?? '',
             'employer' => $user->client_id ?? '',
             'button' => 'Edit User',
-            'calltext' => 'Delete User',
-            'callroute' => "/user/delete/$id",
             'clientlist' => $clients,
             'roles' => $roles
         ];
@@ -367,7 +369,7 @@ class User extends Presenter
         return [
             'template' => 'userform.html.php',
             'title' => 'Edit User',
-            'variables' => [...$vars, ...$args]
+            'variables' => [...$vars, ...$args, ...$payload]
         ];
     }
 

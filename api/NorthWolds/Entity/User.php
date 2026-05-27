@@ -43,6 +43,21 @@ class User extends Entity
     return $this->self;
   }
 
+  public function edit()
+  {
+    return false;
+  }
+
+  public function editPayload($id = '')
+  {
+    return [];
+  }
+
+  public function loadPayload()
+  {
+    return [];
+  }
+
   //convert ids into table structure [userid, roleid]
   protected function getAllRoles(array $ids)
   {
@@ -133,16 +148,9 @@ class User extends Entity
     return $this->roleid;
   }
 
-
   public function getRoles(int $userid, string $roleid)
   {
-    $f = composer(negate(curry2('equals')('Admin')), curry2('getter')('id'));
-    $roleid = $this->getRole($userid);
-    //list of roles determined by current user
-    //allow Admin to be listed only if that happens to be one of the few Admin roles
-    $cb = preg_match('/^Admin/', $roleid) ? 'identity' : $f;
-    $roles = $this->fetchAllRoles($this->roles, [$roleid]);
-    return safeFilter($roles, $cb ?? 'identity');
+    return [];
   }
 
   public function setRole(string $role, int $userid = 0)

@@ -1,4 +1,7 @@
 <?php
+
+$admin = isApproved($_SESSION['role'], 'ADMIN');
+/*
 $single = !$colleagues;
 $k = $single && ($priv === 'Client Admin') ? 'Client' : $priv;
 //could be failed attempt to edit form from a TEAM member
@@ -11,17 +14,16 @@ if (isset($selected)) {
 	//$k = 'Client';
 }
 $route = $routes[$k];
-
+*/
 if ($admin) { ?>
 	<p class="call"><a href="/client/load/">Edit Clients</a></p>
 <?php
 }
-include $route;
+include $retour;
 ?>
 
 </main>
 <footer>
 	<?php
-
 	include TEMPLATE . '_logout.html.php'; ?>
 </footer>

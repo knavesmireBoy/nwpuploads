@@ -5,10 +5,10 @@ namespace NorthWolds\Entity;
 class Manager extends Employee
 {
 
-    public function __construct(...$args) {
+    public function __construct(...$args)
+    {
 
         parent::__construct(...$args);
-
     }
 
     public function setRole(string $role, int $userid = 0)
@@ -18,8 +18,8 @@ class Manager extends Employee
         }
     }
 
-    public function delete($id, $subject){
-     
-        dump('manager deleter...');
+    public function delete($id)
+    {
+        return '';
     }
 }

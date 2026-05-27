@@ -3,7 +3,7 @@
 <?php
 
 
-if ($cadmin || isset($editor)) {
+if (isset($callroute)) {
 	include TEMPLATE . '_call.html.php';
 }
 if (isset($template)) {
@@ -28,7 +28,7 @@ if (empty($selected) && $admin):
 		</select>
 		<input type="submit" name="action" value="Choose" />
 	</form>
-<?php //elseif (preg_match("/client/i", $priv) || (isset($selected))):
+<?php 
 elseif (!empty($users)):
 ?>
 	<div class="clientgroup">

@@ -28,4 +28,9 @@ class Solo extends ClientAdmin
     {
         return 'last';
     }
+
+    public function edit()
+    {
+        return false;
+    }
 }

@@ -9,7 +9,7 @@ $load = '/user/load/';
 	<p><?= $message; ?></p>
 <?php
 }
-if (($cadmin || $editor) && !empty($id)) {
+if (isset($callroute)) {
 	include TEMPLATE . '_call.html.php';
 }
 ?>
