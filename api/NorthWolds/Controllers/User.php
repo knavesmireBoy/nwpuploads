@@ -424,12 +424,12 @@ class User extends Presenter
     public function delete($id)
     {
         //andrewsykes@btinternet.com
+        $msg = '';
         $details = $this->getPrivilege();
         $entity = $this->getEntity($details);
 
         $user = $this->table->find('id', $id)[0];
         $user->setSelf($id == $details['id']);
-        dump(2);
         if (!$user->getSelf()) {
             $details = $user->getDetails();
             $entity = $this->getEntity($details);
@@ -437,6 +437,7 @@ class User extends Presenter
             dump(3);
             $msg = $subject->validateDelete();
         }
+        dump(4);
         if ($msg) {
             return reLocate($this->home . $msg);
         }
