@@ -17,12 +17,12 @@ class User extends Presenter
         parent::__construct($table);
     }
 
-    protected function getSubUser($id, $user)
+    protected function getSubUser($user)
     {
         $details = $user->getDetails();
         $entity = $this->getEntity($details);
         $this->table->setEntity($entity);
-        return $this->table->find('id', $id)[0];
+        return $this->table->find('id', $user->id)[0];
     }
 
     private function query($key)
@@ -435,9 +435,7 @@ class User extends Presenter
         $details = $this->getPrivilege();
         $user = $this->table->find('id', $id)[0];
         $user->setSelf($id == $details['id']);
-        if (!$user->getSelf()) {
-            $user = $this->getSubUser($id, $user);
-        } 
+        $user = $this->getSubUser($user);
         $msg = $user->validateDelete();
         if ($msg) {
             return reLocate($this->home . $msg);
