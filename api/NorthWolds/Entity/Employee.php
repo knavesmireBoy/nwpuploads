@@ -2,13 +2,10 @@
 
 namespace NorthWolds\Entity;
 
-class Employee extends User
+class Employee extends ClientAdmin
 {
-
     public function __construct(...$args) {
-
         parent::__construct(...$args);
-
     }
 
     public function setRole(string $role, int $userid = 0)

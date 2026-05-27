@@ -11,6 +11,7 @@ class User extends Presenter
 
     private $punter;
 
+
     public function __construct(protected DatabaseTable $table, private DatabaseTable $clienttable, private string $home)
     {
         parent::__construct($table);
@@ -34,6 +35,7 @@ class User extends Presenter
             'editno' => 'You do not have the required privilges to edit this user details.',
             'read' => 'You may view but not edit this user details.',
 
+            '_admin' => "You cannot delete an administrator.",
             "lasteditor" => "There must be at least one administrator role, please assign another user before removing your credentials from the database.",
             "lastadmin" => "There must be at least one administrator role, please promote another user to the admin role.",
             'last' => "Only the database administrator can delete this user.",
@@ -122,8 +124,7 @@ class User extends Presenter
         return [$ret, $opt];
     }
 
-
-    protected function setPunter($details)
+    protected function getEntity($details)
     {
         $role = str_replace(' ', '', $details['role']);
         if (preg_match('/client/i', $role)) {
@@ -134,7 +135,7 @@ class User extends Presenter
                 $role = preg_match('/admin/', $role) ? 'Admin' : 'Freelancer';
             }
         }
-        return $role;
+        return "NorthWolds\\Entity\\$role";
     }
 
     protected function getPrivilege($prop = '')
@@ -424,16 +425,15 @@ class User extends Presenter
     {
         //andrewsykes@btinternet.com
         $details = $this->getPrivilege();
-        //$this->punter->delete($id);
-        $role = $this->setPunter($details);
+        $entity = $this->getEntity($details);
         $user = $this->table->find('id', $id)[0];
-      //$punter = $this->table->getEntity("NorthWolds\\Entity\\$role");
-        $details = $user->getDetails();
-        $role = $this->setPunter($details);
-        dump($role);
-        $subject = $this->table->getEntity("NorthWolds\\Entity\\$role");
-       // $subject->delete($id);
-        $msg = $user->validateDelete($id);
+        $user->setSelf($id == $details['id']);
+        if (!$user->getSelf()) {
+            $details = $user->getDetails();
+            $entity = $this->getEntity($details);
+            $subject = $this->table->getEntity($entity);
+            $msg = $subject->validateDelete();
+        }
         if ($msg) {
             return reLocate($this->home . $msg);
         }

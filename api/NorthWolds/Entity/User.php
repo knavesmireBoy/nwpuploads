@@ -17,6 +17,7 @@ class User extends Entity
   protected $userroletable;
   protected $clienttable;
   protected $roles = ['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'];
+  protected $self;
   //public $permissions;
   public $password;
   public $id;
@@ -32,8 +33,18 @@ class User extends Entity
     $this->clienttable = $client;
   }
 
+  public function setSelf(bool $bool)
+  {
+    $this->self = $bool;
+  }
+
+  public function getSelf(bool $bool)
+  {
+    return $this->self;
+  }
+
   //convert ids into table structure [userid, roleid]
-  private function getAllRoles(array $ids)
+  protected function getAllRoles(array $ids)
   {
     if (empty($ids)) {
       return [];
@@ -43,7 +54,7 @@ class User extends Entity
     $roles = safeFilter($roles, fn($o) => $o->roleid);
     return array_map('get_object_vars', $roles);
   }
-  private function getAdminRoles(array $roles = [])
+  protected function getAdminRoles(array $roles = [])
   {
     $cb = composer(partial('equals', 'Client Admin'), curry2('getter')('roleid'));
     return !empty($roles) ? safeFilter($roles, $cb) : $roles;
@@ -62,7 +73,6 @@ class User extends Entity
       $msg = $admin ? '_last' : 'last';
     }
     $adminroles = $this->getAdminRoles($roles);
-
     if (!$msg && count($adminroles) === 1) {
       $ids = array_column($adminroles, 'userid');
       $key = in_array($this->id, $ids) ? 'lasteditor' : '';
@@ -75,7 +85,7 @@ class User extends Entity
   {
     $details = $this->getDetails();
 
-    if(empty($details)){
+    if (empty($details)) {
       return $role;
     }
     $admin = isApproved($details['role'], 'ADMIN');

@@ -2,7 +2,7 @@
 
 namespace NorthWolds\Entity;
 
-class Freelancer extends User
+class Browser extends Employee
 {
 
     public function __construct(...$args) {
@@ -18,11 +18,8 @@ class Freelancer extends User
         }
     }
 
-    public function getUserIds($roles = null){
-        return [];
-    }
-
-    public function validateDelete(){
-        return '';
+    public function delete($id, $subject){
+     
+        dump('browser deleter...');
     }
 }

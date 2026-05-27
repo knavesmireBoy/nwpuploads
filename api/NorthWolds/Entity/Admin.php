@@ -22,4 +22,9 @@ class Admin extends User
      
         dump('admin deleter...');
     }
+
+    public function validateDelete()
+    {
+        return '_admin';
+    }
 }

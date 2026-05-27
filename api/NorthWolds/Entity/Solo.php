@@ -2,13 +2,13 @@
 
 namespace NorthWolds\Entity;
 
-class Solo extends User
+class Solo extends ClientAdmin
 {
 
-    public function __construct(...$args) {
+    public function __construct(...$args)
+    {
 
         parent::__construct(...$args);
-
     }
 
     public function setRole(string $role, int $userid = 0)
@@ -19,7 +19,13 @@ class Solo extends User
     }
 
 
-    public function delete($id){
+    public function delete($id)
+    {
         dump('cannot delete clientAdmin');
+    }
+
+    public function validateDelete()
+    {
+        return 'last';
     }
 }
