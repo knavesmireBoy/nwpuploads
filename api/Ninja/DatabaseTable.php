@@ -224,10 +224,15 @@ class DatabaseTable
     //give access to functionality without an actual record
     public function getEntity(string $classname = '')
     {
-        if($classname){
+        if ($classname) {
             return new $classname(...$this->constructorArgs);
         }
         return new $this->className(...$this->constructorArgs);
+    }
+
+    public function setEntity($classname)
+    {
+        $this->className = $classname;
     }
 
     public function setMinToNull($colname, $colval)

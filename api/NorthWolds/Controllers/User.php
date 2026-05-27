@@ -423,14 +423,12 @@ class User extends Presenter
     public function delete($id)
     {
         //andrewsykes@btinternet.com
-
-        dump(999);
         $details = $this->getPrivilege();
-        // $this->punter->delete($id);
+        //$this->punter->delete($id);
         $role = $this->setPunter($details);
         $user = $this->table->find('id', $id)[0];
 
-      //  $punter = $this->table->getEntity("NorthWolds\\Entity\\$role");
+      //$punter = $this->table->getEntity("NorthWolds\\Entity\\$role");
 
         $details = $user->getDetails();
         $role = $this->setPunter($details);
