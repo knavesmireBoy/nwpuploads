@@ -37,6 +37,7 @@ class ClientAdmin extends User
     {
         $msg = '';
         $ids = $this->getUserIds();
+        dump($ids);
         $roles = $this->getAllRoles($ids);
         $adminroles = $this->getAdminRoles($roles);
         dump([42, $adminroles]);

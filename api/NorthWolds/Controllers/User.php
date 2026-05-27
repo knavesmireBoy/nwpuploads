@@ -434,7 +434,6 @@ class User extends Presenter
             $details = $user->getDetails();
             $entity = $this->getEntity($details);
             $subject = $this->table->getEntity($entity);
-            dump(3);
             $msg = $subject->validateDelete();
         }
         dump(4);
