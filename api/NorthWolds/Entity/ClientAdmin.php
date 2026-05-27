@@ -39,6 +39,7 @@ class ClientAdmin extends User
         $ids = $this->getUserIds();
         $roles = $this->getAllRoles($ids);
         $adminroles = $this->getAdminRoles($roles);
+        dump([42, $adminroles]);
         if (count($adminroles) === 1) {
             $ids = array_column($adminroles, 'userid');
             $key = in_array($this->id, $ids) ? 'lasteditor' : '';
