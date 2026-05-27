@@ -127,8 +127,8 @@ class User extends Presenter
     {
         $role = str_replace(' ', '', $details['role']);
         if (preg_match('/client/i', $role)) {
-            if (isset($details['colleague'])) {
-                $role = $details['colleague'] ? $role : 'Solo';
+            if (isset($details['colleagues'])) {
+                $role = $details['colleagues'] ? $role : 'Solo';
                 $role = ($role === 'Client') ? 'Employee' : $role;
             } else {
                 $role = preg_match('/admin/', $role) ? 'Admin' : 'Freelancer';
