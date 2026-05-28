@@ -24,6 +24,12 @@ class User extends Presenter
         //return $this->table->find('id', $user->id)[0];
     }
 
+    private function destroy($id)
+    {
+        $this->table->delete('id', $id);
+        reLocate($this->home);
+    }
+
     private function query($key)
     {
         $lib = [
@@ -262,16 +268,9 @@ class User extends Presenter
 
     public function add()
     {
-        $admin = isApproved($_SESSION['role'] ?? '', 'admin');
         $details = $this->getPrivilege();
-
-        if (!$admin) {
-         //   reLocate($this->home);
-        }
-
-        $user = $this->table->find('id', $details['id'])[0];
-        $roles = $user->getRoles($user->id, 'Manager');
-
+        $user = $this->fetch('table','id', $details['id']);
+        $roles = $user->getRoles($user->id);
         return $this->edit(0, [
             'action' => "user/add/",
             'pagehead' => 'Add User',
@@ -449,9 +448,5 @@ class User extends Presenter
         reLocate($this->home);
     }
 
-    public function destroy($id)
-    {
-        $this->table->delete('id', $id);
-        reLocate($this->home);
-    }
+
 }

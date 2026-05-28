@@ -2,7 +2,7 @@
 //$root = $_SERVER['DOCUMENT_ROOT'] . '/nwp_uploads/api/';
 $route = preg_match("/administrators/i", $error) ? '..' : '.';
 $route = preg_match("/administrators/i", $error) ? "../?action=logout" : "./?action=logout";
-$route = '/upload/load';
+$route = '/uploader/load';
 ?>
 	<h1>Access Denied</h1>
 	<p><?= $error; ?></p>
