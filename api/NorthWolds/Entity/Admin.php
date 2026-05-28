@@ -63,7 +63,7 @@ class Admin extends User
         }
     }
 
-    public function getRoles(int $userid, string $roleid)
+    public function getRoles(int $userid)
     {
         if (!$this->self) {
             $roleid = $this->getRole($userid);

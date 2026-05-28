@@ -50,7 +50,7 @@ class Employee extends ClientAdmin
         return [[], []];
     }
 
-    public function getRoles(int $userid, string $roleid)
+    public function getRoles(int $userid)
     {
         return [];
     }

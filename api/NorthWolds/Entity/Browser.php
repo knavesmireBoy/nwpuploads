@@ -27,7 +27,7 @@ class Browser extends Employee
     {
         return [[], []];
     }
-    public function getRoles(int $userid, string $roleid)
+    public function getRoles(int $userid)
     {
         return [];
     }
