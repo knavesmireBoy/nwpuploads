@@ -29,14 +29,22 @@ class Admin extends User
         return '_admin';
     }
 
+
     public function editPayload($id = '')
     {
-        return [
-            'calltext' => 'Delete User',
-            'callroute' => "/user/delete/$id",
-            'retour' => '_return2list.html.php'
-        ];
+        if (!$this->self) {
+            return [
+                'calltext' => 'Delete User',
+                'callroute' => "/user/delete/$id",
+                'retour' => '_return2list.html.php'
+            ];
+        } else {
+            return [
+                'retour' => '_return2list.html.php'
+            ];
+        }
     }
+
 
     public function loadPayload($selected = null)
     {

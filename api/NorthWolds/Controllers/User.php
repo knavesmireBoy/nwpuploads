@@ -319,7 +319,7 @@ class User extends Presenter
     public function edit($id, $args = [])
     {
         $details = $this->getPrivilege();
-        $punter = $this->table->find('id', $details['id']);
+        $punter = $this->table->find('id', $details['id'])[0];
         $punter = $this->getSubUser($punter);
 
         $user = $this->table->find('id', $id);
