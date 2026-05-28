@@ -38,7 +38,13 @@ class Employee extends ClientAdmin
         }
     }
 
-    public function presentList($userId){
-            return [[], []];
+    public function presentList($userId)
+    {
+        return [[], []];
+    }
+
+    public function getRoles(int $userid, string $roleid)
+    {
+        return [];
     }
 }

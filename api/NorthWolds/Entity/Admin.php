@@ -50,16 +50,16 @@ class Admin extends User
     {
         $base =  [
             'callroute' => '/user/add/',
-            'calltext' => 'Add New User',
-            'retour' => '_return2uploads.html.php',
+            'calltext' => 'Add New User'
         ];
         if (!$selected) {
             return [
                 ...$base,
+                'retour' => '_return2uploads.html.php',
                 'optgroup' => 'clients'
             ];
         } else {
-            return $base;
+            return [...$base, 'retour' => '_return2list.html.php'];
         }
     }
 
