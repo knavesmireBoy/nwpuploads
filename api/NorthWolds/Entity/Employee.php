@@ -21,7 +21,7 @@ class Employee extends ClientAdmin
         return true;
     }
 
-    public function editPayload($id = '')
+    public function editPayload1($id = '')
     {
         if (!$this->self) {
             return [
@@ -36,6 +36,13 @@ class Employee extends ClientAdmin
                 'retour' => '_return2uploads.html.php'
             ];
         }
+    }
+
+    public function editPayload($id = '')
+    {
+        return [
+            'retour' => '_return2uploads.html.php'
+        ];
     }
 
     public function presentList($userId)
