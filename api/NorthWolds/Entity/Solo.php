@@ -34,7 +34,12 @@ class Solo extends ClientAdmin
         return false;
     }
 
-    public function presentList($userId){
+    public function presentList($userId)
+    {
         return [[], []];
-}
+    }
+    public function getRoles(int $userid, string $roleid)
+    {
+        return [];
+    }
 }

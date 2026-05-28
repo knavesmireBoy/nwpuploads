@@ -5,10 +5,10 @@ namespace NorthWolds\Entity;
 class Browser extends Employee
 {
 
-    public function __construct(...$args) {
+    public function __construct(...$args)
+    {
 
         parent::__construct(...$args);
-
     }
 
     public function setRole(string $role, int $userid = 0)
@@ -18,11 +18,17 @@ class Browser extends Employee
         }
     }
 
-    public function delete($id){
+    public function delete($id)
+    {
         return '';
     }
 
-    public function presentList($userId){
+    public function presentList($userId)
+    {
         return [[], []];
-}
+    }
+    public function getRoles(int $userid, string $roleid)
+    {
+        return [];
+    }
 }

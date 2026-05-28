@@ -324,10 +324,6 @@ class User extends Presenter
         $user = $this->getSubUser($user[0] ?? null);
         $editor = ($id == $details['id']);
         $member = $editor ? $user : $punter;
-
-
-        dump([$id, $details['id']]);
-
         $member->setSelf($editor);
         $payload = $member->editPayload($id);
         
