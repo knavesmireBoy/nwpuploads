@@ -20,7 +20,8 @@ class User extends Presenter
         $details = $user->getDetails();
         $entity = $this->getEntity($details);
         $this->table->setEntity($entity);
-        return $this->table->find('id', $user->id)[0];
+        return $this->fetch('table','id', $user->id);
+        //return $this->table->find('id', $user->id)[0];
     }
 
     private function query($key)
