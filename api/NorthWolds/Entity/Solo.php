@@ -18,7 +18,6 @@ class Solo extends ClientAdmin
         }
     }
 
-
     public function delete($id)
     {
         dump('cannot delete clientAdmin');
@@ -42,4 +41,14 @@ class Solo extends ClientAdmin
     {
         return [];
     }
+
+    public function editPayload($id = '')
+    {
+        return [
+            'calltext' => 'Add User',
+            'callroute' => "/user/add/",
+            'retour' => '_return2list.html.php'
+        ];
+    }
+
 }

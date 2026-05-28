@@ -148,7 +148,7 @@ class User extends Entity
     return $this->roleid;
   }
 
-  public function getRoles(int $userid, string $roleid)
+  public function getRoles(int $userid)
   {
     return [];
   }

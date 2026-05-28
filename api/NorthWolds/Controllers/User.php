@@ -263,7 +263,7 @@ class User extends Presenter
         $details = $this->getPrivilege();
 
         if (!$admin) {
-            reLocate($this->home);
+         //   reLocate($this->home);
         }
 
         $user = $this->table->find('id', $details['id'])[0];
@@ -273,8 +273,6 @@ class User extends Presenter
             'action' => "user/add/",
             'pagehead' => 'Add User',
             'button' => 'Add User',
-            'calltext' => null,
-            'callroute' =>  null,
             'employer' => $details['client_id'] ?? 0,
             'roles' => $roles
         ]);

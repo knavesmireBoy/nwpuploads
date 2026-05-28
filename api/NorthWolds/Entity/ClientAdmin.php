@@ -66,7 +66,7 @@ class ClientAdmin extends User
         ];
     }
 
-    public function getRoles(int $userid, string $roleid)
+    public function getRoles(int $userid)
     {
       $f = composer(negate(curry2('equals')('Admin')), curry2('getter')('id'));
       $roleid = $this->getRole($userid);
@@ -75,7 +75,6 @@ class ClientAdmin extends User
     }
 
     public function presentList($userId){
-
         $user = $this->table->find('id', $userId);
         $user = $user[0] ?? null;
         if (isset($user)) {
