@@ -10,13 +10,34 @@ class ClientAdmin extends User
 
         parent::__construct(...$args);
     }
-
+/*
     public function setRole(string $role, int $userid = 0)
     {
         if (!empty($this->roletable->find('id', $role))) {
             $this->userroletable->save(['userid' => $this->id, 'roleid' => $role]);
         }
     }
+*/
+
+
+
+    public function setRole(string $role, int $userid = 0)
+    {
+      $uid = $userid ? $userid : $this->id;
+      //if $action is true insert otherwise update
+      $action = empty($this->userroletable->find('userid', $uid));
+      //A) if validation fails return a key for query eg 'last' header(Location: /user/load/last)
+      $role = $this->validateRole($role);
+  
+      if (in_array($role, $this->roles)) {
+        $this->userroletable->save(['userid' => $this->id, 'roleid' => $role], $action);
+        $this->roleid = $userid ? null : $role;
+        //B if validation succeeds set to empty string (or success?)
+        $role = '';
+      }
+      return $role;
+    }
+  
     public function getUserIds($roles = null)
     {
         $users = $this->table->find('client_id', $this->client_id);

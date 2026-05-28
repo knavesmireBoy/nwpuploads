@@ -19,6 +19,37 @@ class Admin extends User
     }
 
 
+    protected function validateRole($role)
+    {
+      $details = $this->getDetails();
+  
+      if (empty($details)) {
+        return $role;
+      }
+  
+      if ($this->id == $details['id']) {
+        return $this->roleid;
+      }
+      $ids = $this->getUserIds();
+      
+      if (in_array($role, $this->roles)) {
+        $roles = $this->getAllRoles($ids);
+  
+        if (!empty($roles)) {
+          $i = array_search($role, $this->roles);
+          $j = array_search($this->roleid, $this->roles);
+  
+          if (($i < $j)) { //demotion
+            if (count($roles) === 1) {
+              return  '_last';
+            }
+          }
+        }
+      }
+      return $role;
+    }
+
+
     public function delete($id)
     {
         return '_admin';

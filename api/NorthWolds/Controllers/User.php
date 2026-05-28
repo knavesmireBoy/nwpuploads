@@ -87,28 +87,26 @@ class User extends Presenter
         return $ret;
     }
 
-    private function updateUserDomainFactory($admin, $user, $cid, $data, $dbrecord, $userID = 0)
+    private function updateUserDomainFactory($key, $user, $cid, $data, $dbrecord, $userID = 0)
     {
         if (isset($user->client_id) && $user->client_id == $cid) {
-            return function () use ($admin, $cid, $user, $data, $dbrecord) {
+
+            return function () use ($key, $cid, $user, $data, $dbrecord) {
                 //ensure domain remains the same
                 list($_name, $_dom, $_com) = $user->parseEmail($data['email']);
                 if (isset($dbrecord['email'])) { //existing
                     list($name, $dom, $com) = $user->parseEmail($dbrecord['email']);
-                    $key = "$_dom.$_com" !== "$dom.$com" ? 'domain' : '';
-                    $key = $key && $admin ? '_domain' : $key;
-
-                    if ($key && $user->domainCheck("$_dom.$_com")) {
-                        $key = $admin ? '_domain' : 'domain';
+                    $k = "$_dom.$_com" !== "$dom.$com" ? $key : '';
+                    if ($k && $user->findDomain("$_dom.$_com")) {
                         reLocate($this->home . $key);
                     }
-                    if ($key) {
-                        reLocate($this->home . "$key");
+                    if ($k) {
+                      //  reLocate($this->home . $key);
                     }
                     $data['email'] = "$name@$dom.$com";
                     return $data;
                 } else { //new
-                    $client = $this->clienttable->find('id', $cid)[0];
+                    $client = $this->fetch('clienttable','id', $cid);
                     $domain = $client->domain;
                     $data['email'] = "$_name@$domain";
                     return $data;
@@ -119,6 +117,8 @@ class User extends Presenter
             return $user->updateUserDomain($cid, $data, $userID);
         };
     }
+
+    
 
     private function hasChanged($db, $post, $mandatory, $optionals)
     {
@@ -364,11 +364,14 @@ class User extends Presenter
     {
         $data = $_POST['data'];
         $client_id = $_POST['employer'] ?? $_POST['employed'];
-        $admin = isApproved($_SESSION['role'], 'ADMIN');
+
+        $key = isApproved($_SESSION['role'], 'ADMIN') ? '_domain' : 'domain';
+
         $required = array_filter($data, function ($item) {
             return $item;
         });
         $role = $_POST['roles'][0] ?? 'Browser';
+        
         if (count($required) < 3) {
             reLocate($this->home . "/");
         }
@@ -380,7 +383,7 @@ class User extends Presenter
         //role must be set BEFORE "updateUserDomain" no user can navigate the site without an assigned role
         $user->setRole($role);
 
-        $updateUserDomain = $this->updateUserDomainFactory($admin, $user, nullify($client_id), get_object_vars($user), [], $userId);
+        $updateUserDomain = $this->updateUserDomainFactory($key, $user, nullify($client_id), get_object_vars($user), [], $userId);
         $data = $updateUserDomain();
         $this->table->save($data);
         reLocate($this->home);
@@ -401,11 +404,13 @@ class User extends Presenter
         $record = get_object_vars($user);
         $required = array_filter($data, fn($item) => $item);
 
-        $updateUserDomain = $this->updateUserDomainFactory($_SESSION['role'] === 'Admin', $user, nullify($clientID), $data, $record);
+        $updateUserDomain = $this->updateUserDomainFactory($_SESSION['role'] === 'Admin' ? '_domain' : 'domain', $user, nullify($clientID), $data, $record);
+
         //will exit here if domain doesn't validate
         $data = [...$record, ...$required, ...$updateUserDomain()];
         //exclude password from update unless requested...
         list($change, $optional) = $this->hasChanged($record, $required, ['email', 'password'], ['name']);
+
         if ($editor && $change !== [] && empty($_POST['override'])) {
             $this->setCookie($data, [...$change, ...$optional], true);
             return $this->load('change', ['id' => $id]);

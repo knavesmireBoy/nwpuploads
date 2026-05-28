@@ -11,7 +11,7 @@ class User extends Entity
   const ADMIN = 16; // 00010000; edit user permissions
   const SUPER = 32; // 00100000; ; edit user permissions AND delete user (must ALSO be account_editor) ie 48
   const SUPERADMIN = 64; // 01000000 (use permissions : 80)
-  private $roleid;
+  protected $roleid;
   protected $table;
   protected $roletable;
   protected $userroletable;
@@ -80,7 +80,7 @@ class User extends Entity
     return '';
   }
 
-  private function validateRole($role)
+  protected function validateRole($role)
   {
     $details = $this->getDetails();
 
@@ -88,6 +88,7 @@ class User extends Entity
       return $role;
     }
     $admin = isApproved($details['role'], 'ADMIN');
+
     if ($admin && $this->id == $details['id']) {
       return $this->roleid;
     }
@@ -137,19 +138,8 @@ class User extends Entity
     return [];
   }
 
-  public function setRole(string $role, int $userid = 0)
+  public function setRole(string $role)
   {
-    $uid = $userid ? $userid : $this->id;
-    //if $action is true insert otherwise update
-    $action = empty($this->userroletable->find('userid', $uid));
-    //A) if validation fails return a key for query eg 'last' header(Location: /user/load/last)
-    $role = $this->validateRole($role);
-    if (in_array($role, $this->roles)) {
-      $this->userroletable->save(['userid' => $this->id, 'roleid' => $role], $action);
-      $this->roleid = $userid ? null : $role;
-      //B if validation succeeds set to empty string (or success?)
-      $role = '';
-    }
     return $role;
   }
 
@@ -203,8 +193,7 @@ class User extends Entity
     return $data;
   }
 
-
-  public function domainCheck($postdom)
+  public function findDomain($postdom)
   {
     return $this->find('clienttable', 'domain', $postdom);
   }
@@ -224,7 +213,9 @@ class User extends Entity
     $postdom = "$dom.$com";
     $details = $this->getDetails();
     $domain = $details['domain'];
+
     $data = $this->validateDom($cid, $postdata, $name, $postdom, $insertID);
+
     if ($cid && $domain && ($postdom !== $domain)) {
       reLocate('/user/load/domain');
     } else {
