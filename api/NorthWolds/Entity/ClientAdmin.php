@@ -70,11 +70,24 @@ class ClientAdmin extends User
     {
       $f = composer(negate(curry2('equals')('Admin')), curry2('getter')('id'));
       $roleid = $this->getRole($userid);
-      //list of roles determined by current user
-      //allow Admin to be listed only if that happens to be one of the few Admin roles
-      $cb = preg_match('/^Admin/', $roleid) ? 'identity' : $f;
       $roles = $this->fetchAllRoles($this->roles, [$roleid]);
-      return safeFilter($roles, $cb ?? 'identity');
+      return safeFilter($roles, $f);
+    }
+
+    public function presentList($userId){
+
+        $user = $this->table->find('id', $userId);
+        $user = $user[0] ?? null;
+        if (isset($user)) {
+            $users = $user->getUserIds();
+            if (isset($users[1])) {
+                foreach ($users as $k => $v) {
+                    $u = $this->table->find('id', $v)[0];
+                    $usr[$u->id] = $u->name;
+                }
+            }
+            return [$usr, []];
+        }
     }
   
 }

@@ -41,4 +41,9 @@ class Freelancer extends User
             'retour' => '_return2uploads.html.php'
         ];
     }
+
+    public function presentList($userId)
+    {
+        return [[], []];
+    }
 }

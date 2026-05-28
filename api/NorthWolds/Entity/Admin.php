@@ -65,12 +65,40 @@ class Admin extends User
 
     public function getRoles(int $userid, string $roleid)
     {
-        $f = composer(negate(curry2('equals')('Admin')), curry2('getter')('id'));
-        $roleid = $this->getRole($userid);
-        //list of roles determined by current user
-        //allow Admin to be listed only if that happens to be one of the few Admin roles
-        $cb = preg_match('/^Admin/', $roleid) ? 'identity' : $f;
-        $roles = $this->fetchAllRoles($this->roles, [$roleid]);
-        return safeFilter($roles, $cb ?? 'identity');
+        if (!$this->self) {
+            $roleid = $this->getRole($userid);
+            $roles = $this->fetchAllRoles($this->roles, [$roleid]);
+            return safeFilter($roles, 'identity');
+        }
+        return [];
+    }
+
+
+    public function presentList($userId, $prop = 'domain')
+    {
+        if ($this->self) {
+            return [[], []];
+        }
+        $clients = [];
+        $usr = [];
+        $all = $this->table->findAll();
+        foreach ($all as $k => $row) {
+            if (empty($row->client_id)) {
+                $usr[$k]['name'] =  $row->name;
+                $usr[$k]['id'] = $row->id;
+            } else {
+                $u = $this->table->find('id', $row->id)[0];
+                $details = $u->getDetails();
+                if (!empty($details)) {
+                    $clients[$k][$prop] = $details[$prop];
+                    $clients[$k]['name'] = $details['clientname'];
+                }
+            }
+        }
+        array_multisort(array_column($usr, 'name'), SORT_ASC, $usr);
+        array_multisort(array_column($clients, 'name'), SORT_ASC, $clients);
+        $users = toKeyValue($usr, 'id', 'name');
+        $client = toKeyValue($clients, $prop, 'name');
+        return [$users, $client];
     }
 }

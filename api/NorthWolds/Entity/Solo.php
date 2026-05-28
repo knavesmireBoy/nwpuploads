@@ -33,4 +33,8 @@ class Solo extends ClientAdmin
     {
         return false;
     }
+
+    public function presentList($userId){
+        return [[], []];
+}
 }

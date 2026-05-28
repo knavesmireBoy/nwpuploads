@@ -22,4 +22,8 @@ class Manager extends Employee
     {
         return '';
     }
+
+    public function presentList($userId){
+        return [[], []];
+}
 }

@@ -3,8 +3,6 @@
 namespace NorthWolds\Controllers;
 
 use \Ninja\DatabaseTable;
-use \NorthWolds\Users\Useroo;
-use \NorthWolds\Users\Admin;
 
 class User extends Presenter
 {
@@ -17,7 +15,7 @@ class User extends Presenter
         parent::__construct($table);
     }
 
-    protected function getSubUser($user)
+    protected function getSubUser(\NorthWolds\Entity\User $user)
     {
         $details = $user->getDetails();
         $entity = $this->getEntity($details);
@@ -319,24 +317,20 @@ class User extends Presenter
     public function edit($id, $args = [])
     {
         $details = $this->getPrivilege();
-        $punter = $this->table->find('id', $details['id'])[0];
-        $punter = $this->getSubUser($punter);
+        $punter = $this->table->find('id', $details['id']);
+        $punter = $this->getSubUser($punter[0] ?? null);
 
         $user = $this->table->find('id', $id);
-        $user = $user[0] ?? null;
-        $user = $this->getSubUser($user);
+        $user = $this->getSubUser($user[0] ?? null);
         $editor = ($id == $details['id']);
         $member = $editor ? $user : $punter;
 
         $member->setSelf($editor);
         $payload = $member->editPayload($id);
-        $roles = [];
         
-        list($_, $clients) = $this->presentList($_SESSION['role'], $id, $this->table, 'client_id');
+        list($_, $clients) = $member->presentList($id, 'client_id');
+        $roles = $user->getRoles($user->id, $details['role']);
 
-        if ($user) {
-            $roles = $user->getRoles($user->id, $details['role']);
-        }
         $id = $user->id ?? null;
         $vars = [
             'colleagues' => '',

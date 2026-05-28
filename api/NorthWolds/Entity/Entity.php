@@ -28,7 +28,6 @@ class Entity
         }
     }
 
-
     public function find(...$args)
     {
      return $this->fetch(...$args);
