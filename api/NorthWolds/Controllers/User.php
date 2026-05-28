@@ -328,7 +328,7 @@ class User extends Presenter
         $payload = $member->editPayload($id);
         
         list($_, $clients) = $member->presentList($id, 'client_id');
-        $roles = $user->getRoles($user->id, $details['role']);
+        $roles = $member->getRoles($user->id, $details['role']);
 
         $id = $user->id ?? null;
         $vars = [
