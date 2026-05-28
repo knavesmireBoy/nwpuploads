@@ -160,7 +160,9 @@ class User extends Presenter
 
     protected function getAccess($key)
     {
-        $lib = ['load' => 'This page is restricted to Account Administrators'];
+
+        $msg = 'This page is restricted to Account Administrators';
+        $lib = ['load' => $msg, 'add' => $msg, 'edit' => $msg, 'delete' => $msg];
         return $lib[$key] ?? '';
     }
 
