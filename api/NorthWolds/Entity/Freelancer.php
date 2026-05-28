@@ -23,11 +23,6 @@ class Freelancer extends User
         return [];
     }
 
-    public function validateDelete()
-    {
-        return '';
-    }
-
     public function edit()
     {
         return true;

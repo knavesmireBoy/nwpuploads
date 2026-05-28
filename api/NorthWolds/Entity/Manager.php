@@ -18,11 +18,6 @@ class Manager extends Employee
         }
     }
 
-    public function delete($id)
-    {
-        return '';
-    }
-
     public function presentList($userId)
     {
         return [[], []];

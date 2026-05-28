@@ -75,25 +75,9 @@ class User extends Entity
     return !empty($roles) ? safeFilter($roles, $cb) : $roles;
   }
 
-  public function validateDelete()
+  public function delete($id)
   {
-    $ids = $this->getUserIds();
-    $msg = '';
-    if (empty($ids)) {
-      return $msg;
-    }
-    $admin = isApproved($_SESSION['role'], 'ADMIN');
-    $roles = $this->getAllRoles($ids);
-    if (count($roles) === 1) {
-      $msg = $admin ? '_last' : 'last';
-    }
-    $adminroles = $this->getAdminRoles($roles);
-    if (!$msg && count($adminroles) === 1) {
-      $ids = array_column($adminroles, 'userid');
-      $key = in_array($this->id, $ids) ? 'lasteditor' : '';
-      $msg = $admin ? '_last' : $key;
-    }
-    return $msg;
+    return '';
   }
 
   private function validateRole($role)

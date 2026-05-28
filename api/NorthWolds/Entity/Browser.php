@@ -18,10 +18,6 @@ class Browser extends Employee
         }
     }
 
-    public function delete($id)
-    {
-        return '';
-    }
 
     public function presentList($userId)
     {

@@ -18,12 +18,8 @@ class Solo extends ClientAdmin
         }
     }
 
-    public function delete($id)
-    {
-        dump('cannot delete clientAdmin');
-    }
 
-    public function validateDelete()
+    public function delete($id)
     {
         return 'last';
     }
@@ -37,7 +33,7 @@ class Solo extends ClientAdmin
     {
         return [[], []];
     }
-    public function getRoles(int $userid, string $roleid)
+    public function getRoles(int $userid)
     {
         return [];
     }

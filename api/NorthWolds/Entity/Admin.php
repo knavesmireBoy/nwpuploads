@@ -18,13 +18,8 @@ class Admin extends User
         }
     }
 
-    public function delete($id, $subject)
-    {
 
-        dump('admin deleter...');
-    }
-
-    public function validateDelete()
+    public function delete($id)
     {
         return '_admin';
     }

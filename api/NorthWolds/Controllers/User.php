@@ -425,7 +425,7 @@ class User extends Presenter
         $user = $this->table->find('id', $id)[0];
         $user->setSelf($id == $details['id']);
         $user = $this->getSubUser($user);
-        $msg = $user->validateDelete();
+        $msg = $user->delete();
         if ($msg) {
             return reLocate($this->home . $msg);
         }

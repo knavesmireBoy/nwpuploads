@@ -17,11 +17,6 @@ class ClientAdmin extends User
             $this->userroletable->save(['userid' => $this->id, 'roleid' => $role]);
         }
     }
-    public function delete($id)
-    {
-        dump('me a deleter...');
-    }
-
     public function getUserIds($roles = null)
     {
         $users = $this->table->find('client_id', $this->client_id);
@@ -33,7 +28,7 @@ class ClientAdmin extends User
         return $res;
     }
 
-    public function validateDelete()
+    public function delete($id)
     {
         $msg = '';
         $ids = $this->getUserIds();
