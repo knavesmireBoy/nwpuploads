@@ -318,17 +318,20 @@ class User extends Presenter
 
     public function edit($id, $args = [])
     {
+        $details = $this->getPrivilege();
+        $punter = $this->table->find('id', $details['id']);
+        $punter = $this->getSubUser($punter);
+
         $user = $this->table->find('id', $id);
         $user = $user[0] ?? null;
-        
-        $details = $this->getPrivilege();
         $user = $this->getSubUser($user);
-        $user->setSelf($id == $details['id']);
+        $editor = ($id == $details['id']);
+        $member = $editor ? $user : $punter;
 
-        $payload = $user->editPayload($id);
-
+        $member->setSelf($editor);
+        $payload = $member->editPayload($id);
         $roles = [];
-        $editor = $id == $details['id'];
+        
         list($_, $clients) = $this->presentList($_SESSION['role'], $id, $this->table, 'client_id');
 
         if ($user) {

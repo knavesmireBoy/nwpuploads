@@ -19,7 +19,7 @@ if ($admin) { ?>
 	<p class="call"><a href="/client/load/">Edit Clients</a></p>
 <?php
 }
-//include $retour;
+include $retour;
 ?>
 
 </main>
