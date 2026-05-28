@@ -31,7 +31,7 @@ class Solo extends ClientAdmin
 
     public function edit()
     {
-        return false;
+        return true;
     }
 
     public function presentList($userId)
