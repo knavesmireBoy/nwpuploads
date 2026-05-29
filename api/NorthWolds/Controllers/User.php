@@ -254,6 +254,7 @@ class User extends Presenter
             $args = $error ? ['message' => $error] : [];
             $args['colleagues'] = $details['colleagues'] ?? false;
             $id = $details['id'];
+            dump($customVars);
             return $this->edit($id, [...$customVars, ...$args]);
         }
         return $this->displayer($details, $customVars, $owner, $error);
@@ -319,7 +320,7 @@ class User extends Presenter
         $member = $editor ? $user : $punter;
         $member->setSelf($editor);
         $payload = $member->editPayload($id);
-
+        
         list($_, $clients) = $member->presentList($id, 'client_id');
         $roles = $member->getRoles($user->id, $details['role']);
 
