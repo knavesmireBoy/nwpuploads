@@ -13,45 +13,13 @@ class Admin extends User
     /*
     protected function validateRole($role)
     {
-        $details = $this->getDetails();
+}
 
-        if (empty($details)) {
-            return $role;
-        }
-
-        if ($this->id == $details['id']) {
-            return $this->roleid;
-        }
-        $ids = $this->getUserIds();
-
-        if (in_array($role, $this->roles)) {
-            $roles = $this->getAllRoles($ids);
-
-            if (!empty($roles)) {
-                $i = array_search($role, $this->roles);
-                $j = array_search($this->roleid, $this->roles);
-
-                if (($i < $j)) { //demotion
-                    if (count($roles) === 1) {
-                        return  '_last';
-                    }
-                }
-            }
-        }
-        return $role;
-    }
-
-    public function setRole(string $role, int $userid = 0)
-    {
-        
-        return parent::setRole($role);
-    }
 */
     public function delete($id)
     {
         return '_admin';
     }
-
 
     public function editPayload($id = '')
     {
@@ -98,13 +66,12 @@ class Admin extends User
                 $j = array_search('Client Admin', $roles);
                 $roles = array_slice($roles, 0, $j);
                 $roles = $admin ? [...$roles, 'Admin'] : $roles;
-                
+
                 //discrepancy 'Client Admin' role must belong to a Client
                 if ($roleid === 'Client Admin') {
                     $this->userroletable->delete('id', $userid);
                     $this->userroletable->save(['userid' => $userid, 'roleid' => 'Client']);
                 }
-                    
             } else {
                 $roles = array_slice($roles, 0, count($roles) - 1);
             }
