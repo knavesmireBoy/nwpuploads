@@ -382,7 +382,7 @@ class User extends Presenter
         $key = '';
         $data = $_POST['data'];
         $user = $this->fetch('table', 'id', $id);
-        //roles may not be present
+        //list of roles (radio buttons) may not be present
         $role = isset($_POST['roles']) ? $_POST['roles'][0] : $user->getDetails('role');
         $clientID = $_POST['employer'] ?? $_POST['employed'] ?? null;
 
@@ -399,7 +399,7 @@ class User extends Presenter
         $data = [...$record, ...$required, ...$updateUserDomain()];
         //exclude password from update unless requested...
         list($change, $optional) = $this->hasChanged($record, $required, ['email', 'password'], ['name']);
-
+        dump([$editor, $change, empty($_POST['override'])]);
         if ($editor && $change !== [] && empty($_POST['override'])) {
             $this->setCookie($data, [...$change, ...$optional], true);
             return $this->load('change', ['id' => $id]);
