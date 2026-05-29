@@ -254,7 +254,7 @@ class User extends Entity
   {
     $role = $this->getRole();
 
-    if($prop === 'role') dump($role);
+   // if($prop === 'role') dump($role);
     $key = 'id';
     $client = null;
     $base = [$key => $this->id, 'name' => $this->name, 'email' => $this->email, 'role' => $role, 'client_id' => null];
@@ -264,6 +264,7 @@ class User extends Entity
       if ($prop === 'owner') {
         $key = 'ownerid';
       } else if ($prop) {
+        dump($this->{$prop} ?? 'goo');
         return isset($this->{$prop}) ? $this->{$prop} : [];
       }
       if ($this->client_id) {
