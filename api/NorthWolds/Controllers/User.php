@@ -399,10 +399,11 @@ class User extends Presenter
         $data = [...$record, ...$required, ...$updateUserDomain()];
         //exclude password from update unless requested...
         list($change, $optional) = $this->hasChanged($record, $required, ['email', 'password'], ['name']);
-        dump([$editor, $change, empty($_POST['override'])]);
+
         if ($editor && $change !== [] && empty($_POST['override'])) {
             $this->setCookie($data, [...$change, ...$optional], true);
-            return $this->load('change', ['id' => $id]);
+            reLocate("/user/loadbridge/change/$id");
+            //return $this->load('change', ['id' => $id]);
         }
         $user->updatePassword($required['password'] ?? '');
         unset($data['password']);
