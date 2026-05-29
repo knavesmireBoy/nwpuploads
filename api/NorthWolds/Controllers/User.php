@@ -254,7 +254,7 @@ class User extends Presenter
             $args = $error ? ['message' => $error] : [];
             $args['colleagues'] = $details['colleagues'] ?? false;
             $id = $details['id'];
-            return $this->edit($id, $args);
+            return $this->edit($id, [...$customVars, ...$args]);
         }
         return $this->displayer($details, $customVars, $owner, $error);
     }
