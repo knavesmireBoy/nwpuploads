@@ -250,7 +250,7 @@ class User extends Presenter
         $user = $this->table->find('email', $_SESSION['username'])[0];
         $user = $this->getSubUser($user);
 
-        if ($user->edit()) {
+        if ($user->edit(empty($customVars))) {
             $args = $error ? ['message' => $error] : [];
             $args['colleagues'] = $details['colleagues'] ?? false;
             $id = $details['id'];
@@ -341,7 +341,7 @@ class User extends Presenter
 
        // $this->setCookie($_COOKIE, ['name', 'email', 'password'], false);
 
-     //  if(!empty($args)) dump($args);
+       if(!empty($args)) dump($args);
         return [
             'template' => 'userform.html.php',
             'title' => 'Edit User',
