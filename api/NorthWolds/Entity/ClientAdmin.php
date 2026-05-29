@@ -13,22 +13,21 @@ class ClientAdmin extends User
 
     public function setRole(string $role, int $userid = 0)
     {
-      dump(999);
         $uid = $userid ? $userid : $this->id;
-      //if $action is true insert otherwise update
-      $action = empty($this->userroletable->find('userid', $uid));
-      //A) if validation fails return a key for query eg 'last' header(Location: /user/load/last)
-      $role = $this->validateRole($role);
-  
-      if (in_array($role, $this->roles)) {
-        $this->userroletable->save(['userid' => $this->id, 'roleid' => $role], $action);
-        $this->roleid = $userid ? null : $role;
-        //B if validation succeeds set to empty string
-        $role = '';
-      }
-      return $role;
+        //if $action is true insert otherwise update
+        $action = empty($this->userroletable->find('userid', $uid));
+        //A) if validation fails return a key for query eg 'last' header(Location: /user/load/last)
+        $role = $this->validateRole($role);
+
+        if (in_array($role, $this->roles)) {
+            $this->userroletable->save(['userid' => $this->id, 'roleid' => $role], $action);
+            $this->roleid = $userid ? null : $role;
+            //B if validation succeeds set to empty string
+            $role = '';
+        }
+        return $role;
     }
-  
+
     public function getUserIds($roles = null)
     {
         $users = $this->table->find('client_id', $this->client_id);
@@ -68,20 +67,21 @@ class ClientAdmin extends User
         return [
             'callroute' => '/user/add/',
             'calltext' => 'Add New User',
-            'selected' => true,//!!foregoes the drop down menu required by Admin
+            'selected' => true, //!!foregoes the drop down menu required by Admin
             'retour' => '_return2uploads.html.php'
         ];
     }
 
     public function getRoles(int $userid)
     {
-      $f = composer(negate(curry2('equals')('Admin')), curry2('getter')('id'));
-      $roleid = $this->getRole($userid);
-      $roles = $this->fetchAllRoles($this->roles, [$roleid]);
-      return safeFilter($roles, $f);
+        $f = composer(negate(curry2('equals')('Admin')), curry2('getter')('id'));
+        $roleid = $this->getRole($userid);
+        $roles = $this->fetchAllRoles($this->roles, [$roleid]);
+        return safeFilter($roles, $f);
     }
 
-    public function presentList($userId){
+    public function presentList($userId)
+    {
         $user = $this->table->find('id', $userId);
         $user = $user[0] ?? null;
         if (isset($user)) {
@@ -95,5 +95,4 @@ class ClientAdmin extends User
             return [$usr, []];
         }
     }
-  
 }
