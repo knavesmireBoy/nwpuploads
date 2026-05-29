@@ -382,11 +382,13 @@ class User extends Presenter
         $id = nullify($_POST['id']);
         $key = '';
         $data = $_POST['data'];
-        $role = $_POST['roles'][0] ?? '';
-
+        $user = $this->fetch('table', 'id', $id);
+        //roles may not be present
+        $role = isset($_POST['roles']) ? $_POST['roles'] : $user->roleid;
         $clientID = $_POST['employer'] ?? $_POST['employed'] ?? null;
 
-        $user = $this->fetch('table','id', $id);
+        $user = $this->getSubUser($user);
+
         $editor = intval($id) === $this->getPrivilege('id');
 
         $record = get_object_vars($user);

@@ -13,8 +13,6 @@ class ClientAdmin extends User
 
     public function setRole(string $role, int $userid = 0)
     {
-      
-      
       dump(999);
         $uid = $userid ? $userid : $this->id;
       //if $action is true insert otherwise update
