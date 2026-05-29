@@ -143,6 +143,7 @@ class User extends Entity
       if (!empty($this->roletable->find('id', $role))) {
           $this->userroletable->save(['userid' => $this->id, 'roleid' => $role]);
       }
+      return $role;
   }
 
   private function validateDom($cid, $dbrecord, $ename, $postdom, $insertID)
