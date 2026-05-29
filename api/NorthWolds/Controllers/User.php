@@ -246,7 +246,9 @@ class User extends Presenter
         $customVars = $this->getCustomVars($key, $vars);
         //if ($key === 'selected') dump($customVars);
         $owner = []; //prompt.html.php expects this from Uploader Controller
+
         unset($vars['id']);
+        //the occasional error may require ONE argument which is not an id
         $error = $this->query($key, ...$vars);
 
         $user = $this->table->find('email', $_SESSION['username'])[0];
@@ -386,7 +388,7 @@ class User extends Presenter
         $data = $_POST['data'];
         $user = $this->fetch('table', 'id', $id);
         //list of roles (radio buttons) may not be present
-        $role = isset($_POST['roles']) ? $_POST['roles'][0] : $user->getDetails('role');
+        $role = isset($_POST['roles']) ? $_POST['roles'][0] : $user->getDetails('roleid');
         $clientID = $_POST['employer'] ?? $_POST['employed'] ?? null;
 
         $user = $this->getSubUser($user);
