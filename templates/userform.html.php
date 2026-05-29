@@ -1,11 +1,13 @@
 <?php
+/*
 $selected = true;
 $domain = false;
 $setcookie = doSetCookie(false);
+*/
 $load = '/user/load/';
 ?>
 <h1><?= $pagehead; ?></h1>
-<?php if (!empty($message)) { ?>
+<?php if (isset($message)) { ?>
 	<p><?= $message; ?></p>
 <?php
 }
@@ -13,13 +15,13 @@ if (isset($callroute)) {
 	include TEMPLATE . '_call.html.php';
 }
 ?>
-<form action="<?= $action; ?>" method="post" name="usersform" class="<?= empty($class) ? 'details' : $class; ?>">
+<form action="<?= $action; ?>" method="post" name="usersform" class="<?= $class ?? 'details'; ?>">
 	<?php
 	if (isset($class) && preg_match("/override/", $class)) {
 	?>
 		<a href="<?= $load; ?>" class="cancel">X</a>
 	<?php }
-	if ($legend != '') { ?>
+	if (isset($legend)) { ?>
 		<p><?= $legend; ?></p>
 	<?php	}
 	?>

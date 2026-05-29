@@ -208,16 +208,11 @@ class User extends Presenter
         
         $admin = isApproved($details['role'], 'ADMIN');
         $defaultVars = [
-            'admin' => $admin,
-            'cadmin' => $cadmin,
-            'priv' => $details['role'],
-            'colleagues' => $details['colleagues'] ?? false,
             'prompt' => null,
             'users' => $users,
             'clients' => $clients,
             'usercount' => 0,
             'denied' => false,
-            'selected' => null,
             'nwpagency' => null,
             'pagehead' => 'Edit Details',
             'pageid' => 'admin_user',
@@ -225,7 +220,6 @@ class User extends Presenter
             'nwp_id' => null,
             'pagehead_role' => 'Admin',
             'error' => $error,
-            'message' => '',
             'nwproleorder' => ['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'],
             'owner' => $owner,
             'redirects' => ['pwd', 'domainflag', 'domainassoc', 'namechange'],
@@ -259,7 +253,7 @@ class User extends Presenter
 
         if($user->edit()){
             $args = $error ? ['message' => $error] : [];
-            $args['colleagues'] = $details['colleagues'];
+            $args['colleagues'] = $details['colleagues'] ?? false;
             $id = $details['id'];
             return $this->edit($id, $args);
         }
@@ -332,23 +326,17 @@ class User extends Presenter
 
         $id = $user->id ?? null;
         $vars = [
-            'colleagues' => '',
-            'priv' => $_SESSION['role'],
-            'editor' => $editor,
-            'class' => '',
-            'legend' => '',
-            'override' => '',
+            'button' => 'Edit User',
             'pagehead' => 'Edit User',
-            'message' => '',
             'action' => '/user/edit/',
             'id' => $id,
             'name' => $_COOKIE['name'] ?? $user->name ?? '',
             'email' => $_COOKIE['email'] ?? $user->email ?? '',
             'password' => $_COOKIE['password'] ?? '',
             'employer' => $user->client_id ?? '',
-            'button' => 'Edit User',
+            'editor' => $editor,
             'clientlist' => $clients,
-            'roles' => $roles
+            'roles' => $roles,
         ];
 
         $this->setCookie($_COOKIE, ['name', 'email', 'password'], false);

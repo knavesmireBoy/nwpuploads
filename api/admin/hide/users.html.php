@@ -33,7 +33,7 @@ if ($admin || isset($editor)) {
 }
 ?>
 <?php
-if (empty($selected)):
+if (!isset($selected)):
 ?>
 	<form action="" method="post" name="userform" class="choose">
 		<label for="user"></label><select id="user" name="user">
@@ -49,7 +49,7 @@ if (empty($selected)):
 		</select>
 		<input type="submit" name="action" value="Choose" />
 	</form>
-<?php elseif (preg_match("/client/i", $priv) || (isset($selected))):
+<?php else:
 ?>
 	<div class="clientgroup">
 		<?php

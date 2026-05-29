@@ -74,6 +74,7 @@ class ClientAdmin extends User
         return [
             'callroute' => '/user/add/',
             'calltext' => 'Add New User',
+            'selected' => true,//!!foregoes the drop down menu required by Admin
             'retour' => '_return2uploads.html.php'
         ];
     }
