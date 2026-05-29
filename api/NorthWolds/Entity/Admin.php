@@ -21,32 +21,32 @@ class Admin extends User
 
     protected function validateRole($role)
     {
-      $details = $this->getDetails();
-  
-      if (empty($details)) {
-        return $role;
-      }
-  
-      if ($this->id == $details['id']) {
-        return $this->roleid;
-      }
-      $ids = $this->getUserIds();
-      
-      if (in_array($role, $this->roles)) {
-        $roles = $this->getAllRoles($ids);
-  
-        if (!empty($roles)) {
-          $i = array_search($role, $this->roles);
-          $j = array_search($this->roleid, $this->roles);
-  
-          if (($i < $j)) { //demotion
-            if (count($roles) === 1) {
-              return  '_last';
-            }
-          }
+        $details = $this->getDetails();
+
+        if (empty($details)) {
+            return $role;
         }
-      }
-      return $role;
+
+        if ($this->id == $details['id']) {
+            return $this->roleid;
+        }
+        $ids = $this->getUserIds();
+
+        if (in_array($role, $this->roles)) {
+            $roles = $this->getAllRoles($ids);
+
+            if (!empty($roles)) {
+                $i = array_search($role, $this->roles);
+                $j = array_search($this->roleid, $this->roles);
+
+                if (($i < $j)) { //demotion
+                    if (count($roles) === 1) {
+                        return  '_last';
+                    }
+                }
+            }
+        }
+        return $role;
     }
 
 
@@ -93,8 +93,18 @@ class Admin extends User
     {
         if (!$this->self) {
             $roleid = $this->getRole($userid);
-            $roles = $this->fetchAllRoles($this->roles, [$roleid]);
-            return safeFilter($roles, 'identity');
+            $user = $this->fetch('table', 'id', $userid);
+            $roles = $this->roles;
+            $admin = $roleid === 'Admin';
+
+            if (!$user->client_id) {
+                $j = array_search('Client', $roles);
+                $roles = array_slice($roles, 0, $j + 1);
+                $roles = $admin ? [...$roles, 'Admin'] : $roles;
+            } else {
+                $roles = array_slice($roles, 0, count($roles) - 1);
+            }
+            return $this->fetchAllRoles($roles, [$roleid]);
         }
         return [];
     }

@@ -18,9 +18,6 @@ class ClientAdmin extends User
         }
     }
 */
-
-
-
     public function setRole(string $role, int $userid = 0)
     {
       $uid = $userid ? $userid : $this->id;
@@ -53,7 +50,6 @@ class ClientAdmin extends User
     {
         $msg = '';
         $ids = $this->getUserIds();
-
         $roles = $this->getAllRoles($ids);
         $adminroles = $this->getAdminRoles($roles);
         if (count($adminroles) === 1) {
