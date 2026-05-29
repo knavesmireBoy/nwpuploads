@@ -36,7 +36,6 @@ class Admin extends User
         }
     }
 
-
     public function loadPayload($selected = null)
     {
         $base =  [
@@ -69,17 +68,18 @@ class Admin extends User
 
                 //discrepancy 'Client Admin' role must belong to a Client
                 if ($roleid === 'Client Admin') {
-                    $this->userroletable->delete('id', $userid);
+                    $this->userroletable->delete('userid', $userid);
                     $this->userroletable->save(['userid' => $userid, 'roleid' => 'Client']);
+                    reLocate("/user/edit/$userid");
                 }
             } else {
-                $roles = array_slice($roles, 0, count($roles) - 1);
+                $j = array_search('Admin', $roles);
+                $roles = array_slice($roles, 0, $j);
             }
             return $this->fetchAllRoles($roles, [$roleid]);
         }
         return [];
     }
-
 
     public function presentList($userId, $prop = 'domain')
     {
