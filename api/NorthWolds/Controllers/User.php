@@ -20,8 +20,7 @@ class User extends Presenter
         $details = $user->getDetails();
         $entity = $this->getEntity($details);
         $this->table->setEntity($entity);
-        return $this->fetch('table','id', $user->id);
-        //return $this->table->find('id', $user->id)[0];
+        return $this->fetch('table', 'id', $user->id);
     }
 
     private function destroy($id)
@@ -101,12 +100,12 @@ class User extends Presenter
                         reLocate($this->home . $key);
                     }
                     if ($k) {
-                      //  reLocate($this->home . $key);
+                        //  reLocate($this->home . $key);
                     }
                     $data['email'] = "$name@$dom.$com";
                     return $data;
                 } else { //new
-                    $client = $this->fetch('clienttable','id', $cid);
+                    $client = $this->fetch('clienttable', 'id', $cid);
                     $domain = $client->domain;
                     $data['email'] = "$_name@$domain";
                     return $data;
@@ -118,7 +117,7 @@ class User extends Presenter
         };
     }
 
-    
+
 
     private function hasChanged($db, $post, $mandatory, $optionals)
     {
@@ -205,7 +204,7 @@ class User extends Presenter
 
         $payload = $user->loadPayload(isset($customVars['selected']));
         list($users, $clients) = $this->presentList($details['role'], $details['id'], $this->table);
-        
+
         $admin = isApproved($details['role'], 'ADMIN');
         $defaultVars = [
             'prompt' => null,
@@ -251,7 +250,7 @@ class User extends Presenter
         $user = $this->table->find('email', $_SESSION['username'])[0];
         $user = $this->getSubUser($user);
 
-        if($user->edit()){
+        if ($user->edit()) {
             $args = $error ? ['message' => $error] : [];
             $args['colleagues'] = $details['colleagues'] ?? false;
             $id = $details['id'];
@@ -263,7 +262,7 @@ class User extends Presenter
     public function add()
     {
         $details = $this->getPrivilege();
-        $user = $this->fetch('table','id', $details['id']);
+        $user = $this->fetch('table', 'id', $details['id']);
         $roles = $user->getRoles($user->id);
         return $this->edit(0, [
             'action' => "user/add/",
@@ -320,7 +319,7 @@ class User extends Presenter
         $member = $editor ? $user : $punter;
         $member->setSelf($editor);
         $payload = $member->editPayload($id);
-        
+
         list($_, $clients) = $member->presentList($id, 'client_id');
         $roles = $member->getRoles($user->id, $details['role']);
 
@@ -359,7 +358,7 @@ class User extends Presenter
             return $item;
         });
         $role = $_POST['roles'][0] ?? 'Browser';
-        
+
         if (count($required) < 3) {
             reLocate($this->home . "/");
         }
@@ -388,8 +387,8 @@ class User extends Presenter
         $clientID = $_POST['employer'] ?? $_POST['employed'] ?? null;
 
         $user = $this->getSubUser($user);
-
         $editor = intval($id) === $this->getPrivilege('id');
+        $user->setSelf($editor);
 
         $record = get_object_vars($user);
         $required = array_filter($data, fn($item) => $item);
@@ -442,6 +441,4 @@ class User extends Presenter
         }
         reLocate($this->home);
     }
-
-
 }

@@ -95,17 +95,16 @@ class Admin extends User
             $admin = $roleid === 'Admin';
 
             if (!$user->client_id) {
-                //$j = array_search('Client', $roles);
                 $j = array_search('Client Admin', $roles);
-                $roles = array_slice($roles, 0, $j + 1);
+                $roles = array_slice($roles, 0, $j);
                 $roles = $admin ? [...$roles, 'Admin'] : $roles;
-                /*
+                
                 //discrepancy 'Client Admin' role must belong to a Client
                 if ($roleid === 'Client Admin') {
                     $this->userroletable->delete('id', $userid);
                     $this->userroletable->save(['userid' => $userid, 'roleid' => 'Client']);
                 }
-                    */
+                    
             } else {
                 $roles = array_slice($roles, 0, count($roles) - 1);
             }
