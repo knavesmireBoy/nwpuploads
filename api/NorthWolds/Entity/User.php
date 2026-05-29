@@ -75,6 +75,7 @@ class User extends Entity
     return !empty($roles) ? safeFilter($roles, $cb) : $roles;
   }
 
+  //sort of validate delete if it returns anything other than a empty string you cannot delete
   public function delete($id)
   {
     return '';
