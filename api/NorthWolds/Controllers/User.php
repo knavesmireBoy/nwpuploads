@@ -254,7 +254,7 @@ class User extends Presenter
             $args = $error ? ['message' => $error] : [];
             $args['colleagues'] = $details['colleagues'] ?? false;
             $id = $details['id'];
-            if(!empty($customVars)) dump($customVars);
+           // if(!empty($customVars)) dump($customVars);
             return $this->edit($id, [...$customVars, ...$args]);
         }
         return $this->displayer($details, $customVars, $owner, $error);
@@ -339,8 +339,9 @@ class User extends Presenter
             'roles' => $roles,
         ];
 
-        $this->setCookie($_COOKIE, ['name', 'email', 'password'], false);
+       // $this->setCookie($_COOKIE, ['name', 'email', 'password'], false);
 
+     //  if(!empty($args)) dump($args);
         return [
             'template' => 'userform.html.php',
             'title' => 'Edit User',
