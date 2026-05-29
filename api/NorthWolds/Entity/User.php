@@ -11,7 +11,7 @@ class User extends Entity
   const ADMIN = 16; // 00010000; edit user permissions
   const SUPER = 32; // 00100000; ; edit user permissions AND delete user (must ALSO be account_editor) ie 48
   const SUPERADMIN = 64; // 01000000 (use permissions : 80)
-  protected $roleid;
+  protected $roleid;//NOTE ::getDetails returns a role field BUT property is $roleid
   protected $table;
   protected $roletable;
   protected $userroletable;
