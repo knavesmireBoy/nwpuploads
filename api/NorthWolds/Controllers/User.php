@@ -383,7 +383,7 @@ class User extends Presenter
         $data = $_POST['data'];
         $user = $this->fetch('table', 'id', $id);
         //roles may not be present
-        $role = isset($_POST['roles']) ? $_POST['roles'][0] : $user->roleid;
+        $role = isset($_POST['roles']) ? $_POST['roles'][0] : $user->getDetails('role');
         $clientID = $_POST['employer'] ?? $_POST['employed'] ?? null;
 
         $user = $this->getSubUser($user);
