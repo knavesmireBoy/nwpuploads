@@ -29,7 +29,7 @@ class User extends Presenter
         reLocate($this->home);
     }
 
-    private function query($key, $arg)
+    private function query($key, $arg = '')
     {
         $lib = [
             'nousers' => "<Unable to find any users",
