@@ -11,15 +11,14 @@ class Solo extends ClientAdmin
         parent::__construct(...$args);
     }
 
-
     public function delete($id)
     {
         return 'last';
     }
 
-    public function edit()
+    public function edit($flag = true)
     {
-        return true;
+        return $flag;
     }
 
     public function presentList($userId)
