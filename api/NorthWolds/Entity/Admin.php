@@ -7,10 +7,10 @@ class Admin extends User
 
     public function __construct(...$args)
     {
-
         parent::__construct(...$args);
     }
 
+    /*
     protected function validateRole($role)
     {
         $details = $this->getDetails();
@@ -41,6 +41,12 @@ class Admin extends User
         return $role;
     }
 
+    public function setRole(string $role, int $userid = 0)
+    {
+        
+        return parent::setRole($role);
+    }
+*/
     public function delete($id)
     {
         return '_admin';
@@ -89,7 +95,7 @@ class Admin extends User
             $admin = $roleid === 'Admin';
 
             if (!$user->client_id) {
-              //$j = array_search('Client', $roles);
+                //$j = array_search('Client', $roles);
                 $j = array_search('Client Admin', $roles);
                 $roles = array_slice($roles, 0, $j + 1);
                 $roles = $admin ? [...$roles, 'Admin'] : $roles;

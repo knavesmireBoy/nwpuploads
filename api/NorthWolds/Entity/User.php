@@ -142,6 +142,7 @@ class User extends Entity
   {
       if (!empty($this->roletable->find('id', $role))) {
           $this->userroletable->save(['userid' => $this->id, 'roleid' => $role]);
+          return '';//ok
       }
       return $role;
   }

@@ -4,14 +4,10 @@ namespace NorthWolds\Entity;
 
 class Freelancer extends User
 {
-
     public function __construct(...$args)
     {
-
         parent::__construct(...$args);
     }
-
-
 
     public function getUserIds($roles = null)
     {
