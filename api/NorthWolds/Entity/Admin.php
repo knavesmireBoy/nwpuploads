@@ -69,7 +69,7 @@ class Admin extends User
                 //discrepancy 'Client Admin' role must belong to a Client
                 if ($roleid === 'Client Admin') {
                     $this->userroletable->delete('userid', $userid);
-                    $this->userroletable->save(['userid' => $userid, 'roleid' => 'Client']);
+                    $this->userroletable->save(['userid' => $userid, 'roleid' => 'Client'], true);
                     reLocate("/user/edit/$userid");
                 }
             } else {
