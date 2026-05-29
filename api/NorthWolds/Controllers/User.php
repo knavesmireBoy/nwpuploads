@@ -340,7 +340,6 @@ class User extends Presenter
         ];
 
        // $this->setCookie($_COOKIE, ['name', 'email', 'password'], false);
-
       // if(!empty($args)) dump($args);
         return [
             'template' => 'userform.html.php',
@@ -385,7 +384,7 @@ class User extends Presenter
         $data = $_POST['data'];
         $user = $this->fetch('table', 'id', $id);
         //list of roles (radio buttons) may not be present
-        $role = isset($_POST['roles']) ? $_POST['roles'][0] : $user->getDetails('role');
+        $role = isset($_POST['roles']) ? $_POST['roles'][0] : $user->getDetails('roleid');
         $clientID = $_POST['employer'] ?? $_POST['employed'] ?? null;
 
         $user = $this->getSubUser($user);

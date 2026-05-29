@@ -264,7 +264,7 @@ class User extends Entity
       if ($prop === 'owner') {
         $key = 'ownerid';
       } else if ($prop) {
-       dump([$this->{$prop} ?? 'goo', $this->roleid]);
+     //  dump([$this->{$prop} ?? 'goo', $this->roleid]);
         return isset($this->{$prop}) ? $this->{$prop} : [];
       }
       if ($this->client_id) {
