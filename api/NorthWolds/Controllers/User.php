@@ -29,7 +29,7 @@ class User extends Presenter
         reLocate($this->home);
     }
 
-    private function query($key)
+    private function query($key, $arg)
     {
         $lib = [
             'nousers' => "<Unable to find any users",
@@ -47,6 +47,7 @@ class User extends Presenter
             'editno' => 'You do not have the required privilges to edit this user details.',
             'read' => 'You may view but not edit this user details.',
 
+            'undef' => "Missing property: $arg",
             '_admin' => "You cannot delete an administrator.",
             "lasteditor" => "There must be at least one administrator role, please assign another user before removing credentials from the database.",
             "lastadmin" => "There must be at least one administrator role, please promote another user to the admin role.",
@@ -234,9 +235,9 @@ class User extends Presenter
         ];
     }
 
-    public function loadbridge($key, $id)
+    public function loadbridge($key, $id, ...$args)
     {
-        return $this->load($key, ['id' => $id]);
+        return $this->load($key, ['id' => $id, ...$args]);
     }
 
     public function load(string $key = '', array $vars = [])
@@ -245,7 +246,8 @@ class User extends Presenter
         $customVars = $this->getCustomVars($key, $vars);
         //if ($key === 'selected') dump($customVars);
         $owner = []; //prompt.html.php expects this from Uploader Controller
-        $error = $this->query($key);
+        unset($vars['id']);
+        $error = $this->query($key, ...$vars);
 
         $user = $this->table->find('email', $_SESSION['username'])[0];
         $user = $this->getSubUser($user);
@@ -339,7 +341,7 @@ class User extends Presenter
             'roles' => $roles,
         ];
 
-       // $this->setCookie($_COOKIE, ['name', 'email', 'password'], false);
+        $this->setCookie($_COOKIE, ['name', 'email', 'password'], false);
       // if(!empty($args)) dump($args);
         return [
             'template' => 'userform.html.php',
@@ -384,7 +386,7 @@ class User extends Presenter
         $data = $_POST['data'];
         $user = $this->fetch('table', 'id', $id);
         //list of roles (radio buttons) may not be present
-        $role = isset($_POST['roles']) ? $_POST['roles'][0] : $user->getDetails('roleid');
+        $role = isset($_POST['roles']) ? $_POST['roles'][0] : $user->getDetails('role');
         $clientID = $_POST['employer'] ?? $_POST['employed'] ?? null;
 
         $user = $this->getSubUser($user);

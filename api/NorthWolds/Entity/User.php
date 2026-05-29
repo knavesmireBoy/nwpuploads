@@ -140,11 +140,11 @@ class User extends Entity
 
   public function setRole(string $role, int $userid = 0)
   {
-      if (!empty($this->roletable->find('id', $role))) {
-          $this->userroletable->save(['userid' => $this->id, 'roleid' => $role]);
-          return '';//ok
-      }
-      return $role;
+    if (!empty($this->roletable->find('id', $role))) {
+      $this->userroletable->save(['userid' => $this->id, 'roleid' => $role]);
+      return ''; //ok
+    }
+    return $role;
   }
 
   private function validateDom($cid, $dbrecord, $ename, $postdom, $insertID)
@@ -253,8 +253,6 @@ class User extends Entity
   public function getDetails($prop = '')
   {
     $role = $this->getRole();
-
-   // if($prop === 'role') dump($role);
     $key = 'id';
     $client = null;
     $base = [$key => $this->id, 'name' => $this->name, 'email' => $this->email, 'role' => $role, 'client_id' => null];
@@ -264,8 +262,13 @@ class User extends Entity
       if ($prop === 'owner') {
         $key = 'ownerid';
       } else if ($prop) {
-     //  dump([$this->{$prop} ?? 'goo', $this->roleid]);
-        return isset($this->{$prop}) ? $this->{$prop} : [];
+        $pass = isset($this->{$prop});
+        if ($pass) {
+          return $this->{$prop};
+        } else {
+          $id = $this->id;
+          reLocate("/user/loadbridge/undef/$id/$prop");
+        }
       }
       if ($this->client_id) {
         $client = $this->fetch('clienttable', 'id', $this->client_id);
