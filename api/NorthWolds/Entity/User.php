@@ -138,9 +138,11 @@ class User extends Entity
     return [];
   }
 
-  public function setRole(string $role)
+  public function setRole(string $role, int $userid = 0)
   {
-    return $role;
+      if (!empty($this->roletable->find('id', $role))) {
+          $this->userroletable->save(['userid' => $this->id, 'roleid' => $role]);
+      }
   }
 
   private function validateDom($cid, $dbrecord, $ename, $postdom, $insertID)

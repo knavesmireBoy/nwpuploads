@@ -11,14 +11,6 @@ class Admin extends User
         parent::__construct(...$args);
     }
 
-    public function setRole(string $role, int $userid = 0)
-    {
-        if (!empty($this->roletable->find('id', $role))) {
-            $this->userroletable->save(['userid' => $this->id, 'roleid' => $role]);
-        }
-    }
-
-
     protected function validateRole($role)
     {
         $details = $this->getDetails();
@@ -48,7 +40,6 @@ class Admin extends User
         }
         return $role;
     }
-
 
     public function delete($id)
     {

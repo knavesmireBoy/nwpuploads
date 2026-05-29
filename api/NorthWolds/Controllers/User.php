@@ -386,7 +386,7 @@ class User extends Presenter
 
         $clientID = $_POST['employer'] ?? $_POST['employed'] ?? null;
 
-        $user = $this->table->find('id', $id)[0];
+        $user = $this->fetch('table','id', $id);
         $editor = intval($id) === $this->getPrivilege('id');
 
         $record = get_object_vars($user);
