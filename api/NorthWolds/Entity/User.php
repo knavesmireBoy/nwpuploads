@@ -253,6 +253,8 @@ class User extends Entity
   public function getDetails($prop = '')
   {
     $role = $this->getRole();
+
+    if($prop === 'role') dump($role);
     $key = 'id';
     $client = null;
     $base = [$key => $this->id, 'name' => $this->name, 'email' => $this->email, 'role' => $role, 'client_id' => null];

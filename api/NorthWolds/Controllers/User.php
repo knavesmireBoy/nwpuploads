@@ -410,7 +410,7 @@ class User extends Presenter
         $user->updatePassword($required['password'] ?? '');
         unset($data['password']);
         $user = $this->table->save($data);
-
+        if(is_array($role)) dump($role);
         $key = $user->setRole($role); //UPDATE role here; it may trigger an error message
         reLocate($this->home . strtolower($key));
     }
