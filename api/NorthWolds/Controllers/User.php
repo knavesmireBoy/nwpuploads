@@ -341,7 +341,7 @@ class User extends Presenter
 
        // $this->setCookie($_COOKIE, ['name', 'email', 'password'], false);
 
-       if(!empty($args)) dump($args);
+      // if(!empty($args)) dump($args);
         return [
             'template' => 'userform.html.php',
             'title' => 'Edit User',
