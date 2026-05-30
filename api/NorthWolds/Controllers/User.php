@@ -253,8 +253,10 @@ class User extends Presenter
         unset($vars['id']);
         //the occasional error may require ONE argument which is not an id
         $error = $this->query($key, ...$vars);
-
-        dump([$vars, $error]);
+        if(!empty($vars)){
+            dump([$vars, $error]);
+        }
+      
 
         $user = $this->table->find('email', $_SESSION['username'])[0];
         $user = $this->getSubUser($user);
