@@ -270,8 +270,8 @@ class User extends Presenter
     public function add()
     {
         $details = $this->getPrivilege();
-        $user = $this->fetch('table', 'id', $details['id']);
-        $roles = $user->getRoles($user->id);
+        $punter = $this->fetch('table', 'id', $details['id']);
+        $roles = $punter->getRoles($punter->id);
         return $this->edit(0, [
             'action' => "user/add/",
             'pagehead' => 'Add User',
@@ -318,18 +318,20 @@ class User extends Presenter
     public function edit($id, $args = [])
     {
         $details = $this->getPrivilege();
-        $punter = $this->table->find('id', $details['id']);
-        $punter = $this->getSubUser($punter[0] ?? null);
+        $punter = $this->fetch('table','id', $details['id']);
+        $punter = $this->getSubUser($punter);
 
-        $user = $this->table->find('id', $id);
-        $user = $this->getSubUser($user[0] ?? null);
+        $user = $this->fetch('table','id', $id);
+        $user = $this->getSubUser($user);
         $editor = ($id == $details['id']);
+
         $member = $editor ? $user : $punter;
+
         $member->setSelf($editor);
         $payload = $member->editPayload($id);
 
         list($_, $clients) = $member->presentList($id, 'client_id');
-        $roles = $member->getRoles($user->id, $details['role']);
+        $roles = $member->getRoles($user->id);
 
         $id = $user->id ?? null;
         $vars = [
@@ -365,13 +367,13 @@ class User extends Presenter
         $required = array_filter($data, function ($item) {
             return $item;
         });
-        $role = $_POST['roles'][0] ?? 'Browser';
+        $role = $_POST['roles'][0] ?? 'Client';
 
         if (count($required) < 3) {
             reLocate($this->home . "/");
         }
         $userId = $this->getLastInsertId($this->table->save([...$data, 'client_id' => nullify($client_id)], true));
-        $user = $this->table->find('id', $userId)[0];
+        $user = $this->fetch('table','id', $userId);
 
         $user->updatePassword($data['password']);
 

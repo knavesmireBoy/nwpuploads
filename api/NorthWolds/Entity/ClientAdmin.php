@@ -20,7 +20,6 @@ class ClientAdmin extends User
         if (in_array($role, $this->roles)) {
             $roles = $this->getAllRoles($ids);
             $roles = $this->getAdminRoles($roles);
-
             if (!empty($roles)) {
                 $i = array_search($role, $this->roles);
                 $j = array_search($this->roleid, $this->roles);
