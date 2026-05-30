@@ -403,7 +403,7 @@ class User extends Presenter
 
         $user = $this->getSubUser($user);
         $editor = $id == $this->getPrivilege('id');
-
+        dump([$id, $this->getPrivilege('id')]);
         $user->setSelf($editor);
 
         $record = get_object_vars($user);
