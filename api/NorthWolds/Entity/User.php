@@ -173,7 +173,7 @@ class User extends Entity
     return $this->find('clienttable', 'domain', $postdom);
   }
 
-  protected function parseEmail($e)
+  public function parseEmail($e)
   {
     $f = composer(partial('substr', $e, 0), curry2('strpos')('@'));
     $name = $f($e);
