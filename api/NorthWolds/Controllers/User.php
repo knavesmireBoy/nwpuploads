@@ -425,6 +425,8 @@ class User extends Presenter
         $user = $this->table->save($data);
         if(is_array($role)) dump($role[0]);
         $key = $user->setRole($role, $admin ? '_last' : 'lastadmin'); //UPDATE role here; it may trigger an error message
+
+        dump($this->home . strtolower($key));
         reLocate($this->home . strtolower($key));
     }
 
