@@ -394,7 +394,6 @@ class User extends Presenter
 
         $user = $this->getSubUser($user);
         $editor = $id == $this->getPrivilege('id');
-        dump($editor);
         $user->setSelf($editor);
 
         $record = get_object_vars($user);
@@ -415,7 +414,8 @@ class User extends Presenter
         $user->updatePassword($required['password'] ?? '');
         unset($data['password']);
         $user = $this->table->save($data);
-        
+        $user = $this->getSubUser($user);
+        $user->setSelf($editor);
         $key = $user->setRole($role, $admin ? '_last' : 'lastadmin'); //UPDATE role here; it may trigger an error message
 
         reLocate($this->home . strtolower($key));
