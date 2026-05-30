@@ -69,7 +69,6 @@ class User extends Presenter
 
     protected function getCustomVars($key, $data)
     {
-        //if($key === 'confirm') dump($data);
         $ret = [];
         $id = $data['id'] ?? '';
         $users = $key === 'selected' ? $data : [];
@@ -247,17 +246,11 @@ class User extends Presenter
     {
         $details = $this->getPrivilege();
         $customVars = $this->getCustomVars($key, $vars);
-        //if ($key === 'selected') dump($customVars);
         $owner = []; //prompt.html.php expects this from Uploader Controller
 
         unset($vars['id']);
         //the occasional error may require ONE argument which is not an id
         $error = $this->query($key, ...$vars);
-        if(!empty($vars)){
-            dump([$vars, $error]);
-        }
-      
-
         $user = $this->table->find('email', $_SESSION['username'])[0];
         $user = $this->getSubUser($user);
 
@@ -265,7 +258,6 @@ class User extends Presenter
             $args = $error ? ['message' => $error] : [];
             $args['colleagues'] = $details['colleagues'] ?? false;
             $id = $details['id'];
-           // if(!empty($customVars)) dump($customVars);
             return $this->edit($id, [...$customVars, ...$args]);
         }
         return $this->displayer($details, $customVars, $owner, $error);
@@ -353,7 +345,6 @@ class User extends Presenter
         ];
 
         $this->setCookie($_COOKIE, ['name', 'email', 'password'], false);
-      // if(!empty($args)) dump($args);
         return [
             'template' => 'userform.html.php',
             'title' => 'Edit User',
@@ -403,7 +394,7 @@ class User extends Presenter
 
         $user = $this->getSubUser($user);
         $editor = $id == $this->getPrivilege('id');
-        dump([$id, $this->getPrivilege('id')]);
+        dump($editor);
         $user->setSelf($editor);
 
         $record = get_object_vars($user);
@@ -424,7 +415,7 @@ class User extends Presenter
         $user->updatePassword($required['password'] ?? '');
         unset($data['password']);
         $user = $this->table->save($data);
-        if(is_array($role)) dump($role[0]);
+        
         $key = $user->setRole($role, $admin ? '_last' : 'lastadmin'); //UPDATE role here; it may trigger an error message
 
         reLocate($this->home . strtolower($key));
