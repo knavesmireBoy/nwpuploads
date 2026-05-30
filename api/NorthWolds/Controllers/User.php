@@ -402,7 +402,8 @@ class User extends Presenter
         $clientID = $_POST['employer'] ?? $_POST['employed'] ?? null;
 
         $user = $this->getSubUser($user);
-        $editor = intval($id) === $this->getPrivilege('id');
+        $editor = $id == $this->getPrivilege('id');
+
         $user->setSelf($editor);
 
         $record = get_object_vars($user);
@@ -426,7 +427,6 @@ class User extends Presenter
         if(is_array($role)) dump($role[0]);
         $key = $user->setRole($role, $admin ? '_last' : 'lastadmin'); //UPDATE role here; it may trigger an error message
 
-        dump($this->home . strtolower($key));
         reLocate($this->home . strtolower($key));
     }
 

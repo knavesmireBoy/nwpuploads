@@ -25,7 +25,7 @@ class ClientAdmin extends User
                 $j = array_search($this->roleid, $this->roles);
                 if ($i < $j) { //demotion
                     if (count($roles) === 1) {
-                        return $this->self ? 'lastadmin' : '_lastadmin';
+                        return $this->self ? 'lastadminrole' : '_lastadminrole';
                     }
                 }
             }
