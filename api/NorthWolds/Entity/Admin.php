@@ -10,12 +10,25 @@ class Admin extends User
         parent::__construct(...$args);
     }
 
-    /*
+    //discrepancy 'Client Admin' role must belong to a Client; maybe a user left an organisation in which case their status is of a generic "User" but rolewise known as a Client
+    private function demote($userid, $roleid)
+    {
+        if ($roleid === 'Client Admin') {
+            $this->userroletable->delete('userid', $userid);
+            $this->userroletable->save(['userid' => $userid, 'roleid' => 'Client'], true);
+            reLocate("/user/edit/$userid");
+        }
+    }
+
     protected function validateRole($role)
     {
-}
+        $details = $this->getDetails();
+        if (empty($details)) {
+            return $role;
+        }
+        return $this->roleid;
+    }
 
-*/
     public function delete($id)
     {
         return '_admin';
@@ -65,13 +78,7 @@ class Admin extends User
                 $j = array_search('Client Admin', $roles);
                 $roles = array_slice($roles, 0, $j);
                 $roles = $admin ? [...$roles, 'Admin'] : $roles;
-
-                //discrepancy 'Client Admin' role must belong to a Client
-                if ($roleid === 'Client Admin') {
-                    $this->userroletable->delete('userid', $userid);
-                    $this->userroletable->save(['userid' => $userid, 'roleid' => 'Client'], true);
-                    reLocate("/user/edit/$userid");
-                }
+                $this->demote($userid, $roleid);
             } else {
                 $j = array_search('Admin', $roles);
                 $roles = array_slice($roles, 0, $j);

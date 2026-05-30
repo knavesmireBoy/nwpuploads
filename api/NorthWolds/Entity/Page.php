@@ -29,7 +29,7 @@ class Page
 
     public function setName($name)
     {
-       // return $this->table->setName($name);
+       //return $this->table->setName($name);
     }
 
     public function getSlotEntity()

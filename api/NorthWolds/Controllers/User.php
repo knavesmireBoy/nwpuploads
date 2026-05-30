@@ -50,10 +50,13 @@ class User extends Presenter
             'undef' => "Missing property: $arg",
             '_admin' => "You cannot delete an administrator.",
             "lasteditor" => "There must be at least one administrator role, please assign another user before removing credentials from the database.",
-            "lastadmin" => "There must be at least one administrator role, please promote another user to the admin role.",
+            "lastadminrole" => "There must be at least one administrator role, please promote another user to the admin role before demoting your status.",
+            '_lastadminrole' => "To demote the admin status of this user you must promote another user to the admin role.",
+            
             'last' => "Only the database administrator can delete this user.",
             "_denied" => "Cannot (re)move a user with a client admin role.",
             '_last' => "To remove this final user, please delete the client instead.",
+          
             'domain' => 'Only the database administrator can change the domain of an email address.',
             '_domain' => 'Set the drop down menu to empty when changing the domain. Change the domain of the client to update the domain for all members.',
             'traitor' => 'To disassociate this user please supply a new email address.',
@@ -383,6 +386,7 @@ class User extends Presenter
 
     public function editSubmit()
     {
+        $admin = $_SESSION['role'] === 'Admin';
         $id = nullify($_POST['id']);
         $key = '';
         $data = $_POST['data'];
@@ -398,7 +402,7 @@ class User extends Presenter
         $record = get_object_vars($user);
         $required = array_filter($data, fn($item) => $item);
 
-        $updateUserDomain = $this->updateUserDomainFactory($_SESSION['role'] === 'Admin' ? '_domain' : 'domain', $user, nullify($clientID), $data, $record);
+        $updateUserDomain = $this->updateUserDomainFactory($admin ? '_domain' : 'domain', $user, nullify($clientID), $data, $record);
 
         //will exit here if domain doesn't validate
         $data = [...$record, ...$required, ...$updateUserDomain()];
@@ -414,7 +418,7 @@ class User extends Presenter
         unset($data['password']);
         $user = $this->table->save($data);
         if(is_array($role)) dump($role[0]);
-        $key = $user->setRole($role); //UPDATE role here; it may trigger an error message
+        $key = $user->setRole($role, $admin ? '_last' : 'lastadmin'); //UPDATE role here; it may trigger an error message
         reLocate($this->home . strtolower($key));
     }
 

@@ -4,6 +4,7 @@ namespace NorthWolds\Entity;
 
 class User extends Entity
 {
+  /*
   const BROWSER = 1; // 00000001
   const MANAGER = 2; // 00000010
   const CLIENT = 4; // 00000100
@@ -11,14 +12,15 @@ class User extends Entity
   const ADMIN = 16; // 00010000; edit user permissions
   const SUPER = 32; // 00100000; ; edit user permissions AND delete user (must ALSO be account_editor) ie 48
   const SUPERADMIN = 64; // 01000000 (use permissions : 80)
-  protected $roleid;//NOTE ::getDetails returns a role field BUT property is $roleid
+  public $permissions;
+*/
+  protected $roleid; //NOTE ::getDetails returns a role field BUT property is $roleid
   protected $table;
   protected $roletable;
   protected $userroletable;
   protected $clienttable;
   protected $roles = ['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'];
   protected $self;
-  //public $permissions;
   public $password;
   public $id;
   public $name;
@@ -75,40 +77,8 @@ class User extends Entity
     return !empty($roles) ? safeFilter($roles, $cb) : $roles;
   }
 
-  //sort of validate delete if it returns anything other than a empty string you cannot delete
-  public function delete($id)
-  {
-    return '';
-  }
-
   protected function validateRole($role)
   {
-    $details = $this->getDetails();
-
-    if (empty($details)) {
-      return $role;
-    }
-    $admin = isApproved($details['role'], 'ADMIN');
-
-    if ($admin && $this->id == $details['id']) {
-      return $this->roleid;
-    }
-    $ids = $this->getUserIds();
-    if (in_array($role, $this->roles)) {
-      $roles = $this->getAllRoles($ids);
-      $roles = $admin ? $roles : $this->getAdminRoles($roles);
-
-      if (!empty($roles)) {
-        $i = array_search($role, $this->roles);
-        $j = array_search($this->roleid, $this->roles);
-
-        if (($i < $j) && preg_match('/admin/i', $this->roleid)) { //demotion
-          if (count($roles) === 1) {
-            return $admin ? '_last' : 'lastadmin';
-          }
-        }
-      }
-    }
     return $role;
   }
 
@@ -139,7 +109,7 @@ class User extends Entity
     return [];
   }
 
-  public function setRole(string $role, int $userid = 0)
+  public function setRole(string $role)
   {
     if (!empty($this->roletable->find('id', $role))) {
       $this->userroletable->save(['userid' => $this->id, 'roleid' => $role]);
@@ -148,7 +118,7 @@ class User extends Entity
     return $role;
   }
 
-  private function validateDom($cid, $dbrecord, $ename, $postdom, $insertID)
+  protected function validateDom($cid, $dbrecord, $ename, $postdom, $insertID)
   {
     $client = $cid ? $this->clienttable->find('id', $cid) : [];
     $key = '';
@@ -198,12 +168,12 @@ class User extends Entity
     return $data;
   }
 
-  public function findDomain($postdom)
+  protected function findDomain($postdom)
   {
     return $this->find('clienttable', 'domain', $postdom);
   }
 
-  public function parseEmail($e)
+  protected function parseEmail($e)
   {
     $f = composer(partial('substr', $e, 0), curry2('strpos')('@'));
     $name = $f($e);
@@ -301,5 +271,10 @@ class User extends Entity
       return $roles ? $ret : $this->getAdminRoles($ret);
     }
     return $res;
+  }
+  //sort of validate delete; if it returns anything other than a empty string you cannot delete
+  public function delete($id)
+  {
+    return '';
   }
 }

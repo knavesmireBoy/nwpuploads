@@ -4,7 +4,7 @@ so we extend ClientAdmin in order to validate role or domain changes*/
 
 namespace NorthWolds\Entity;
 
-class Browser extends ClientAdmin
+class Browser extends User
 {
     public function __construct(...$args)
     {

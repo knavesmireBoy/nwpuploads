@@ -7,21 +7,43 @@ class ClientAdmin extends User
 
     public function __construct(...$args)
     {
-
         parent::__construct(...$args);
     }
 
-    public function setRole(string $role, int $userid = 0)
+    protected function validateRole($role)
     {
-        $uid = $userid ? $userid : $this->id;
+        $details = $this->getDetails();
+        if (empty($details)) {
+            return $role;
+        }
+        $ids = $this->getUserIds();
+        if (in_array($role, $this->roles)) {
+            $roles = $this->getAllRoles($ids);
+            $roles = $this->getAdminRoles($roles);
+
+            if (!empty($roles)) {
+                $i = array_search($role, $this->roles);
+                $j = array_search($this->roleid, $this->roles);
+                if ($i < $j) { //demotion
+                    if (count($roles) === 1) {
+                        return $this->self ? 'lastadmin' : '_lastadmin';
+                    }
+                }
+            }
+        }
+        return $role;
+    }
+
+    public function setRole(string $role)
+    {
         //if $action is true insert otherwise update
-        $action = empty($this->userroletable->find('userid', $uid));
+        $action = empty($this->userroletable->find('userid', $this->id));
         //A) if validation fails return a key for query eg 'last' header(Location: /user/load/last)
         $role = $this->validateRole($role);
 
         if (in_array($role, $this->roles)) {
             $this->userroletable->save(['userid' => $this->id, 'roleid' => $role], $action);
-            $this->roleid = $userid ? null : $role;
+            $this->roleid = $role;
             //B if validation succeeds set to empty string
             $role = '';
         }

@@ -38,5 +38,4 @@ class Solo extends ClientAdmin
             'retour' => '_return2list.html.php'
         ];
     }
-
 }
