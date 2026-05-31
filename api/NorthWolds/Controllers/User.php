@@ -243,15 +243,14 @@ class User extends Presenter
 
     public function load(string $key = '', array $vars = [])
     {
-        $error = '';
         $details = $this->getPrivilege();
         $customVars = $this->getCustomVars($key, $vars);
 
         $owner = []; //prompt.html.php expects this from Uploader Controller
         //if(!empty($vars)) dump($customVars);
-        //unset($vars['id']);
+        unset($vars['id']);
         //the occasional error may require ONE argument which is not an id
-        //$error = $this->query($key, ...$vars);
+        $error = $this->query($key, ...$vars);
         $user = $this->fetch('table','email', $_SESSION['username']);
         $user = $this->getSubUser($user);
 
@@ -401,10 +400,6 @@ class User extends Presenter
         $required = array_filter($data, fn($item) => $item);
 
         $updateUserDomain = $this->updateUserDomainFactory($admin ? '_domain' : 'domain', $user, nullify($clientID), $data, $record);
-
-        if (!empty($_POST['override'])) {
-           // dump([333,$data, $record, $required, $updateUserDomain()]);
-        }
 
         //will exit here if domain doesn't validate
         $data = [...$record, ...$required, ...$updateUserDomain()];
