@@ -245,13 +245,15 @@ class User extends Presenter
 
     public function load(string $key = '', array $vars = [])
     {
+        $error = '';
         $details = $this->getPrivilege();
         $customVars = $this->getCustomVars($key, $vars);
-        $owner = []; //prompt.html.php expects this from Uploader Controller
 
+        $owner = []; //prompt.html.php expects this from Uploader Controller
+        if(!empty($vars)) dump($vars);
         //unset($vars['id']);
         //the occasional error may require ONE argument which is not an id
-        $error = $this->query($key, ...$vars);
+        //$error = $this->query($key, ...$vars);
         $user = $this->table->find('email', $_SESSION['username'])[0];
         $user = $this->getSubUser($user);
 
