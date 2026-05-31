@@ -261,6 +261,7 @@ class User extends Entity
   {
     $res = array_map(fn($o) => $o['id'], $users);
     $ret = $this->getAllRoles($res);
+    dump(['countroles', $ret]);
     return $flag ? count($this->getAdminRoles($ret)) : count($ret);
   }
 

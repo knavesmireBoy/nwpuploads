@@ -146,6 +146,8 @@ class User extends Presenter
             if (isset($details['colleagues'])) {
                 $role = $details['colleagues'] ? $role : 'Solo';
                 $role = $details['administrators'] === 1 ? 'ClientSolo' : $role;
+
+                dump([150, $role]);
                 $role = ($role === 'Client') ? 'Employee' : $role;
             } else {
                 $role = preg_match('/admin/', $role) ? 'Admin' : 'Freelancer';
