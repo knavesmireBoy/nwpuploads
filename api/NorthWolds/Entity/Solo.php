@@ -37,7 +37,7 @@ class Solo extends User
         return [
             'calltext' => 'Add User',
             'callroute' => "/user/add/",
-            'retour' => '_return2list.html.php'
+            'retour' => '_return2uploads.html.php'
         ];
     }
 }

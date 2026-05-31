@@ -52,7 +52,7 @@ class ClientAdmin extends User
         ];
     }
 
-    public function loadPayload()
+    public function loadPayload($id = '')
     {
         return [
             'callroute' => '/user/add/',
