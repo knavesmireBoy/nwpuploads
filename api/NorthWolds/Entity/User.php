@@ -45,9 +45,9 @@ class User extends Entity
     return $this->self;
   }
 
-  public function edit()
+  public function edit($flag = true)
   {
-    return false;
+    return $flag;
   }
 
   public function editPayload($id = '')

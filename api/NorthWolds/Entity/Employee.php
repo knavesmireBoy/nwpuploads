@@ -9,11 +9,6 @@ class Employee extends ClientAdmin
         parent::__construct(...$args);
     }
 
-    public function edit($flag = true)
-    {
-      return $flag;
-    }
-    
     public function editPayload($id = '')
     {
         return [
