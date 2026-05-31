@@ -28,6 +28,12 @@ class Admin extends User
         return '_admin';
     }
 
+    //default for employee;solo
+    public function edit($flag = true)
+    {
+        return false;
+    }
+
     public function editPayload($id = '')
     {
         if (!$this->self) {

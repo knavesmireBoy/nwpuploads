@@ -131,7 +131,6 @@ class User extends Entity
   protected function validateDom($cid, $dbrecord, $ename, $postdom, $insertID)
   {
     
-    
     $client = $cid ? $this->clienttable->find('id', $cid) : [];
     $key = '';
     $flag = isset($_COOKIE['leave']) ? false : true;
