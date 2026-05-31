@@ -4,13 +4,11 @@ namespace NorthWolds\Entity;
 
 class ClientAdmin extends User
 {
-    /*
-    public function __construct(...$args)
-    {
-        parent::__construct(...$args);
-    }
-        */
-
+     //return false to present list of users for logged in client
+     public function edit($flag = true)
+     {
+         return false;
+     }
     public function setRole(string $role)
     {
         //if $action is true insert otherwise update
@@ -36,11 +34,6 @@ class ClientAdmin extends User
             return $roles ? $ret : $this->getAdminRoles($ret);
         }
         return $res;
-    }
-    //return false to present list
-    public function edit($flag = true)
-    {
-        return false;
     }
 
     public function editPayload($id = '')

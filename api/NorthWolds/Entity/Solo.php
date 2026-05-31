@@ -9,10 +9,6 @@ class Solo extends User
         return 'last';
     }
 
-    protected function validateRole1($role) {
-        return '_lastadminrole';
-    }
-
     protected function validateRole($role)
     {
         $i = array_search($role, $this->roles);

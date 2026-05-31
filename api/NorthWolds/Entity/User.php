@@ -35,6 +35,11 @@ class User extends Entity
     $this->clienttable = $client;
   }
 
+  protected function findDomain($postdom)
+  {
+    return $this->find('clienttable', 'domain', $postdom);
+  }
+
   public function setSelf(bool $bool)
   {
     $this->self = $bool;
@@ -125,11 +130,15 @@ class User extends Entity
 
   protected function validateDom($cid, $dbrecord, $ename, $postdom, $insertID)
   {
+    
+    
     $client = $cid ? $this->clienttable->find('id', $cid) : [];
     $key = '';
     $flag = isset($_COOKIE['leave']) ? false : true;
     $setcookie = doSetCookie($flag);
     //ADMIN moving or switching a user to a client
+
+    dump($this);
     if (isset($client[0])) {
       $details = $this->getDetails();
       if (isApproved($details['role'], 'admin')) {
@@ -147,16 +156,6 @@ class User extends Entity
       $client = $this->clienttable->getEntity();
       if ($client->domainAvailable($postdom)) {
         $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'name' => $dbrecord['name'], 'client_id' => null];
-        /*
-        if ($flag) {
-          $this->setCookie($data, ['name', 'email'], true);
-          $setcookie('leave');
-          reLocate('/user/loadbridge/leave/'  . $this->id);
-        } else {
-          $setcookie('leave');
-          $this->setCookie($data, ['name', 'email'], false);
-        }
-          */
       } else {
         if ($insertID) { // a new
           $this->table->delete('id', $insertID);
@@ -171,11 +170,6 @@ class User extends Entity
       }
     }
     return $data;
-  }
-
-  protected function findDomain($postdom)
-  {
-    return $this->find('clienttable', 'domain', $postdom);
   }
 
   public function parseEmail($e)
