@@ -54,14 +54,14 @@ class User extends Presenter
             '_lastadminrole' => "To demote the admin status of this user you must promote another user to the admin role.",
 
             'last' => "Only the database administrator can delete this user.",
-            "_denied" => "Cannot (re)move a user with a client admin role.",
+            "_denied" => "Cannot assign this user to a client.",
             '_last' => "To remove this final user, please delete the client instead.",
 
             'domain' => 'Only the database administrator can change the domain of an email address.',
             '_domain' => 'Set the drop down menu to empty when changing the domain. Change the domain of the client to update the domain for all members.',
             'traitor' => 'To disassociate this user please supply a new email address.',
             '_traitor' => 'To assign to another client use the drop down menu.',
-            'impostor' => 'That domain is in use, use the client list drop down to assign a user.'
+            '_impostor' => 'That domain is in use, use the client list drop down to assign a user.'
         ];
 
         return $lib[$key] ?? '';

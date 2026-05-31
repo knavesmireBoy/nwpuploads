@@ -130,7 +130,6 @@ class User extends Entity
 
   protected function validateDom($cid, $dbrecord, $ename, $postdom, $insertID)
   {
-    
     $client = $cid ? $this->clienttable->find('id', $cid) : [];
     $key = '';
     $flag = isset($_COOKIE['leave']) ? false : true;
@@ -140,12 +139,8 @@ class User extends Entity
    // dump($this);
     if (isset($client[0])) {
       $details = $this->getDetails();
-      dump($details);
       if (isApproved($details['role'], 'admin')) {
         $key = '_denied';
-      }
-      if (isset($details['colleagues']) && !$details['colleagues']) {
-        $key = '_last';
       }
       if ($key) {
         reLocate("/user/load/$key");
@@ -159,12 +154,13 @@ class User extends Entity
       } else {
         if ($insertID) { // a new
           $this->table->delete('id', $insertID);
-          reLocate('/user/load/impostor');
-        } else { //or existing user (freelancer) attempting to leave
+          reLocate('/user/load/_impostor');
+        } else { //or existing user (freelancer) attempting to swap clients
           $client = $this->find('clienttable', 'domain', $postdom);
           $postdom = $client->domain;
           //silently restore to client as
-          reLocate('/user/load/traitor');
+          $key = $this->self ? 'traitor' : '_traitor';
+          reLocate("/user/load/$key");
           $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'name' => $dbrecord['name'], 'client_id' => nullify($client->id)];
         }
       }
