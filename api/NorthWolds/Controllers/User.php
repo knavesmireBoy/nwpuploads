@@ -52,11 +52,11 @@ class User extends Presenter
             "lasteditor" => "There must be at least one administrator role, please assign another user before removing credentials from the database.",
             "lastadminrole" => "There must be at least one administrator role, please promote another user to the admin role before demoting your status.",
             '_lastadminrole' => "To demote the admin status of this user you must promote another user to the admin role.",
-            
+
             'last' => "Only the database administrator can delete this user.",
             "_denied" => "Cannot (re)move a user with a client admin role.",
             '_last' => "To remove this final user, please delete the client instead.",
-          
+
             'domain' => 'Only the database administrator can change the domain of an email address.',
             '_domain' => 'Set the drop down menu to empty when changing the domain. Change the domain of the client to update the domain for all members.',
             'traitor' => 'To disassociate this user please supply a new email address.',
@@ -202,14 +202,11 @@ class User extends Presenter
         $details = $this->getPrivilege();
 
         $user = $this->table->find('id', $details['id']);
-        $user = $user[0] ?? null;
-        $user = $this->getSubUser($user);
+        $user = isset($user[0]) ? $this->getSubUser($user[0]) : null;
         $user->setSelf(false);
 
         $payload = $user->loadPayload(isset($customVars['selected']));
         list($users, $clients) = $this->presentList($details['role'], $details['id'], $this->table);
-
-        $admin = isApproved($details['role'], 'ADMIN');
         $defaultVars = [
             'prompt' => null,
             'users' => $users,
@@ -254,8 +251,8 @@ class User extends Presenter
         //unset($vars['id']);
         //the occasional error may require ONE argument which is not an id
         //$error = $this->query($key, ...$vars);
-        $user = $this->table->find('email', $_SESSION['username'])[0];
-        $user = $this->getSubUser($user);
+        $user = $this->table->find('email', $_SESSION['username']);
+        $user = $user = isset($user[0]) ? $this->getSubUser($user[0]) : null;
 
         if ($user->edit(empty($customVars))) {
             $args = $error ? ['message' => $error] : [];
@@ -317,11 +314,11 @@ class User extends Presenter
     public function edit($id, $args = [])
     {
         $details = $this->getPrivilege();
-        $punter = $this->fetch('table','id', $details['id']);
-        $punter = $this->getSubUser($punter);
+        $punter = $this->fetch('table', 'id', $details['id']);
+        $punter = isset($punter[0]) ? $this->getSubUser($punter[0]) : null;
 
-        $user = $this->fetch('table','id', $id);
-        $user = $this->getSubUser($user);
+        $user = $this->fetch('table', 'id', $id);
+        $user = isset($user[0]) ? $this->getSubUser($user[0]) : null;
         $editor = ($id == $details['id']);
 
         $member = $editor ? $user : $punter;
@@ -371,7 +368,7 @@ class User extends Presenter
             reLocate($this->home . "/");
         }
         $userId = $this->getLastInsertId($this->table->save([...$data, 'client_id' => nullify($client_id)], true));
-        $user = $this->fetch('table','id', $userId);
+        $user = $this->fetch('table', 'id', $userId);
 
         $user->updatePassword($data['password']);
 
@@ -395,7 +392,7 @@ class User extends Presenter
         $role = isset($_POST['roles']) ? $_POST['roles'][0] : $user->getDetails('roleid');
         $clientID = $_POST['employer'] ?? $_POST['employed'] ?? null;
 
-        $user = $this->getSubUser($user);
+        $user = isset($user[0]) ? $this->getSubUser($user[0]) : null;
         $editor = $id == $this->getPrivilege('id');
         $user->setSelf($editor);
 
@@ -403,6 +400,10 @@ class User extends Presenter
         $required = array_filter($data, fn($item) => $item);
 
         $updateUserDomain = $this->updateUserDomainFactory($admin ? '_domain' : 'domain', $user, nullify($clientID), $data, $record);
+
+        if (!empty($_POST['override'])) {
+            dump([333,$data, $record, $required, $updateUserDomain()]);
+        }
 
         //will exit here if domain doesn't validate
         $data = [...$record, ...$required, ...$updateUserDomain()];
@@ -417,7 +418,7 @@ class User extends Presenter
         $user->updatePassword($required['password'] ?? '');
         unset($data['password']);
         $user = $this->table->save($data);
-        $user = $this->getSubUser($user);
+        $user =  $this->getSubUser($user);
         $user->setSelf($editor);
         $key = $user->setRole($role, $admin ? '_last' : 'lastadmin'); //UPDATE role here; it may trigger an error message
 
@@ -428,9 +429,9 @@ class User extends Presenter
     {
         $msg = '';
         $details = $this->getPrivilege();
-        $user = $this->table->find('id', $id)[0];
+        $user = $this->table->find('id', $id);
+        $user = isset($user[0]) ? $this->getSubUser($user[0]) : null;
         $user->setSelf($id == $details['id']);
-        $user = $this->getSubUser($user);
         $msg = $user->delete($id);
         if ($msg) {
             return reLocate($this->home . $msg);
