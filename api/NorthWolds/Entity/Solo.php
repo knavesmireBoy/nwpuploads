@@ -47,4 +47,11 @@ class Solo extends User
             'retour' => '_return2list.html.php'
         ];
     }
+    //used if prompted
+    public function loadPayload($id = '')
+    {
+        return [
+            'retour' => '_return2uploads.html.php'
+        ];
+    }
 }
