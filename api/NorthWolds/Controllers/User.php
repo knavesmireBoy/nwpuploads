@@ -409,8 +409,8 @@ class User extends Presenter
 
         if ($editor && $change !== [] && empty($_POST['override'])) {
             $this->setCookie($data, [...$change, ...$optional], true);
-            reLocate("/user/loadbridge/change/$id");
-            //return $this->load('change', ['id' => $id]);
+            //reLocate("/user/loadbridge/change/$id");
+            return $this->load('change', ['id' => $id]);
         }
         $user->updatePassword($required['password'] ?? '');
         unset($data['password']);
