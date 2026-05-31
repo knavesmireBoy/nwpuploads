@@ -156,8 +156,8 @@ class User extends Entity
           $this->table->delete('id', $insertID);
           reLocate('/user/load/_impostor');
         } else { //or existing user (freelancer) attempting to swap clients
-          $client = $this->find('clienttable', 'domain', $postdom);
-          $postdom = $client->domain;
+          //$client = $this->find('clienttable', 'domain', $postdom);
+          //$postdom = $client->domain;
           //silently restore to client as
           $key = $this->self ? 'traitor' : '_traitor';
           reLocate("/user/load/$key");
