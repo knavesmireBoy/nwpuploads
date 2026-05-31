@@ -35,7 +35,7 @@ class User extends Entity
     $this->clienttable = $client;
   }
 
-  protected function findDomain($postdom)
+  public function findDomain($postdom)
   {
     return $this->find('clienttable', 'domain', $postdom);
   }
