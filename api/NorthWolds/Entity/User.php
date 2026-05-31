@@ -256,12 +256,10 @@ class User extends Entity
     return $this->clienttable->find('domain', $domain, 'name', 0, 0, $mode)[0];
   }
 
-
   protected function countRoles($users, $flag = false)
   {
     $res = array_map(fn($o) => $o['id'], $users);
     $ret = $this->getAllRoles($res);
-    dump([$flag, $this->getAdminRoles($ret)]);
     return $flag ? count($this->getAdminRoles($ret)) : count($ret);
   }
 
