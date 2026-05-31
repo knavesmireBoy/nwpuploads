@@ -51,9 +51,11 @@ class User extends Entity
     return $flag;
   }
 
-  public function loadPayload()
+  public function loadPayload($id = '')
   {
-    return [];
+      return [
+          'retour' => '_return2uploads.html.php'
+      ];
   }
 
   public function editPayload($id = '')
