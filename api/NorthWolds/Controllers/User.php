@@ -249,7 +249,7 @@ class User extends Presenter
         $customVars = $this->getCustomVars($key, $vars);
         $owner = []; //prompt.html.php expects this from Uploader Controller
 
-        unset($vars['id']);
+        //unset($vars['id']);
         //the occasional error may require ONE argument which is not an id
         $error = $this->query($key, ...$vars);
         $user = $this->table->find('email', $_SESSION['username'])[0];
@@ -409,8 +409,8 @@ class User extends Presenter
 
         if ($editor && $change !== [] && empty($_POST['override'])) {
             $this->setCookie($data, [...$change, ...$optional], true);
-            //reLocate("/user/loadbridge/change/$id");
-            return $this->load('change', ['id' => $id]);
+            reLocate("/user/loadbridge/change/$id");
+            //return $this->load('change', ['id' => $id]);
         }
         $user->updatePassword($required['password'] ?? '');
         unset($data['password']);
