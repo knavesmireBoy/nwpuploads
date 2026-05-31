@@ -259,7 +259,7 @@ class User extends Entity
 
   protected function countRoles($users, $flag = false)
   {
-    $res = array_map(fn($o) => $o->id, $users);
+    $res = array_map(fn($o) => $o['id'], $users);
     $ret = $this->getAllRoles($res);
     return $flag ? count($this->getAdminRoles($ret)) : count($ret);
   }
