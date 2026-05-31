@@ -45,7 +45,7 @@ class User extends Entity
     return $this->self;
   }
 
-  public function edit($flag = true)
+  public function edit($flag = false)
   {
     return $flag;
   }

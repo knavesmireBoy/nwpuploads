@@ -202,7 +202,7 @@ class User extends Presenter
         $cadmin = isApproved($_SESSION['role'], 'admin');
         $details = $this->getPrivilege();
 
-        $user = $this->fetch('table','id', $details['id']);
+        $user = $this->fetch('table', 'id', $details['id']);
         $user = $this->getSubUser($user);
         $user->setSelf(!empty($customVars));
 
@@ -247,16 +247,14 @@ class User extends Presenter
         $customVars = $this->getCustomVars($key, $vars);
 
         $owner = []; //prompt.html.php expects this from Uploader Controller
-        //if(!empty($vars)) dump($customVars);
         unset($vars['id']);
         //the occasional error may require ONE argument which is not an id
         $error = $this->query($key, ...$vars);
-        $user = $this->fetch('table','email', $_SESSION['username']);
+        $user = $this->fetch('table', 'email', $_SESSION['username']);
         $user = $this->getSubUser($user);
 
         if ($user->edit(empty($customVars))) {
             $args = $error ? ['message' => $error] : [];
-            $args['colleagues'] = $details['colleagues'] ?? false;
             $id = $details['id'];
             return $this->edit($id, [...$customVars, ...$args]);
         }
@@ -286,7 +284,6 @@ class User extends Presenter
 
             if ($user) {
                 $id = $user->id;
-                setExtent(1);
                 reLocate("/user/edit/$id");
             }
         } else {
@@ -298,7 +295,6 @@ class User extends Presenter
             $users = $this->table->find('client_id', $client->id);
             $usrs = [];
             $i = count($users);
-            setExtent($i);
             if ($i > 1) {
                 foreach ($users as $usr) {
                     $usrs[$usr->id] = $usr->name;
@@ -372,7 +368,8 @@ class User extends Presenter
 
         $user->updatePassword($data['password']);
 
-        //role must be set BEFORE "updateUserDomain" no user can navigate the site without an assigned role
+        /*role must be set BEFORE "updateUserDomain"
+        no user can navigate the site without an assigned role*/
         $user->setRole($role);
 
         $updateUserDomain = $this->updateUserDomainFactory($key, $user, nullify($client_id), get_object_vars($user), [], $userId);
@@ -425,7 +422,7 @@ class User extends Presenter
     {
         $msg = '';
         $details = $this->getPrivilege();
-        $user = $this->fetch('table','id', $id);
+        $user = $this->fetch('table', 'id', $id);
         $user = $this->getSubUser($user);
         $user->setSelf($id == $details['id']);
         $msg = $user->delete($id);
