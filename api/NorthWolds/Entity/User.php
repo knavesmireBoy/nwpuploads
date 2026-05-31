@@ -244,7 +244,7 @@ class User extends Entity
       if ($this->client_id) {
         $client = $this->fetch('clienttable', 'id', $this->client_id);
         $users = $this->table->find('client_id', $this->client_id, null, 0, 0, \PDO::FETCH_ASSOC);
-        $clientdetails = ['client_id' => $this->client_id, 'clientname' => $client->name, 'tel' => $client->tel, 'domain' => $client->domain, 'colleagues' => count($users) > 1];
+        $clientdetails = ['client_id' => $this->client_id, 'clientname' => $client->name, 'tel' => $client->tel, 'domain' => $client->domain, 'colleagues' => count($users) > 1, 'administrators' => $this->countRoles($users)];
       }
       return [...$base, ...$clientdetails];
     }
@@ -254,6 +254,14 @@ class User extends Entity
   public function fromDomain($domain, $mode = \PDO::FETCH_CLASS)
   {
     return $this->clienttable->find('domain', $domain, 'name', 0, 0, $mode)[0];
+  }
+
+
+  protected function countRoles($users, $flag = false)
+  {
+    $res = array_map(fn($o) => $o->id, $users);
+    $ret = $this->getAllRoles($res);
+    return $flag ? count($this->getAdminRoles($ret)) : count($ret);
   }
 
   public function getUserIds($roles = null)

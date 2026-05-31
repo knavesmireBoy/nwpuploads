@@ -10,29 +10,6 @@ class ClientAdmin extends User
         parent::__construct(...$args);
     }
 
-    protected function validateRole($role)
-    {
-        $details = $this->getDetails();
-        if (empty($details)) {
-            return $role;
-        }
-        $ids = $this->getUserIds();
-        if (in_array($role, $this->roles)) {
-            $roles = $this->getAllRoles($ids);
-            $roles = $this->getAdminRoles($roles);
-            if (!empty($roles)) {
-                $i = array_search($role, $this->roles);
-                $j = array_search($this->roleid, $this->roles);
-                if ($i < $j) { //demotion
-                    if (count($roles) === 1) {
-                        return $this->self ? 'lastadminrole' : '_lastadminrole';
-                    }
-                }
-            }
-        }
-        return $role;
-    }
-
     public function setRole(string $role)
     {
         //if $action is true insert otherwise update
@@ -58,20 +35,6 @@ class ClientAdmin extends User
             return $roles ? $ret : $this->getAdminRoles($ret);
         }
         return $res;
-    }
-
-    public function delete($id)
-    {
-        $msg = '';
-        $ids = $this->getUserIds();
-        $roles = $this->getAllRoles($ids);
-        $adminroles = $this->getAdminRoles($roles);
-        if (count($adminroles) === 1) {
-            $ids = array_column($adminroles, 'userid');
-            $key = in_array($this->id, $ids) ? 'lasteditor' : '';
-            $msg = $key;
-        }
-        return $msg;
     }
 
     public function editPayload($id = '')

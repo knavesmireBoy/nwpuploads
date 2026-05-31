@@ -2,7 +2,7 @@
 
 namespace NorthWolds\Entity;
 
-class Solo extends ClientAdmin
+class Solo extends User
 {
 
     public function __construct(...$args)
@@ -14,6 +14,20 @@ class Solo extends ClientAdmin
     public function delete($id)
     {
         return 'last';
+    }
+
+    protected function validateRole1($role) {
+        return '_lastadminrole';
+    }
+
+    protected function validateRole($role)
+    {
+        $i = array_search($role, $this->roles);
+        $j = array_search($this->roleid, $this->roles);
+        if ($i < $j) { //demotion
+            return $this->self ? 'lastadminrole' : '_lastadminrole';
+        }
+        return $role;
     }
 
     public function edit($flag = true)
