@@ -30,11 +30,6 @@ class Solo extends User
         return $role;
     }
 
-    public function edit($flag = true)
-    {
-        return $flag;
-    }
-
     public function presentList($userId)
     {
         return [[], []];
