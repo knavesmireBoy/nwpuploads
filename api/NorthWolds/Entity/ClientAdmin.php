@@ -36,6 +36,11 @@ class ClientAdmin extends User
         }
         return $res;
     }
+    //return false to present list
+    public function edit($flag = true)
+    {
+        return false;
+    }
 
     public function editPayload($id = '')
     {

@@ -146,7 +146,7 @@ class User extends Presenter
         if (preg_match('/client/i', $role)) {
             if (isset($details['colleagues'])) {
                 $role = $details['colleagues'] ? $role : 'Solo';
-                $role = $details['administrator'] ? 'ClientSolo' : $role;
+                $role = $details['administrator'] ? 'ClientAdminSolo' : $role;
                 $role = ($role === 'Client') ? 'Employee' : $role;
             } else {
                 $role = preg_match('/admin/', $role) ? 'Admin' : 'Freelancer';
@@ -253,7 +253,7 @@ class User extends Presenter
         $user = $this->fetch('table', 'email', $_SESSION['username']);
         $user = $this->getSubUser($user);
 
-        if ($user->edit(!empty($customVars))) {
+        if ($user->edit(empty($customVars))) {
             $args = $error ? ['message' => $error] : [];
             $id = $details['id'];
             return $this->edit($id, [...$customVars, ...$args]);

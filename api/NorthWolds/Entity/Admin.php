@@ -34,6 +34,11 @@ class Admin extends User
         return '_admin';
     }
 
+    public function edit($flag = true)
+    {
+        return false;
+    }
+
     public function editPayload($id = '')
     {
         if (!$this->self) {

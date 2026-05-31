@@ -45,7 +45,8 @@ class User extends Entity
     return $this->self;
   }
 
-  public function edit($flag = false)
+  //default for employee;solo
+  public function edit($flag = true)
   {
     return $flag;
   }
@@ -245,7 +246,7 @@ class User extends Entity
         $client = $this->fetch('clienttable', 'id', $this->client_id);
         $users = $this->table->find('client_id', $this->client_id, null, 0, 0, \PDO::FETCH_ASSOC);
 
-        $bool = $this->countRoles($users, $this->id);
+        $bool = $this->countRoles($users, $this->id) && count($users) > 1;
 
         $clientdetails = ['client_id' => $this->client_id, 'clientname' => $client->name, 'tel' => $client->tel, 'domain' => $client->domain, 'colleagues' => count($users) > 1, 'administrator' => $bool];
       }
