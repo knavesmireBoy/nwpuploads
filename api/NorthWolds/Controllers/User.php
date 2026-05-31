@@ -105,7 +105,8 @@ class User extends Presenter
                     if ($k) {
                         //  reLocate($this->home . $key);
                     }
-                    $data['email'] = "$name@$dom.$com";
+                    //$_name allowed to change
+                    $data['email'] = "$_name@$dom.$com";
                     return $data;
                 } else { //new
                     $client = $this->fetch('clienttable', 'id', $cid);
@@ -402,7 +403,7 @@ class User extends Presenter
         $updateUserDomain = $this->updateUserDomainFactory($admin ? '_domain' : 'domain', $user, nullify($clientID), $data, $record);
 
         if (!empty($_POST['override'])) {
-            dump([333,$data, $record, $required, $updateUserDomain()]);
+           // dump([333,$data, $record, $required, $updateUserDomain()]);
         }
 
         //will exit here if domain doesn't validate
