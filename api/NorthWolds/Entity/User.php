@@ -269,6 +269,7 @@ class User extends Entity
       if (count($adminroles) === 1 && $id && $id == $adminroles[0]['userid']) {
         return true;
       }
+      return false;
     }
 
     return count($ret);
