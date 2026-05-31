@@ -51,14 +51,16 @@ class User extends Entity
     return $flag;
   }
 
-  public function editPayload($id = '')
+  public function loadPayload()
   {
     return [];
   }
 
-  public function loadPayload()
+  public function editPayload($id = '')
   {
-    return [];
+      return [
+          'retour' => '_return2uploads.html.php'
+      ];
   }
 
   //convert ids into table structure [userid, roleid]

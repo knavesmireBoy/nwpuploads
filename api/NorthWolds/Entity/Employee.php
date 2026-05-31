@@ -9,12 +9,6 @@ class Employee extends ClientAdmin
         parent::__construct(...$args);
     }
 
-    public function editPayload($id = '')
-    {
-        return [
-            'retour' => '_return2uploads.html.php'
-        ];
-    }
 
     public function presentList($userId)
     {

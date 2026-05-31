@@ -4,11 +4,12 @@ namespace NorthWolds\Entity;
 
 class ClientAdmin extends User
 {
-
+    /*
     public function __construct(...$args)
     {
         parent::__construct(...$args);
     }
+        */
 
     public function setRole(string $role)
     {

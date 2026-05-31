@@ -4,13 +4,6 @@ namespace NorthWolds\Entity;
 
 class Solo extends User
 {
-
-    public function __construct(...$args)
-    {
-
-        parent::__construct(...$args);
-    }
-
     public function delete($id)
     {
         return 'last';
@@ -45,13 +38,6 @@ class Solo extends User
             'calltext' => 'Add User',
             'callroute' => "/user/add/",
             'retour' => '_return2list.html.php'
-        ];
-    }
-    //used if prompted
-    public function loadPayload($id = '')
-    {
-        return [
-            'retour' => '_return2uploads.html.php'
         ];
     }
 }

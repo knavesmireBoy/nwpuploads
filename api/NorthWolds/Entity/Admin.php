@@ -5,10 +5,6 @@ namespace NorthWolds\Entity;
 class Admin extends User
 {
 
-    public function __construct(...$args)
-    {
-        parent::__construct(...$args);
-    }
 
     //discrepancy 'Client Admin' role must belong to a Client; maybe a user left an organisation in which case their status is of a generic "User" but rolewise known as a Client
     private function demote($userid, $roleid)
@@ -32,11 +28,6 @@ class Admin extends User
     public function delete($id)
     {
         return '_admin';
-    }
-
-    public function edit($flag = true)
-    {
-        return false;
     }
 
     public function editPayload($id = '')

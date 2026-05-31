@@ -27,13 +27,6 @@ class Freelancer extends User
             'retour' => '_return2uploads.html.php'
         ];
     }
-//used if prompted
-    public function loadPayload($id = '')
-    {
-        return [
-            'retour' => '_return2uploads.html.php'
-        ];
-    }
 
     public function presentList($userId)
     {
