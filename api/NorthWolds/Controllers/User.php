@@ -201,9 +201,9 @@ class User extends Presenter
         $cadmin = isApproved($_SESSION['role'], 'admin');
         $details = $this->getPrivilege();
 
-        $user = $this->table->find('id', $details['id']);
-        $user = isset($user[0]) ? $this->getSubUser($user[0]) : null;
-        $user->setSelf(false);
+        $user = $this->fetch('table','id', $details['id']);
+        $user = $this->getSubUser($user);
+        $user->setSelf(!empty($customVars));
 
         $payload = $user->loadPayload(isset($customVars['selected']));
         list($users, $clients) = $this->presentList($details['role'], $details['id'], $this->table);
@@ -251,8 +251,8 @@ class User extends Presenter
         //unset($vars['id']);
         //the occasional error may require ONE argument which is not an id
         //$error = $this->query($key, ...$vars);
-        $user = $this->table->find('email', $_SESSION['username']);
-        $user = $user = isset($user[0]) ? $this->getSubUser($user[0]) : null;
+        $user = $this->fetch('table','email', $_SESSION['username']);
+        $user = $this->getSubUser($user);
 
         if ($user->edit(empty($customVars))) {
             $args = $error ? ['message' => $error] : [];
@@ -315,10 +315,10 @@ class User extends Presenter
     {
         $details = $this->getPrivilege();
         $punter = $this->fetch('table', 'id', $details['id']);
-        $punter = isset($punter[0]) ? $this->getSubUser($punter[0]) : null;
+        $punter = $this->getSubUser($punter);
 
         $user = $this->fetch('table', 'id', $id);
-        $user = isset($user[0]) ? $this->getSubUser($user[0]) : null;
+        $user = $this->getSubUser($user);
         $editor = ($id == $details['id']);
 
         $member = $editor ? $user : $punter;
@@ -392,7 +392,7 @@ class User extends Presenter
         $role = isset($_POST['roles']) ? $_POST['roles'][0] : $user->getDetails('roleid');
         $clientID = $_POST['employer'] ?? $_POST['employed'] ?? null;
 
-        $user = isset($user[0]) ? $this->getSubUser($user[0]) : null;
+        $user = $this->getSubUser($user);
         $editor = $id == $this->getPrivilege('id');
         $user->setSelf($editor);
 
@@ -429,8 +429,8 @@ class User extends Presenter
     {
         $msg = '';
         $details = $this->getPrivilege();
-        $user = $this->table->find('id', $id);
-        $user = isset($user[0]) ? $this->getSubUser($user[0]) : null;
+        $user = $this->fetch('table','id', $id);
+        $user = $this->getSubUser($user);
         $user->setSelf($id == $details['id']);
         $msg = $user->delete($id);
         if ($msg) {
