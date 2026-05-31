@@ -59,7 +59,7 @@ class User extends Presenter
 
             'domain' => 'Only the database administrator can change the domain of an email address.',
             '_domain' => 'Set the drop down menu to empty when changing the domain. Change the domain of the client to update the domain for all members.',
-            'traitor' => 'To disassociate this user please supply a new email address.',
+            'traitor' => 'That domain is not available.',
             '_traitor' => 'To assign to another client use the drop down menu.',
             '_impostor' => 'That domain is in use, use the client list drop down to assign a user.'
         ];
@@ -102,9 +102,6 @@ class User extends Presenter
                     if ($k && $user->findDomain("$_dom.$_com")) {
                         reLocate($this->home . $key);
                     }
-                    if ($k) {
-                        //  reLocate($this->home . $key);
-                    }
                     //$_name allowed to change
                     $data['email'] = "$_name@$dom.$com";
                     return $data;
@@ -116,6 +113,7 @@ class User extends Presenter
                 }
             };
         }
+
         return function () use ($user, $cid, $data, $userID) {
             return $user->updateUserDomain($cid, $data, $userID);
         };
