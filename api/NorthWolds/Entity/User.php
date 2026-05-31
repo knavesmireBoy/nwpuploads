@@ -244,7 +244,10 @@ class User extends Entity
       if ($this->client_id) {
         $client = $this->fetch('clienttable', 'id', $this->client_id);
         $users = $this->table->find('client_id', $this->client_id, null, 0, 0, \PDO::FETCH_ASSOC);
-        $clientdetails = ['client_id' => $this->client_id, 'clientname' => $client->name, 'tel' => $client->tel, 'domain' => $client->domain, 'colleagues' => count($users) > 1, 'administrators' => $this->countRoles($users, true)];
+
+        $bool = $this->countRoles($users, $this->id);
+
+        $clientdetails = ['client_id' => $this->client_id, 'clientname' => $client->name, 'tel' => $client->tel, 'domain' => $client->domain, 'colleagues' => count($users) > 1, 'administrator' => $bool];
       }
       return [...$base, ...$clientdetails];
     }
@@ -256,11 +259,19 @@ class User extends Entity
     return $this->clienttable->find('domain', $domain, 'name', 0, 0, $mode)[0];
   }
 
-  protected function countRoles($users, $flag = false)
+  protected function countRoles($users, $id = false)
   {
     $res = array_map(fn($o) => $o['id'], $users);
     $ret = $this->getAllRoles($res);
-    return $flag ? count($this->getAdminRoles($ret)) : count($ret);
+
+    if ($id) {
+      $adminroles = $this->getAdminRoles($ret);
+      if (count($adminroles) === 1 && $id && $id == $adminroles[0]['userid']) {
+        return true;
+      }
+    }
+
+    return count($ret);
   }
 
   public function getUserIds($roles = null)
