@@ -137,9 +137,10 @@ class User extends Entity
     $setcookie = doSetCookie($flag);
     //ADMIN moving or switching a user to a client
 
-    dump($this);
+   // dump($this);
     if (isset($client[0])) {
       $details = $this->getDetails();
+      dump($details);
       if (isApproved($details['role'], 'admin')) {
         $key = '_denied';
       }
