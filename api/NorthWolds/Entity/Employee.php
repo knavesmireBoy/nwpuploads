@@ -29,4 +29,57 @@ class Employee extends ClientAdmin
     {
         return $flag;
     }
+
+    
+    protected function validateDom($cid, $record, $ename, $edom, $insertId = 0)
+    {
+        $postdata['email'] = "$ename.$edom";
+        $postdata['client_id'] = $cid;
+        return $postdata;
+    }
+
+
+    public function updateDomain($key, $override)
+    {
+        return function (?int $cid, array $postdata, int $id = 0) use ($key, $override) {
+            list($name, $dom, $com) = $this->parseEmail($postdata['email']);
+            $relocate = '';
+            $dbrecord = $this->fetch('TABLE', 'id', $this->id);
+            if (isset($dbrecord['email'])) { //existing
+                $newdata = $this->validateDom($cid, $dbrecord, $name, "$dom.$com", $id);
+                if (!$newdata) {
+                    reLocate("/user/load/$key");
+                }
+                $postdata = [...$postdata, ...$newdata];
+                //can only be admin moving an employee; admin users cannot be moved
+                if ($cid && $cid != $dbrecord['client_id']) {
+                    $data = $this->fetch('clienttable', 'id', $cid);
+                    $domain = $data->domain;
+                    $postdata['email'] = "$name.$domain";
+                    if ($override) {
+                        $relocate = "/user/loadbridge/leave/$id";
+                    }
+                } else { //admin releasing an employee OR updating name 
+                    $clients = $this->clienttable->findAll();
+                    $checkDomains = composer(partial('in_array', $dom), partial('array_values'), partial('array_map', curry2('getter')(0)), partial('array_map', 'parseEmail'), partial('array_column', $clients));
+                    if ($checkDomains('domain')) {
+                        reLocate("/user/load/_traitor");
+                    }
+                    if (!$cid && $override) {
+                        $relocate = "/user/loadbridge/leave/$id";
+                    }
+                }
+                if ($relocate) {
+                    $this->setCookie($postdata, ['name', 'email', 'client_id'], true);
+                    reLocate($relocate);
+                }
+                return $postdata;
+            } else { //new
+                $client = $this->fetch('clienttable', 'id', $cid);
+                $domain = $client->domain;
+                $postdata['email'] = "$name@$domain";
+                return $postdata;
+            }
+        };
+    }
 }

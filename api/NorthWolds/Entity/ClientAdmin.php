@@ -11,63 +11,40 @@ class ClientAdmin extends User
     {
         return false;
     }
-
+    /*
     protected function resetClient($cid)
     {
         $ret = $this->fetch('clienttable', 'id', $this->client_id);
         return [$ret->id, $ret->domain];
     }
+    */
+
+    protected function validateDom($cid, $record, $ename, $edom, $insertId = 0)
+    {
+        list($name, $dom, $com) = $this->parseEmail($record['email']);
+        if ($edom === "$dom.$com") {
+            $postdata['email'] = "$ename@$dom.$com";
+            $postdata['client_id'] = $cid;
+            return $postdata;
+        }
+        return false;
+    }
 
     public function updateDomain($key, $override)
     {
         return function (?int $cid, array $postdata, int $id = 0) use ($key, $override) {
-            list($_name, $_dom, $_com) = $this->parseEmail($postdata['email']);
-            $relocate = '';
-            $id = $_POST['id'];
+            list($name, $dom, $com) = $this->parseEmail($postdata['email']);
             $dbrecord = $this->fetch('TABLE', 'id', $this->id);
             if (isset($dbrecord['email'])) { //existing
-                list($name, $dom, $com) = $this->parseEmail($dbrecord['email']);
-                $key = "$_dom.$_com" !== "$dom.$com" ? $key : '';
-
-                if ($cid && $key) {
+                $data = $this->validateDom($cid, $dbrecord, $name, "$dom.$com", $id);
+                if(!$data){
                     reLocate("/user/load/$key");
                 }
-                //can only be admin moving an employee; admin users cannot be moved
-                if ($cid && $cid != $dbrecord['client_id']) {
-                    list($cid, $domain) = $this->resetClient($cid, "$dom.$com");
-                    $postdata['email'] = "$_name@$domain";
-                    $postdata['client_id'] = $cid;
-                    if ($domain === "$dom.$com") {
-                        reLocate("/user/load/_move");
-                    } else {
-                        if ($override) {
-                            $relocate = "/user/loadbridge/leave/$id";
-                        }
-                    }
-                } else { //admin releasing an employee OR updating name 
-                    $clients = $this->clienttable->findAll();
-                    //$f = negate(curry2('equals')($dom));
-                    //curry2('array_filter')($f)
-                    $checkDomains = composer(partial('in_array', $_dom), partial('array_values'), partial('array_map', curry2('getter')(0)), partial('array_map', 'parseEmail'), partial('array_column', $clients));
-                    if ($checkDomains('domain')) {
-                        reLocate("/user/load/_traitor");
-                    }
-                    if (!$cid && $override) {
-                        $relocate = "/user/loadbridge/leave/$id";
-                    } else {
-                        $postdata['email'] = $cid ? "$_name@$dom.$com" : "$_name@$_dom.$_com";
-                        $postdata['client_id'] = $cid;
-                    }
-                }
-                if ($relocate) {
-                    $this->setCookie($postdata, ['name', 'email', 'client_id'], true);
-                    reLocate($relocate);
-                }
-                return $postdata;
+                return $data;
             } else { //new
                 $client = $this->fetch('clienttable', 'id', $cid);
                 $domain = $client->domain;
-                $postdata['email'] = "$_name@$domain";
+                $postdata['email'] = "$name@$domain";
                 return $postdata;
             }
         };
