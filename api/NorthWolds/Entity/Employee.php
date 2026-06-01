@@ -29,12 +29,24 @@ class Employee extends ClientAdmin
     {
         return $flag;
     }
-
+    /*
     protected function validateDom($cid, $record, $ename, $edom, $insertId = 0)
     {
         $postdata['email'] = "$ename@$edom";
         $postdata['client_id'] = $cid;
         return $postdata;
+    }
+        */
+
+    protected function validateDom($cid, $record, $ename, $edom, $insertId = 0)
+    {
+        list($name, $dom, $com) = $this->parseEmail($record['email']);
+        $postdata['email'] = "$ename@$edom";
+        $postdata['client_id'] = $cid;
+        if ($edom === "$dom.$com" || !$this->self) {
+            return $postdata;
+        }
+        return false;
     }
 
     public function editPayload($id = '')
