@@ -301,7 +301,7 @@ class User extends Presenter
             'name' => $_COOKIE['name'] ?? $user->name ?? '',
             'email' => $_COOKIE['email'] ?? $user->email ?? '',
             'password' => $_COOKIE['password'] ?? '',
-            'employer' => $user->client_id ?? '',
+            'employer' => $_COOKIE['cid'] ?? $user->client_id ?? '',
             'editor' => $editor,
             'clientlist' => $clients,
             'roles' => $roles,
