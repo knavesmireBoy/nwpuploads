@@ -33,8 +33,15 @@ class ClientAdmin extends User
                     list($cid, $domain) = $this->resetClient($cid, "$dom.$com");
                     $postdata['email'] = "$_name@$domain";
                     $postdata['client_id'] = $cid;
-                } else {
-                    $postdata['email'] = "$_name@$dom.$com";
+                } else {//admin releasing an employee OR updating name 
+                    $clients = $this->clienttable->findAll();
+                    $domains = array_column($clients, 'domain');
+                    $domains = array_map('parseEmail', $domains);
+
+                    dump($domains);
+                   
+
+                    $postdata['email'] = $cid ? "$_name@$dom.$com" : "$_name@$_dom.$_com";
                     $postdata['client_id'] = $cid;
                 }
                 return $postdata;
