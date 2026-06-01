@@ -54,12 +54,13 @@ class ClientAdmin extends User
                     }
                     if (!$cid && $override) {
                         $relocate = "/user/loadbridge/leave/$id";
+                    } else {
+                        $postdata['email'] = $cid ? "$_name@$dom.$com" : "$_name@$_dom.$_com";
+                        $postdata['client_id'] = $cid;
                     }
-                    $postdata['email'] = $cid ? "$_name@$dom.$com" : "$_name@$_dom.$_com";
-                    $postdata['client_id'] = $cid;
                 }
                 if ($relocate) {
-                    $this->setCookie($_COOKIE, ['name', 'email', 'client_id'], true);
+                    $this->setCookie($postdata, ['name', 'email', 'client_id'], true);
                     reLocate($relocate);
                 }
                 return $postdata;
