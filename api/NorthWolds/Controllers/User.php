@@ -32,7 +32,9 @@ class User extends Presenter
     private function query($key, $arg = '')
     {
         $lib = [
-            'nousers' => "<Unable to find any users",
+
+            'success' => "Changes succesfully applied",
+            'nousers' => "Unable to find any users",
             "addnotice" => "Please fill required fields",
             "selectuser" => "Please select a user for editing",
             "domainflag" => "Cannot assign this user to a new client",
@@ -284,11 +286,11 @@ class User extends Presenter
         $user = $this->fetch('table', 'id', $id);
 
         //$id maybe 0 if an add request bypasses load; should this happen?
-        if($user){
+        if ($user) {
             $user = $this->getSubUser($user);
             $user->setSelf($editor);
         }
-       
+
         $member = $editor ? $user : $punter;
         $member->setSelf($editor);
         $payload = $member->editPayload($id);
@@ -365,8 +367,6 @@ class User extends Presenter
         $record = get_object_vars($user);
         $required = array_filter($data, fn($item) => $item);
 
-        //$updateUserDomain = $this->updateUserDomainFactory($admin ? '_domain' : 'domain', $user, nullify($clientID), $data, $record);
-
         $dom = $updateDomain(nullify($clientID), $data);
 
         //will exit here if domain doesn't validate
@@ -385,7 +385,15 @@ class User extends Presenter
         $user =  $this->getSubUser($user);
         $user->setSelf($editor);
         $key = $user->setRole($role, $admin ? '_last' : 'lastadmin'); //UPDATE role here; it may trigger an error message
+        //need a message for success for solo/freelancers IF data has changed
 
+        if (!$key) {
+            $updated = get_object_vars($user);
+            $result = array_diff_assoc($record, $updated);
+            if (!empty($result)) {
+                $key = 'success';
+            }
+        }
         reLocate($this->home . strtolower($key));
     }
 
