@@ -170,15 +170,15 @@ class User extends Entity
     return [$name, $dom, $com];
   }
 
-  public function updateDomain($key)
+  public function updateDomain($key, $override)
   {
-    return function (?int $cid, array $postdata, int $insertID = 0) use ($key) {
+    return function (?int $cid, array $postdata, int $id = 0) use ($key, $override) {
       $email = $cid ? $this->email : $postdata['email'];
       list($name, $dom, $com) = $this->parseEmail($email);
       $postdom = "$dom.$com";
       $details = $this->getDetails();
       $domain = $details['domain'];
-      $data = $this->validateDom($cid, $postdata, $name, $postdom, $insertID);
+      $data = $this->validateDom($cid, $postdata, $name, $postdom, $id);
       if ($cid && $domain && ($postdom !== $domain)) {
         reLocate("/user/load/$key");
       } else {

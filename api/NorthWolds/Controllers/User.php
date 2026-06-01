@@ -307,10 +307,6 @@ class User extends Presenter
             'roles' => $roles,
         ];
 
-        if(isset($_COOKIE['name'])){
-            dump($_COOKIE);
-        }
-
         $this->setCookie($_COOKIE, ['name', 'email', 'password', 'client_id'], false);
         return [
             'template' => 'userform.html.php',
@@ -336,7 +332,7 @@ class User extends Presenter
         $user = $this->fetch('table', 'id', $userId);
 
         $user->updatePassword($data['password']);
-        $updateDomain = $user->updateDomain($key);
+        $updateDomain = $user->updateDomain($key, $_POST['override']);
         /*role must be set BEFORE "updateUserDomain"
         no user can navigate the site without an assigned role*/
         $user->setRole($role);
@@ -360,14 +356,14 @@ class User extends Presenter
         $editor = $id == $this->getPrivilege('id');
         $user->setSelf($editor);
 
-        $updateDomain = $user->updateDomain($admin ? '_domain' : 'domain');
+        $updateDomain = $user->updateDomain($admin ? '_domain' : 'domain', $_POST['override']);
 
         $record = get_object_vars($user);
         $required = array_filter($data, fn($item) => $item);
 
         //$updateUserDomain = $this->updateUserDomainFactory($admin ? '_domain' : 'domain', $user, nullify($clientID), $data, $record);
 
-        $dom = $updateDomain(nullify($clientID), $data);
+        $dom = $updateDomain(nullify($clientID), $data, $id);
 
         //will exit here if domain doesn't validate
         $data = [...$record, ...$required, ...$dom];

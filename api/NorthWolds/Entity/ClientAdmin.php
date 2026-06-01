@@ -2,6 +2,8 @@
 
 namespace NorthWolds\Entity;
 
+use Override;
+
 class ClientAdmin extends User
 {
     //return false to present list of users for logged in client
@@ -16,10 +18,12 @@ class ClientAdmin extends User
         return [$ret->id, $ret->domain];
     }
 
-    public function updateDomain($key)
+    public function updateDomain($key, $override)
     {
-        return function (?int $cid, array $postdata, int $insertID = 0) use ($key) {
+        return function (?int $cid, array $postdata, int $id = 0) use ($key, $override) {
             list($_name, $_dom, $_com) = $this->parseEmail($postdata['email']);
+            $relocate = '';
+            $id = $_POST['id'];
             $dbrecord = $this->fetch('TABLE', 'id', $this->id);
             if (isset($dbrecord['email'])) { //existing
                 list($name, $dom, $com) = $this->parseEmail($dbrecord['email']);
@@ -33,16 +37,11 @@ class ClientAdmin extends User
                     list($cid, $domain) = $this->resetClient($cid, "$dom.$com");
                     $postdata['email'] = "$_name@$domain";
                     $postdata['client_id'] = $cid;
-                    if($domain === "$dom.$com"){
+                    if ($domain === "$dom.$com") {
                         reLocate("/user/load/_move");
-                    }
-                    else {
-                        if(empty($_POST['override'])){
-                            $id = $_POST['id'];
-                           // $data = [...$postdata, ['cid' => $cid]];
-                          
-                            $this->setCookie($postdata, ['name', 'email', 'client_id'], true);
-                            reLocate("/user/loadbridge/leave/$id");
+                    } else {
+                        if (!$override) {
+                            $relocate = "/user/loadbridge/leave/$id";
                         }
                     }
                 } else { //admin releasing an employee OR updating name 
@@ -51,16 +50,18 @@ class ClientAdmin extends User
                     //curry2('array_filter')($f)
                     $checkDomains = composer(partial('in_array', $_dom), partial('array_values'), partial('array_map', curry2('getter')(0)), partial('array_map', 'parseEmail'), partial('array_column', $clients));
 
-                    if($checkDomains('domain')){
+                    if ($checkDomains('domain')) {
                         reLocate("/user/load/_traitor");
                     }
 
-                    if(!$cid && empty($_POST['override'])){
-                        $id = $_POST['id'];
-                        $this->setCookie($_COOKIE, ['name', 'email'], true);
-                        reLocate("/user/loadbridge/leave/$id");
+                    if (!$cid && !$override) {
+                        $relocate = "/user/loadbridge/leave/$id";
                     }
 
+                    if ($relocate) {
+                        $this->setCookie($_COOKIE, ['name', 'email', 'client_id'], true);
+                        reLocate("/user/loadbridge/leave/$id");
+                    }
                     $postdata['email'] = $cid ? "$_name@$dom.$com" : "$_name@$_dom.$_com";
                     $postdata['client_id'] = $cid;
                 }
