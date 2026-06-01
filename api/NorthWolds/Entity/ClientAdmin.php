@@ -20,7 +20,7 @@ class ClientAdmin extends User
             $key = "$_dom.$_com" !== "$dom.$com" ? $key : '';
 
             if ($key) {
-                reLocate($this->home . $key);
+                reLocate("/user/load/$key");
             }
             //$_name allowed to change
             $postdata['email'] = "$_name@$dom.$com";

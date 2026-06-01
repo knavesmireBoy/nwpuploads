@@ -398,7 +398,7 @@ class User extends Presenter
 
         //$updateUserDomain = $this->updateUserDomainFactory($admin ? '_domain' : 'domain', $user, nullify($clientID), $data, $record);
 
-        $dom = $user->updateUserDomain($clientID, $data);
+        $dom = $user->updateUserDomain(nullify($clientID), $data);
 
         //will exit here if domain doesn't validate
         $data = [...$record, ...$required, ...$dom];
