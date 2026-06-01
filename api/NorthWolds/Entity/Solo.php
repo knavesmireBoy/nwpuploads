@@ -36,4 +36,10 @@ class Solo extends ClientAdmin
             'retour' => '_return2uploads.html.php'
         ];
     }
+
+    //default for employee;solo
+    public function edit($flag = true)
+    {
+        return $flag;
+    }
 }

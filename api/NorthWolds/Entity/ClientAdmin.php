@@ -18,7 +18,8 @@ class ClientAdmin extends User
         if (isset($dbrecord['email'])) { //existing
             list($name, $dom, $com) = $this->parseEmail($dbrecord['email']);
             $key = "$_dom.$_com" !== "$dom.$com" ? $key : '';
-            if ($key && $this->findDomain("$_dom.$_com")) {
+
+            if ($key) {
                 reLocate($this->home . $key);
             }
             //$_name allowed to change

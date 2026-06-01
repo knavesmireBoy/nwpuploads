@@ -19,4 +19,9 @@ class Employee extends ClientAdmin
     {
         return [];
     }
+
+    public function edit($flag = true)
+    {
+        return $flag;
+    }
 }
