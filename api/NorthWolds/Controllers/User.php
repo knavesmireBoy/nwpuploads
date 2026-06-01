@@ -32,8 +32,8 @@ class User extends Presenter
     private function query($key, $arg = '')
     {
         $lib = [
-
             'success' => "Changes succesfully applied",
+            'suces' => "Changes succesfully applied again",
             'nousers' => "Unable to find any users",
             "addnotice" => "Please fill required fields",
             "selectuser" => "Please select a user for editing",
@@ -215,6 +215,8 @@ class User extends Presenter
     {
         $details = $this->getPrivilege();
         $customVars = $this->getCustomVars($key, $vars);
+
+        if($key === 'success') dump($_SERVER['REQUEST_URI']);
 
         $owner = []; //prompt.html.php expects this from Uploader Controller
         unset($vars['id']);
