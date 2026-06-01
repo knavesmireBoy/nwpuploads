@@ -40,7 +40,7 @@ class ClientAdmin extends User
                     if ($domain === "$dom.$com") {
                         reLocate("/user/load/_move");
                     } else {
-                        if (!$override) {
+                        if ($override) {
                             $relocate = "/user/loadbridge/leave/$id";
                         }
                     }
@@ -54,13 +54,13 @@ class ClientAdmin extends User
                         reLocate("/user/load/_traitor");
                     }
 
-                    if (!$cid && !$override) {
+                    if (!$cid && $override) {
                         $relocate = "/user/loadbridge/leave/$id";
                     }
 
                     if ($relocate) {
                         $this->setCookie($_COOKIE, ['name', 'email', 'client_id'], true);
-                        reLocate("/user/loadbridge/leave/$id");
+                        reLocate($relocate);
                     }
                     $postdata['email'] = $cid ? "$_name@$dom.$com" : "$_name@$_dom.$_com";
                     $postdata['client_id'] = $cid;
