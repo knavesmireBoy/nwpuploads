@@ -370,8 +370,10 @@ class User extends Presenter
         no user can navigate the site without an assigned role*/
         $user->setRole($role);
 
-        $updateUserDomain = $this->updateUserDomainFactory($key, $user, nullify($client_id), get_object_vars($user), [], $userId);
-        $data = $updateUserDomain();
+        //$updateUserDomain = $this->updateUserDomainFactory($key, $user, nullify($client_id), get_object_vars($user), [], $userId);
+
+        $data = $user->updateUserDomain(nullify($client_id), get_object_vars($user), $userId);
+       // $data = $updateUserDomain();
         $this->table->save($data);
         reLocate($this->home);
     }
@@ -394,10 +396,12 @@ class User extends Presenter
         $record = get_object_vars($user);
         $required = array_filter($data, fn($item) => $item);
 
-        $updateUserDomain = $this->updateUserDomainFactory($admin ? '_domain' : 'domain', $user, nullify($clientID), $data, $record);
+        //$updateUserDomain = $this->updateUserDomainFactory($admin ? '_domain' : 'domain', $user, nullify($clientID), $data, $record);
+
+        $dom = $user->updateUserDomain($clientID, $data);
 
         //will exit here if domain doesn't validate
-        $data = [...$record, ...$required, ...$updateUserDomain()];
+        $data = [...$record, ...$required, ...$dom];
         //exclude password from update unless requested...
         list($change, $optional) = $this->hasChanged($record, $required, ['email', 'password'], ['name']);
 

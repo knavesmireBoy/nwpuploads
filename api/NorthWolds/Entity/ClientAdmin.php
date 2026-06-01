@@ -11,9 +11,8 @@ class ClientAdmin extends User
     }
     public function updateUserDomain(?int $cid, array $postdata, int $insertID = 0)
     {
-        $key = $this->self ? 'domain' : '_domain';
-       // $key = 'domain';
-        
+        // $key = $this->self ? 'domain' : '_domain';
+        $key = 'domain';
         list($_name, $_dom, $_com) = $this->parseEmail($postdata['email']);
         $dbrecord = $this->fetch('TABLE', 'id', $this->id);
         if (isset($dbrecord['email'])) { //existing
