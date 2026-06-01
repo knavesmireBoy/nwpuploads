@@ -48,13 +48,10 @@ class ClientAdmin extends User
                 if(!$cid || $dbrecord['client_id'] != $cid){
                     reLocate("/user/load/_cadmin");
                 }
-
                 $data = $this->validateDom($cid, $dbrecord, $name, "$dom.$com", $id);
                 if (!$data) {
-                   // $key = $cid ? 'domain' : '_domain';
-                    reLocate("/user/load/domain");
+                    reLocate("/user/load/$key");
                 }
-             
                 return $data;
             } else { //new
                 return $this->setClientEmail($cid, $name, $postdata);
