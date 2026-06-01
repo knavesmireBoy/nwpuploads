@@ -24,7 +24,8 @@ class ClientAdmin extends User
             if (isset($dbrecord['email'])) { //existing
                 list($name, $dom, $com) = $this->parseEmail($dbrecord['email']);
                 $key = "$_dom.$_com" !== "$dom.$com" ? $key : '';
-                if ($key) {
+
+                if ($cid && $key) {
                     reLocate("/user/load/$key");
                 }
                 //can only be admin moving an employee
@@ -34,6 +35,7 @@ class ClientAdmin extends User
                     $postdata['client_id'] = $cid;
                 } else {
                     $postdata['email'] = "$_name@$dom.$com";
+                    $postdata['client_id'] = $cid;
                 }
                 return $postdata;
             } else { //new
