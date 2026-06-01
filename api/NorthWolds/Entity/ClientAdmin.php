@@ -9,6 +9,13 @@ class ClientAdmin extends User
     {
         return false;
     }
+
+    protected function resetClient($cid)
+    {
+        $ret = $this->fetch('clienttable', 'id', $this->client_id);
+        return [$ret->id, $ret->domain];
+    }
+
     public function updateDomain($key)
     {
         return function (?int $cid, array $postdata, int $insertID = 0) use ($key) {
@@ -17,14 +24,17 @@ class ClientAdmin extends User
             if (isset($dbrecord['email'])) { //existing
                 list($name, $dom, $com) = $this->parseEmail($dbrecord['email']);
                 $key = "$_dom.$_com" !== "$dom.$com" ? $key : '';
-
-                dump($_POST);
-
                 if ($key) {
                     reLocate("/user/load/$key");
                 }
-                //$_name allowed to change
-                $postdata['email'] = "$_name@$dom.$com";
+                //can only be admin moving an employee
+                if ($cid && $cid != $dbrecord['client_id']) {
+                    list($cid, $domain) = $this->resetClient($cid, "$dom.$com");
+                    $postdata['email'] = "$_name@$domain";
+                    $postdata['client_id'] = $cid;
+                } else {
+                    $postdata['email'] = "$_name@$dom.$com";
+                }
                 return $postdata;
             } else { //new
                 $client = $this->fetch('clienttable', 'id', $cid);

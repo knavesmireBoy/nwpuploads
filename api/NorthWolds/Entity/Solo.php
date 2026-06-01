@@ -4,6 +4,7 @@ namespace NorthWolds\Entity;
 
 class Solo extends ClientAdmin
 {
+    
     public function delete($id)
     {
         return 'last';

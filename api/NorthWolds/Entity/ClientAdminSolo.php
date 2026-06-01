@@ -4,6 +4,7 @@ namespace NorthWolds\Entity;
 //if this is the only admin role we cannot demote or delete
 class ClientAdminSolo extends ClientAdmin
 {
+
     protected function validateRole($role)
     {
         $details = $this->getDetails();

@@ -9,6 +9,11 @@ class Employee extends ClientAdmin
         parent::__construct(...$args);
     }
 
+    protected function resetClient($cid)
+    {
+        $ret = $this->fetch('clienttable', 'id', $cid);
+        return [$cid, $ret->domain];
+    }
 
     public function presentList($userId)
     {
