@@ -61,6 +61,7 @@ class User extends Presenter
             '_domain' => 'Set the drop down menu to empty when changing the domain. Change the domain of the client to update the domain for all members.',
             'traitor' => 'That domain is not available.',
             '_traitor' => 'To assign to another client use the drop down menu.',
+            '_move' => 'Cannot move a user with an admin role',
             '_impostor' => 'That domain is in use, use the client list drop down to assign a user.'
         ];
 

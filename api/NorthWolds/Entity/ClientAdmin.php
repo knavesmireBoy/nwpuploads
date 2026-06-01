@@ -28,19 +28,29 @@ class ClientAdmin extends User
                 if ($cid && $key) {
                     reLocate("/user/load/$key");
                 }
-                //can only be admin moving an employee
+                //can only be admin moving an employee; admin users cannot be moved
                 if ($cid && $cid != $dbrecord['client_id']) {
                     list($cid, $domain) = $this->resetClient($cid, "$dom.$com");
                     $postdata['email'] = "$_name@$domain";
                     $postdata['client_id'] = $cid;
+                    if($domain === "$dom.$com"){
+                        reLocate("/user/load/_move");
+                    }
                 } else { //admin releasing an employee OR updating name 
                     $clients = $this->clienttable->findAll();
-                    $f = negate(curry2('equals')($dom));
-                    $getDoms = composer(partial('in_array', $_dom), curry2('array_filter')($f), partial('array_values'), partial('array_map', curry2('getter')(0)), partial('array_map', 'parseEmail'), partial('array_column', $clients));
-                    $domz = $getDoms('domain');
+                    //$f = negate(curry2('equals')($dom));
+                    //curry2('array_filter')($f)
+                    $checkDomains = composer(partial('in_array', $_dom), partial('array_values'), partial('array_map', curry2('getter')(0)), partial('array_map', 'parseEmail'), partial('array_column', $clients));
 
-                    dump($domz);
+                    if($checkDomains('domain')){
+                        reLocate("/user/load/_traitor");
+                    }
 
+                    if(!$cid && empty($_POST['override'])){
+                        $id = $_POST['id'];
+                        $this->setCookie($_COOKIE, ['name', 'email'], true);
+                        reLocate("/user/loadbridge/leave/$id");
+                    }
 
                     $postdata['email'] = $cid ? "$_name@$dom.$com" : "$_name@$_dom.$_com";
                     $postdata['client_id'] = $cid;

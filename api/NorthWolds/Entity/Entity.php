@@ -23,7 +23,7 @@ class Entity
     {
         $setcookie = doSetCookie($flag);
         foreach ($mandatory as $prop) {
-            $arg = isset($data[$prop]) && $flag ? $data[$prop] : '';
+            $arg = $flag && !isset($data[$prop]) ? $data[$prop] : '';
             $setcookie($prop, $arg);
         }
     }
