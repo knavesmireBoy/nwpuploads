@@ -35,12 +35,16 @@ class ClientAdmin extends User
                     $postdata['client_id'] = $cid;
                 } else { //admin releasing an employee OR updating name 
                     $clients = $this->clienttable->findAll();
+                    $f = negate(curry2('equals')($dom));
+                    $getDoms = composer(curry2('array_filter')($f), partial('array_values'), partial('array_map', curry2('getter')(0)), partial('array_map', 'parseEmail'), partial('array_column', $clients));
 
                     $domains = array_column($clients, 'domain');
                     $domains = array_map('parseEmail', $domains);
                     $doms = array_values(array_map(curry2('getter')(0), $domains));
 
-                    dump($doms);
+
+
+                    dump($getDoms('domain'));
 
 
 
