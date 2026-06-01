@@ -307,6 +307,10 @@ class User extends Presenter
             'roles' => $roles,
         ];
 
+        if(isset($_COOKIE['name'])){
+            dump($_COOKIE);
+        }
+
         $this->setCookie($_COOKIE, ['name', 'email', 'password', 'client_id'], false);
         return [
             'template' => 'userform.html.php',
