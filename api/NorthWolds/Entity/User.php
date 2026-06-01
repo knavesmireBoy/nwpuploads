@@ -21,6 +21,7 @@ class User extends Entity
   protected $clienttable;
   protected $roles = ['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'];
   protected $self;
+  protected $home;
   public $password;
   public $id;
   public $name;
