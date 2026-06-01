@@ -49,21 +49,18 @@ class ClientAdmin extends User
                     //$f = negate(curry2('equals')($dom));
                     //curry2('array_filter')($f)
                     $checkDomains = composer(partial('in_array', $_dom), partial('array_values'), partial('array_map', curry2('getter')(0)), partial('array_map', 'parseEmail'), partial('array_column', $clients));
-
                     if ($checkDomains('domain')) {
                         reLocate("/user/load/_traitor");
                     }
-
                     if (!$cid && $override) {
                         $relocate = "/user/loadbridge/leave/$id";
                     }
-
-                    if ($relocate) {
-                        $this->setCookie($_COOKIE, ['name', 'email', 'client_id'], true);
-                        reLocate($relocate);
-                    }
                     $postdata['email'] = $cid ? "$_name@$dom.$com" : "$_name@$_dom.$_com";
                     $postdata['client_id'] = $cid;
+                }
+                if ($relocate) {
+                    $this->setCookie($_COOKIE, ['name', 'email', 'client_id'], true);
+                    reLocate($relocate);
                 }
                 return $postdata;
             } else { //new
