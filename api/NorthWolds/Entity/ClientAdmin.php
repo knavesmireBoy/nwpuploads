@@ -23,11 +23,19 @@ class ClientAdmin extends User
     {
         list($name, $dom, $com) = $this->parseEmail($record['email']);
         if ($edom === "$dom.$com") {
-            $postdata['email'] = "$ename@$dom.$com";
+            $postdata['email'] = "$ename@$edom";
             $postdata['client_id'] = $cid;
             return $postdata;
         }
         return false;
+    }
+
+    protected function setClientEmail($cid, $name, $data)
+    {
+        $client = $this->fetch('clienttable', 'id', $cid);
+        $domain = $client->domain;
+        $data['email'] = "$name@$domain";
+        return $data;
     }
 
     public function updateDomain($key, $override)
@@ -37,15 +45,15 @@ class ClientAdmin extends User
             $dbrecord = $this->fetch('TABLE', 'id', $this->id);
             if (isset($dbrecord['email'])) { //existing
                 $data = $this->validateDom($cid, $dbrecord, $name, "$dom.$com", $id);
-                if(!$data){
+                if (!$data) {
                     reLocate("/user/load/$key");
+                }
+                if(!$cid || $dbrecord['client_id'] != $cid){
+                    reLocate("/user/load/_cadmin");
                 }
                 return $data;
             } else { //new
-                $client = $this->fetch('clienttable', 'id', $cid);
-                $domain = $client->domain;
-                $postdata['email'] = "$name@$domain";
-                return $postdata;
+                return $this->setClientEmail($cid, $name, $postdata);
             }
         };
     }

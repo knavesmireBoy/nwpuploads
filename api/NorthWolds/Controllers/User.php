@@ -59,6 +59,7 @@ class User extends Presenter
 
             'domain' => 'Only the database administrator can change the domain of an email address.',
             '_domain' => 'Set the drop down menu to empty when changing the domain. Change the domain of the client to update the domain for all members.',
+            '_cadmin' => 'Cannot change the domain of a user with an admin role',
             'traitor' => 'That domain is not available.',
             '_traitor' => 'To assign to another client use the drop down menu.',
             '_move' => 'Cannot move a user with an admin role',

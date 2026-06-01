@@ -30,14 +30,12 @@ class Employee extends ClientAdmin
         return $flag;
     }
 
-    
     protected function validateDom($cid, $record, $ename, $edom, $insertId = 0)
     {
-        $postdata['email'] = "$ename.$edom";
+        $postdata['email'] = "$ename@$edom";
         $postdata['client_id'] = $cid;
         return $postdata;
     }
-
 
     public function updateDomain($key, $override)
     {
@@ -75,10 +73,7 @@ class Employee extends ClientAdmin
                 }
                 return $postdata;
             } else { //new
-                $client = $this->fetch('clienttable', 'id', $cid);
-                $domain = $client->domain;
-                $postdata['email'] = "$name@$domain";
-                return $postdata;
+                return $this->setClientEmail($cid, $name, $postdata);
             }
         };
     }
