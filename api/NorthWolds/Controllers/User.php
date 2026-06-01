@@ -216,8 +216,6 @@ class User extends Presenter
         $details = $this->getPrivilege();
         $customVars = $this->getCustomVars($key, $vars);
 
-        if($key === 'success') dump($_SERVER['REQUEST_URI']);
-
         $owner = []; //prompt.html.php expects this from Uploader Controller
         unset($vars['id']);
         //the occasional error may require ONE argument which is not an id
@@ -393,7 +391,8 @@ class User extends Presenter
             $updated = get_object_vars($user);
             $result = array_diff_assoc($record, $updated);
             if (!empty($result)) {
-                $key = 'success';
+                $request = $_SERVER['REQUEST_URI'];
+                $key = strpos($request, 'success') ? 'suces' : 'success';
             }
         }
         reLocate($this->home . strtolower($key));
