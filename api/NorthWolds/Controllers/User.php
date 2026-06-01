@@ -89,38 +89,6 @@ class User extends Presenter
         return $ret;
     }
 
-    private function updateUserDomainFactory($key, $user, $cid, $data, $dbrecord, $userID = 0)
-    {
-        if (isset($user->client_id) && $user->client_id == $cid) {
-
-            return function () use ($key, $cid, $user, $data, $dbrecord) {
-                //ensure domain remains the same
-                list($_name, $_dom, $_com) = $user->parseEmail($data['email']);
-                if (isset($dbrecord['email'])) { //existing
-                    list($name, $dom, $com) = $user->parseEmail($dbrecord['email']);
-                    $k = "$_dom.$_com" !== "$dom.$com" ? $key : '';
-                    if ($k && $user->findDomain("$_dom.$_com")) {
-                        reLocate($this->home . $key);
-                    }
-                    //$_name allowed to change
-                    $data['email'] = "$_name@$dom.$com";
-                    return $data;
-                } else { //new
-                    $client = $this->fetch('clienttable', 'id', $cid);
-                    $domain = $client->domain;
-                    $data['email'] = "$_name@$domain";
-                    return $data;
-                }
-            };
-        }
-
-        return function () use ($user, $cid, $data, $userID) {
-            return $user->updateUserDomain($cid, $data, $userID);
-        };
-    }
-
-
-
     private function hasChanged($db, $post, $mandatory, $optionals)
     {
         $ret = [];
@@ -350,9 +318,7 @@ class User extends Presenter
     {
         $data = $_POST['data'];
         $client_id = $_POST['employer'] ?? $_POST['employed'];
-
         $key = isApproved($_SESSION['role'], 'ADMIN') ? '_domain' : 'domain';
-
         $required = array_filter($data, function ($item) {
             return $item;
         });
@@ -365,15 +331,11 @@ class User extends Presenter
         $user = $this->fetch('table', 'id', $userId);
 
         $user->updatePassword($data['password']);
-
+        $updateDomain = $user->updateDomain($key);
         /*role must be set BEFORE "updateUserDomain"
         no user can navigate the site without an assigned role*/
         $user->setRole($role);
-
-        //$updateUserDomain = $this->updateUserDomainFactory($key, $user, nullify($client_id), get_object_vars($user), [], $userId);
-
-        $data = $user->updateUserDomain(nullify($client_id), get_object_vars($user), $userId);
-       // $data = $updateUserDomain();
+        $data = $updateDomain(nullify($client_id), get_object_vars($user), $userId);
         $this->table->save($data);
         reLocate($this->home);
     }
@@ -393,12 +355,14 @@ class User extends Presenter
         $editor = $id == $this->getPrivilege('id');
         $user->setSelf($editor);
 
+        $updateDomain = $user->updateDomain($admin ? '_domain' : 'domain');
+
         $record = get_object_vars($user);
         $required = array_filter($data, fn($item) => $item);
 
         //$updateUserDomain = $this->updateUserDomainFactory($admin ? '_domain' : 'domain', $user, nullify($clientID), $data, $record);
 
-        $dom = $user->updateUserDomain(nullify($clientID), $data);
+        $dom = $updateDomain(nullify($clientID), $data);
 
         //will exit here if domain doesn't validate
         $data = [...$record, ...$required, ...$dom];

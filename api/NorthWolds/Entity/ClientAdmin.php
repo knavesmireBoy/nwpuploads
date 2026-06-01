@@ -9,28 +9,27 @@ class ClientAdmin extends User
     {
         return false;
     }
-    public function updateUserDomain(?int $cid, array $postdata, int $insertID = 0)
+    public function updateDomain($key)
     {
-        // $key = $this->self ? 'domain' : '_domain';
-        $key = 'domain';
-        list($_name, $_dom, $_com) = $this->parseEmail($postdata['email']);
-        $dbrecord = $this->fetch('TABLE', 'id', $this->id);
-        if (isset($dbrecord['email'])) { //existing
-            list($name, $dom, $com) = $this->parseEmail($dbrecord['email']);
-            $key = "$_dom.$_com" !== "$dom.$com" ? $key : '';
-
-            if ($key) {
-                reLocate("/user/load/$key");
+        return function (?int $cid, array $postdata, int $insertID = 0) use ($key) {
+            list($_name, $_dom, $_com) = $this->parseEmail($postdata['email']);
+            $dbrecord = $this->fetch('TABLE', 'id', $this->id);
+            if (isset($dbrecord['email'])) { //existing
+                list($name, $dom, $com) = $this->parseEmail($dbrecord['email']);
+                $key = "$_dom.$_com" !== "$dom.$com" ? $key : '';
+                if ($key) {
+                    reLocate("/user/load/$key");
+                }
+                //$_name allowed to change
+                $postdata['email'] = "$_name@$dom.$com";
+                return $postdata;
+            } else { //new
+                $client = $this->fetch('clienttable', 'id', $cid);
+                $domain = $client->domain;
+                $postdata['email'] = "$_name@$domain";
+                return $postdata;
             }
-            //$_name allowed to change
-            $postdata['email'] = "$_name@$dom.$com";
-            return $postdata;
-        } else { //new
-            $client = $this->fetch('clienttable', 'id', $cid);
-            $domain = $client->domain;
-            $postdata['email'] = "$_name@$domain";
-            return $postdata;
-        }
+        };
     }
 
     public function setRole(string $role)

@@ -51,7 +51,6 @@ class User extends Entity
     return $this->self;
   }
 
-  //default for employee;solo
   public function edit($flag = true)
   {
     return $flag;
@@ -59,18 +58,17 @@ class User extends Entity
 
   public function loadPayload($id = '')
   {
-      return [
-          'retour' => '_return2uploads.html.php'
-      ];
+    return [
+      'retour' => '_return2uploads.html.php'
+    ];
   }
 
   public function editPayload($id = '')
   {
-      return [
-          'retour' => '_return2uploads.html.php'
-      ];
+    return [
+      'retour' => '_return2uploads.html.php'
+    ];
   }
-
   //convert ids into table structure [userid, roleid]
   protected function getAllRoles(array $ids)
   {
@@ -133,11 +131,6 @@ class User extends Entity
   {
     $client = $cid ? $this->clienttable->find('id', $cid) : [];
     $key = '';
-    $flag = isset($_COOKIE['leave']) ? false : true;
-    $setcookie = doSetCookie($flag);
-    //ADMIN moving or switching a user to a client
-
-   // dump($this);
     if (isset($client[0])) {
       $details = $this->getDetails();
       if (isApproved($details['role'], 'admin')) {
@@ -177,19 +170,21 @@ class User extends Entity
     return [$name, $dom, $com];
   }
 
-  public function updateUserDomain(?int $cid, array $postdata, int $insertID = 0)
+  public function updateDomain($key)
   {
-    $email = $cid ? $this->email : $postdata['email'];
-    list($name, $dom, $com) = $this->parseEmail($email);
-    $postdom = "$dom.$com";
-    $details = $this->getDetails();
-    $domain = $details['domain'];
-    $data = $this->validateDom($cid, $postdata, $name, $postdom, $insertID);
-    if ($cid && $domain && ($postdom !== $domain)) {
-      reLocate('/user/load/domain');
-    } else {
-      return $data;
-    }
+    return function (?int $cid, array $postdata, int $insertID = 0) use ($key) {
+      $email = $cid ? $this->email : $postdata['email'];
+      list($name, $dom, $com) = $this->parseEmail($email);
+      $postdom = "$dom.$com";
+      $details = $this->getDetails();
+      $domain = $details['domain'];
+      $data = $this->validateDom($cid, $postdata, $name, $postdom, $insertID);
+      if ($cid && $domain && ($postdom !== $domain)) {
+        reLocate("/user/load/$key");
+      } else {
+        return $data;
+      }
+    };
   }
 
   public function updatePassword($password)
