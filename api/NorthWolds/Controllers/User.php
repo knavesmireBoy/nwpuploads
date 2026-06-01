@@ -280,13 +280,16 @@ class User extends Presenter
         $details = $this->getPrivilege();
         $punter = $this->fetch('table', 'id', $details['id']);
         $punter = $this->getSubUser($punter);
-
-        $user = $this->fetch('table', 'id', $id);
-        $user = $this->getSubUser($user);
         $editor = ($id == $details['id']);
+        $user = $this->fetch('table', 'id', $id);
 
+        //$id maybe 0 if an add request bypasses load; should this happen?
+        if($user){
+            $user = $this->getSubUser($user);
+            $user->setSelf($editor);
+        }
+       
         $member = $editor ? $user : $punter;
-
         $member->setSelf($editor);
         $payload = $member->editPayload($id);
 

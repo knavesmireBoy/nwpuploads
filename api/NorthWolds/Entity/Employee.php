@@ -37,6 +37,13 @@ class Employee extends ClientAdmin
         return $postdata;
     }
 
+    public function editPayload($id = '')
+    {
+        return [
+            'retour' => '_return2uploads.html.php'
+        ];
+    }
+
     public function updateDomain($key, $uid, $override)
     {
         return function (?int $cid, array $postdata, int $id = 0) use ($key, $uid, $override) {
