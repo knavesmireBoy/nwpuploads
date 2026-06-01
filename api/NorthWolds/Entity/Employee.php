@@ -78,7 +78,14 @@ class Employee extends ClientAdmin
                     }
                 } else { //admin releasing an employee OR updating name 
                     $clients = $this->clienttable->findAll();
-                    $checkDomains = composer(partial('in_array', $dom), partial('array_values'), partial('array_map', curry2('getter')(0)), partial('array_map', 'parseEmail'), partial('array_column', $clients));
+
+                    
+                    $f = negate(curry2('equals')($dom));
+                    $f = $cid ? $f : 'identity';
+                    $filter = curry2('array_filter')($f);
+
+                    $checkDomains = composer(partial('in_array', $dom), $filter, partial('array_values'), partial('array_map', curry2('getter')(0)), partial('array_map', 'parseEmail'), partial('array_column', $clients));
+
                     if ($checkDomains('domain')) {
                         reLocate("/user/load/_traitor");
                     }
