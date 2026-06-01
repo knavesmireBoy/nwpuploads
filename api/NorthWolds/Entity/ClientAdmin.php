@@ -36,6 +36,13 @@ class ClientAdmin extends User
                     if($domain === "$dom.$com"){
                         reLocate("/user/load/_move");
                     }
+                    else {
+                        if(empty($_POST['override'])){
+                            $id = $_POST['id'];
+                            $this->setCookie($_COOKIE, ['name', 'email'], true);
+                            reLocate("/user/loadbridge/leave/$id");
+                        }
+                    }
                 } else { //admin releasing an employee OR updating name 
                     $clients = $this->clienttable->findAll();
                     //$f = negate(curry2('equals')($dom));
