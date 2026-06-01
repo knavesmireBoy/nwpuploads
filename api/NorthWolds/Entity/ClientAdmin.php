@@ -38,9 +38,9 @@ class ClientAdmin extends User
         return $data;
     }
 
-    public function updateDomain($key, $override)
+    public function updateDomain($key, $uid, $override)
     {
-        return function (?int $cid, array $postdata, int $id = 0) use ($key, $override) {
+        return function (?int $cid, array $postdata, int $id = 0) use ($key, $uid, $override) {
             list($name, $dom, $com) = $this->parseEmail($postdata['email']);
             $dbrecord = $this->fetch('TABLE', 'id', $this->id);
             if (isset($dbrecord['email'])) { //existing
@@ -48,7 +48,7 @@ class ClientAdmin extends User
                 if(!$cid || $dbrecord['client_id'] != $cid){
                     reLocate("/user/load/_cadmin");
                 }
-                $data = $this->validateDom($cid, $dbrecord, $name, "$dom.$com", $id);
+                $data = $this->validateDom($cid, $dbrecord, $name, "$dom.$com");
                 if (!$data) {
                     reLocate("/user/load/$key");
                 }

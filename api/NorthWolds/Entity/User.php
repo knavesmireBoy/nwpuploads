@@ -170,9 +170,9 @@ class User extends Entity
     return [$name, $dom, $com];
   }
 
-  public function updateDomain($key, $override)
+  public function updateDomain($key, $uid, $override)
   {
-    return function (?int $cid, array $postdata, int $id = 0) use ($key, $override) {
+    return function (?int $cid, array $postdata, int $id = 0) use ($key, $uid, $override) {
       $email = $cid ? $this->email : $postdata['email'];
       list($name, $dom, $com) = $this->parseEmail($email);
       $postdom = "$dom.$com";

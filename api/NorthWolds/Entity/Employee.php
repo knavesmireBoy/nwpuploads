@@ -37,14 +37,14 @@ class Employee extends ClientAdmin
         return $postdata;
     }
 
-    public function updateDomain($key, $override)
+    public function updateDomain($key, $uid, $override)
     {
-        return function (?int $cid, array $postdata, int $id = 0) use ($key, $override) {
+        return function (?int $cid, array $postdata, int $id = 0) use ($key, $uid, $override) {
             list($name, $dom, $com) = $this->parseEmail($postdata['email']);
             $relocate = '';
             $dbrecord = $this->fetch('TABLE', 'id', $this->id);
             if (isset($dbrecord['email'])) { //existing
-                $newdata = $this->validateDom($cid, $dbrecord, $name, "$dom.$com", $id);
+                $newdata = $this->validateDom($cid, $dbrecord, $name, "$dom.$com");
                 if (!$newdata) {
                     reLocate("/user/load/$key");
                 }
@@ -55,7 +55,7 @@ class Employee extends ClientAdmin
                     $domain = $data->domain;
                     $postdata['email'] = "$name.$domain";
                     if ($override) {
-                        $relocate = "/user/loadbridge/leave/$id";
+                        $relocate = "/user/loadbridge/leave/$uid";
                     }
                 } else { //admin releasing an employee OR updating name 
                     $clients = $this->clienttable->findAll();
@@ -64,7 +64,7 @@ class Employee extends ClientAdmin
                         reLocate("/user/load/_traitor");
                     }
                     if (!$cid && $override) {
-                        $relocate = "/user/loadbridge/leave/$id";
+                        $relocate = "/user/loadbridge/leave/$uid";
                     }
                 }
                 if ($relocate) {

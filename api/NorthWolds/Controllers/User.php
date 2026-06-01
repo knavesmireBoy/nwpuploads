@@ -333,8 +333,8 @@ class User extends Presenter
         $user = $this->fetch('table', 'id', $userId);
 
         $user->updatePassword($data['password']);
-        $updateDomain = $user->updateDomain($key, empty($_POST['override']));
-        /*role must be set BEFORE "updateUserDomain"
+        $updateDomain = $user->updateDomain($key, $data['id'], empty($_POST['override']));
+        /*role must be set BEFORE "updateDomain"
         no user can navigate the site without an assigned role*/
         $user->setRole($role);
         $data = $updateDomain(nullify($client_id), get_object_vars($user), $userId);
@@ -357,14 +357,14 @@ class User extends Presenter
         $editor = $id == $this->getPrivilege('id');
         $user->setSelf($editor);
 
-        $updateDomain = $user->updateDomain($admin ? '_domain' : 'domain', empty($_POST['override']));
+        $updateDomain = $user->updateDomain($admin ? '_domain' : 'domain', $id, empty($_POST['override']));
 
         $record = get_object_vars($user);
         $required = array_filter($data, fn($item) => $item);
 
         //$updateUserDomain = $this->updateUserDomainFactory($admin ? '_domain' : 'domain', $user, nullify($clientID), $data, $record);
 
-        $dom = $updateDomain(nullify($clientID), $data, $id);
+        $dom = $updateDomain(nullify($clientID), $data);
 
         //will exit here if domain doesn't validate
         $data = [...$record, ...$required, ...$dom];
