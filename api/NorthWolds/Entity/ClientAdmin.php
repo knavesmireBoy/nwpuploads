@@ -17,6 +17,9 @@ class ClientAdmin extends User
             if (isset($dbrecord['email'])) { //existing
                 list($name, $dom, $com) = $this->parseEmail($dbrecord['email']);
                 $key = "$_dom.$_com" !== "$dom.$com" ? $key : '';
+
+                dump($_POST);
+
                 if ($key) {
                     reLocate("/user/load/$key");
                 }
