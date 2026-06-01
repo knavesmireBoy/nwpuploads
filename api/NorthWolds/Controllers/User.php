@@ -301,13 +301,13 @@ class User extends Presenter
             'name' => $_COOKIE['name'] ?? $user->name ?? '',
             'email' => $_COOKIE['email'] ?? $user->email ?? '',
             'password' => $_COOKIE['password'] ?? '',
-            'employer' => $_COOKIE['cid'] ?? $user->client_id ?? '',
+            'employer' => $_COOKIE['client_id'] ?? $user->client_id ?? '',
             'editor' => $editor,
             'clientlist' => $clients,
             'roles' => $roles,
         ];
 
-        $this->setCookie($_COOKIE, ['name', 'email', 'password'], false);
+        $this->setCookie($_COOKIE, ['name', 'email', 'password', 'client_id'], false);
         return [
             'template' => 'userform.html.php',
             'title' => 'Edit User',

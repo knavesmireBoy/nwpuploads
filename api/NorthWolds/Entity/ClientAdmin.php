@@ -39,8 +39,9 @@ class ClientAdmin extends User
                     else {
                         if(empty($_POST['override'])){
                             $id = $_POST['id'];
-                            $data = [...$postdata, ['cid' => $cid]];
-                            $this->setCookie($data, ['name', 'email', 'cid'], true);
+                           // $data = [...$postdata, ['cid' => $cid]];
+                          
+                            $this->setCookie($postdata, ['name', 'email', 'client_id'], true);
                             reLocate("/user/loadbridge/leave/$id");
                         }
                     }
