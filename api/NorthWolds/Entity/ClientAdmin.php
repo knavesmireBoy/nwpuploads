@@ -36,7 +36,7 @@ class ClientAdmin extends User
                 } else { //admin releasing an employee OR updating name 
                     $clients = $this->clienttable->findAll();
                     $f = negate(curry2('equals')($dom));
-                    $getDoms = composer(partial('in_array', $dom), curry2('array_filter')($f), partial('array_values'), partial('array_map', curry2('getter')(0)), partial('array_map', 'parseEmail'), partial('array_column', $clients));
+                    $getDoms = composer(partial('in_array', $_dom), curry2('array_filter')($f), partial('array_values'), partial('array_map', curry2('getter')(0)), partial('array_map', 'parseEmail'), partial('array_column', $clients));
                     $domz = $getDoms('domain');
 
                     dump($domz);
