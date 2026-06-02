@@ -7,6 +7,7 @@
 
     if (isset($pos) && !isset($neg)) {
         include 'confirm.html.php';
+        exit();
     }
 
     if (isset($clientlist)): ?>
