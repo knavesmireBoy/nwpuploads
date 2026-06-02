@@ -389,7 +389,7 @@ class User extends Presenter
         $key = $user->setRole($role, $admin ? '_last' : 'lastadmin'); //UPDATE role here; it may trigger an error message
         //need a message for success for solo/freelancers IF data has changed
         if (!$key) {
-            Presenter::$success = !Presenter::$success;
+            Presenter::$success = intval(!Presenter::$success);
             $updated = get_object_vars($user);
             $result = array_diff_assoc($record, $updated);
             if (!empty($result)) {

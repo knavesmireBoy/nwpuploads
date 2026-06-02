@@ -11,7 +11,7 @@ class Presenter
     {
     }
 
-    public static string $success = false;
+    public static string $success = 0;
 
     protected function presentList(string $role, mixed $userId, \Ninja\DatabaseTable $table, $prop = 'domain')
     {
