@@ -84,7 +84,7 @@ class User extends Presenter
             'selected' => ['pagehead' => 'Select User', 'selected' => true, 'clients' => [], 'users' => $users],
             'change' => ['pagehead' => 'Edit User', 'id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Changing these details will require you to log in again. Proceed?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'editor' => $id, 'action' => '/user/change/'],
             'leave' => [...$prompt, 'editor' => $id, 'action' => '/user/change/', 'prompt' => "Are you sure you want to disassociate this user from the client?"],
-            'success' => ['pagehead' => 'Edit User', 'id' => $id, 'template' => 'prompt.html.php', 'editor' => $id, 'action' => '/user/load/', 'call' => 'load', 'pos' => 'OK', 'prompt' => "Success!", 'delete' => false]
+            'success' => ['pagehead' => 'Edit User', 'id' => $id, 'template' => 'prompt.html.php', 'editor' => $id, 'action' => '/user/load/', 'call' => 'load', 'pos' => 'OK', 'prompt' => "Success!"]
         ];
 
         if ($key && isset($lib[$key])) {
