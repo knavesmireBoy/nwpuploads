@@ -398,7 +398,7 @@ class User extends Presenter
                 
                 //$key = isset($_COOKIE['success']) && $_COOKIE['success'] === 'success' ? $toggle['success'] : $toggle['victory'];
 
-                $key = $toggle[$_COOKIE['success']] ?? $toggle['victory'];
+                $key = $toggle[$_COOKIE['success'] ?? $toggle['victory']];
                 $setcookie('success', $key);
                 
             }
