@@ -215,6 +215,8 @@ class User extends Presenter
         $details = $this->getPrivilege();
         $customVars = $this->getCustomVars($key, $vars);
 
+        if($key === 'success') dump($_COOKIE);
+
         $owner = []; //prompt.html.php expects this from Uploader Controller
         unset($vars['id']);
         //the occasional error may require ONE argument which is not an id
