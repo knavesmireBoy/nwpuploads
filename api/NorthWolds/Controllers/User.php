@@ -31,8 +31,8 @@ class User extends Presenter
     private function query($key, $arg = '')
     {
         $lib = [
-            'success' => "Changes succesfully applied",
-            'victory' => "Changes succesfully applied again",
+            'successo' => "Changes succesfully applied",
+            'victoryo' => "Changes succesfully applied again",
             'nousers' => "Unable to find any users",
             "addnotice" => "Please fill required fields",
             "selectuser" => "Please select a user for editing",
@@ -84,6 +84,7 @@ class User extends Presenter
             'selected' => ['pagehead' => 'Select User', 'selected' => true, 'clients' => [], 'users' => $users],
             'change' => ['pagehead' => 'Edit User', 'id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Changing these details will require you to log in again. Proceed?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'editor' => $id, 'action' => '/user/change/'],
             'leave' => [...$prompt, 'editor' => $id, 'action' => '/user/change/', 'prompt' => "Are you sure you want to disassociate this user from the client?"],
+            'success' => ['pagehead' => 'Edit User', 'id' => $id, 'template' => '_confirmer.html.php', 'editor' => $id, 'action' => '/user/load/', 'prompt' => "Success"],
         ];
 
         if ($key && isset($lib[$key])) {
@@ -214,8 +215,6 @@ class User extends Presenter
     {
         $details = $this->getPrivilege();
         $customVars = $this->getCustomVars($key, $vars);
-
-        if($key === 'success') dump($_COOKIE);
 
         $owner = []; //prompt.html.php expects this from Uploader Controller
         unset($vars['id']);
@@ -352,7 +351,7 @@ class User extends Presenter
     {
         $setcookie = doSetCookie(true);
         $unsetcookie = doSetCookie(false);
-        
+
         $admin = $_SESSION['role'] === 'Admin';
         $id = nullify($_POST['id']);
         $key = '';
@@ -391,16 +390,14 @@ class User extends Presenter
         $key = $user->setRole($role, $admin ? '_last' : 'lastadmin'); //UPDATE role here; it may trigger an error message
         //need a message for success for solo/freelancers IF data has changed
         if (!$key) {
-            Presenter::$success = intval(!Presenter::$success);
+            // Presenter::$success = intval(!Presenter::$success);
             $updated = get_object_vars($user);
             $result = array_diff_assoc($record, $updated);
             if (!empty($result)) {
-                $key = Presenter::$success ? 'success' : 'victory';
-                Presenter::$success = !Presenter::$success;
-                $setcookie('success', $key);
-            }
-            else {
-                $unsetcookie('success');
+                //$key = Presenter::$success ? 'success' : 'victory';
+                $key = 'success';
+                //Presenter::$success = !Presenter::$success;
+                // $setcookie('success', $key);
             }
         }
         reLocate($this->home . strtolower($key));

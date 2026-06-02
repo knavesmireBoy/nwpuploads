@@ -279,8 +279,10 @@ function doSetCookie($flag, $toggle = '')
             }
         }
 
-        // if (!isset($_COOKIE[$k]) && $flag || (isset($_COOKIE[$k]) && $_COOKIE[$k] === $toggle) && $flag) {
         if (!isset($_COOKIE[$k]) && $flag) {
+            setcookie($k, $v, $time, '/');
+            $_COOKIE[$k] = $v;
+        } elseif (isset($_COOKIE[$k]) && $flag) {
             setcookie($k, $v, $time, '/');
             $_COOKIE[$k] = $v;
         } elseif (isset($_COOKIE[$k]) && !$flag) {
