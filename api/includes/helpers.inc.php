@@ -263,9 +263,9 @@ function unsetCookie($str)
     setcookie($str, '', -1, '/');
 }
 
-function doSetCookie($flag)
+function doSetCookie($flag, $toggle = '')
 {
-    return function ($k, $v = '', $time = -1) use ($flag) {
+    return function ($k, $v = '', $time = -1) use ($flag, $toggle) {
         //need if undefined here
         if (!is_string($v)) {
             if (!is_int($v)) {
@@ -279,7 +279,7 @@ function doSetCookie($flag)
             }
         }
 
-        if (!isset($_COOKIE[$k]) && $flag) {
+        if (!isset($_COOKIE[$k]) && $flag || ($_COOKIE[$k] === $toggle) && $flag) {
             setcookie($k, $v, $time, '/');
             $_COOKIE[$k] = $v;
         } elseif (isset($_COOKIE[$k]) && !$flag) {
