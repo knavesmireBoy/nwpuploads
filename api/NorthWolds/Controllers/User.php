@@ -394,7 +394,12 @@ class User extends Presenter
             if (!empty($result)) {
                 $key = $a ? 'victory' : 'success';
             }
-            if($a) dump($result);
+            if($a) {
+                dump($result);
+            }
+            else {
+                dump($_SERVER['REQUEST_URI'], preg_match('/success/', $_SERVER['REQUEST_URI']));
+            }
         }
         reLocate($this->home . strtolower($key));
     }
