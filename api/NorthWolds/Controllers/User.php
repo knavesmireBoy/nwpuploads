@@ -349,7 +349,7 @@ class User extends Presenter
 
     public function editSubmit()
     {
-        $setcookie = doSetCookie(true);
+        $setcookie = doSetCookie(true, 'success');
         $unsetcookie = doSetCookie(false);
         $admin = $_SESSION['role'] === 'Admin';
         $id = nullify($_POST['id']);
