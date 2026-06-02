@@ -391,9 +391,10 @@ class User extends Presenter
         if (!$key) {
             $updated = get_object_vars($user);
             $result = array_diff_assoc($record, $updated);
+            $toggle = ['success' => 'victory', 'victory' => 'success'];
 
             if(!empty($result)){
-                $key = isset($_COOKIE['success']) && $_COOKIE['success'] === 'success' ? 'victory' : 'success';
+                $key = isset($_COOKIE['success']) && $_COOKIE['success'] === 'success' ? $toggle['success'] : $toggle['victory'];
                 $setcookie('success', $key);
             }
            
