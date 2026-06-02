@@ -349,6 +349,8 @@ class User extends Presenter
 
     public function editSubmit()
     {
+        $setcookie = doSetCookie(true);
+        $unsetcookie = doSetCookie(false);
         $admin = $_SESSION['role'] === 'Admin';
         $id = nullify($_POST['id']);
         $key = '';
@@ -386,22 +388,16 @@ class User extends Presenter
         $user->setSelf($editor);
         $key = $user->setRole($role, $admin ? '_last' : 'lastadmin'); //UPDATE role here; it may trigger an error message
         //need a message for success for solo/freelancers IF data has changed
-        $a = strpos($_SERVER['REQUEST_URI'], 'success');
-        $b = preg_match('/load/', $_SERVER['REQUEST_URI']);
-        $c = preg_match('/load/', preg_replace('/\\/', $_SERVER['REQUEST_URI'], ''));
-
-
         if (!$key) {
             $updated = get_object_vars($user);
             $result = array_diff_assoc($record, $updated);
-            if (!empty($result)) {
-                $key = $a ? 'victory' : 'success';
+
+            if(!empty($result)){
+                $key = isset($_COOKIE['success']) && $_COOKIE['success'] === 'success' ? 'victory' : 'success';
+                $setcookie('success', $key);
             }
-            if($a) {
-                dump([$_SERVER['REQUEST_URI'], preg_match('/success/', $_SERVER['REQUEST_URI'])]);
-            }
+           
         }
-        if($b) dump($c);
         reLocate($this->home . strtolower($key));
     }
 
