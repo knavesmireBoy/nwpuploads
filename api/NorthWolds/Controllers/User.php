@@ -390,7 +390,9 @@ class User extends Presenter
         if (!$key) {
             $updated = get_object_vars($user);
             $result = array_diff_assoc($record, $updated);
+            var_dump([$updated,$updated, $result, $_SERVER['REQUEST_URI']]);
             if (!empty($result)) {
+                var_dump()
                 $key = strpos($_SERVER['REQUEST_URI'], 'success') ? 'victory' : 'success';
             }
         }

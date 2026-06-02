@@ -29,20 +29,16 @@ class Employee extends ClientAdmin
     {
         return $flag;
     }
-    /*
-    protected function validateDom($cid, $record, $ename, $edom, $insertId = 0)
-    {
-        $postdata['email'] = "$ename@$edom";
-        $postdata['client_id'] = $cid;
-        return $postdata;
-    }
-        */
-
+    //validate activity on the email field
     protected function validateDom($cid, $record, $ename, $edom, $insertId = 0)
     {
         list($name, $dom, $com) = $this->parseEmail($record['email']);
         $postdata['email'] = "$ename@$edom";
         $postdata['client_id'] = $cid;
+        /*
+        admin can change the domain provided there is no selection in the drop down menu
+        so therefore no $cid ($client->id) allows a employee to become a freelancer
+        */
         if ($edom === "$dom.$com" || !$cid) {
             return $postdata;
         }
