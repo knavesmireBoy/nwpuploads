@@ -395,10 +395,10 @@ class User extends Presenter
                 $key = $a ? 'victory' : 'success';
             }
             if($a) {
-                dump($result);
+                dump([$_SERVER['REQUEST_URI'], preg_match('/success/', $_SERVER['REQUEST_URI'])]);
             }
             else {
-                dump($_SERVER['REQUEST_URI'], preg_match('/success/', $_SERVER['REQUEST_URI']));
+                
             }
         }
         reLocate($this->home . strtolower($key));
