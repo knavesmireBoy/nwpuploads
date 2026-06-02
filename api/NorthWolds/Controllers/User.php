@@ -350,7 +350,7 @@ class User extends Presenter
     {
         $setcookie = doSetCookie(true);
         $unsetcookie = doSetCookie(false);
-        $unsetcookie('success');
+        
         $admin = $_SESSION['role'] === 'Admin';
         $id = nullify($_POST['id']);
         $key = '';
@@ -396,6 +396,9 @@ class User extends Presenter
                 $key = Presenter::$success ? 'success' : 'victory';
                 Presenter::$success = !Presenter::$success;
                 $setcookie('success', $key);
+            }
+            else {
+                $unsetcookie('success');
             }
         }
         reLocate($this->home . strtolower($key));
