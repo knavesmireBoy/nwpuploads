@@ -387,6 +387,8 @@ class User extends Presenter
         $key = $user->setRole($role, $admin ? '_last' : 'lastadmin'); //UPDATE role here; it may trigger an error message
         //need a message for success for solo/freelancers IF data has changed
         $a = strpos($_SERVER['REQUEST_URI'], 'success');
+        $b = preg_match('/load/', $_SERVER['REQUEST_URI']);
+        $c = preg_match('/load/', preg_replace('/\\/', $_SERVER['REQUEST_URI'], ''));
 
 
         if (!$key) {
@@ -399,7 +401,7 @@ class User extends Presenter
                 dump([$_SERVER['REQUEST_URI'], preg_match('/success/', $_SERVER['REQUEST_URI'])]);
             }
         }
-        if($a) dump($key);
+        if($b) dump($c);
         reLocate($this->home . strtolower($key));
     }
 
