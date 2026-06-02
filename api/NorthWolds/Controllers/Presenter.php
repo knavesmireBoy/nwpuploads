@@ -9,8 +9,10 @@ class Presenter
 
     public function __construct(protected DatabaseTable $table)
     {
-        
     }
+
+    public static string $success = false;
+
     protected function presentList(string $role, mixed $userId, \Ninja\DatabaseTable $table, $prop = 'domain')
     {
         $clients = [];

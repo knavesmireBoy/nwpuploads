@@ -9,7 +9,6 @@ class User extends Presenter
 
     private $punter;
 
-
     public function __construct(protected DatabaseTable $table, private DatabaseTable $clienttable, private string $home)
     {
         parent::__construct($table);
@@ -349,9 +348,9 @@ class User extends Presenter
 
     public function editSubmit()
     {
-       $setcookie = doSetCookie(true, 'victory');
-       //$unsetcookie = doSetCookie(false);
-       //$unsetcookie('success');
+        $setcookie = doSetCookie(true);
+        $unsetcookie = doSetCookie(false);
+        $unsetcookie('success');
         $admin = $_SESSION['role'] === 'Admin';
         $id = nullify($_POST['id']);
         $key = '';
@@ -390,12 +389,12 @@ class User extends Presenter
         $key = $user->setRole($role, $admin ? '_last' : 'lastadmin'); //UPDATE role here; it may trigger an error message
         //need a message for success for solo/freelancers IF data has changed
         if (!$key) {
+            Presenter::$success = !Presenter::$success;
             $updated = get_object_vars($user);
             $result = array_diff_assoc($record, $updated);
-            $toggle = ['success' => 'victory', 'victory' => 'success'];
-            $key = 'success';
             if (!empty($result)) {
-                $key = $toggle[$_COOKIE['success'] ?? $toggle['victory']];
+                $key = Presenter::$success ? 'success' : 'victory';
+                Presenter::$success = !Presenter::$success;
                 $setcookie('success', $key);
             }
         }
