@@ -390,10 +390,11 @@ class User extends Presenter
         if (!$key) {
             $updated = get_object_vars($user);
             $result = array_diff_assoc($record, $updated);
-            var_dump([$updated,$updated, $result, $_SERVER['REQUEST_URI']]);
+            $a = strpos($_SERVER['REQUEST_URI'], 'success');
             if (!empty($result)) {
-                $key = strpos($_SERVER['REQUEST_URI'], 'success') ? 'victory' : 'success';
+                $key = $a ? 'victory' : 'success';
             }
+            if($a) dump($result);
         }
         reLocate($this->home . strtolower($key));
     }
