@@ -393,11 +393,10 @@ class User extends Presenter
             $result = array_diff_assoc($record, $updated);
             $toggle = ['success' => 'victory', 'victory' => 'success'];
 
-            if(!empty($result)){
+            if (!empty($result)) {
                 $key = isset($_COOKIE['success']) && $_COOKIE['success'] === 'success' ? $toggle['success'] : $toggle['victory'];
                 $setcookie('success', $key);
             }
-           
         }
         reLocate($this->home . strtolower($key));
     }
