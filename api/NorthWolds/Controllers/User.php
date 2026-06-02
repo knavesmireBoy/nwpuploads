@@ -350,7 +350,7 @@ class User extends Presenter
     public function editSubmit()
     {
        $setcookie = doSetCookie(true, 'victory');
-        //$unsetcookie = doSetCookie(false);
+       //$unsetcookie = doSetCookie(false);
        //$unsetcookie('success');
         $admin = $_SESSION['role'] === 'Admin';
         $id = nullify($_POST['id']);
@@ -395,12 +395,8 @@ class User extends Presenter
             $toggle = ['success' => 'victory', 'victory' => 'success'];
             $key = 'success';
             if (!empty($result)) {
-                
-                //$key = isset($_COOKIE['success']) && $_COOKIE['success'] === 'success' ? $toggle['success'] : $toggle['victory'];
-
                 $key = $toggle[$_COOKIE['success'] ?? $toggle['victory']];
                 $setcookie('success', $key);
-                
             }
         }
         reLocate($this->home . strtolower($key));
