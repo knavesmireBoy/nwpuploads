@@ -3,7 +3,11 @@
     //$clientlist from admin not upload
 
 
-//dump([$call, $delete, $owner, $id]);
+    //dump([$call, $delete, $owner, $id]);
+
+    if (isset($pos) && !isset($neg)) {
+        include 'confirm.html.php';
+    }
 
     if (isset($clientlist)): ?>
         <form action="." method="post" name="clientform" class="prompt">
