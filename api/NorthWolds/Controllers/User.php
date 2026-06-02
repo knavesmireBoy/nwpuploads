@@ -33,7 +33,7 @@ class User extends Presenter
     {
         $lib = [
             'success' => "Changes succesfully applied",
-            'suces' => "Changes succesfully applied again",
+            'victory' => "Changes succesfully applied again",
             'nousers' => "Unable to find any users",
             "addnotice" => "Please fill required fields",
             "selectuser" => "Please select a user for editing",
@@ -391,8 +391,7 @@ class User extends Presenter
             $updated = get_object_vars($user);
             $result = array_diff_assoc($record, $updated);
             if (!empty($result)) {
-                $request = $_SERVER['REQUEST_URI'];
-                $key = strpos($request, 'success') ? 'suces' : 'success';
+                $key = strpos($_SERVER['REQUEST_URI'], 'success') ? 'victory' : 'success';
             }
         }
         reLocate($this->home . strtolower($key));
