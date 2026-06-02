@@ -43,7 +43,7 @@ class Employee extends ClientAdmin
         list($name, $dom, $com) = $this->parseEmail($record['email']);
         $postdata['email'] = "$ename@$edom";
         $postdata['client_id'] = $cid;
-        if ($edom === "$dom.$com" || !$this->self) {
+        if ($edom === "$dom.$com" || !$cid) {
             return $postdata;
         }
         return false;
