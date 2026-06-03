@@ -31,6 +31,8 @@ class User extends Presenter
     private function query($key, $arg = '')
     {
         $lib = [
+            
+            'nouser' => "No user found",
             'nousers' => "Unable to find any users",
             "addnotice" => "Please fill required fields",
             "selectuser" => "Please select a user for editing",
@@ -312,6 +314,8 @@ class User extends Presenter
         list($_, $clients) = $member->presentList($id, 'client_id');
         $roles = $member->getRoles($user->id ?? '');
 
+        dump([$args, $roles]);
+
         $id = $user->id ?? null;
         $vars = [
             'button' => 'Edit User',
@@ -415,18 +419,23 @@ class User extends Presenter
         reLocate($relocate);
     }
 
-    public function delete($id)
+    public function delete($id = '')
     {
         $msg = '';
         $details = $this->getPrivilege();
         $user = $this->fetch('table', 'id', $id);
-        $user = $this->getSubUser($user);
-        $user->setSelf($id == $details['id']);
-        $msg = $user->delete($id);
-        if ($msg) {
-            return reLocate($this->home . $msg);
+        if ($user) {
+            $user = $this->getSubUser($user);
+            $user->setSelf($id == $details['id']);
+            $msg = $user->delete($id);
+
+            if ($msg) {
+                return reLocate($this->home . $msg);
+            }
+            return $this->load('delete', ['id' => $id]);
+        } else {
+            return reLocate($this->home . 'nouser');
         }
-        return $this->load('delete', ['id' => $id]);
     }
 
     public function confirm()
