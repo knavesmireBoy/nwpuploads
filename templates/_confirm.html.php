@@ -10,6 +10,6 @@
 
 <?php endif; ?>
 
-
+<input type="hidden" name="id" value="<?= $cookie ?? ''; ?>" />
 <input type="hidden" name="id" value="<?= $id; ?>" />
 <input type="submit" value="<?= $submit ?? 'submit'; ?>"/>
