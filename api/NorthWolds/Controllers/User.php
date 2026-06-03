@@ -437,13 +437,14 @@ class User extends Presenter
     {
         if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
 
-         dump($_POST);
+   
             if(isset($_POST['cookie'])){
 
                 parse_str($_POST['cookie'], $cookie);
                 $this->setCookie($_COOKIE, $cookie, false);
+                dump($cookie);
                 $id = $_POST['id'];
-                $cookie = 'class=details_override&override=override&legend=you_may';
+                $cookie = 'class=details_override&override=override';
                 reLocate("/user/editbabe/$id/$cookie");
             }
 
