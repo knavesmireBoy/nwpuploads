@@ -13,6 +13,12 @@ class Solo extends ClientAdmin
     {
         return [];
     }
+
+    public function preEdit($flag = true)
+    {
+      return $flag;
+    }
+  
     public function postEdit()
     {
         return $this->self ? 'success' : '';

@@ -19,12 +19,12 @@ class Employee extends ClientAdmin
     {
       return $this->self ? 'success' : '';
     }
-    protected function resetClient($cid)
-    {
-        $ret = $this->fetch('clienttable', 'id', $cid);
-        return [$cid, $ret->domain];
-    }
 
+    public function preEdit($flag = true)
+    {
+      return $flag;
+    }
+  
     //validate activity on the email field
     protected function validateDom($cid, $record, $ename, $edom, $insertId = 0)
     {

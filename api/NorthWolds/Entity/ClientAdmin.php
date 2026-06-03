@@ -2,7 +2,6 @@
 
 namespace NorthWolds\Entity;
 
-use Override;
 
 class ClientAdmin extends User
 {
@@ -11,13 +10,6 @@ class ClientAdmin extends User
     {
         return false;
     }
-    /*
-    protected function resetClient($cid)
-    {
-        $ret = $this->fetch('clienttable', 'id', $this->client_id);
-        return [$ret->id, $ret->domain];
-    }
-    */
 
     protected function validateDom($cid, $record, $ename, $edom, $insertId = 0)
     {
