@@ -447,6 +447,7 @@ class User extends Presenter
 
             if (isset($_POST['cookie'])) {
                 parse_str($_POST['cookie'], $cookie);
+                dump([$_COOKIE, $cookie]);
                 $this->setCookie($_COOKIE, array_keys($cookie), '');
                 $id = $_POST['id'];
                 $str = urlencode('you may now proceed with your edits');
