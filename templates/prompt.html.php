@@ -1,5 +1,6 @@
 <section id=prompt>
     <?php
+    $exit = null;
     if (isset($pos) && !isset($neg)) {
         include 'confirm.html.php';
         $exit = true;

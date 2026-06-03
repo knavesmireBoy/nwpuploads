@@ -11,6 +11,30 @@ class ClientAdmin extends User
         return false;
     }
 
+    public function postEdit()
+    {
+      return '';
+    }
+  
+    /*
+    public function getUserIds($roles = null)
+    {
+      $details = $this->getDetails();
+      $res = [];
+      if ($details['client_id']) {
+        $users = $this->table->find('client_id', $this->client_id);
+        $res = array_map(fn($o) => $o->id, $users);
+      } else {
+        return [];
+      }
+      if (is_bool($roles)) {
+        $ret = $this->getAllRoles($res);
+        return $roles ? $ret : $this->getAdminRoles($ret);
+      }
+      return $res;
+    }
+      */
+
     protected function validateDom($cid, $record, $ename, $edom, $insertId = 0)
     {
         list($name, $dom, $com) = $this->parseEmail($record['email']);

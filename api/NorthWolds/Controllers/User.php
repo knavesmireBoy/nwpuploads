@@ -422,6 +422,8 @@ class User extends Presenter
     {
         if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
             return $this->destroy($_POST['id']);
+        } else {
+            $this->setCookie($_COOKIE, ['name', 'email', 'password', 'client_id'], false);
         }
         reLocate($this->home);
     }

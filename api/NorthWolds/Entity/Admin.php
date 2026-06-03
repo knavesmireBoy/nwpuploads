@@ -33,6 +33,11 @@ class Admin extends User
         return false;
     }
 
+    public function postEdit()
+    {
+      return '';
+    }  
+
     public function editPayload($id = '')
     {
         if (!$this->self) {

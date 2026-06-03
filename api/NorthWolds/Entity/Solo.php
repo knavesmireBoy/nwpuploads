@@ -2,17 +2,8 @@
 
 namespace NorthWolds\Entity;
 
-class Solo extends ClientAdmin
+class Solo extends User
 {
-
-    public function presentList($userId)
-    {
-        return [[], []];
-    }
-    public function getRoles(int $userid)
-    {
-        return [];
-    }
 
     public function preEdit($flag = true)
     {

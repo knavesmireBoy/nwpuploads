@@ -36,65 +36,28 @@ class User extends Entity
     $this->clienttable = $client;
   }
 
-  public function findDomain($postdom)
-  {
-    return $this->find('clienttable', 'domain', $postdom);
-  }
-
-  public function setSelf(bool $bool)
-  {
-    $this->self = $bool;
-  }
-
-  public function getSelf()
-  {
-    return $this->self;
-  }
-
-  public function preEdit($flag = true)
-  {
-    return $flag;
-  }
-
-  public function postEdit()
-  {
-    return '';
-  }
-
-  public function loadPayload($id = '')
-  {
-    return [
-      'retour' => '_return2uploads.html.php'
-    ];
-  }
-
-  public function editPayload($id = '')
-  {
-    return [
-      'retour' => '_return2uploads.html.php'
-    ];
-  }
-  //convert ids into table structure [userid, roleid]
-  protected function getAllRoles(array $ids)
-  {
-    if (empty($ids)) {
-      return [];
-    }
-    $cb = partial([$this, 'find'], 'userroletable', 'userid');
-    $roles = array_map($cb, $ids);
-    $roles = safeFilter($roles, fn($o) => $o->roleid);
-    return array_map('get_object_vars', $roles);
-  }
-  protected function getAdminRoles(array $roles = [])
-  {
-    $cb = composer(partial('equals', 'Client Admin'), curry2('getter')('roleid'));
-    return !empty($roles) ? safeFilter($roles, $cb) : $roles;
-  }
-
   protected function validateRole($role)
   {
     return $role;
   }
+
+    //convert ids into table structure [userid, roleid]
+    protected function getAllRoles(array $ids)
+    {
+      if (empty($ids)) {
+        return [];
+      }
+      $cb = partial([$this, 'find'], 'userroletable', 'userid');
+      $roles = array_map($cb, $ids);
+      $roles = safeFilter($roles, fn($o) => $o->roleid);
+      return array_map('get_object_vars', $roles);
+    }
+    protected function getAdminRoles(array $roles = [])
+    {
+      $cb = composer(partial('equals', 'Client Admin'), curry2('getter')('roleid'));
+      return !empty($roles) ? safeFilter($roles, $cb) : $roles;
+    }
+  
 
   protected function fetchAllRoles(array $keys = [], array $selectedRoles = []): array
   {
@@ -118,18 +81,20 @@ class User extends Entity
     return $this->roleid;
   }
 
-  public function getRoles(int $userid)
+  protected function countRoles($users, $id = false)
   {
-    return [];
-  }
+    $res = array_map(fn($o) => $o['id'], $users);
+    $ret = $this->getAllRoles($res);
 
-  public function setRole(string $role)
-  {
-    if (!empty($this->roletable->find('id', $role))) {
-      $this->userroletable->save(['userid' => $this->id, 'roleid' => $role]);
-      return ''; //ok
+    if ($id) {
+      $adminroles = $this->getAdminRoles($ret);
+      if (count($adminroles) === 1 && $id && $id == $adminroles[0]['userid']) {
+        return true;
+      }
+      return false;
     }
-    return $role;
+
+    return count($ret);
   }
 
   protected function validateDom($cid, $dbrecord, $ename, $postdom, $insertID)
@@ -139,10 +104,7 @@ class User extends Entity
     if (isset($client[0])) {
       $details = $this->getDetails();
       if (isApproved($details['role'], 'admin')) {
-        $key = '_denied';
-      }
-      if ($key) {
-        reLocate("/user/load/$key");
+        reLocate("/user/load/_denied");
       }
       $postdom = $client[0]->domain; //sync
       $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'client_id' => $client[0]->id];
@@ -155,9 +117,6 @@ class User extends Entity
           $this->table->delete('id', $insertID);
           reLocate('/user/load/_impostor');
         } else { //or existing user (freelancer) attempting to swap clients
-          //$client = $this->find('clienttable', 'domain', $postdom);
-          //$postdom = $client->domain;
-          //silently restore to client as
           $key = $this->self ? 'traitor' : '_traitor';
           reLocate("/user/load/$key");
           $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'name' => $dbrecord['name'], 'client_id' => nullify($client->id)];
@@ -165,6 +124,74 @@ class User extends Entity
       }
     }
     return $data;
+  }
+
+  public function presentList($userId)
+  {
+      return [[], []];
+  }
+
+  public function getRoles(int $userid)
+  {
+    return [];
+  }
+
+  public function getUserIds($roles = null)
+  {
+      return [];
+  }
+
+  public function findDomain($postdom)
+  {
+    return $this->find('clienttable', 'domain', $postdom);
+  }
+
+  public function fromDomain($domain, $mode = \PDO::FETCH_CLASS)
+  {
+    return $this->clienttable->find('domain', $domain, 'name', 0, 0, $mode)[0];
+  }
+
+  public function setSelf(bool $bool)
+  {
+    $this->self = $bool;
+  }
+
+  public function getSelf()
+  {
+    return $this->self;
+  }
+
+  public function preEdit($flag = true)
+  {
+    return $flag;
+  }
+
+  public function postEdit()
+  {
+    return $this->self ? 'success' : '';
+  }
+
+  public function loadPayload($id = '')
+  {
+    return [
+      'retour' => '_return2uploads.html.php'
+    ];
+  }
+
+  public function editPayload($id = '')
+  {
+    return [
+      'retour' => '_return2uploads.html.php'
+    ];
+  }
+
+  public function setRole(string $role)
+  {
+    if (!empty($this->roletable->find('id', $role))) {
+      $this->userroletable->save(['userid' => $this->id, 'roleid' => $role]);
+      return ''; //ok
+    }
+    return $role;
   }
 
   public function parseEmail($e)
@@ -248,43 +275,6 @@ class User extends Entity
     return [];
   }
 
-  public function fromDomain($domain, $mode = \PDO::FETCH_CLASS)
-  {
-    return $this->clienttable->find('domain', $domain, 'name', 0, 0, $mode)[0];
-  }
-
-  protected function countRoles($users, $id = false)
-  {
-    $res = array_map(fn($o) => $o['id'], $users);
-    $ret = $this->getAllRoles($res);
-
-    if ($id) {
-      $adminroles = $this->getAdminRoles($ret);
-      if (count($adminroles) === 1 && $id && $id == $adminroles[0]['userid']) {
-        return true;
-      }
-      return false;
-    }
-
-    return count($ret);
-  }
-
-  public function getUserIds($roles = null)
-  {
-    $details = $this->getDetails();
-    $res = [];
-    if ($details['client_id']) {
-      $users = $this->table->find('client_id', $this->client_id);
-      $res = array_map(fn($o) => $o->id, $users);
-    } else {
-      return [];
-    }
-    if (is_bool($roles)) {
-      $ret = $this->getAllRoles($res);
-      return $roles ? $ret : $this->getAdminRoles($ret);
-    }
-    return $res;
-  }
   //sort of validate delete; if it returns anything other than a empty string you cannot delete
   public function delete($id)
   {
