@@ -240,7 +240,7 @@ class User extends Presenter
         $punter = $this->fetch('table', 'id', $details['id']);
         $roles = $punter->getRoles();
         return $this->edit(0, [
-            'action' => "user/add/",
+            'action' => "/user/add/",
             'pagehead' => 'Add User',
             'button' => 'Add User',
             'employer' => $details['client_id'] ?? 0,
@@ -345,7 +345,7 @@ class User extends Presenter
         });
 
         $role = $_POST['roles'][0] ?? 'Client';
-        dump($role);
+
         if (count($required) < 3) {
             reLocate($this->home . "/");
         }
