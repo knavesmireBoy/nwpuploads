@@ -362,8 +362,6 @@ class User extends Presenter
 
     public function editSubmit()
     {
-        $setcookie = doSetCookie(true);
-        $unsetcookie = doSetCookie(false);
 
         $admin = $_SESSION['role'] === 'Admin';
         $id = nullify($_POST['id']);
@@ -447,7 +445,7 @@ class User extends Presenter
             if (isset($_POST['cookie'])) {
                 parse_str($_POST['cookie'], $cookie);
                 
-                $this->setCookie($_COOKIE, array_keys($cookie), true);
+                $this->setCookie(['client_id' => ''], array_keys($cookie), true);
                 $id = $_POST['id'];
                 $str = urlencode('you may now proceed with your edits');
                 $cookie = "class=details%20override&override=override&legend=$str";
