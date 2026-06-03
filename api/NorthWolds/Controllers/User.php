@@ -437,6 +437,7 @@ class User extends Presenter
     {
         if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
 
+            dump($_POST);
             if(isset($_POST['cookie'])){
 
                 parse_str($_POST['cookie'], $cookie);
