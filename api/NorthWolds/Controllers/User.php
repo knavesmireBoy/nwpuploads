@@ -422,8 +422,6 @@ class User extends Presenter
     {
         if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
             return $this->destroy($_POST['id']);
-        } else {
-            $this->setCookie($_COOKIE, ['name', 'email', 'password', 'client_id'], false);
         }
         reLocate($this->home);
     }
@@ -432,6 +430,9 @@ class User extends Presenter
     {
         if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
             return $this->edit($_POST['id'], ['class' => 'details override', 'override' => 'override', 'legend' => 'You may now proceed with your edits']);
+        }
+        else {
+            $this->setCookie($_COOKIE, ['name', 'email', 'password', 'client_id'], false);
         }
         reLocate($this->home);
     }
