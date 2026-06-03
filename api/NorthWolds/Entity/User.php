@@ -209,7 +209,7 @@ class User extends Entity
       list($name, $dom, $com) = $this->parseEmail($email);
       $postdom = "$dom.$com";
       $details = $this->getDetails();
-      $domain = $details['domain'];
+      $domain = $details['domain'] ?? '';
       $data = $this->validateDom($cid, $postdata, $name, $postdom, $id);
       if ($cid && $domain && ($postdom !== $domain)) {
         reLocate("/user/load/$key");

@@ -348,7 +348,7 @@ class User extends Presenter
         $user = $this->fetch('table', 'id', $userId);
 
         $user->updatePassword($data['password']);
-        $updateDomain = $user->updateDomain($key, $data['id'], empty($_POST['override']));
+        $updateDomain = $user->updateDomain($key, $_POST['id'], empty($_POST['override']));
         /*role must be set BEFORE "updateDomain"
         no user can navigate the site without an assigned role*/
         $user->setRole($role);
