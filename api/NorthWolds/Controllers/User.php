@@ -305,7 +305,7 @@ class User extends Presenter
             $user->setSelf($editor);
         }
 
-        $member = $editor ? $user : $punter;
+        $member = $editor && $user ? $user : $punter;
         $member->setSelf($editor);
         $payload = $member->editPayload($id);
 
