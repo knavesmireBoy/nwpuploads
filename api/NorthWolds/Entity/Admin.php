@@ -28,8 +28,7 @@ class Admin extends User
         return '_admin';
     }
 
-    //default for employee;solo
-    public function edit($flag = true)
+    public function preEdit($flag = true)
     {
         return false;
     }

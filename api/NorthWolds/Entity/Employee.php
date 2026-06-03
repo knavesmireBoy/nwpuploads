@@ -25,10 +25,6 @@ class Employee extends ClientAdmin
         return [];
     }
 
-    public function edit($flag = true)
-    {
-        return $flag;
-    }
     //validate activity on the email field
     protected function validateDom($cid, $record, $ename, $edom, $insertId = 0)
     {
@@ -98,5 +94,10 @@ class Employee extends ClientAdmin
                 return $this->setClientEmail($cid, $name, $postdata);
             }
         };
+    }
+
+    public function postEdit()
+    {
+      return 'success';
     }
 }

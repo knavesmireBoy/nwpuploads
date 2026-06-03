@@ -51,9 +51,14 @@ class User extends Entity
     return $this->self;
   }
 
-  public function edit($flag = true)
+  public function preEdit($flag = true)
   {
     return $flag;
+  }
+
+  public function postEdit()
+  {
+    return '';
   }
 
   public function loadPayload($id = '')

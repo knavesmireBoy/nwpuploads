@@ -16,4 +16,4 @@
 
 
 <input type="hidden" name="id" value="<?= $id; ?>" />
-<input type="submit" />
+<input type="submit" value="<? $submit ?? 'submit'; ?>"/>

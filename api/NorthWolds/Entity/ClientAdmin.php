@@ -7,7 +7,7 @@ use Override;
 class ClientAdmin extends User
 {
     //return false to present list of users for logged in client
-    public function edit($flag = true)
+    public function preEdit($flag = true)
     {
         return false;
     }

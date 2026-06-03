@@ -38,9 +38,9 @@ class Solo extends ClientAdmin
         ];
     }
 
-    //default for employee;solo
-    public function edit($flag = true)
+    public function postEdit()
     {
-        return $flag;
+      return 'success';
     }
+
 }

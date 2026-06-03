@@ -31,8 +31,6 @@ class User extends Presenter
     private function query($key, $arg = '')
     {
         $lib = [
-            'successo' => "Changes succesfully applied",
-            'victoryo' => "Changes succesfully applied again",
             'nousers' => "Unable to find any users",
             "addnotice" => "Please fill required fields",
             "selectuser" => "Please select a user for editing",
@@ -84,7 +82,7 @@ class User extends Presenter
             'selected' => ['pagehead' => 'Select User', 'selected' => true, 'clients' => [], 'users' => $users],
             'change' => ['pagehead' => 'Edit User', 'id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Changing these details will require you to log in again. Proceed?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'editor' => $id, 'action' => '/user/change/'],
             'leave' => [...$prompt, 'editor' => $id, 'action' => '/user/change/', 'prompt' => "Are you sure you want to disassociate this user from the client?"],
-            'success' => ['pagehead' => 'Edit User', 'id' => $id, 'template' => 'prompt.html.php', 'editor' => $id, 'action' => '/user/load/', 'call' => 'load', 'pos' => 'OK', 'prompt' => "Success!"]
+            'success' => ['pagehead' => 'Edit User', 'id' => $id, 'template' => 'prompt.html.php', 'editor' => $id, 'action' => '/user/load/', 'call' => 'load', 'pos' => 'OK', 'prompt' => "Details succesfully updated", 'submit' => 'Edit']
         ];
 
         if ($key && isset($lib[$key])) {
@@ -223,7 +221,7 @@ class User extends Presenter
         $user = $this->fetch('table', 'email', $_SESSION['username']);
         $user = $this->getSubUser($user);
 
-        if ($user->edit(empty($customVars))) {
+        if ($user->preEdit(empty($customVars))) {
             $args = $error ? ['message' => $error] : [];
             $id = $details['id'];
             return $this->edit($id, [...$customVars, ...$args]);
@@ -394,10 +392,7 @@ class User extends Presenter
             $updated = get_object_vars($user);
             $result = array_diff_assoc($record, $updated);
             if (!empty($result)) {
-                //$key = Presenter::$success ? 'success' : 'victory';
-                $key = 'success';
-                //Presenter::$success = !Presenter::$success;
-                // $setcookie('success', $key);
+                $key = $user->postEdit();
             }
         }
         reLocate($this->home . strtolower($key));

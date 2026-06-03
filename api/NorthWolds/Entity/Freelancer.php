@@ -14,11 +14,6 @@ class Freelancer extends User
         return [];
     }
 
-    public function edit($flag = true)
-    {
-        return $flag;
-    }
-
     public function editPayload($id = '')
     {
         return [
@@ -31,5 +26,10 @@ class Freelancer extends User
     public function presentList($userId)
     {
         return [[], []];
+    }
+
+    public function postEdit()
+    {
+      return 'success';
     }
 }
