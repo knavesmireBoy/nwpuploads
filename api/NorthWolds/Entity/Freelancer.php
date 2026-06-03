@@ -4,11 +4,17 @@ namespace NorthWolds\Entity;
 
 class Freelancer extends User
 {
-    public function __construct(...$args)
+    
+    public function presentList($userId)
     {
-        parent::__construct(...$args);
+        return [[], []];
     }
 
+    public function postEdit()
+    {
+      return $this->self ? 'success' : '';
+    }
+    
     public function getUserIds($roles = null)
     {
         return [];
@@ -23,13 +29,5 @@ class Freelancer extends User
         ];
     }
 
-    public function presentList($userId)
-    {
-        return [[], []];
-    }
-
-    public function postEdit()
-    {
-      return 'success';
-    }
+ 
 }

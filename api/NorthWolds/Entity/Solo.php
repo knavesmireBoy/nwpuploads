@@ -4,7 +4,20 @@ namespace NorthWolds\Entity;
 
 class Solo extends ClientAdmin
 {
-    
+
+    public function presentList($userId)
+    {
+        return [[], []];
+    }
+    public function getRoles(int $userid)
+    {
+        return [];
+    }
+    public function postEdit()
+    {
+        return $this->self ? 'success' : '';
+    }
+
     public function delete($id)
     {
         return 'last';
@@ -20,15 +33,6 @@ class Solo extends ClientAdmin
         return $role;
     }
 
-    public function presentList($userId)
-    {
-        return [[], []];
-    }
-    public function getRoles(int $userid)
-    {
-        return [];
-    }
-
     public function editPayload($id = '')
     {
         return [
@@ -37,10 +41,4 @@ class Solo extends ClientAdmin
             'retour' => '_return2uploads.html.php'
         ];
     }
-
-    public function postEdit()
-    {
-      return 'success';
-    }
-
 }
