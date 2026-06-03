@@ -20,7 +20,7 @@ if (isset($callroute)) {
 		<a href="<?= $load; ?>" class="cancel">X</a>
 	<?php }
 	if (isset($legend)) { ?>
-		<p><?= $legend; ?></p>
+		<p><?= ucfirst($legend); ?></p>
 	<?php	}
 	?>
 	<div>

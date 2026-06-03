@@ -35,8 +35,8 @@ class Admin extends User
 
     public function postEdit()
     {
-      return '';
-    }  
+        return '';
+    }
 
     public function editPayload($id = '')
     {
@@ -72,6 +72,10 @@ class Admin extends User
 
     public function getRoles(int $userid)
     {
+
+        if (!$userid) {
+            return $this->fetchAllRoles($this->roles);
+        }
         if (!$this->self) {
             $roleid = $this->getRole($userid);
             $user = $this->fetch('table', 'id', $userid);
@@ -82,6 +86,7 @@ class Admin extends User
                 $j = array_search('Client Admin', $roles);
                 $roles = array_slice($roles, 0, $j);
                 $roles = $admin ? [...$roles, 'Admin'] : $roles;
+                //$roles = [...$roles, 'Admin'];
                 $this->demote($userid, $roleid);
             } else {
                 $j = array_search('Admin', $roles);

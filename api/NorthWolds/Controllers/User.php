@@ -306,7 +306,7 @@ class User extends Presenter
         $payload = $member->editPayload($id);
 
         list($_, $clients) = $member->presentList($id, 'client_id');
-        $roles = $member->getRoles($user->id);
+        $roles = $member->getRoles($user->id ?? 0);
 
         $id = $user->id ?? null;
         $vars = [
@@ -440,7 +440,7 @@ class User extends Presenter
                 parse_str($_POST['cookie'], $cookie);
                 $this->setCookie($_COOKIE, array_keys($cookie), '');
                 $id = $_POST['id'];
-                $str = urlencode('you may now proceed with your edits!');
+                $str = urlencode('you may now proceed with your edits');
                 $cookie = "class=details%20override&override=override&legend=$str";
                 reLocate("/user/editparse/$id/$cookie");
             } else {
