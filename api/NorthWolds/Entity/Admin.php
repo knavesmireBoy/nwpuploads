@@ -72,7 +72,6 @@ class Admin extends User
 
     public function getRoles(int $userid)
     {
-
         if (!$userid) {
             return $this->fetchAllRoles($this->roles);
         }

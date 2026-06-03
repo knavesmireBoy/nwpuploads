@@ -238,7 +238,7 @@ class User extends Presenter
     {
         $details = $this->getPrivilege();
         $punter = $this->fetch('table', 'id', $details['id']);
-        $roles = $punter->getRoles($punter->id);
+        $roles = $punter->getRoles();
         return $this->edit(0, [
             'action' => "user/add/",
             'pagehead' => 'Add User',
@@ -344,9 +344,8 @@ class User extends Presenter
             return $item;
         });
 
-        dump($_POST['roles']);
         $role = $_POST['roles'][0] ?? 'Client';
-
+        dump($role);
         if (count($required) < 3) {
             reLocate($this->home . "/");
         }
