@@ -2,18 +2,16 @@
 
 namespace NorthWolds\Entity;
 
-class Employee extends ClientAdmin
+class Employee extends User
 {
-    
-    public function presentList($userId)
+    protected function setClientEmail($cid, $name, $data)
     {
-        return [[], []];
+        $client = $this->fetch('clienttable', 'id', $cid);
+        $domain = $client->domain;
+        $data['email'] = "$name@$domain";
+        return $data;
     }
 
-    public function getRoles(int $userid)
-    {
-        return [];
-    }
     
     public function postEdit()
     {

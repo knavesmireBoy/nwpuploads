@@ -70,7 +70,7 @@ class Admin extends User
         }
     }
 
-    public function getRoles(int $userid)
+    public function getRoles($userid = '')
     {
         if (!$userid) {
             return $this->fetchAllRoles($this->roles);

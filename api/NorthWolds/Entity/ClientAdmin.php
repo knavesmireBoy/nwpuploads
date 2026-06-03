@@ -121,7 +121,7 @@ class ClientAdmin extends User
         ];
     }
 
-    public function getRoles(int $userid)
+    public function getRoles($userid = '')
     {
         $f = composer(negate(curry2('equals')('Admin')), curry2('getter')('id'));
         $roleid = $this->getRole($userid);

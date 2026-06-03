@@ -131,7 +131,7 @@ class User extends Entity
       return [[], []];
   }
 
-  public function getRoles(int $userid)
+  public function getRoles($userid = '')
   {
     return [];
   }
