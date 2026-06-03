@@ -111,17 +111,21 @@ class User extends Presenter
 
     protected function getEntity($details)
     {
-        $role = str_replace(' ', '', $details['role']);
-        if (preg_match('/client/i', $role)) {
-            if (isset($details['colleagues'])) {
-                $role = $details['colleagues'] ? $role : 'Solo';
-                $role = $details['administrator'] ? 'ClientAdminSolo' : $role;
-                $role = ($role === 'Client') ? 'Employee' : $role;
-            } else {
-                $role = preg_match('/admin/', $role) ? 'Admin' : 'Freelancer';
+        if (isset($details['role'])) {
+            $role = str_replace(' ', '', $details['role']);
+            if (preg_match('/client/i', $role)) {
+                if (isset($details['colleagues'])) {
+                    $role = $details['colleagues'] ? $role : 'Solo';
+                    $role = $details['administrator'] ? 'ClientAdminSolo' : $role;
+                    $role = ($role === 'Client') ? 'Employee' : $role;
+                } else {
+                    $role = preg_match('/admin/', $role) ? 'Admin' : 'Freelancer';
+                }
             }
+            return "NorthWolds\\Entity\\$role";
+        } else {
+            return null;
         }
-        return "NorthWolds\\Entity\\$role";
     }
 
     protected function getPrivilege($prop = '')
@@ -339,6 +343,8 @@ class User extends Presenter
         $required = array_filter($data, function ($item) {
             return $item;
         });
+
+        dump($_POST['roles']);
         $role = $_POST['roles'][0] ?? 'Client';
 
         if (count($required) < 3) {
