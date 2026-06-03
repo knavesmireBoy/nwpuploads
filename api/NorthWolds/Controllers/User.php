@@ -279,7 +279,6 @@ class User extends Presenter
     public function editbabe($id, $str)
     {
         parse_str($str, $args);
-        dump($args);
         return $this->edit($id, $args);
     }
 
@@ -444,7 +443,7 @@ class User extends Presenter
                 $this->setCookie($_COOKIE, array_keys($cookie), false);
                 //dump($cookie);
                 $id = $_POST['id'];
-                $cookie = 'class=details_override&override=override';
+                $cookie = 'class=details%20override&override=override&legend=gobaby';
                 reLocate("/user/editbabe/$id/$cookie");
             }
 
