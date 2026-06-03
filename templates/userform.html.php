@@ -1,10 +1,7 @@
 <?php
-/*
-$selected = true;
-$domain = false;
-$setcookie = doSetCookie(false);
-*/
+
 $load = '/user/load/';
+
 ?>
 <h1><?= $pagehead; ?></h1>
 <?php if (isset($message)) { ?>
@@ -15,6 +12,7 @@ if (isset($callroute)) {
 	include TEMPLATE . '_call.html.php';
 }
 ?>
+
 <form action="<?= $action; ?>" method="post" name="usersform" class="<?= $class ?? 'details'; ?>">
 	<?php
 	if (isset($class) && preg_match("/override/", $class)) {
