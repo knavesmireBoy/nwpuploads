@@ -19,7 +19,7 @@ class Entity
     }
 
 
-    protected function setCookie($data, $mandatory, bool $flag = false)
+    protected function setCookie(array $data, array $mandatory, mixed $flag)
     {
         $setcookie = doSetCookie($flag);
         foreach ($mandatory as $prop) {

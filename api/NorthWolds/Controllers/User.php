@@ -81,7 +81,7 @@ class User extends Presenter
             'confirm' => ['id' => $id],
             'selected' => ['pagehead' => 'Select User', 'selected' => true, 'clients' => [], 'users' => $users],
             'change' => ['pagehead' => 'Edit User', 'id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Changing these details will require you to log in again. Proceed?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'editor' => $id, 'action' => '/user/change/'],
-            'leave' => [...$prompt, 'editor' => $id, 'action' => '/user/change/', 'prompt' => "Are you sure you want to disassociate this user from the client?", 'call' => 'confirm','cookie' => 'client_id'],
+            'leave' => [...$prompt, 'editor' => $id, 'action' => '/user/change/', 'prompt' => "Are you sure you want to disassociate this user from the client?", 'call' => 'confirm', 'cookie' => 'client_id'],
             //note pos set but not neg and call not required; the logic being if just pos the dialog need not include radio buttons but simply supply a button for further editing
             'success' => ['pagehead' => 'Edit User', 'template' => 'prompt.html.php', 'action' => "/user/editbridge/$id", 'prompt' => "Details succesfully updated", 'pos' => 'Yes', 'submit' => 'edit again']
         ];
@@ -276,10 +276,9 @@ class User extends Presenter
         }
     }
 
-    public function editbabe($id, $str)
+    public function editparse($id, $str)
     {
         parse_str($str, $args);
-
         dump($_COOKIE);
         return $this->edit($id, $args);
     }
@@ -438,20 +437,19 @@ class User extends Presenter
     {
         if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
 
-   
-            if(isset($_POST['cookie'])){
+            $f = doSetCookie(false);
+            $f('success');
+            if (isset($_POST['cookie'])) {
                 parse_str($_POST['cookie'], $cookie);
-                $this->setCookie($_COOKIE, array_keys($cookie), '');
+                $this->setCookie($_COOKIE, [array_keys($cookie)], '');
                 $id = $_POST['id'];
                 $str = urlencode('you may now proceed with your edits!');
                 $cookie = "class=details%20override&override=override&legend=$str";
-                reLocate("/user/editbabe/$id/$cookie");
-            }
-            else {
+                reLocate("/user/editparse/$id/$cookie");
+            } else {
                 return $this->edit($_POST['id'], ['class' => 'details override', 'override' => 'override', 'legend' => 'You may now proceed with your edits']);
             }
-        }
-        else {
+        } else {
             $this->setCookie($_COOKIE, ['name', 'email', 'password', 'client_id'], false);
         }
         reLocate($this->home);
