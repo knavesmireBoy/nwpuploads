@@ -435,11 +435,11 @@ class User extends Presenter
     {
         if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
 
-            if(isset($cookie)){
+            if(isset($_POST['cookie'])){
 
                 parse_str('first=one&second=two', $out);
 
-                dump([explode(';', $cookie), $out]);
+                dump([explode(';', $_POST['cookie']), $out]);
                 $this->setCookie($_COOKIE, explode(';', $cookie), false);
             }
 
