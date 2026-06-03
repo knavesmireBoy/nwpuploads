@@ -83,7 +83,7 @@ class User extends Presenter
             'change' => ['pagehead' => 'Edit User', 'id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Changing these details will require you to log in again. Proceed?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'editor' => $id, 'action' => '/user/change/'],
             'leave' => [...$prompt, 'editor' => $id, 'action' => '/user/change/', 'prompt' => "Are you sure you want to disassociate this user from the client?"],
             //note pos set but not neg and call not required; the logic being if just pos the dialog need not include radio buttons but simply supply a button for further editing
-            'success' => ['pagehead' => 'Edit User', 'template' => 'prompt.html.php', 'action' => "/user/edit/$id", 'prompt' => "Details succesfully updated", 'pos' => 'Yes', 'submit' => 'edit']
+            'success' => ['pagehead' => 'Edit User', 'template' => 'prompt.html.php', 'action' => "/user/editbridge/$id", 'prompt' => "Details succesfully updated", 'pos' => 'Yes', 'submit' => 'edit again']
         ];
 
         if ($key && isset($lib[$key])) {
@@ -274,6 +274,11 @@ class User extends Presenter
                 reLocate("/user/edit/$id");
             }
         }
+    }
+
+    public function editbridge($id)
+    {
+        return $this->edit($id);
     }
 
     public function edit($id, $args = [])
