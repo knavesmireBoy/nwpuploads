@@ -276,9 +276,14 @@ class User extends Presenter
         }
     }
 
-    public function editbridge($id)
+    public function editbridge1($id)
     {
         return $this->edit($id);
+    }
+
+    public function editbridge($id, ...$args)
+    {
+        return $this->edit($id, [...$args]);
     }
 
     public function edit($id, $args = [])
@@ -431,8 +436,13 @@ class User extends Presenter
         if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
 
             if(isset($cookie)){
+
+                parse_str('first=one&second=two', $out);
+
+                dump([explode(';', $cookie), $out]);
                 $this->setCookie($_COOKIE, explode(';', $cookie), false);
             }
+
 
             return $this->edit($_POST['id'], ['class' => 'details override', 'override' => 'override', 'legend' => 'You may now proceed with your edits']);
         }
