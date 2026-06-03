@@ -68,7 +68,7 @@ class Presenter
 
     public function getRoute($role) {}
 
-    protected function setCookie($data, $mandatory, bool $flag = false)
+    protected function setCookie($data, $mandatory, mixed $flag)
     {
         $setcookie = doSetCookie($flag);
         foreach ($mandatory as $prop) {

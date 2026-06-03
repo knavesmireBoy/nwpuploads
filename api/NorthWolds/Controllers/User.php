@@ -441,7 +441,7 @@ class User extends Presenter
             $f('success');
             if (isset($_POST['cookie'])) {
                 parse_str($_POST['cookie'], $cookie);
-                $this->setCookie($_COOKIE, [array_keys($cookie)], '');
+                $this->setCookie($_COOKIE, array_keys($cookie), '');
                 $id = $_POST['id'];
                 $str = urlencode('you may now proceed with your edits!');
                 $cookie = "class=details%20override&override=override&legend=$str";
