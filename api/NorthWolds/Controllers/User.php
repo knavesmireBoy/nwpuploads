@@ -401,7 +401,7 @@ class User extends Presenter
                 $key = $user->postEdit();
             }
         }
-        reLocate('/user/load/' . strtolower($key) . "/$id");
+        reLocate('/user/loadbridge/' . strtolower($key) . "/$id");
     }
 
     public function delete($id)
