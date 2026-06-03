@@ -392,16 +392,16 @@ class User extends Presenter
         $user =  $this->getSubUser($user);
         $user->setSelf($editor);
         $key = $user->setRole($role, $admin ? '_last' : 'lastadmin'); //UPDATE role here; it may trigger an error message
-        //need a message for success for solo/freelancers IF data has changed
         if (!$key) {
-            // Presenter::$success = intval(!Presenter::$success);
             $updated = get_object_vars($user);
             $result = array_diff_assoc($record, $updated);
             if (!empty($result)) {
                 $key = $user->postEdit();
             }
+            $relocate = $key ? '/user/loadbridge/' . strtolower($key) . "/$id" : null;
         }
-        reLocate('/user/loadbridge/' . strtolower($key) . "/$id");
+        $relocate = $relocate ?? '/user/load/' . strtolower($key);
+        reLocate($relocate);
     }
 
     public function delete($id)
