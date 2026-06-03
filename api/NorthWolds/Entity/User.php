@@ -185,10 +185,10 @@ class User extends Entity
     ];
   }
 
-  public function setRole(string $role)
+  public function setRole(string $role, int $insertID = 0)
   {
     if (!empty($this->roletable->find('id', $role))) {
-      $this->userroletable->save(['userid' => $this->id, 'roleid' => $role]);
+      $this->userroletable->save(['userid' => $this->id, 'roleid' => $role], $insertID);
       return ''; //ok
     }
     return $role;
