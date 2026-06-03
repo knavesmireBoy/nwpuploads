@@ -441,8 +441,8 @@ class User extends Presenter
             if(isset($_POST['cookie'])){
 
                 parse_str($_POST['cookie'], $cookie);
-                $this->setCookie($_COOKIE, $cookie, false);
-                dump($cookie);
+                $this->setCookie($_COOKIE, array_keys($cookie), false);
+                //dump($cookie);
                 $id = $_POST['id'];
                 $cookie = 'class=details_override&override=override';
                 reLocate("/user/editbabe/$id/$cookie");
