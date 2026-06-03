@@ -245,8 +245,7 @@ class User extends Presenter
             'action' => "/user/add/",
             'pagehead' => 'Add User',
             'button' => 'Add User',
-            'employer' => $details['client_id'] ?? 0,
-            'roles' => $roles
+            'employer' => $details['client_id'] ?? 0
         ]);
     }
 
@@ -313,8 +312,6 @@ class User extends Presenter
 
         list($_, $clients) = $member->presentList($id, 'client_id');
         $roles = $member->getRoles($user->id ?? '');
-
-        dump([$args, $roles]);
 
         $id = $user->id ?? null;
         $vars = [
