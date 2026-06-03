@@ -401,7 +401,7 @@ class User extends Presenter
                 $key = $user->postEdit();
             }
         }
-        reLocate($this->home . strtolower($key));
+        reLocate('/user/load/' . strtolower($key) . "/$id");
     }
 
     public function delete($id)
