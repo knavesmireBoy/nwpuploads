@@ -438,17 +438,16 @@ class User extends Presenter
 
    
             if(isset($_POST['cookie'])){
-
                 parse_str($_POST['cookie'], $cookie);
                 $this->setCookie($_COOKIE, array_keys($cookie), false);
-                //dump($cookie);
                 $id = $_POST['id'];
-                $cookie = 'class=details%20override&override=override&legend=gobaby';
+                $str = urlencode('you may now proceed with your edits!');
+                $cookie = "class=details%20override&override=override&legend=$str";
                 reLocate("/user/editbabe/$id/$cookie");
             }
-
-
-            return $this->edit($_POST['id'], ['class' => 'details override', 'override' => 'override', 'legend' => 'You may now proceed with your edits']);
+            else {
+                return $this->edit($_POST['id'], ['class' => 'details override', 'override' => 'override', 'legend' => 'You may now proceed with your edits']);
+            }
         }
         else {
             $this->setCookie($_COOKIE, ['name', 'email', 'password', 'client_id'], false);
