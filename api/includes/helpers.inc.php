@@ -290,7 +290,6 @@ function doSetCookie($flag, $toggle = '')
                 unset($_COOKIE[$k]);
                 setcookie($k, '', -1, '/');
             } else {
-                dump(293);
                 setcookie($k, '', $time, '/');
                 $_COOKIE[$k] = '';
             }
