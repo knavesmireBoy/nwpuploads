@@ -68,6 +68,11 @@ class DatabaseTable
         $query .= ' WHERE `' . $k . '` = :pk AND `' . $key . '` = :kk';
         $values['pk'] = $values[$k];
         $values['kk'] = $oldkey;
+
+        if (DBSYSTEM === 'postgres') {
+            $query = preg_replace('/`/', '', $query);
+        }
+
         $stmt = $this->pdo->prepare($query);
         $stmt->execute($values);
     }

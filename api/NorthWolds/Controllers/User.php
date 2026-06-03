@@ -354,7 +354,7 @@ class User extends Presenter
         $updateDomain = $user->updateDomain($key, $_POST['id'], empty($_POST['override']));
         /*role must be set BEFORE "updateDomain"
         no user can navigate the site without an assigned role*/
-        $user->setRole($role, $userId);
+        $user->setRole($role, isset($userId));
         $data = $updateDomain(nullify($client_id), get_object_vars($user), $userId);
         $this->table->save($data);
         reLocate($this->home);
