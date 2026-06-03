@@ -291,7 +291,7 @@ function doSetCookie($flag, $toggle = '')
                 setcookie($k, '', -1, '/');
             } else {
                 setcookie($k, '', $time, '/');
-                $_COOKIE[$k] = $v;
+                $_COOKIE[$k] = '';
             }
         }
     };

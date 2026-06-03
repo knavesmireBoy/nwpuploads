@@ -279,7 +279,6 @@ class User extends Presenter
     public function editparse($id, $str)
     {
         parse_str($str, $args);
-        dump($_COOKIE);
         return $this->edit($id, $args);
     }
 
@@ -437,8 +436,6 @@ class User extends Presenter
     {
         if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
 
-            $f = doSetCookie(false);
-            $f('success');
             if (isset($_POST['cookie'])) {
                 parse_str($_POST['cookie'], $cookie);
                 $this->setCookie($_COOKIE, array_keys($cookie), '');
