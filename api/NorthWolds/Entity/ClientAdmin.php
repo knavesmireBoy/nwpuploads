@@ -75,7 +75,7 @@ class ClientAdmin extends User
         };
     }
 
-    public function setRole(string $role)
+    public function setRole(string $role, mixed $flag)
     {
         //if $action is true insert otherwise update
         $action = empty($this->userroletable->find('userid', $this->id));

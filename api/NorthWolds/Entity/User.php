@@ -185,10 +185,10 @@ class User extends Entity
     ];
   }
 
-  public function setRole(string $role, bool $flag)
+  public function setRole(string $role, mixed $flag)
   {
     if (!empty($this->roletable->find('id', $role))) {
-      $this->userroletable->save(['userid' => $this->id, 'roleid' => $role], $flag);
+      $this->userroletable->save(['userid' => $this->id, 'roleid' => $role], $flag && is_bool($flag));
       return ''; //ok
     }
     return $role;
