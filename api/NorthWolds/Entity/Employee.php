@@ -53,9 +53,11 @@ class Employee extends User
             $relocate = '';
             $dbrecord = $this->fetch('TABLE', 'id', $this->id);
             if (isset($dbrecord['email'])) { //existing
-
-                $newdata = $this->validateDom($cid, $dbrecord, $name, "$dom.$com");
-                if (!$newdata && $override) {
+                /*
+                $override is normal state ($_POST['override'] is empty) otherwise cookies have loadded new data in to the form and validateDom will fail as $postdata and $dbrecord won't tally; as this can only happen with an admin user in control we let it go
+                */
+                $newdata = $override ? $this->validateDom($cid, $dbrecord, $name, "$dom.$com") : [];
+                if (!$newdata) {
                     reLocate("/user/load/$key");
                 }
                 $postdata = [...$postdata, ...$newdata];
