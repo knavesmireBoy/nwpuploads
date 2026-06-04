@@ -20,9 +20,7 @@ class Client extends Entity
         }
     }
 
-    public function getUsers() {
-
-    }
+    public function getUsers() {}
 
     public function domainAvailable($domain)
     {
@@ -59,5 +57,11 @@ class Client extends Entity
         } else {
             return $users;
         }
+    }
+
+    protected function validateDomain($email, $prop = 'id')
+    {
+        list($name, $dom, $com) = parseEmail($email);
+        return $this->domain === "$dom.$com" ? [$prop => "$dom.$com"] : [];
     }
 }

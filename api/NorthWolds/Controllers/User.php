@@ -59,6 +59,7 @@ class User extends Presenter
             '_last' => "To remove this final user, please delete the client instead.",
 
             'domain' => 'Only the database administrator can change the domain of an email address.',
+            '_sync' => "Email domain and client domain do not match!",
             '_domain' => 'Set the drop down menu to empty when changing the domain. Change the domain of the client to update the domain for all members.',
             '_cadmin' => 'Cannot change the domain of a user with an admin role',
             'traitor' => 'That domain is not available.',
@@ -227,10 +228,10 @@ class User extends Presenter
         $error = '';
         $owner = []; //prompt.html.php expects this from Uploader Controller
 
-      //if($key !== 'select') dump($vars);
+      if(!is_array($vars)) dump($vars);
         unset($vars['id']);
         //the occasional error may require ONE argument which is not an id
-       // $error = $this->query($key, ...$vars);
+        $error = $this->query($key, ...$vars);
         $user = $this->fetch('table', 'email', $_SESSION['username']);
         $user = $this->getSubUser($user);
 

@@ -52,6 +52,7 @@ class Employee extends User
             list($name, $dom, $com) = $this->parseEmail($postdata['email']);
             $relocate = '';
             $dbrecord = $this->fetch('TABLE', 'id', $this->id);
+            $client = $this->fetch('clienttable', 'id', $cid);
             if (isset($dbrecord['email'])) { //existing
                 /*
                 $override is normal state ($_POST['override'] is empty) otherwise cookies have loadded new data in to the form and validateDom will fail as $postdata and $dbrecord won't tally; as this can only happen with an admin user in control we let it go
@@ -60,9 +61,15 @@ class Employee extends User
                 if (!$newdata) {
                     reLocate("/user/load/$key");
                 }
-                $postdata = [...$postdata, ...$newdata];
 
-                if (!$override) dump([$cid, $this->validateDomain($cid, $postdata['email']), $postdata]);
+                if ($client) {
+                    $clientdata = $client->validateDomain($postdata['email'], 'client_id');
+                }
+                if (empty($clientdata)) {
+                    reLocate("/user/load/_sync");
+                }
+                $postdata = [...$postdata, ...$newdata, ...$clientdata];
+
                 //can only be admin moving an employee; admin users cannot be moved
                 if ($cid && $cid != $dbrecord['client_id'] && $override) {
                     $data = $this->fetch('clienttable', 'id', $cid);
