@@ -101,7 +101,7 @@ class User extends Entity
   protected function validateDomain($cid, $email)
   {
     $client = $cid ? $this->clienttable->find('id', $cid) : [];
-    list($name, $dom, $com) = $email;
+    list($name, $dom, $com) = $this->parseEmail($email);
     dump([$client[0]->domain,"$dom.$com"]);
     return isset($client[0]) && $client[0]->domain === "$dom.$com";
   }
