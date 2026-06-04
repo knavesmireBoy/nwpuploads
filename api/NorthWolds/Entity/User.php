@@ -41,23 +41,23 @@ class User extends Entity
     return $role;
   }
 
-    //convert ids into table structure [userid, roleid]
-    protected function getAllRoles(array $ids)
-    {
-      if (empty($ids)) {
-        return [];
-      }
-      $cb = partial([$this, 'find'], 'userroletable', 'userid');
-      $roles = array_map($cb, $ids);
-      $roles = safeFilter($roles, fn($o) => $o->roleid);
-      return array_map('get_object_vars', $roles);
+  //convert ids into table structure [userid, roleid]
+  protected function getAllRoles(array $ids)
+  {
+    if (empty($ids)) {
+      return [];
     }
-    protected function getAdminRoles(array $roles = [])
-    {
-      $cb = composer(partial('equals', 'Client Admin'), curry2('getter')('roleid'));
-      return !empty($roles) ? safeFilter($roles, $cb) : $roles;
-    }
-  
+    $cb = partial([$this, 'find'], 'userroletable', 'userid');
+    $roles = array_map($cb, $ids);
+    $roles = safeFilter($roles, fn($o) => $o->roleid);
+    return array_map('get_object_vars', $roles);
+  }
+  protected function getAdminRoles(array $roles = [])
+  {
+    $cb = composer(partial('equals', 'Client Admin'), curry2('getter')('roleid'));
+    return !empty($roles) ? safeFilter($roles, $cb) : $roles;
+  }
+
 
   protected function fetchAllRoles(array $keys = [], array $selectedRoles = []): array
   {
@@ -97,6 +97,14 @@ class User extends Entity
     return count($ret);
   }
 
+
+  protected function validateDomain($cid, $email)
+  {
+    $client = $cid ? $this->clienttable->find('id', $cid) : [];
+    list($name, $dom, $com) = $email;
+    return isset($client[0]) && $client[0]->domain === "$dom.$com";
+  }
+  
   protected function validateDom($cid, $dbrecord, $ename, $postdom, $insertID)
   {
     $client = $cid ? $this->clienttable->find('id', $cid) : [];
@@ -128,7 +136,7 @@ class User extends Entity
 
   public function presentList($userId)
   {
-      return [[], []];
+    return [[], []];
   }
 
   public function getRoles($userid = '')
@@ -138,7 +146,7 @@ class User extends Entity
 
   public function getUserIds($roles = null)
   {
-      return [];
+    return [];
   }
 
   public function findDomain($postdom)

@@ -56,13 +56,13 @@ class Employee extends User
                 /*
                 $override is normal state ($_POST['override'] is empty) otherwise cookies have loadded new data in to the form and validateDom will fail as $postdata and $dbrecord won't tally; as this can only happen with an admin user in control we let it go
                 */
-                $newdata = $override ? $this->validateDom($cid, $dbrecord, $name, "$dom.$com") : [];
-                if (!$newdata && is_bool($newdata)) {
+                $newdata = $override ? $this->validateDom($cid, $dbrecord, $name, "$dom.$com") : $postdata;
+                if (!$newdata) {
                     reLocate("/user/load/$key");
                 }
                 $postdata = [...$postdata, ...$newdata];
 
-             //   if(!$override) dump($postdata);
+                if (!$override) dump([$this->validateDomain($cid, $postdata['email']), $postdata]);
                 //can only be admin moving an employee; admin users cannot be moved
                 if ($cid && $cid != $dbrecord['client_id'] && $override) {
                     $data = $this->fetch('clienttable', 'id', $cid);
@@ -72,6 +72,11 @@ class Employee extends User
                         $relocate = "/user/loadbridge/move/$uid/client_id=$cid";
                     }
                 } else { //admin releasing an employee OR updating name 
+
+                    if (!$cid && $override) { //empty $cd courtesy of admin
+                        $relocate = "/user/loadbridge/leave/$uid/client_id=$cid";
+                    }
+
                     $clients = $this->clienttable->findAll();
                     //allow a user to change the name part of the email address; so filter out current domain IF NOT admin
                     $f = negate(curry2('equals')("$dom.$com"));
@@ -83,9 +88,6 @@ class Employee extends User
                     //allow a user to change the name part of the email address
                     if ($checkDomains('domain')) {
                         reLocate("/user/load/_traitor");
-                    }
-                    if (!$cid && $override) { //empty $cd courtesy of admin
-                        $relocate = "/user/loadbridge/leave/$uid/client_id=$cid";
                     }
                 }
                 if ($relocate) {
