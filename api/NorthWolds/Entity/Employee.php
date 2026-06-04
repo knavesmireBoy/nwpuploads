@@ -63,7 +63,6 @@ class Employee extends User
                     $domain = $data->domain;
                     $postdata['email'] = "$name@$domain";
 
-                    dump($override);
                     if ($override) {
                         $relocate = "/user/loadbridge/move/$uid/cookie=$cid";
                     }
