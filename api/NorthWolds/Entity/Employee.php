@@ -80,13 +80,14 @@ class Employee extends User
                         reLocate("/user/load/_traitor");
                     }
                     if (!$cid && $override) {//empty $cd courtesy of admin
-                        $relocate = "/user/loadbridge/leave/$uid";
+                        $relocate = "/user/loadbridge/leave/$uid/client_id=$cid";
                     }
                 }
                 if ($relocate) {
                     $this->setCookie($postdata, ['name', 'email', 'client_id'], true);
                     reLocate($relocate);
                 }
+                dump([90,$postdata]);
                 return $postdata;
             } else { //new
                 return $this->setClientEmail($cid, $name, $postdata);
