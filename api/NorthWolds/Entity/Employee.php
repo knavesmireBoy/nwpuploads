@@ -51,6 +51,7 @@ class Employee extends User
 
             list($name, $dom, $com) = $this->parseEmail($postdata['email']);
             $relocate = '';
+            $cookiearg = true;
             $dbrecord = $this->fetch('TABLE', 'id', $this->id);
             $client = $this->fetch('clienttable', 'id', $cid);
             $clientdata = [];
@@ -65,7 +66,11 @@ class Employee extends User
 
                 if (!$override && $client) {
                     $clientdata = $client->validateDomain($postdata['email'], 'client_id');
-                    $relocate = $clientdata ? '' : "/user/load/_sync";
+                    if(!$clientdata){
+                        $relocate = "/user/load/_sync";
+                        $cookiearg = false;
+                    }
+                   
                 }
                 $postdata = [...$postdata, ...$newdata, ...$clientdata];
 
@@ -93,11 +98,13 @@ class Employee extends User
 
                     //allow a user to change the name part of the email address
                     if ($checkDomains('domain')) {
+                        $cookiearg = false;
                         reLocate("/user/load/_traitor");
                     }
                 }
                 if ($relocate) {
-                    $this->setCookie($postdata, ['name', 'email', 'client_id'], true);
+                    $data = $cookiearg ? $postdata : $_COOKIE;
+                    $this->setCookie($data, ['name', 'email', 'client_id'], $cookiearg);
                     reLocate($relocate);
                 }
                 return $postdata;
