@@ -61,7 +61,7 @@ class Client extends Entity
 
     public function validateDomain($email, $prop = 'id')
     {
-        list($name, $dom, $com) = parseEmail($email);
+        list($dom, $com) = parseEmail($email);
         return $this->domain === "$dom.$com" ? [$prop => "$dom.$com"] : [];
     }
 }
