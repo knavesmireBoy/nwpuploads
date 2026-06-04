@@ -99,7 +99,7 @@ class Employee extends User
                     $this->setCookie($data, ['name', 'email', 'client_id'], $cookiearg);
                     reLocate($relocate);
                 }
-                return $cid ? $postdata : [...$postdata, ...['client_id' => null]];
+                return $cid ? $postdata : [...$postdata, 'client_id' => null];
             } else { //new
                 return $this->setClientEmail($cid, $name, $postdata);
             }
