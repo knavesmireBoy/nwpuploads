@@ -446,17 +446,14 @@ class User extends Presenter
     public function changeSubmit()
     {
         if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
-
             if (isset($_POST['cookie'])) {
-               // parse_str(, $cookie);
                 $v = $_POST['cookie'];
                 $flag = empty($v) ? 'empty' : true;
-                dump([$v, $flag]);
                 $this->setCookie(['client_id' => $v], ['client_id'], $flag);
                 $id = $_POST['id'];
                 $str = urlencode('you may now proceed with your edits');
-                $cookie = "class=details%20override&override=override&legend=$str";
-                reLocate("/user/editparse/$id/$cookie");
+                $str = "class=details%20override&override=override&legend=$str";
+                reLocate("/user/editparse/$id/$str");
             } else {
                 return $this->edit($_POST['id'], ['class' => 'details override', 'override' => 'override', 'legend' => 'You may now proceed with your edits']);
             }
