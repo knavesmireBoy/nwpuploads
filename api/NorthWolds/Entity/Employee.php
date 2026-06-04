@@ -64,7 +64,7 @@ class Employee extends User
                 //can only be admin moving an employee; admin users cannot be moved
 
                 if(!$override){
-                    dump([$postdata, $cid, $dbrecord['client_id']]);
+                    dump($newdata);
                 }
 
                 if ($cid && $cid != $dbrecord['client_id'] && $override) {
