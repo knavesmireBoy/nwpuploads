@@ -31,7 +31,7 @@ class User extends Presenter
     private function query($key, $arg = '')
     {
         
-        dump(func_get_args());
+        var_dump(func_get_args());
         $lib = [
             'nouser' => "No user found",
             'nousers' => "Unable to find any users",
@@ -218,7 +218,7 @@ class User extends Presenter
     public function loadbridge($key, $id, $args)
     {
         parse_str($args, $res);
-       
+        dump($key, $id, $args);
         return $this->load($key, ['id' => $id, ...$res]);
     }
 
