@@ -64,11 +64,10 @@ class Employee extends User
                     $postdata['email'] = "$name@$domain";
                     if ($override) {
                         $relocate = "/user/loadbridge/move/$uid/client_id=$cid";
-                    } else {
-                        dump($postdata);
-                        return $postdata;
-                    }
+                    } 
                 } else { //admin releasing an employee OR updating name 
+
+                   
                     $clients = $this->clienttable->findAll();
                     //allow a user to change the name part of the email address; so filter out current domain IF NOT admin
                     $f = negate(curry2('equals')("$dom.$com"));
@@ -81,6 +80,8 @@ class Employee extends User
                     if ($checkDomains('domain')) {
                         reLocate("/user/load/_traitor");
                     }
+
+                    dump([84,$postdata]);
                     if (!$cid && $override) { //empty $cd courtesy of admin
                         $relocate = "/user/loadbridge/leave/$uid/client_id=$cid";
                     }
