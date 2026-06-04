@@ -28,10 +28,10 @@ class User extends Presenter
         reLocate($this->home);
     }
 
-    private function query($key, $arg = '')
+    private function query($key, $arg)
     {
+       // $arg = $args
         
-        var_dump(func_get_args());
         $lib = [
             'nouser' => "No user found",
             'nousers' => "Unable to find any users",
@@ -218,7 +218,6 @@ class User extends Presenter
     public function loadbridge($key, $id, $args)
     {
         parse_str($args, $res);
-        dump([$key, $id, $args, $res]);
         return $this->load($key, ['id' => $id, ...$res]);
     }
 
@@ -229,8 +228,8 @@ class User extends Presenter
         $error = '';
         $owner = []; //prompt.html.php expects this from Uploader Controller
 
-      if(!is_array($vars)) dump($vars);
-        unset($vars['id']);
+      //if(!is_array($vars)) dump($vars);
+        //unset($vars['id']);
         //the occasional error may require ONE argument which is not an id
         $error = $this->query($key, ...$vars);
         $user = $this->fetch('table', 'email', $_SESSION['username']);
