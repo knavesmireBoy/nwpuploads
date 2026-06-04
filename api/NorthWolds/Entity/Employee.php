@@ -54,7 +54,7 @@ class Employee extends User
             $cookiearg = true;
             $dbrecord = $this->fetch('TABLE', 'id', $this->id);
             $client = $this->fetch('clienttable', 'id', $cid);
-            $clientdata = [];
+            $clientdata = ['client_id' => NULL];
             if (isset($dbrecord['email'])) { //existing
                 /*
                 $override is normal state ($_POST['override'] is empty) otherwise cookies have loadded new data in to the form and validateDom will fail as $postdata and $dbrecord won't tally; as this can only happen with an admin user in control we let it go
@@ -99,14 +99,9 @@ class Employee extends User
                         $cookiearg = false;
                         reLocate("/user/load/_traitor");
                     }
-
-                 
                     if(!$cid && !$override){
-
                         dump([102,$postdata]);
                     }
-
-                     
                 }
                 if ($relocate) {
                     $data = $cookiearg ? $postdata : $_COOKIE;
