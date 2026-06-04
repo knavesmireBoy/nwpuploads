@@ -97,7 +97,7 @@ class Employee extends User
                         $cookiearg = false;
                         reLocate("/user/load/_traitor");
                     }
-                    if(!$cid){
+                    if(!$cid && !$override){
 
                         dump([102,$postdata]);
                     }
