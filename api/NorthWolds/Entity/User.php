@@ -214,6 +214,9 @@ class User extends Entity
       if ($cid && $domain && ($postdom !== $domain)) {
         reLocate("/user/load/$key");
       } else {
+        if ($cid && ! $domain) {
+          dump('associate');
+        }
         return $data;
       }
     };
