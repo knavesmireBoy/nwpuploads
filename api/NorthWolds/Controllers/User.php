@@ -227,7 +227,7 @@ class User extends Presenter
         $error = '';
         $owner = []; //prompt.html.php expects this from Uploader Controller
 
-       if(!empty($vars)) dump($vars);
+       if($key) dump($vars);
         unset($vars['id']);
         //the occasional error may require ONE argument which is not an id
        // $error = $this->query($key, ...$vars);
