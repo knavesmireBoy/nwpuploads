@@ -62,7 +62,7 @@ class Employee extends User
                 }
                 $postdata = [...$postdata, ...$newdata];
 
-                if (!$override) dump([$this->validateDomain($cid, $postdata['email']), $postdata]);
+                if (!$override) dump([$cid, $this->validateDomain($cid, $postdata['email']), $postdata]);
                 //can only be admin moving an employee; admin users cannot be moved
                 if ($cid && $cid != $dbrecord['client_id'] && $override) {
                     $data = $this->fetch('clienttable', 'id', $cid);
