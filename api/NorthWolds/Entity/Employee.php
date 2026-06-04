@@ -48,6 +48,8 @@ class Employee extends User
     public function updateDomain($key, $uid, $override)
     {
         return function (?int $cid, array $postdata, int $id = 0) use ($key, $uid, $override) {
+
+            if(!$override) dump(9);
             list($name, $dom, $com) = $this->parseEmail($postdata['email']);
             $relocate = '';
             $dbrecord = $this->fetch('TABLE', 'id', $this->id);
@@ -88,7 +90,6 @@ class Employee extends User
                 }
                 return $postdata;
             } else { //new
-                dump(91);
                 return $this->setClientEmail($cid, $name, $postdata);
             }
         };
