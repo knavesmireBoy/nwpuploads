@@ -61,6 +61,8 @@ class Employee extends User
                     reLocate("/user/load/$key");
                 }
                 $postdata = [...$postdata, ...$newdata];
+
+                if(!$override) dump($postdata);
                 //can only be admin moving an employee; admin users cannot be moved
                 if ($cid && $cid != $dbrecord['client_id'] && $override) {
                     $data = $this->fetch('clienttable', 'id', $cid);
