@@ -272,8 +272,10 @@ function doSetCookie($flag, $time = -1)
             setcookie($k, $v, $time, '/');
             $_COOKIE[$k] = $v;
         } elseif (isset($_COOKIE[$k]) && !$flag) {
-            unset($_COOKIE[$k]);
-            setcookie($k, '', -1, '/');
+            if (is_bool($flag)) {
+                unset($_COOKIE[$k]);
+                setcookie($k, '', -1, '/');
+            }
         }
     };
 }
