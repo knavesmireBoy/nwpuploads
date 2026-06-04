@@ -30,8 +30,8 @@ class User extends Presenter
 
     private function query($key, ...$args)
     {
-       $arg = $args[1] ?? $args[0] ?? '';
-        
+        $arg = $args[1] ?? $args[0] ?? '';
+
         $lib = [
             'nouser' => "No user found",
             'nousers' => "Unable to find any users",
@@ -228,7 +228,7 @@ class User extends Presenter
         $error = '';
         $owner = []; //prompt.html.php expects this from Uploader Controller
 
-      //if(!is_array($vars)) dump($vars);
+        //if(!is_array($vars)) dump($vars);
         //unset($vars['id']);
         //the occasional error may require ONE argument which is not an id
         $error = $this->query($key, ...$vars);
@@ -388,6 +388,10 @@ class User extends Presenter
         $required = array_filter($data, fn($item) => $item);
 
         $dom = $updateDomain(nullify($clientID), $data);
+
+        if ($_POST['override']) {
+            dump([393, $dom]);
+        }
 
         //will exit here if domain doesn't validate
         $data = [...$record, ...$required, ...$dom];
