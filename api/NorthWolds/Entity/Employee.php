@@ -66,6 +66,7 @@ class Employee extends User
                 if (!$override && $client) {
                     $clientdata = $client->validateDomain($postdata['email'], 'client_id');
                     if (!$clientdata['client_id']) {
+                        dump(99);
                         $relocate = "/user/load/_sync";
                         $cookiearg = false;
                     }
