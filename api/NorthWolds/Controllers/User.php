@@ -216,7 +216,7 @@ class User extends Presenter
     public function loadbridge($key, $id, $args)
     {
         parse_str($args, $res);
-        dump($res);
+       
         return $this->load($key, ['id' => $id, ...$res]);
     }
 
@@ -449,8 +449,6 @@ class User extends Presenter
                // parse_str(, $cookie);
                 $v = $_POST['cookie'];
                 $flag = empty($v) ? 'empty' : true;
-
-
                 dump([$v, $flag]);
                 $this->setCookie(['client_id' => $v], ['client_id'], $flag);
                 $id = $_POST['id'];
