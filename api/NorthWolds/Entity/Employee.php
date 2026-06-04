@@ -14,14 +14,14 @@ class Employee extends User
 
     public function postEdit()
     {
-      return $this->self ? 'success' : '';
+        return $this->self ? 'success' : '';
     }
 
     public function preEdit($flag = true)
     {
-      return $flag;
+        return $flag;
     }
-  
+
     //validate activity on the email field
     protected function validateDom($cid, $record, $ename, $edom, $insertId = 0)
     {
@@ -62,9 +62,10 @@ class Employee extends User
                     $data = $this->fetch('clienttable', 'id', $cid);
                     $domain = $data->domain;
                     $postdata['email'] = "$name@$domain";
-
                     if ($override) {
                         $relocate = "/user/loadbridge/move/$uid/client_id=$cid";
+                    } else {
+                        return $postdata;
                     }
                 } else { //admin releasing an employee OR updating name 
                     $clients = $this->clienttable->findAll();
@@ -79,7 +80,7 @@ class Employee extends User
                     if ($checkDomains('domain')) {
                         reLocate("/user/load/_traitor");
                     }
-                    if (!$cid && $override) {//empty $cd courtesy of admin
+                    if (!$cid && $override) { //empty $cd courtesy of admin
                         $relocate = "/user/loadbridge/leave/$uid/client_id=$cid";
                     }
                 }
@@ -87,12 +88,10 @@ class Employee extends User
                     $this->setCookie($postdata, ['name', 'email', 'client_id'], true);
                     reLocate($relocate);
                 }
-                dump([90,$postdata]);
                 return $postdata;
             } else { //new
                 return $this->setClientEmail($cid, $name, $postdata);
             }
         };
     }
-
 }
