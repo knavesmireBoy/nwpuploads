@@ -28,9 +28,9 @@ class User extends Presenter
         reLocate($this->home);
     }
 
-    private function query($key, $arg)
+    private function query($key, ...$args)
     {
-       // $arg = $args
+       $arg = $args[1] ?? $args[0];
         
         $lib = [
             'nouser' => "No user found",
