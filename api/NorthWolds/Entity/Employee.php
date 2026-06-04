@@ -63,14 +63,12 @@ class Employee extends User
                 if (!$newdata) {
                     reLocate("/user/load/$key");
                 }
-
                 if (!$override && $client) {
                     $clientdata = $client->validateDomain($postdata['email'], 'client_id');
                     if(!$clientdata){
                         $relocate = "/user/load/_sync";
                         $cookiearg = false;
-                    }
-                   
+                    }   
                 }
                 $postdata = [...$postdata, ...$newdata, ...$clientdata];
 
@@ -83,11 +81,9 @@ class Employee extends User
                         $relocate = "/user/loadbridge/move/$uid/client_id=$cid";
                     }
                 } else { //admin releasing an employee OR updating name 
-
                     if (!$cid && $override) { //empty $cd courtesy of admin
                         $relocate = "/user/loadbridge/leave/$uid/client_id=$cid";
                     }
-
                     $clients = $this->clienttable->findAll();
                     //allow a user to change the name part of the email address; so filter out current domain IF NOT admin
                     $f = negate(curry2('equals')("$dom.$com"));
@@ -101,6 +97,12 @@ class Employee extends User
                         $cookiearg = false;
                         reLocate("/user/load/_traitor");
                     }
+                    if(!$cid){
+
+                        dump([102,$postdata]);
+                    }
+
+                     
                 }
                 if ($relocate) {
                     $data = $cookiearg ? $postdata : $_COOKIE;
