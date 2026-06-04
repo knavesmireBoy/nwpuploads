@@ -12,7 +12,6 @@ class Employee extends User
         return $data;
     }
 
-    
     public function postEdit()
     {
       return $this->self ? 'success' : '';
@@ -62,7 +61,7 @@ class Employee extends User
                 if ($cid && $cid != $dbrecord['client_id']) {
                     $data = $this->fetch('clienttable', 'id', $cid);
                     $domain = $data->domain;
-                    $postdata['email'] = "$name.$domain";
+                    $postdata['email'] = "$name@$domain";
                     if ($override) {
                         $relocate = "/user/loadbridge/leave/$uid";
                     }

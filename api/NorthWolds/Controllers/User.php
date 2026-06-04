@@ -362,7 +362,6 @@ class User extends Presenter
 
     public function editSubmit()
     {
-
         $admin = $_SESSION['role'] === 'Admin';
         $id = nullify($_POST['id']);
         $key = '';
