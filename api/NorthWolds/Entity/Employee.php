@@ -58,7 +58,7 @@ class Employee extends User
                 */
                 $newdata = $override ? $this->validateDom($cid, $dbrecord, $name, "$dom.$com") : [];
                 if (!$newdata) {
-                    reLocate("/user/load/$key");
+                  //  reLocate("/user/load/$key");
                 }
                 $postdata = [...$postdata, ...$newdata];
                 //can only be admin moving an employee; admin users cannot be moved
