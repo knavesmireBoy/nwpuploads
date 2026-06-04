@@ -224,11 +224,13 @@ class User extends Presenter
     {
         $details = $this->getPrivilege();
         $customVars = $this->getCustomVars($key, $vars);
-
+        $error = '';
         $owner = []; //prompt.html.php expects this from Uploader Controller
+
+       // if(!empty($vars)) dump($vars);
         unset($vars['id']);
         //the occasional error may require ONE argument which is not an id
-        $error = $this->query($key, ...$vars);
+       // $error = $this->query($key, ...$vars);
         $user = $this->fetch('table', 'email', $_SESSION['username']);
         $user = $this->getSubUser($user);
 
