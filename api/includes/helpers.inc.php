@@ -263,36 +263,17 @@ function unsetCookie($str)
     setcookie($str, '', -1, '/');
 }
 
-function doSetCookie($flag, $toggle = '')
+function doSetCookie($flag, $time = -1)
 {
-    return function ($k, $v = '', $time = -1) use ($flag, $toggle) {
-        //need if undefined here
-        if (!is_string($v)) {
-            if (!is_int($v)) {
-                $v = $k;
-            }
-        }
-
-        if (!is_int($v)) {
-            if (!is_string($v)) {
-                $v = $k;
-            }
-        }
-
+    return function ($k, $v = '') use ($flag, $time) {
+        $v = $v ? $v : $k;
         if (!isset($_COOKIE[$k]) && $flag) {
-            setcookie($k, $v, $time, '/');
-            $_COOKIE[$k] = $v;
-        } elseif (isset($_COOKIE[$k]) && $flag) {
+            $v = is_bool($flag) ? $v : '';
             setcookie($k, $v, $time, '/');
             $_COOKIE[$k] = $v;
         } elseif (isset($_COOKIE[$k]) && !$flag) {
-            if (is_bool($flag)) {
-                unset($_COOKIE[$k]);
-                setcookie($k, '', -1, '/');
-            } else {
-                setcookie($k, '', $time, '/');
-                $_COOKIE[$k] = '';
-            }
+            unset($_COOKIE[$k]);
+            setcookie($k, '', -1, '/');
         }
     };
 }
