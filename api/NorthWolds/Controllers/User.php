@@ -213,7 +213,7 @@ class User extends Presenter
         ];
     }
 
-    public function loadbridge($key, $id, ...$args)
+    public function loadbridge($key, $id, $args)
     {
         
         parse_str($args, $res);
