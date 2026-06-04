@@ -83,7 +83,9 @@ class User extends Presenter
             'confirm' => ['id' => $id],
             'selected' => ['pagehead' => 'Select User', 'selected' => true, 'clients' => [], 'users' => $users],
             'change' => ['pagehead' => 'Edit User', 'id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Changing these details will require you to log in again. Proceed?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'editor' => $id, 'action' => '/user/change/'],
-            'leave' => [...$prompt, 'editor' => $id, 'action' => '/user/change/', 'prompt' => "Are you sure you want to disassociate this user from the client?", 'call' => 'confirm', 'cookie' => 'client_id'],
+            'leave' => [...$prompt, 'editor' => $id, 'action' => '/user/change/', 'prompt' => "Are you sure you want to disassociate this user from the client?", 'cookie' => 'client_id'],
+
+            'move' => [...$prompt, 'editor' => $id, 'action' => '/user/change/', 'prompt' => "Are you sure you want to move this user to another client?", 'cookie' => 'client_id'],
             //note pos set but not neg and call not required; the logic being if just pos the dialog need not include radio buttons but simply supply a button for further editing
             'success' => ['pagehead' => 'Edit User', 'template' => 'prompt.html.php', 'action' => "/user/editbridge/$id", 'prompt' => "Details succesfully updated", 'pos' => 'Yes', 'submit' => 'edit again']
         ];

@@ -53,8 +53,6 @@ class Employee extends User
             $dbrecord = $this->fetch('TABLE', 'id', $this->id);
             if (isset($dbrecord['email'])) { //existing
                 $newdata = $this->validateDom($cid, $dbrecord, $name, "$dom.$com");
-
-                dump($newdata);
                 if (!$newdata) {
                     reLocate("/user/load/$key");
                 }
@@ -65,7 +63,7 @@ class Employee extends User
                     $domain = $data->domain;
                     $postdata['email'] = "$name@$domain";
                     if ($override) {
-                        $relocate = "/user/loadbridge/leave/$uid";
+                        //$relocate = "/user/loadbridge/move/$uid";
                     }
                 } else { //admin releasing an employee OR updating name 
                     $clients = $this->clienttable->findAll();
