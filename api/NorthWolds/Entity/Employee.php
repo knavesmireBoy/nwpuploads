@@ -49,13 +49,13 @@ class Employee extends User
     {
         return function (?int $cid, array $postdata, int $id = 0) use ($key, $uid, $override) {
 
-            if(!$override) dump(9);
             list($name, $dom, $com) = $this->parseEmail($postdata['email']);
             $relocate = '';
             $dbrecord = $this->fetch('TABLE', 'id', $this->id);
             if (isset($dbrecord['email'])) { //existing
+
                 $newdata = $this->validateDom($cid, $dbrecord, $name, "$dom.$com");
-                if (!$newdata) {
+                if (!$newdata && $override) {
                     reLocate("/user/load/$key");
                 }
                 $postdata = [...$postdata, ...$newdata];
