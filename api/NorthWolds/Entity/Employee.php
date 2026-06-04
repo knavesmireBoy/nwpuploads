@@ -66,7 +66,6 @@ class Employee extends User
                 if (!$override && $client) {
                     $clientdata = $client->validateDomain($postdata['email'], 'client_id');
                     if (!$clientdata['client_id']) {
-                        dump(99);
                         $relocate = "/user/load/_sync";
                         $cookiearg = false;
                     }
@@ -78,9 +77,9 @@ class Employee extends User
                     $data = $this->fetch('clienttable', 'id', $cid);
                     $domain = $data->domain;
                     $postdata['email'] = "$name@$domain";
-                    $relocate = "/user/loadbridge/move/$uid/client_id=$cid";
+                    $relocate = $relocate ? $relocate : "/user/loadbridge/move/$uid/client_id=$cid";
                 } else { //admin releasing an employee OR updating name 
-                    $relocate = !$cid && $override ? "/user/loadbridge/leave/$uid/client_id=$cid" : '';
+                    $relocate = !$cid && $override ? "/user/loadbridge/leave/$uid/client_id=$cid" : $relocate;
                     $clients = $this->clienttable->findAll();
                     //allow a user to change the name part of the email address; so filter out current domain IF NOT admin
                     $f = negate(curry2('equals')("$dom.$com"));
