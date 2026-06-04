@@ -63,7 +63,7 @@ class Employee extends User
                     $domain = $data->domain;
                     $postdata['email'] = "$name@$domain";
                     if ($override) {
-                      //  $relocate = "/user/loadbridge/move/$uid/client_id=$cid";
+                        $relocate = "/user/loadbridge/move/$uid/client_id=$cid";
                     } 
                 } else { //admin releasing an employee OR updating name 
                     $clients = $this->clienttable->findAll();
@@ -88,6 +88,7 @@ class Employee extends User
                 }
                 return $postdata;
             } else { //new
+                dump(91);
                 return $this->setClientEmail($cid, $name, $postdata);
             }
         };
