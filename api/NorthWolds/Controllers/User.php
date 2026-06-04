@@ -218,7 +218,7 @@ class User extends Presenter
     public function loadbridge($key, $id, $args)
     {
         parse_str($args, $res);
-        dump([$key, $id, $args]);
+        dump([$key, $id, $args, $res]);
         return $this->load($key, ['id' => $id, ...$res]);
     }
 
