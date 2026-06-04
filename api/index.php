@@ -3,7 +3,9 @@ require_once __DIR__ . '/config.php';
 include_once HELPERS;
 include_once ACCESS;
 
+$a = [];
 
+dump(!$a);
 //phpinfo();
 
 $layout = 'pagelayout.html.php';
