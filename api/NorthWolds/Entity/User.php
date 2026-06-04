@@ -97,15 +97,6 @@ class User extends Entity
     return count($ret);
   }
 
-
-  protected function validateDomain($cid, $email)
-  {
-    $client = $cid ? $this->clienttable->find('id', $cid) : [];
-    list($name, $dom, $com) = $this->parseEmail($email);
-    dump([$client[0]->domain,"$dom.$com"]);
-    return isset($client[0]) && $client[0]->domain === "$dom.$com";
-  }
-
   protected function validateDom($cid, $dbrecord, $ename, $postdom, $insertID)
   {
     $client = $cid ? $this->clienttable->find('id', $cid) : [];

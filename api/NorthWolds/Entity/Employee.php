@@ -88,7 +88,6 @@ class Employee extends User
 
                     $checkDomains = composer(partial('in_array', "$dom.$com"), $filter, partial('array_values'), partial('array_map', curry2('getter')(0)), partial('array_map', 'parseEmail'), partial('array_column', $clients));
 
-                    //allow a user to change the name part of the email address
                     if ($checkDomains('domain')) {
                         $cookiearg = false;
                         reLocate("/user/load/_traitor");

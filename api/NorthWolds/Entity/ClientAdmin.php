@@ -60,7 +60,6 @@ class ClientAdmin extends User
             list($name, $dom, $com) = $this->parseEmail($postdata['email']);
             $dbrecord = $this->fetch('TABLE', 'id', $this->id);
             if (isset($dbrecord['email'])) { //existing
-
                 if(!$cid || $dbrecord['client_id'] != $cid){
                     reLocate("/user/load/_cadmin");
                 }
