@@ -62,6 +62,8 @@ class Employee extends User
                     $data = $this->fetch('clienttable', 'id', $cid);
                     $domain = $data->domain;
                     $postdata['email'] = "$name@$domain";
+
+                    dump($override);
                     if ($override) {
                         $relocate = "/user/loadbridge/move/$uid/cookie=$cid";
                     }
