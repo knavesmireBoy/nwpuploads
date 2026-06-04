@@ -3,9 +3,9 @@ require_once __DIR__ . '/config.php';
 include_once HELPERS;
 include_once ACCESS;
 
-$ar = [$a => ''];
+$ar = ['a' => ''];
 
-dump($ar[$a] ?? 'b');
+dump($ar['a'] ?? 'b');
 
 //phpinfo();
 
