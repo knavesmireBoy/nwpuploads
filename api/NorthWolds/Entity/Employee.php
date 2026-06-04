@@ -53,6 +53,8 @@ class Employee extends User
             $dbrecord = $this->fetch('TABLE', 'id', $this->id);
             if (isset($dbrecord['email'])) { //existing
                 $newdata = $this->validateDom($cid, $dbrecord, $name, "$dom.$com");
+
+                dump($newdata);
                 if (!$newdata) {
                     reLocate("/user/load/$key");
                 }
