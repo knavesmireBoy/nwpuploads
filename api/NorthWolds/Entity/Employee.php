@@ -67,7 +67,7 @@ class Employee extends User
                     $clientdata = $client->validateDomain($postdata['email'], 'client_id');
                 }
                 if (empty($clientdata)) {
-                    reLocate("/user/load/_sync");
+                   // reLocate("/user/load/_sync");
                 }
                 $postdata = [...$postdata, ...$newdata, ...$clientdata];
 
