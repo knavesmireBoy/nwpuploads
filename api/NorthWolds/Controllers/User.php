@@ -389,10 +389,6 @@ class User extends Presenter
 
         $dom = $updateDomain(nullify($clientID), $data);
 
-        if ($_POST['override']) {
-            dump([393, $dom]);
-        }
-
         //will exit here if domain doesn't validate
         $data = [...$record, ...$required, ...$dom];
         //exclude password from update unless requested...
