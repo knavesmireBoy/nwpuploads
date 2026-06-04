@@ -215,7 +215,10 @@ class User extends Presenter
 
     public function loadbridge($key, $id, ...$args)
     {
-        return $this->load($key, ['id' => $id, ...$args]);
+        
+        parse_str($args, $res);
+        dump($res);
+        return $this->load($key, ['id' => $id, ...$res]);
     }
 
     public function load(string $key = '', array $vars = [])
