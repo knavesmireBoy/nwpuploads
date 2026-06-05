@@ -53,16 +53,23 @@ class Employee extends User
 
     public function updateDomain($key, $uid, $default)
     {
-        return function (?int $cid, array $postdata, int $id = 0) use ($key, $uid, $default) {
-            $relocate = '';
-            $cookiearg = true;
-            $clientdata = [];
+
+        $relocate = '';
+        $cookiearg = true;
+        $clientdata = [];
+
+        return function (?int $cid, array $postdata, int $id = 0) use ($key, $uid, $default, $relocate, $cookiearg, $clientdata) {
+
             $dbrecord = $this->fetch('TABLE', 'id', $this->id);
             $client = $this->fetch('clienttable', 'id', $cid);
             list($name, $dom, $com) = $this->parseEmail($postdata['email']);
+
             if (isset($dbrecord['email'])) { //existing
+
                 $newdata = $default ? $this->validateDom($cid, $dbrecord, $postdata) : $postdata;
+
                 $relocate = $newdata ? $relocate : "/user/load/$key";
+                
                 if (!$default && $client) {
                     $clientdata = $client->validateDomain($postdata['email'], 'client_id');
                     if (!$clientdata['client_id']) {
