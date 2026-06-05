@@ -398,10 +398,11 @@ class User extends Presenter
 
         $updateDomain = $user->updateDomain($admin ? '_domain' : 'domain', $id, $default);
 
-        $record = get_object_vars($user);
-        $required = array_filter($data, fn($item) => $item);
 
         $dom = $updateDomain(nullify($clientID), $data);
+
+        $record = get_object_vars($user);
+        $required = array_filter($data, fn($item) => $item);
 
         //will exit here if domain doesn't validate
         $data = [...$record, ...$required, ...$dom];

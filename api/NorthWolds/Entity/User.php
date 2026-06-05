@@ -116,7 +116,8 @@ class User extends Entity
     } else {
       $client = $this->clienttable->getEntity();
       if ($client->domainAvailable($postdom)) {
-        $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'name' => $dbrecord['name'], 'client_id' => null];
+        $name = $postdata['name'] ? $postdata['name'] : $dbrecord['name'];
+        $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'name' => $name, 'client_id' => null];
       } else {
         if ($insertID) { // a new
           $this->table->delete('id', $insertID);
