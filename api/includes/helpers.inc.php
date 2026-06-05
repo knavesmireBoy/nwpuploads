@@ -269,6 +269,20 @@ function doSetCookie($flag, $time = -1)
 
        // if($k == 'client_id') var_dump($v);
       //  $v = $v) ? $v : $k;
+
+            //need if undefined here
+            if (!is_string($v)) {
+                if (!is_int($v)) {
+                    $v = $k;
+                }
+            }
+    
+            if (!is_int($v)) {
+                if (!is_string($v)) {
+                    $v = $k;
+                }
+            }
+
         if (!isset($_COOKIE[$k]) && $flag) {
             $v = is_bool($flag) ? $v : '';
             setcookie($k, $v, $time, '/');

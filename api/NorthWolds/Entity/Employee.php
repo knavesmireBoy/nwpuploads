@@ -101,7 +101,6 @@ class Employee extends User
             }; //default function
         }
         return function (?int $cid, array $postdata, int $id = 0) use ($uid, $relocate, $cookiearg, $dbrecord) {
-
             $postdata = $this->setClientEmail($cid, $postdata, $dbrecord);
             $fail = $this->traitorCheck($cid, $dbrecord, $postdata);
             if ($fail) {
@@ -113,7 +112,7 @@ class Employee extends User
                 $this->setCookie($data, ['name', 'email', 'client_id'], $cookiearg);
                 reLocate($relocate);
             }
-            dump($postdata);
+           return $postdata;
         };
     }
 }
