@@ -211,17 +211,37 @@ class User extends Entity
 
   public function updateDomain($key, $uid, $default)
   {
-    return function (?int $cid, array $postdata, int $id = 0) use ($key, $uid, $default) {
-      $data = $this->validateDom($cid, [], $postdata, $id);
+    if ($default) {
+      return function (?int $cid, array $postdata, int $id = 0) use ($key, $uid) {
+        $data = $this->validateDom($cid, [], $postdata, $id);
 
-      $details = $this->getDetails();
-      $domain = $details['domain'] ?? '';
+        $details = $this->getDetails();
+        $domain = $details['domain'] ?? '';
 
-      if ($default && $cid && !$domain) {
-        reLocate("/user/loadbridge/join/$uid/client_id=$cid");
-      }
-      return $data;
-    };
+        if ($cid && !$domain) {
+          reLocate("/user/loadbridge/join/$uid/client_id=$cid");
+        }
+        return $data;
+      };
+      return function (int $cid, array $postdata, int $id = 0) {
+        $cookiearg = true;
+        $client = $this->fetch('clienttable', 'id', $cid);
+        $clientdata = $client->validateDomain($postdata['email'], 'client_id');
+
+        if (!$clientdata['client_id']) {
+          $relocate = "/user/load/_sync";
+          $cookiearg = false;
+        }
+        $postdata = [...$postdata, ...$clientdata];
+
+        if ($relocate) {
+          $data = $cookiearg ? $postdata : $_COOKIE;
+          $this->setCookie($data, ['name', 'email', 'client_id'], $cookiearg);
+          reLocate($relocate);
+        }
+        return $postdata;
+      };
+    }
   }
 
   public function updatePassword($password)
