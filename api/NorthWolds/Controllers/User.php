@@ -376,6 +376,7 @@ class User extends Presenter
         $id = nullify($_POST['id']);
         $key = '';
         $data = $_POST['data'];
+        $default = empty($_POST['override']);
         $user = $this->fetch('table', 'id', $id);
         //list of roles (radio buttons) may not be present
         $role = isset($_POST['roles']) ? $_POST['roles'][0] : $user->getDetails('roleid');
@@ -385,7 +386,11 @@ class User extends Presenter
         $editor = $id == $this->getPrivilege('id');
         $user->setSelf($editor);
 
-        $updateDomain = $user->updateDomain($admin ? '_domain' : 'domain', $id, empty($_POST['override']));
+        if (!$default) {
+            dump($user);
+        }
+
+        $updateDomain = $user->updateDomain($admin ? '_domain' : 'domain', $id, $default);
 
         $record = get_object_vars($user);
         $required = array_filter($data, fn($item) => $item);
