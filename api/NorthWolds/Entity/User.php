@@ -120,17 +120,8 @@ class User extends Entity
     $relocate = '';
     $key = '';
     if (isset($client[0])) {
-
       $details = $this->getDetails();
       $relocate = isApproved($details['role'], 'admin') ? "/user/load/_denied" : $relocate;
-      /*
-      $cdom = $client[0]->domain; //sync
-      if (!$relocate && $cdom !== $postdom) {
-        //admin assigning user to client let this go
-        ///$relocate = $this->self ? '/user/load/domain' : '/user/load/_domain';
-      }
-      $data  = ['id' => $this->id, 'email' => "$ename@$cdom", 'client_id' => $client[0]->id];
-*/
       $data = $this->setClientEmail($cid, $postdata, $dbrecord);
     } else {
       $client = $this->clienttable->getEntity();
