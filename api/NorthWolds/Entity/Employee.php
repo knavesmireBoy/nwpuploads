@@ -73,7 +73,6 @@ class Employee extends User
         $cookiearg = true;
         $dbrecord = $this->fetch('TABLE', 'id', $this->id);
         if ($default) {
-
             return function (?int $cid, array $postdata, int $id = 0) use ($uid, $relocate, $cookiearg, $dbrecord) {
 
                 if (isset($dbrecord['email'])) { //existing
@@ -96,12 +95,11 @@ class Employee extends User
                         $this->setCookie($data, ['name', 'email', 'client_id'], $cookiearg);
                         reLocate($relocate);
                     }
-                    dump($postdata);
                     return $cid ? $postdata : [...$postdata, 'client_id' => null];
                 } else { //new
                     return $this->setClientEmail($cid, $postdata, []);
                 }
-            };
+            }; //default function
         }
         return function (?int $cid, array $postdata, int $id = 0) use ($uid, $relocate, $cookiearg, $dbrecord) {
 
