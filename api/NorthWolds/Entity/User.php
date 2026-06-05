@@ -37,6 +37,20 @@ class User extends Entity
     //$this->setCookie($_COOKIE, ['name', 'email', 'client_id'], false);
   }
 
+  protected function setClientEmail($cid, $data, $record)
+  {
+    $client = $this->fetch('clienttable', 'id', $cid);
+    $domain = $client->domain ?? null;
+    if (!$domain) {
+      list($ename, $dom, $com) = $this->parseEmail($record['email']);
+      $domain = "$dom.$com";
+      $data['client_id'] = null;
+    }
+    list($ename, $dom, $com) = $this->parseEmail($data['email']);
+    $data['email'] = "$ename@$domain";
+    return [...$data, 'client_id' => $cid];
+  }
+
   protected function validateRole($role)
   {
     return $role;
@@ -106,14 +120,18 @@ class User extends Entity
     $relocate = '';
     $key = '';
     if (isset($client[0])) {
+
       $details = $this->getDetails();
       $relocate = isApproved($details['role'], 'admin') ? "/user/load/_denied" : $relocate;
+      /*
       $cdom = $client[0]->domain; //sync
       if (!$relocate && $cdom !== $postdom) {
         //admin assigning user to client let this go
         ///$relocate = $this->self ? '/user/load/domain' : '/user/load/_domain';
       }
-      $data = ['id' => $this->id, 'email' => "$ename@$cdom", 'client_id' => $client[0]->id];
+      $data  = ['id' => $this->id, 'email' => "$ename@$cdom", 'client_id' => $client[0]->id];
+*/
+      $data = $this->setClientEmail($cid, $postdata, $dbrecord);
     } else {
       $client = $this->clienttable->getEntity();
       if ($client->domainAvailable($postdom)) {
@@ -218,12 +236,15 @@ class User extends Entity
       return function (?int $cid, array $postdata, int $id = 0) use ($key, $uid) {
 
         $dbrecord = $this->fetch('TABLE', 'id', $uid);
+
+
         $data = $this->validateDom($cid, $dbrecord, $postdata, $id);
 
         $details = $this->getDetails();
         $domain = $details['domain'] ?? '';
 
         if ($cid && !$domain) {
+          $this->setCookie($data, ['name', 'email', 'client_id'], true);
           reLocate("/user/loadbridge/join/$uid/client_id=$cid");
         }
         return $data;
