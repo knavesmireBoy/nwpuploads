@@ -330,8 +330,6 @@ class User extends Presenter
         list($_, $clients) = $member->presentList($id, 'client_id');
         $roles = $member->getRoles($user->id ?? '');
 
-        $res = $this->syncDomain($user->email);
-
         $id = $user->id ?? null;
         $vars = [
             'button' => 'Edit User',

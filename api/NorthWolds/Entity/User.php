@@ -227,9 +227,8 @@ class User extends Entity
     }
     return function (int $cid, array $postdata, int $id = 0) {
       $cookiearg = true;
+      $relocate = '';
       $client = $this->fetch('clienttable', 'id', $cid);
-      // $domain = $client->domain;
-      // $postdata['email'] = preg_replace('/(.+@).+/', "$1$domain", $postdata['email']);
       $clientdata = $client->validateDomain($postdata['email'], 'client_id');
 
       if (!$clientdata['client_id']) {
