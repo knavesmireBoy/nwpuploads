@@ -9,7 +9,7 @@ class User extends Presenter
 
     private $punter;
 
-    public function __construct(protected DatabaseTable $table, private DatabaseTable $clienttable, private string $home)
+    public function __construct(protected DatabaseTable $table, protected DatabaseTable $clienttable, private string $home)
     {
         parent::__construct($table);
     }
