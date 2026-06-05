@@ -215,7 +215,7 @@ class User extends Entity
     if ($default) {
       return function (?int $cid, array $postdata, int $id = 0) use ($key, $uid) {
 
-        $dbrecord = $this->fetch('table', 'id', $uid);
+        $dbrecord = $this->fetch('TABLE', 'id', $uid);
         $data = $this->validateDom($cid, $dbrecord, $postdata, $id);
 
         $details = $this->getDetails();
