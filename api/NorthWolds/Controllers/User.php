@@ -292,6 +292,8 @@ class User extends Presenter
     public function editparse($id, $str)
     {
         parse_str($str, $args);
+
+        dump([$_COOKIE, $args]);
         return $this->edit($id, $args);
     }
 
@@ -464,13 +466,11 @@ class User extends Presenter
         if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
             if (isset($_POST['cookie'])) {
                 $v = $_POST['cookie'];
-                dump([44,$v]);
                 $flag = empty($v) ? 'empty' : true;
                 $this->setCookie(['client_id' => $v], ['client_id'], $flag);
                 $id = $_POST['id'];
                 $str = urlencode('you may now proceed with your edits');
                 $str = "class=details%20override&override=override&legend=$str";
-
                 reLocate("/user/editparse/$id/$str");
             } else {
                 return $this->edit($_POST['id'], ['class' => 'details override', 'override' => 'override', 'legend' => 'You may now proceed with your edits']);
