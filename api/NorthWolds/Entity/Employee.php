@@ -26,6 +26,7 @@ class Employee extends User
     protected function validateDom($cid, $record, $ename, $edom, $insertId = 0)
     {
         list($name, $dom, $com) = $this->parseEmail($record['email']);
+
         $postdata['email'] = "$ename@$edom";
         $postdata['client_id'] = $cid;
         /*
@@ -33,6 +34,9 @@ class Employee extends User
         so therefore no $cid ($client->id) allows a employee to become a freelancer
         */
         if ($edom === "$dom.$com" || !$cid) {
+            if (!$cid) {
+                $postdata['client_id'] = null;
+            }
             return $postdata;
         }
         return false;
@@ -45,26 +49,26 @@ class Employee extends User
         ];
     }
 
-    public function updateDomain($key, $uid, $override)
+    public function updateDomain($key, $uid, $default)
     {
-        return function (?int $cid, array $postdata, int $id = 0) use ($key, $uid, $override) {
+        return function (?int $cid, array $postdata, int $id = 0) use ($key, $uid, $default) {
 
-            list($name, $dom, $com) = $this->parseEmail($postdata['email']);
+
             $relocate = '';
             $cookiearg = true;
+            $clientdata = [];
             $dbrecord = $this->fetch('TABLE', 'id', $this->id);
             $client = $this->fetch('clienttable', 'id', $cid);
-            $clientdata = [];
+            list($name, $dom, $com) = $this->parseEmail($postdata['email']);
+
             if (isset($dbrecord['email'])) { //existing
-                /*
-                $override is normal state ($_POST['override'] is empty) otherwise cookies have loadded new data in to the form and validateDom will fail as $postdata and $dbrecord won't tally; as this can only happen with an admin user in control we let it go
-                */
-                $newdata = $override ? $this->validateDom($cid, $dbrecord, $name, "$dom.$com") : $postdata;
-                if (!$newdata) {
-                    reLocate("/user/load/$key");
-                }
-                if (!$override && $client) {
+
+                $newdata = $default ? $this->validateDom($cid, $dbrecord, $name, "$dom.$com") : $postdata;
+                $relocate = $newdata ? $relocate : "/user/load/$key";
+
+                if (!$default && $client) {
                     $clientdata = $client->validateDomain($postdata['email'], 'client_id');
+
                     if (!$clientdata['client_id']) {
                         $relocate = "/user/load/_sync";
                         $cookiearg = false;
@@ -73,13 +77,13 @@ class Employee extends User
                 $postdata = [...$postdata, ...$newdata, ...$clientdata];
 
                 //can only be admin moving an employee; admin users cannot be moved
-                if ($cid && $cid != $dbrecord['client_id'] && $override) {
+                if ($cid && $cid != $dbrecord['client_id'] && $default) {
                     $data = $this->fetch('clienttable', 'id', $cid);
                     $domain = $data->domain;
                     $postdata['email'] = "$name@$domain";
                     $relocate = $relocate ? $relocate : "/user/loadbridge/move/$uid/client_id=$cid";
                 } else { //admin releasing an employee OR updating name 
-                    $relocate = !$cid && $override ? "/user/loadbridge/leave/$uid/client_id=$cid" : $relocate;
+                    $relocate = !$cid && $default ? "/user/loadbridge/leave/$uid/client_id=$cid" : $relocate;
                     $clients = $this->clienttable->findAll();
                     //allow a user to change the name part of the email address; so filter out current domain IF NOT admin
                     $f = negate(curry2('equals')("$dom.$com"));

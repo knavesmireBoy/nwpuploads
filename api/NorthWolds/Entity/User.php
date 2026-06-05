@@ -205,17 +205,23 @@ class User extends Entity
   public function updateDomain($key, $uid, $override)
   {
     return function (?int $cid, array $postdata, int $id = 0) use ($key, $uid, $override) {
+
       $email = $cid ? $this->email : $postdata['email'];
+
       list($name, $dom, $com) = $this->parseEmail($email);
       $postdom = "$dom.$com";
+
       $details = $this->getDetails();
+      
       $domain = $details['domain'] ?? '';
+
       $data = $this->validateDom($cid, $postdata, $name, $postdom, $id);
+
       if ($cid && $domain && ($postdom !== $domain)) {
         reLocate("/user/load/$key");
       } else {
-        if ($cid && ! $domain) {
-          dump('associate');
+        if ($cid && !$domain) {
+          reLocate("/user/loadbridge/join/$uid/client_id=$cid");
         }
         return $data;
       }
