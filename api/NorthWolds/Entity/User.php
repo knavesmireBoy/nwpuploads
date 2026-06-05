@@ -230,7 +230,7 @@ class User extends Entity
         $domain = $client->domain;
         $postdata['email'] = preg_replace('/(.+@).+/', "$1$domain", $postdata['email']);
         $clientdata = $client->validateDomain($postdata['email'], 'client_id');
-
+        dump($postdata);
         if (!$clientdata['client_id']) {
           $relocate = "/user/load/_sync";
           $cookiearg = false;
