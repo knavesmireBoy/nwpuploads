@@ -235,7 +235,7 @@ class User extends Entity
       $client = $this->fetch('clienttable', 'id', $cid);
       $clientdata = $client->validateDomain($postdata['email'], 'client_id');
 
-      if (!$clientdata['client_id']) {
+      if ($cid && !$clientdata['client_id']) {
         $relocate = "/user/load/_sync";
         $cookiearg = false;
       }

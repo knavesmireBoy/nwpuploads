@@ -266,22 +266,19 @@ function unsetCookie($str)
 function doSetCookie($flag, $time = -1)
 {
     return function ($k, $v = '') use ($flag, $time) {
-
-       // if($k == 'client_id') var_dump($v);
-      //  $v = $v) ? $v : $k;
-
-            //need if undefined here
-            if (!is_string($v)) {
-                if (!is_int($v)) {
-                    $v = $k;
-                }
-            }
-    
+       // $v = $v ? $v : $k;
+        //need if undefined here
+        if (!is_string($v)) {
             if (!is_int($v)) {
-                if (!is_string($v)) {
-                    $v = $k;
-                }
+                $v = $k;
             }
+        }
+
+        if (!is_int($v)) {
+            if (!is_string($v)) {
+                $v = $k;
+            }
+        }
 
         if (!isset($_COOKIE[$k]) && $flag) {
             $v = is_bool($flag) ? $v : '';
