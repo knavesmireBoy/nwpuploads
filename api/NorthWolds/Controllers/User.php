@@ -293,7 +293,7 @@ class User extends Presenter
     {
         parse_str($str, $args);
 
-        dump([$_COOKIE, $args]);
+        dump($_COOKIE);
         return $this->edit($id, $args);
     }
 

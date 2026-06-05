@@ -266,7 +266,13 @@ function unsetCookie($str)
 function doSetCookie($flag, $time = -1)
 {
     return function ($k, $v = '') use ($flag, $time) {
+
+
+        dump([$k,$v]);
+
         $v = $v ? $v : $k;
+
+
         if (!isset($_COOKIE[$k]) && $flag) {
             $v = is_bool($flag) ? $v : '';
             setcookie($k, $v, $time, '/');
