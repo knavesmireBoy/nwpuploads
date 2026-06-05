@@ -4,11 +4,17 @@ namespace NorthWolds\Entity;
 
 class Employee extends User
 {
-    protected function setClientEmail($cid, $name, $data)
+    protected function setClientEmail($cid, $data, $record)
     {
         $client = $this->fetch('clienttable', 'id', $cid);
         $domain = $client->domain;
-        $data['email'] = "$name@$domain";
+        if (!$domain) {
+            list($ename, $dom, $com) = $this->parseEmail($record['email']);
+            $domain = "$dom.$com";
+            $data['client_id'] = null;
+        }
+        list($ename) = $this->parseEmail($data['email']);
+        $data['email'] = "$ename@$domain";
         return $data;
     }
 
@@ -27,18 +33,15 @@ class Employee extends User
     {
         list($name, $dom, $com) = $this->parseEmail($record['email']);
         list($ename, $edom, $ecom) = $this->parseEmail($postdata['email']);
-        $email = "$ename@$edom.$ecom";
 
-        $postdata['email'] = $email;
-        $postdata['client_id'] = $cid;
+        $postdata = $this->setClientEmail($cid, $postdata, $record);
+
         /*
         admin can change the domain provided there is no selection in the drop down menu
         so therefore no $cid ($client->id) allows a employee to become a freelancer
         */
         if ("$edom.$ecom" === "$dom.$com" || !$cid) {
-            if (!$cid) {
-                $postdata['client_id'] = null;
-            }
+            $postdata['client_id'] = $cid;
             return $postdata;
         }
         return false;
@@ -51,63 +54,69 @@ class Employee extends User
         ];
     }
 
+    protected function traitorCheck($cid, $record, $postdata)
+    {
+        list($name, $dom, $com) = $this->parseEmail($record['email']);
+        $f = negate(curry2('equals')("$dom.$com"));
+        list($name, $dom, $com) = $this->parseEmail($postdata['email']);
+        $f = $cid ? $f : 'identity';
+        $filter = curry2('array_filter')($f);
+        $clients = $this->clienttable->findAll();
+        $traitorCheck = composer(partial('in_array', "$dom.$com"), $filter, partial('array_values'), partial('array_map', curry2('getter')(0)), partial('array_map', 'parseEmail'), partial('array_column', $clients));
+        return $traitorCheck('domain');
+    }
+
     public function updateDomain($key, $uid, $default)
     {
 
-        $relocate = '';
+        $relocate = null;
         $cookiearg = true;
-        $clientdata = [];
+        $dbrecord = $this->fetch('TABLE', 'id', $this->id);
+        if ($default) {
 
-        return function (?int $cid, array $postdata, int $id = 0) use ($key, $uid, $default, $relocate, $cookiearg, $clientdata) {
+            return function (?int $cid, array $postdata, int $id = 0) use ($uid, $relocate, $cookiearg, $dbrecord) {
 
-            $dbrecord = $this->fetch('TABLE', 'id', $this->id);
-            $client = $this->fetch('clienttable', 'id', $cid);
-            list($name, $dom, $com) = $this->parseEmail($postdata['email']);
-
-            if (isset($dbrecord['email'])) { //existing
-
-                $newdata = $default ? $this->validateDom($cid, $dbrecord, $postdata) : $postdata;
-
-                $relocate = $newdata ? $relocate : "/user/load/$key";
-                
-                if (!$default && $client) {
-                    $clientdata = $client->validateDomain($postdata['email'], 'client_id');
-                    if (!$clientdata['client_id']) {
-                        $relocate = "/user/load/_sync";
-                        $cookiearg = false;
+                if (isset($dbrecord['email'])) { //existing
+                    $postdata = $this->setClientEmail($cid, $postdata, $dbrecord);
+                    //can only be admin moving an employee; admin users cannot be moved
+                    if ($cid && $cid != $dbrecord['client_id']) {
+                        $relocate = "/user/loadbridge/move/$uid/client_id=$cid";
+                    } else { //admin releasing an employee OR updating name 
+                        $relocate = !$cid ? "/user/loadbridge/leave/$uid/client_id=$cid" : $relocate;
+                        $fail = $this->traitorCheck($cid, $dbrecord, $postdata);
+                        if ($fail) {
+                            $cookiearg = false;
+                            if (!$relocate) {
+                                $relocate = $this->self ? '/user/load/traitor' : '/user/load/_traitor';
+                            }
+                        }
                     }
-                }
-                $postdata = [...$postdata, ...$newdata, ...$clientdata];
-                //can only be admin moving an employee; admin users cannot be moved
-                if ($cid && $cid != $dbrecord['client_id'] && $default) {
-                    $data = $this->fetch('clienttable', 'id', $cid);
-                    $domain = $data->domain;
-                    $postdata['email'] = "$name@$domain";
-                    $relocate = $relocate ? $relocate : "/user/loadbridge/move/$uid/client_id=$cid";
-                } else { //admin releasing an employee OR updating name 
-                    $relocate = !$cid && $default ? "/user/loadbridge/leave/$uid/client_id=$cid" : $relocate;
-                    $clients = $this->clienttable->findAll();
-                    //allow a user to change the name part of the email address; so filter out current domain IF NOT admin
-                    $f = negate(curry2('equals')("$dom.$com"));
-                    $f = $cid ? $f : 'identity';
-                    $filter = curry2('array_filter')($f);
-
-                    $checkDomains = composer(partial('in_array', "$dom.$com"), $filter, partial('array_values'), partial('array_map', curry2('getter')(0)), partial('array_map', 'parseEmail'), partial('array_column', $clients));
-
-                    if ($checkDomains('domain')) {
-                        $cookiearg = false;
-                        reLocate("/user/load/_traitor");
+                    if ($relocate) {
+                        $data = $cookiearg ? $postdata : $_COOKIE;
+                        $this->setCookie($data, ['name', 'email', 'client_id'], $cookiearg);
+                        reLocate($relocate);
                     }
+                    dump($postdata);
+                    return $cid ? $postdata : [...$postdata, 'client_id' => null];
+                } else { //new
+                    return $this->setClientEmail($cid, $postdata, []);
                 }
-                if ($relocate) {
-                    $data = $cookiearg ? $postdata : $_COOKIE;
-                    $this->setCookie($data, ['name', 'email', 'client_id'], $cookiearg);
-                    reLocate($relocate);
-                }
-                return $cid ? $postdata : [...$postdata, 'client_id' => null];
-            } else { //new
-                return $this->setClientEmail($cid, $name, $postdata);
+            };
+        }
+        return function (?int $cid, array $postdata, int $id = 0) use ($uid, $relocate, $cookiearg, $dbrecord) {
+
+            $postdata = $this->setClientEmail($cid, $postdata, $dbrecord);
+            $fail = $this->traitorCheck($cid, $dbrecord, $postdata);
+            if ($fail) {
+                $cookiearg = false;
+                $relocate = $this->self ? '/user/load/traitor' : '/user/load/_traitor';
             }
+            if ($relocate) {
+                $data = $cookiearg ? $postdata : $_COOKIE;
+                $this->setCookie($data, ['name', 'email', 'client_id'], $cookiearg);
+                reLocate($relocate);
+            }
+            dump($postdata);
         };
     }
 }
