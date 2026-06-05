@@ -302,7 +302,6 @@ class User extends Presenter
 
     protected function syncDomain($email)
     {
-        return $email;
         if ($email && isset($_COOKIE['client_id']) && !isset($_COOKIE['email'])) {
             $client = $this->fetch('clienttable', 'id', $_COOKIE['client_id']);
             $domain = $client->domain;
