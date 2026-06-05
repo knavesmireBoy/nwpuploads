@@ -225,16 +225,17 @@ class User extends Entity
         return $data;
       };
       return function (int $cid, array $postdata, int $id = 0) {
-
-
         $cookiearg = true;
         $client = $this->fetch('clienttable', 'id', $cid);
+        $domain = $client->domain;
+        $postdata['email'] = preg_replace('/(.+@).+/', "$1$domain", $postdata['email']);
         $clientdata = $client->validateDomain($postdata['email'], 'client_id');
 
         if (!$clientdata['client_id']) {
           $relocate = "/user/load/_sync";
           $cookiearg = false;
         }
+       
         $postdata = [...$postdata, ...$clientdata];
 
         if ($relocate) {
