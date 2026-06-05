@@ -15,7 +15,7 @@ class Employee extends User
         }
         list($ename, $dom, $com) = $this->parseEmail($data['email']);
         $data['email'] = "$ename@$domain";
-        return $data;
+        return [...$data, 'client_id' => $cid];
     }
 
     public function postEdit()
