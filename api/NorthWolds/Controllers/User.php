@@ -468,6 +468,7 @@ class User extends Presenter
                 $v = $_POST['cookie'];
                 $flag = empty($v) ? 'empty' : true;
                 $this->setCookie(['client_id' => $v], ['client_id'], $flag);
+                dump($_COOKIE);
                 $id = $_POST['id'];
                 $str = urlencode('you may now proceed with your edits');
                 $str = "class=details%20override&override=override&legend=$str";
