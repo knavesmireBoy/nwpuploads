@@ -97,17 +97,21 @@ class User extends Entity
     return count($ret);
   }
 
-  protected function validateDom($cid, $dbrecord, $ename, $postdom, $insertID)
+  protected function validateDom($cid, $dbrecord, $postdata, $insertID)
   {
     $client = $cid ? $this->clienttable->find('id', $cid) : [];
+    list($ename, $dom, $com) = $this->parseEmail($postdata['email']);
+    $postdom = "$dom.$com";
+    $relocate = '';
     $key = '';
     if (isset($client[0])) {
       $details = $this->getDetails();
-      if (isApproved($details['role'], 'admin')) {
-        reLocate("/user/load/_denied");
+      $relocate = isApproved($details['role'], 'admin') ? "/user/load/_denied" : $relocate;
+      $cdom = $client[0]->domain; //sync
+      if (!$relocate && $cdom !== $postdom) {
+        $relocate = $this->self ? '/user/load/domain' : '/user/load/_domain';
       }
-      $postdom = $client[0]->domain; //sync
-      $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'client_id' => $client[0]->id];
+      $data = ['id' => $this->id, 'email' => "$ename@$cdom", 'client_id' => $client[0]->id];
     } else {
       $client = $this->clienttable->getEntity();
       if ($client->domainAvailable($postdom)) {
@@ -115,13 +119,16 @@ class User extends Entity
       } else {
         if ($insertID) { // a new
           $this->table->delete('id', $insertID);
-          reLocate('/user/load/_impostor');
+          $relocate = '/user/load/_impostor';
         } else { //or existing user (freelancer) attempting to swap clients
           $key = $this->self ? 'traitor' : '_traitor';
-          reLocate("/user/load/$key");
+          $relocate = "/user/load/$key";
           $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'name' => $dbrecord['name'], 'client_id' => nullify($client->id)];
         }
       }
+    }
+    if ($relocate) {
+      reLocate($relocate);
     }
     return $data;
   }
@@ -202,29 +209,18 @@ class User extends Entity
     return [$name, $dom, $com];
   }
 
-  public function updateDomain($key, $uid, $override)
+  public function updateDomain($key, $uid, $default)
   {
-    return function (?int $cid, array $postdata, int $id = 0) use ($key, $uid, $override) {
-
-      $email = $cid ? $this->email : $postdata['email'];
-
-      list($name, $dom, $com) = $this->parseEmail($email);
-      $postdom = "$dom.$com";
+    return function (?int $cid, array $postdata, int $id = 0) use ($key, $uid, $default) {
+      $data = $this->validateDom($cid, [], $postdata, $id);
 
       $details = $this->getDetails();
-      
       $domain = $details['domain'] ?? '';
 
-      $data = $this->validateDom($cid, $postdata, $name, $postdom, $id);
-
-      if ($cid && $domain && ($postdom !== $domain)) {
-        reLocate("/user/load/$key");
-      } else {
-        if ($cid && !$domain) {
-          reLocate("/user/loadbridge/join/$uid/client_id=$cid");
-        }
-        return $data;
+      if ($default && $cid && !$domain) {
+        reLocate("/user/loadbridge/join/$uid/client_id=$cid");
       }
+      return $data;
     };
   }
 

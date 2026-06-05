@@ -35,10 +35,11 @@ class ClientAdmin extends User
     }
       */
 
-    protected function validateDom($cid, $record, $ename, $edom, $insertId = 0)
+    protected function validateDom($cid, $record, $postdata, $insertId = 0)
     {
         list($name, $dom, $com) = $this->parseEmail($record['email']);
-        if ($edom === "$dom.$com") {
+        list($ename, $edom, $ecom) = $this->parseEmail($postdata['email']);
+        if ("$edom.$ecom" === "$dom.$com") {
             $postdata['email'] = "$ename@$edom";
             $postdata['client_id'] = $cid;
             return $postdata;
@@ -54,16 +55,16 @@ class ClientAdmin extends User
         return $data;
     }
 
-    public function updateDomain($key, $uid, $override)
+    public function updateDomain($key, $uid, $default)
     {
-        return function (?int $cid, array $postdata, int $id = 0) use ($key, $uid, $override) {
+        return function (?int $cid, array $postdata, int $id = 0) use ($key, $uid, $default) {
             list($name, $dom, $com) = $this->parseEmail($postdata['email']);
             $dbrecord = $this->fetch('TABLE', 'id', $this->id);
             if (isset($dbrecord['email'])) { //existing
                 if(!$cid || $dbrecord['client_id'] != $cid){
                     reLocate("/user/load/_cadmin");
                 }
-                $data = $this->validateDom($cid, $dbrecord, $name, "$dom.$com");
+                $data = $this->validateDom($cid, $dbrecord, $postdata);
                 if (!$data) {
                     reLocate("/user/load/$key");
                 }

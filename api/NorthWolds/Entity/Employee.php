@@ -23,17 +23,19 @@ class Employee extends User
     }
 
     //validate activity on the email field
-    protected function validateDom($cid, $record, $ename, $edom, $insertId = 0)
+    protected function validateDom($cid, $record, $postdata, $insertId = 0)
     {
         list($name, $dom, $com) = $this->parseEmail($record['email']);
+        list($ename, $edom, $ecom) = $this->parseEmail($postdata['email']);
+        $email = "$ename@$edom.$ecom";
 
-        $postdata['email'] = "$ename@$edom";
+        $postdata['email'] = $email;
         $postdata['client_id'] = $cid;
         /*
         admin can change the domain provided there is no selection in the drop down menu
         so therefore no $cid ($client->id) allows a employee to become a freelancer
         */
-        if ($edom === "$dom.$com" || !$cid) {
+        if ("$edom.$ecom" === "$dom.$com" || !$cid) {
             if (!$cid) {
                 $postdata['client_id'] = null;
             }
@@ -60,10 +62,9 @@ class Employee extends User
             $dbrecord = $this->fetch('TABLE', 'id', $this->id);
             $client = $this->fetch('clienttable', 'id', $cid);
             list($name, $dom, $com) = $this->parseEmail($postdata['email']);
-
             if (isset($dbrecord['email'])) { //existing
 
-                $newdata = $default ? $this->validateDom($cid, $dbrecord, $name, "$dom.$com") : $postdata;
+                $newdata = $default ? $this->validateDom($cid, $dbrecord, $postdata) : $postdata;
                 $relocate = $newdata ? $relocate : "/user/load/$key";
 
                 if (!$default && $client) {
