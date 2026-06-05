@@ -337,7 +337,8 @@ class User extends Presenter
             'action' => '/user/edit/',
             'id' => $id,
             'name' => $_COOKIE['name'] ?? $user->name ?? '',
-            'email' => $this->syncDomain($user->email ?? ''),
+           // 'email' => $this->syncDomain($user->email ?? ''),
+            'email' => $_COOKIE['email'] ?? $user->email ?? '',
             'password' => $_COOKIE['password'] ?? '',
             'employer' => $_COOKIE['client_id'] ?? $user->client_id ?? '',
             'editor' => $editor,
@@ -463,6 +464,7 @@ class User extends Presenter
         if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
             if (isset($_POST['cookie'])) {
                 $v = $_POST['cookie'];
+                dump([44,$v]);
                 $flag = empty($v) ? 'empty' : true;
                 $this->setCookie(['client_id' => $v], ['client_id'], $flag);
                 $id = $_POST['id'];

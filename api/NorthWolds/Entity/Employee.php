@@ -7,13 +7,13 @@ class Employee extends User
     protected function setClientEmail($cid, $data, $record)
     {
         $client = $this->fetch('clienttable', 'id', $cid);
-        $domain = $client->domain;
+        $domain = $client->domain ?? null;
         if (!$domain) {
             list($ename, $dom, $com) = $this->parseEmail($record['email']);
             $domain = "$dom.$com";
             $data['client_id'] = null;
         }
-        list($ename) = $this->parseEmail($data['email']);
+        list($ename, $dom, $com) = $this->parseEmail($data['email']);
         $data['email'] = "$ename@$domain";
         return $data;
     }
@@ -68,7 +68,6 @@ class Employee extends User
 
     public function updateDomain($key, $uid, $default)
     {
-
         $relocate = null;
         $cookiearg = true;
         $dbrecord = $this->fetch('TABLE', 'id', $this->id);
@@ -95,7 +94,7 @@ class Employee extends User
                         $this->setCookie($data, ['name', 'email', 'client_id'], $cookiearg);
                         reLocate($relocate);
                     }
-                    return $cid ? $postdata : [...$postdata, 'client_id' => null];
+                    return $postdata;
                 } else { //new
                     return $this->setClientEmail($cid, $postdata, []);
                 }
