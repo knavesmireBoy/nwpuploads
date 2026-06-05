@@ -267,7 +267,7 @@ function doSetCookie($flag, $time = -1)
 {
     return function ($k, $v = '') use ($flag, $time) {
 
-        if($k == 'client_id') dump($v);
+        if($k == 'client_id') var_dump($v);
 
         $v = $v ? $v : $k;
 
