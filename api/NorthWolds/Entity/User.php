@@ -109,7 +109,8 @@ class User extends Entity
       $relocate = isApproved($details['role'], 'admin') ? "/user/load/_denied" : $relocate;
       $cdom = $client[0]->domain; //sync
       if (!$relocate && $cdom !== $postdom) {
-        $relocate = $this->self ? '/user/load/domain' : '/user/load/_domain';
+        //admin assigning user to client let this go
+        ///$relocate = $this->self ? '/user/load/domain' : '/user/load/_domain';
       }
       $data = ['id' => $this->id, 'email' => "$ename@$cdom", 'client_id' => $client[0]->id];
     } else {
@@ -217,13 +218,15 @@ class User extends Entity
 
         $details = $this->getDetails();
         $domain = $details['domain'] ?? '';
-
+        
         if ($cid && !$domain) {
           reLocate("/user/loadbridge/join/$uid/client_id=$cid");
         }
         return $data;
       };
       return function (int $cid, array $postdata, int $id = 0) {
+
+
         $cookiearg = true;
         $client = $this->fetch('clienttable', 'id', $cid);
         $clientdata = $client->validateDomain($postdata['email'], 'client_id');
