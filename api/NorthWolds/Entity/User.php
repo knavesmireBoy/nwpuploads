@@ -225,8 +225,6 @@ class User extends Entity
         return $data;
       };
       return function (int $cid, array $postdata, int $id = 0) {
-
-       
         $cookiearg = true;
         $client = $this->fetch('clienttable', 'id', $cid);
         $domain = $client->domain;

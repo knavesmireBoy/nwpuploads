@@ -387,9 +387,12 @@ class User extends Presenter
         $user->setSelf($editor);
 
         if (!$default) {
-            dump($user);
+            $updateDomain = $user->updateDomain($admin ? '_domain' : 'domain', $id, $default);
+
+            dump($updateDomain);
         }
 
+        
         $updateDomain = $user->updateDomain($admin ? '_domain' : 'domain', $id, $default);
 
         $record = get_object_vars($user);
