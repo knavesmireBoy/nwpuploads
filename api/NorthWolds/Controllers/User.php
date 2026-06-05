@@ -221,8 +221,6 @@ class User extends Presenter
     public function loadbridge($key, $id, $args)
     {
         parse_str($args, $res);
-
-        dump($res);
         return $this->load($key, ['id' => $id, ...$res]);
     }
 
@@ -236,7 +234,7 @@ class User extends Presenter
         //if(!is_array($vars)) dump($vars);
         //unset($vars['id']);
         //the occasional error may require ONE argument which is not an id
-        $error = $this->query($key, ...$vars);
+        //$error = $this->query($key, ...$vars);
         $user = $this->fetch('table', 'email', $_SESSION['username']);
         $user = $this->getSubUser($user);
 
