@@ -90,6 +90,7 @@ class Employee extends User
                             }
                         }
                     }
+                    dump($relocate);
                     if ($relocate) {
                         $data = $cookiearg ? $postdata : $_COOKIE;
                         $this->setCookie($data, ['name', 'email', 'client_id'], $cookiearg);
