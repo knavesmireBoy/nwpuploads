@@ -86,11 +86,11 @@ class User extends Presenter
             'confirm' => ['id' => $id],
             'selected' => ['pagehead' => 'Select User', 'selected' => true, 'clients' => [], 'users' => $users],
             'change' => ['pagehead' => 'Edit User', 'id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Changing these details will require you to log in again. Proceed?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'editor' => $id, 'action' => '/user/change/'],
-            'leave' => [...$prompt, 'action' => '/user/change/', 'prompt' => "Are you sure you want to disassociate this user from the client?", 'client_id' => $cid],
+            'leave' => [...$prompt, 'action' => '/user/change/', 'prompt' => "Are you sure you want to disassociate this user from the client?", 'cookie' => $cid],
 
-            'move' => [...$prompt, 'action' => '/user/change/', 'prompt' => "Are you sure you want to move this user to another client?", 'client_id' => $cid],
+            'move' => [...$prompt, 'action' => '/user/change/', 'prompt' => "Are you sure you want to move this user to another client?", 'cookie' => $cid],
 
-            'join' => [...$prompt, 'action' => '/user/change/', 'prompt' => "Are you sure you want to associate this user with this client?", 'client_id' => $cid],
+            'join' => [...$prompt, 'action' => '/user/change/', 'prompt' => "Are you sure you want to associate this user with this client?", 'cookie' => $cid],
 
             //note pos set but not neg and call not required; the logic being if just pos the dialog need not include radio buttons but simply supply a button for further editing
             'success' => ['pagehead' => 'Edit User', 'template' => 'prompt.html.php', 'action' => "/user/editbridge/$id", 'prompt' => "Details succesfully updated", 'pos' => 'Yes', 'submit' => 'edit again']
@@ -462,8 +462,8 @@ class User extends Presenter
     public function changeSubmit()
     {
         if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
-            if (isset($_POST['client_id'])) {
-                $v = $_POST['client_id'];
+            if (isset($_POST['cookie'])) {
+                $v = $_POST['cookie'];
                 $flag = empty($v) ? 'empty' : true;
                 $this->setCookie(['client_id' => $v], ['client_id'], $flag);
                 $id = $_POST['id'];

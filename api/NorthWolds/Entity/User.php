@@ -34,7 +34,7 @@ class User extends Entity
     $this->userroletable = $userrole;
     $this->roletable = $role;
     $this->clienttable = $client;
-    $this->setCookie($_COOKIE, ['name', 'email', 'client_id'], false);
+    //$this->setCookie($_COOKIE, ['name', 'email', 'client_id'], false);
   }
 
   protected function validateRole($role)
