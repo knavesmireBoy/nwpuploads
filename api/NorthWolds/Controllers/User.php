@@ -221,6 +221,8 @@ class User extends Presenter
     public function loadbridge($key, $id, $args)
     {
         parse_str($args, $res);
+
+        dump($res);
         return $this->load($key, ['id' => $id, ...$res]);
     }
 
@@ -398,7 +400,6 @@ class User extends Presenter
 
         $updateDomain = $user->updateDomain($admin ? '_domain' : 'domain', $id, $default);
 
-
         $dom = $updateDomain(nullify($clientID), $data);
 
         $record = get_object_vars($user);
@@ -469,6 +470,7 @@ class User extends Presenter
                 $id = $_POST['id'];
                 $str = urlencode('you may now proceed with your edits');
                 $str = "class=details%20override&override=override&legend=$str";
+
                 reLocate("/user/editparse/$id/$str");
             } else {
                 return $this->edit($_POST['id'], ['class' => 'details override', 'override' => 'override', 'legend' => 'You may now proceed with your edits']);
