@@ -218,36 +218,34 @@ class User extends Entity
 
         $details = $this->getDetails();
         $domain = $details['domain'] ?? '';
-        
+
         if ($cid && !$domain) {
           reLocate("/user/loadbridge/join/$uid/client_id=$cid");
         }
         return $data;
       };
-      return function (int $cid, array $postdata, int $id = 0) {
-        $cookiearg = true;
-        $client = $this->fetch('clienttable', 'id', $cid);
-        $domain = $client->domain;
-        dump($domain);
-        $postdata['email'] = preg_replace('/(.+@).+/', "$1$domain", $postdata['email']);
-        $clientdata = $client->validateDomain($postdata['email'], 'client_id');
-      
-        
-        if (!$clientdata['client_id']) {
-          $relocate = "/user/load/_sync";
-          $cookiearg = false;
-        }
-       
-        $postdata = [...$postdata, ...$clientdata];
-
-        if ($relocate) {
-          $data = $cookiearg ? $postdata : $_COOKIE;
-          $this->setCookie($data, ['name', 'email', 'client_id'], $cookiearg);
-          reLocate($relocate);
-        }
-        return $postdata;
-      };
     }
+    return function (int $cid, array $postdata, int $id = 0) {
+      $cookiearg = true;
+      $client = $this->fetch('clienttable', 'id', $cid);
+      // $domain = $client->domain;
+      // $postdata['email'] = preg_replace('/(.+@).+/', "$1$domain", $postdata['email']);
+      $clientdata = $client->validateDomain($postdata['email'], 'client_id');
+
+      if (!$clientdata['client_id']) {
+        $relocate = "/user/load/_sync";
+        $cookiearg = false;
+      }
+
+      $postdata = [...$postdata, ...$clientdata];
+
+      if ($relocate) {
+        $data = $cookiearg ? $postdata : $_COOKIE;
+        $this->setCookie($data, ['name', 'email', 'client_id'], $cookiearg);
+        reLocate($relocate);
+      }
+      return $postdata;
+    };
   }
 
   public function updatePassword($password)

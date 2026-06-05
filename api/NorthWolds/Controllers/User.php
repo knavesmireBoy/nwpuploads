@@ -300,6 +300,16 @@ class User extends Presenter
         return $this->edit($id, [...$args]);
     }
 
+    protected function syncDomain($email)
+    {
+        if ($email && isset($_COOKIE['client_id']) && !isset($_COOKIE['email'])) {
+            $client = $this->fetch('clienttable', 'id', $_COOKIE['client_id']);
+            $domain = $client->domain;
+            return preg_replace('/(.+@).+/', "$1$domain", $email);
+        }
+        return $email;
+    }
+
     public function edit($id, $args = [])
     {
         $details = $this->getPrivilege();
@@ -320,6 +330,8 @@ class User extends Presenter
         list($_, $clients) = $member->presentList($id, 'client_id');
         $roles = $member->getRoles($user->id ?? '');
 
+        $res = $this->syncDomain($user->email);
+
         $id = $user->id ?? null;
         $vars = [
             'button' => 'Edit User',
@@ -327,7 +339,7 @@ class User extends Presenter
             'action' => '/user/edit/',
             'id' => $id,
             'name' => $_COOKIE['name'] ?? $user->name ?? '',
-            'email' => $_COOKIE['email'] ?? $user->email ?? '',
+            'email' => $this->syncDomain($user->email ?? ''),
             'password' => $_COOKIE['password'] ?? '',
             'employer' => $_COOKIE['client_id'] ?? $user->client_id ?? '',
             'editor' => $editor,
@@ -386,13 +398,6 @@ class User extends Presenter
         $editor = $id == $this->getPrivilege('id');
         $user->setSelf($editor);
 
-        if (!$default) {
-            $updateDomain = $user->updateDomain($admin ? '_domain' : 'domain', $id, $default);
-
-            dump($updateDomain);
-        }
-
-        
         $updateDomain = $user->updateDomain($admin ? '_domain' : 'domain', $id, $default);
 
         $record = get_object_vars($user);
