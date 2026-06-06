@@ -266,7 +266,9 @@ function unsetCookie($str)
 function doSetCookie($flag, $time = -1)
 {
     return function ($k, $v = '') use ($flag, $time) {
-       // $v = $v ? $v : $k;
+        //for $v to equal $k send either null or $k
+        $v = $v ?? $k;
+        /*
         //need if undefined here
         if (!is_string($v)) {
             if (!is_int($v)) {
@@ -279,7 +281,7 @@ function doSetCookie($flag, $time = -1)
                 $v = $k;
             }
         }
-
+*/
         if (!isset($_COOKIE[$k]) && $flag) {
             $v = is_bool($flag) ? $v : '';
             setcookie($k, $v, $time, '/');
