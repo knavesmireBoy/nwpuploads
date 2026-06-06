@@ -28,9 +28,9 @@ class User extends Presenter
         reLocate($this->home);
     }
 
-    private function query($key, ...$args)
+    private function query($key, $args)
     {
-        $arg = $args[1] ?? $args[0] ?? '';
+        $arg = $args['arg'] ?? '';
 
         $lib = [
             'nouser' => "No user found",
@@ -223,7 +223,6 @@ class User extends Presenter
         parse_str($_COOKIE['flash'], $res);
         $key = array_shift($res);
         return $this->load($key, $res);
-       // return $this->load($key, ['id' => $id, ...$res]);
     }
 
     public function load(string $key = '', array $vars = [])
@@ -428,10 +427,13 @@ class User extends Presenter
             if (!empty($result)) {
                 $key = $user->postEdit();
             }
-            $relocate = $key ? '/user/loadbridge/' . strtolower($key) . "/$id" : null;
+            if ($key) {
+                $key = strtolower($key);
+                $this->setCookie(['flash' => "key=$key&id=$id"], ['flash'], true);
+                reLocate('user/loadbridge/');
+            }
         }
-        $relocate = $relocate ?? '/user/load/' . strtolower($key);
-        reLocate($relocate);
+        reLocate('/user/load/' . strtolower($key));
     }
 
     public function delete($id = '')

@@ -301,7 +301,8 @@ class User extends Entity
           return $this->{$prop};
         } else {
           $id = $this->id;
-          reLocate("/user/loadbridge/undef/$id/$prop");
+          $this->setCookie(['flash' => "key=undef&id=$id&arg=$prop"], ['flash'], true);
+          reLocate("/user/loadbridge/");
         }
       }
       if ($this->client_id) {
