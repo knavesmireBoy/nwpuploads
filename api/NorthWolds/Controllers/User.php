@@ -35,7 +35,7 @@ class User extends Presenter
             'nousers' => "Unable to find any users",
             "addnotice" => "Please fill required fields",
             "selectuser" => "Please select a user for editing",
-            "domainflag" => "Cannot assign this user to a new client",
+            "domainflag" => "Cannot assign this user to a new client, innit",
 
             "denied" => "You do not have the privileges to delete this user",
             "deniedbyclient" => "There must be at least one administrator role, please assign another user before removing your credentials from the database",
@@ -83,7 +83,9 @@ class User extends Presenter
             'delete' => [...$prompt, 'prompt' => "Are you sure you want to delete this user?", 'action' => '/user/confirm/'],
             'confirm' => ['id' => $id],
             'selected' => ['pagehead' => 'Select User', 'selected' => true, 'clients' => [], 'users' => $users],
+
             'change' => ['pagehead' => 'Edit User', 'id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'prompt' => "Changing these details will require you to log in again. Proceed?", 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No', 'editor' => $id, 'action' => '/user/change/'],
+
             'leave' => [...$prompt, 'action' => '/user/change/', 'prompt' => "Are you sure you want to disassociate this user from the client?", 'cookie' => $cid],
 
             'move' => [...$prompt, 'action' => '/user/change/', 'prompt' => "Are you sure you want to move this user to another client?", 'cookie' => $cid],
@@ -194,17 +196,17 @@ class User extends Presenter
             'clients' => $clients,
             'usercount' => 0,
             'denied' => false,
-            'nwpagency' => null,
+            //'nwpagency' => null,
             'pagehead' => 'Edit Details',
             'pageid' => 'admin_user',
-            'nwproleplay' => 'Admin',
-            'nwp_id' => null,
+            //'nwproleplay' => 'Admin',
+            //'nwp_id' => null,
             'pagehead_role' => 'Admin',
             'error' => $error,
-            'nwproleorder' => ['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'],
+            //'nwproleorder' => ['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'],
             'owner' => $owner,
-            'redirects' => ['pwd', 'domainflag', 'domainassoc', 'namechange'],
-            'predicates' => [partial('preg_match', '/^nwp/')],
+            //'redirects' => ['pwd', 'domainflag', 'domainassoc', 'namechange'],
+            //'predicates' => [partial('preg_match', '/^nwp/')],
             'pages' => 1
         ];
 
