@@ -7,9 +7,9 @@ class Solo extends ClientAdmin
 
     public function preEdit($flag = true)
     {
-      return $flag;
+        return $flag;
     }
-  
+
     public function postEdit()
     {
         return $this->self ? 'success' : '';
@@ -37,5 +37,10 @@ class Solo extends ClientAdmin
             'callroute' => "/user/add/",
             'retour' => '_return2uploads.html.php'
         ];
+    }
+
+    public function presentList($userId)
+    {
+        return [[], []];
     }
 }

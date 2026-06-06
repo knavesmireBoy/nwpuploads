@@ -409,6 +409,7 @@ class User extends Presenter
         list($change, $optional) = $this->hasChanged($record, $required, ['email', 'password'], ['name']);
       
         if ($editor && $change !== [] && empty($_POST['override'])) {
+            dump(99);
             $this->setCookie($data, [...$change, ...$optional], true);
             //reLocate("/user/loadbridge/change/$id");
             return $this->load('change', ['id' => $id]);
