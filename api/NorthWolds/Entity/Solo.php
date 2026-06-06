@@ -2,7 +2,7 @@
 
 namespace NorthWolds\Entity;
 
-class Solo extends User
+class Solo extends ClientAdmin
 {
 
     public function preEdit($flag = true)
