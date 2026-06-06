@@ -231,7 +231,7 @@ class User extends Presenter
         $error = '';
         $owner = []; //prompt.html.php expects this from Uploader Controller
 
-        $key = $_COOKIE('flash') ?? '';
+        $key = $_COOKIE['flash'] ?? '';
         dump($key);
         //if(!is_array($vars)) dump($vars);
         unset($vars['id']);
