@@ -397,7 +397,7 @@ class User extends Presenter
         $user->setSelf($editor);
 
         $updateDomain = $user->updateDomain($admin ? '_domain' : 'domain', $id, $default);
-
+        dump(400);
         $dom = $updateDomain(nullify($clientID), $data);
 
         $record = get_object_vars($user);
@@ -409,7 +409,7 @@ class User extends Presenter
         list($change, $optional) = $this->hasChanged($record, $required, ['email', 'password'], ['name']);
       
         if ($editor && $change !== [] && empty($_POST['override'])) {
-            dump(99);
+           
             $this->setCookie($data, [...$change, ...$optional], true);
             //reLocate("/user/loadbridge/change/$id");
             return $this->load('change', ['id' => $id]);
