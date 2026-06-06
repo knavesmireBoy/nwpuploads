@@ -221,6 +221,8 @@ class User extends Presenter
     public function loadbridge($key, $id, $args)
     {
         parse_str($args, $res);
+
+        dump(array_shift($res));
         return $this->load($key, ['id' => $id, ...$res]);
     }
 
@@ -230,13 +232,11 @@ class User extends Presenter
         $customVars = $this->getCustomVars($key, $vars);
         $error = '';
         $owner = []; //prompt.html.php expects this from Uploader Controller
-
-        $key = $_COOKIE['flash'] ?? '';
-        if($key) dump($key);
-        //if(!is_array($vars)) dump($vars);
         unset($vars['id']);
         //the occasional error may require ONE argument which is not an id
+        $key = $_COOKIE['msg'] ?? '';
         $error = $this->query($key, ...$vars);
+        $this->setCookie($_COOKIE, ['flash'], false);
         $user = $this->fetch('table', 'email', $_SESSION['username']);
         $user = $this->getSubUser($user);
 
@@ -339,7 +339,7 @@ class User extends Presenter
             'action' => '/user/edit/',
             'id' => $id,
             'name' => $_COOKIE['name'] ?? $user->name ?? '',
-           // 'email' => $this->syncDomain($user->email ?? ''),
+            // 'email' => $this->syncDomain($user->email ?? ''),
             'email' => $_COOKIE['email'] ?? $user->email ?? '',
             'password' => $_COOKIE['password'] ?? '',
             'employer' => $_COOKIE['client_id'] ?? $user->client_id ?? '',

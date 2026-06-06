@@ -114,14 +114,14 @@ class User extends Entity
 
   protected function validateDom($cid, $dbrecord, $postdata, $insertID)
   {
-    $client = $this->fetch('clienttable','id', $cid);
+    $client = $this->fetch('clienttable', 'id', $cid);
     list($ename, $dom, $com) = $this->parseEmail($postdata['email']);
     $postdom = "$dom.$com";
     $relocate = '';
     $key = '';
     if ($client) {
       $details = $this->getDetails();
-      $relocate = isApproved($details['role'], 'admin') ? "/user/load/_denied" : $relocate;
+      $key = isApproved($details['role'], 'admin') ? '_denied' : $key;
       $data = $this->setClientEmail($cid, $postdata, $dbrecord);
     } else {
       $client = $this->clienttable->getEntity();
@@ -131,18 +131,15 @@ class User extends Entity
       } else {
         if ($insertID) { // a new
           $this->table->delete('id', $insertID);
-          $relocate = '/user/load/_impostor';
+          $key = '_impostor';
         } else { //or existing user (freelancer) attempting to swap clients
           $key = $this->self ? 'traitor' : '_traitor';
-          $relocate = "/user/load/$key";
-
-          $this->setCookie(['flash' => $key], ['flash'], true);
-
           $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'name' => $dbrecord['name'], 'client_id' => nullify($client->id)];
         }
       }
     }
-    if ($relocate) {
+    if ($key) {
+      $this->setCookie(['msg' => $key], ['msg'], true);
       reLocate('/user/load/');
     }
     return $data;
@@ -230,16 +227,14 @@ class User extends Entity
       return function (?int $cid, array $postdata, int $id = 0) use ($key, $uid) {
 
         $dbrecord = $this->fetch('TABLE', 'id', $uid);
-
-
         $data = $this->validateDom($cid, $dbrecord, $postdata, $id);
 
         $details = $this->getDetails();
         $domain = $details['domain'] ?? '';
 
         if ($cid && !$domain) {
-          $this->setCookie($data, ['name', 'email', 'client_id'], true);
-          reLocate("/user/loadbridge/join/$uid/client_id=$cid");
+          $this->setCookie([...$data, 'flash' => "key=join&id=$uid&client_id=$cid"], ['flash', 'name', 'email', 'client_id'], true);
+          reLocate("/user/loadbridge/");
         }
         return $data;
       };
