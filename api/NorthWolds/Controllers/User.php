@@ -221,7 +221,7 @@ class User extends Presenter
     public function loadbridge($key)
     {
         parse_str($_COOKIE['flash'], $res);
-        dump([$key, array_shift($res)]);
+        dump([$key, $res]);
         return $this->load($key, ['id' => $id, ...$res]);
     }
 
