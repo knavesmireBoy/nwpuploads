@@ -114,12 +114,12 @@ class User extends Entity
 
   protected function validateDom($cid, $dbrecord, $postdata, $insertID)
   {
-    $client = $cid ? $this->clienttable->find('id', $cid) : [];
+    $client = $this->clienttable->find('clienttable','id', $cid);
     list($ename, $dom, $com) = $this->parseEmail($postdata['email']);
     $postdom = "$dom.$com";
     $relocate = '';
     $key = '';
-    if (isset($client[0])) {
+    if ($client) {
       $details = $this->getDetails();
       $relocate = isApproved($details['role'], 'admin') ? "/user/load/_denied" : $relocate;
       $data = $this->setClientEmail($cid, $postdata, $dbrecord);
@@ -135,12 +135,15 @@ class User extends Entity
         } else { //or existing user (freelancer) attempting to swap clients
           $key = $this->self ? 'traitor' : '_traitor';
           $relocate = "/user/load/$key";
+
+          $this->setCookie(['flash' => $key], ['flash'], true);
+
           $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'name' => $dbrecord['name'], 'client_id' => nullify($client->id)];
         }
       }
     }
     if ($relocate) {
-      reLocate($relocate);
+      reLocate('/user/load/');
     }
     return $data;
   }

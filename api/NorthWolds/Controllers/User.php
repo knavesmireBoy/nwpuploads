@@ -231,10 +231,12 @@ class User extends Presenter
         $error = '';
         $owner = []; //prompt.html.php expects this from Uploader Controller
 
+        $key = $_COOKIE('flash') ?? '';
+        dump($key);
         //if(!is_array($vars)) dump($vars);
-        //unset($vars['id']);
+        unset($vars['id']);
         //the occasional error may require ONE argument which is not an id
-        //$error = $this->query($key, ...$vars);
+        $error = $this->query($key, ...$vars);
         $user = $this->fetch('table', 'email', $_SESSION['username']);
         $user = $this->getSubUser($user);
 
