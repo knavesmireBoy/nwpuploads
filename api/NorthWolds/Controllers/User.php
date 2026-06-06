@@ -218,7 +218,7 @@ class User extends Presenter
         ];
     }
 
-    public function loadbridge($key)
+    public function loadbridge()
     {
         parse_str($_COOKIE['flash'], $res);
         $key = array_shift($res);

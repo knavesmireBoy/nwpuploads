@@ -234,7 +234,7 @@ class User extends Entity
 
         if ($cid && !$domain) {
           $this->setCookie([...$data, 'flash' => "key=join&id=$uid&client_id=$cid"], ['flash', 'name', 'email', 'client_id'], true);
-          reLocate("/user/loadbridge");
+          reLocate("/user/loadbridge/");
         }
         return $data;
       };
