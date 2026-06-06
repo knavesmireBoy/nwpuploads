@@ -239,13 +239,13 @@ class User extends Entity
         return $data;
       };
     }
-    return function (?int $cid, array $postdata, int $id = 0) {
+    return function (?int $cid, array $postdata, int $id = 0) use($uid){
       $cookiearg = true;
       $relocate = '';
       $client = $this->fetch('clienttable', 'id', $cid);
-      $clientdata = $client->validateDomain($postdata['email'], 'client_id');
+      $clientdata = $cid ? $client->validateDomain($postdata['email'], 'client_id') : null;
 
-      if ($cid && !$clientdata['client_id']) {
+      if ($clientdata && !$clientdata['client_id']) {
         $relocate = "/user/load/_sync";
         $cookiearg = false;
       }
@@ -254,7 +254,7 @@ class User extends Entity
 
       if ($relocate) {
         $data = $cookiearg ? $postdata : $_COOKIE;
-        $this->setCookie($data, ['name', 'email', 'client_id'], $cookiearg);
+        $this->setCookie([...$data, 'flash'=>"key=_sync&id=$uid"], ['name', 'email', 'client_id', '_sync'], $cookiearg);
         reLocate($relocate);
       }
       return $postdata;
