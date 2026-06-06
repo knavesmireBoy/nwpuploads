@@ -407,7 +407,7 @@ class User extends Presenter
         $data = [...$record, ...$required, ...$dom];
         //exclude password from update unless requested...
         list($change, $optional) = $this->hasChanged($record, $required, ['email', 'password'], ['name']);
-
+      
         if ($editor && $change !== [] && empty($_POST['override'])) {
             $this->setCookie($data, [...$change, ...$optional], true);
             //reLocate("/user/loadbridge/change/$id");
@@ -428,7 +428,7 @@ class User extends Presenter
             if ($key) {
                 $key = strtolower($key);
                 $this->setCookie(['flash' => "key=$key&id=$id"], ['flash'], true);
-                reLocate('user/loadbridge/');
+                reLocate('/user/loadbridge/');
             }
         }
         reLocate('/user/load/' . strtolower($key));
