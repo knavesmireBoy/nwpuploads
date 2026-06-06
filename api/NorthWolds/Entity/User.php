@@ -114,7 +114,7 @@ class User extends Entity
 
   protected function validateDom($cid, $dbrecord, $postdata, $insertID)
   {
-    $client = $this->clienttable->find('clienttable','id', $cid);
+    $client = $this->fetch('clienttable','id', $cid);
     list($ename, $dom, $com) = $this->parseEmail($postdata['email']);
     $postdom = "$dom.$com";
     $relocate = '';
