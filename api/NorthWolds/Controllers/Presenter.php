@@ -8,11 +8,9 @@ class Presenter
 {
 
     public static int $success = 1;
-    protected $table;
 
-    public function __construct(DatabaseTable $table)
+    public function __construct(protected DatabaseTable $table)
     {
-        $this->table = $table;
     }
 
     protected function presentList(string $role, mixed $userId, DatabaseTable $table, $prop = 'domain')
