@@ -9,7 +9,7 @@ class Client extends Entity
     public $domain;
     public $tel;
 
-    public function __construct(private \Ninja\DatabaseTable $table, private \Ninja\DatabaseTable $usertable) {}
+    public function __construct(protected \Ninja\DatabaseTable $table, protected \Ninja\DatabaseTable $usertable) {}
 
     public function getDetails($arg)
     {
