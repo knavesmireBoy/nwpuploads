@@ -37,8 +37,6 @@ class ClientAdmin extends User
 
     protected function validateDom($cid, $record, $postdata, $insertId = 0)
     {
-        
-        dump('client_admin');
         list($name, $dom, $com) = $this->parseEmail($record['email']);
         list($ename, $edom, $ecom) = $this->parseEmail($postdata['email']);
         if ("$edom.$ecom" === "$dom.$com") {

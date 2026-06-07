@@ -54,7 +54,7 @@ class User extends Presenter
             '_lastadminrole' => "To demote the admin status of this user you must promote another user to the admin role.",
 
             'last' => "Only the database administrator can delete this user.",
-            "_denied" => "Cannot assign this user to a client.",
+            "_denied" => "Cannot assign this user to a client!",
             '_last' => "To remove this final user, please delete the client instead.",
 
             'domain' => 'Only the database administrator can change the domain of an email address.',
@@ -222,6 +222,8 @@ class User extends Presenter
     {
         parse_str($_COOKIE['flash'], $res);
         $key = array_shift($res);
+
+        dump([$key, $res]);
         return $this->load($key, $res);
     }
 
