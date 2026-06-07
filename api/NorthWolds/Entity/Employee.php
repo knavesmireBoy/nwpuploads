@@ -73,7 +73,9 @@ class Employee extends User
                         if ($fail) {
                             $cookiearg = false;
                             if (!$relocate) {
-                                $relocate = $this->self ? '/user/load/traitor' : '/user/load/_traitor';
+                                $key = $this->self ? 'traitor' : '_traitor';
+                                $this->setCookie(['flash' => "key=$key"], ['flash'], true);
+                                reLocate("/user/loadbridge");
                             }
                         }
                     }
@@ -100,7 +102,7 @@ class Employee extends User
                 $this->setCookie($data, ['name', 'email', 'client_id'], $cookiearg);
                 reLocate($relocate);
             }
-           return $postdata;
+            return $postdata;
         };
     }
 }

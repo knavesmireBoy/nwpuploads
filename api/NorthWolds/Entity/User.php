@@ -241,22 +241,20 @@ class User extends Entity
         return $data;
       };
     }
-    return function (?int $cid, array $postdata, int $id = 0) use($uid){
+    return function (?int $cid, array $postdata, int $id = 0) use ($uid) {
       $cookiearg = true;
       $relocate = '';
       $client = $this->fetch('clienttable', 'id', $cid);
       $clientdata = $cid ? $client->validateDomain($postdata['email'], 'client_id') : [];
 
       if (!empty($clientdata) && !$clientdata['client_id']) {
-        $relocate = "/user/load/_sync";
+        $relocate = true;
         $cookiearg = false;
       }
-
       $postdata = [...$postdata, ...$clientdata];
-
       if ($relocate) {
         $data = $cookiearg ? $postdata : $_COOKIE;
-        $this->setCookie([...$data, 'flash'=>"key=_sync&id=$uid"], ['name', 'email', 'client_id', '_sync'], $cookiearg);
+        $this->setCookie([...$data, 'flash' => "key=_sync&id=$uid"], ['name', 'email', 'client_id', 'flash'], $cookiearg);
         reLocate($relocate);
       }
       return $postdata;

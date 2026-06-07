@@ -62,7 +62,8 @@ class ClientAdmin extends User
             $dbrecord = $this->fetch('TABLE', 'id', $this->id);
             if (isset($dbrecord['email'])) { //existing
                 if(!$cid || $dbrecord['client_id'] != $cid){
-                    reLocate("/user/load/_cadmin");
+                    $this->setCookie(['flash'=>"key=_cadmin"], ['flash'], true);
+                    reLocate("/user/loadbridge");
                 }
                 $data = $this->validateDom($cid, $dbrecord, $postdata);
                

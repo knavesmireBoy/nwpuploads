@@ -233,7 +233,7 @@ class User extends Presenter
         $owner = []; //prompt.html.php expects this from Uploader Controller
         unset($vars['id']);
         //the occasional error may require ONE argument which is not an id
-      //  $key = $_COOKIE['flash'] ?? '';
+        //  $key = $_COOKIE['flash'] ?? '';
 
 
 
@@ -402,9 +402,7 @@ class User extends Presenter
         $user->setSelf($editor);
 
         $updateDomain = $user->updateDomain($admin ? '_domain' : 'domain', $id, $default);
-       
         $dom = $updateDomain(nullify($clientID), $data);
-
         $record = get_object_vars($user);
         $required = array_filter($data, fn($item) => $item);
 
@@ -412,7 +410,7 @@ class User extends Presenter
         $data = [...$record, ...$required, ...$dom];
         //exclude password from update unless requested...
         list($change, $optional) = $this->hasChanged($record, $required, ['email', 'password'], ['name']);
-      
+
         if ($editor && $change !== [] && empty($_POST['override'])) {
             $this->setCookie($data, [...$change, ...$optional], true);
             //reLocate("/user/loadbridge/change/$id");
@@ -436,7 +434,9 @@ class User extends Presenter
                 reLocate('/user/loadbridge/');
             }
         }
-        reLocate('/user/load/' . strtolower($key));
+        $key = strtolower($key);
+        $this->setCookie(['flash' => "key=$key"], ['flash'], true);
+        reLocate('/user/loadbridge/');
     }
 
     public function delete($id = '')
