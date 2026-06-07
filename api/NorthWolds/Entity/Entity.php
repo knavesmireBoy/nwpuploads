@@ -2,8 +2,50 @@
 
 namespace NorthWolds\Entity;
 
-class Entity
+class Entity implements \SplSubject
 {
+
+    protected \SplObjectStorage $observers;
+
+    protected array $users = [];
+    protected static $instance;
+
+    protected $roleid; //NOTE ::getDetails returns a role field BUT property is $roleid
+    protected $table;
+    protected $roletable;
+    protected $userroletable;
+    protected $clienttable;
+
+    public function __construct(\Ninja\DatabaseTable $table, \Ninja\DatabaseTable $client, \Ninja\DatabaseTable $userrole, \Ninja\DatabaseTable $role)
+    {
+        $this->table = $table;
+        $this->userroletable = $userrole;
+        $this->roletable = $role;
+        $this->clienttable = $client;
+        $this->observers = new \SplObjectStorage;
+    }
+
+    private function __clone() {}
+    public function createUser(User $user): void
+    {
+        $this->users[] = $user;
+        $this->notify();
+    }
+    public function attach(\SplObserver $observer): void
+    {
+        $this->observers->attach($observer);
+    }
+    public function detach(\SplObserver $observer): void
+    {
+        $this->observers->detach($observer);
+    }
+    public function notify(): void
+    {
+        foreach ($this->observers as $observer) {
+            $observer->update($this);
+        }
+    }
+
     protected function fetch($t, $prop, $val, ...$rest)
     {
         $ret = [];
@@ -30,7 +72,6 @@ class Entity
 
     public function find(...$args)
     {
-     return $this->fetch(...$args);
+        return $this->fetch(...$args);
     }
-  
 }

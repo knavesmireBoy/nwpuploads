@@ -4,21 +4,6 @@ namespace NorthWolds\Entity;
 
 class User extends Entity
 {
-  /*
-  const BROWSER = 1; // 00000001
-  const MANAGER = 2; // 00000010
-  const CLIENT = 4; // 00000100
-  const CLIENT_ADMIN = 8; // 00001000
-  const ADMIN = 16; // 00010000; edit user permissions
-  const SUPER = 32; // 00100000; ; edit user permissions AND delete user (must ALSO be account_editor) ie 48
-  const SUPERADMIN = 64; // 01000000 (use permissions : 80)
-  public $permissions;
-*/
-  protected $roleid; //NOTE ::getDetails returns a role field BUT property is $roleid
-  protected $table;
-  protected $roletable;
-  protected $userroletable;
-  protected $clienttable;
   protected $roles = ['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'];
   protected $self;
   protected $home;
@@ -28,14 +13,15 @@ class User extends Entity
   public $email;
   public $client_id;
 
-  public function __construct(\Ninja\DatabaseTable $table, \Ninja\DatabaseTable $client, \Ninja\DatabaseTable $userrole, \Ninja\DatabaseTable $role)
+  /*
+  public static function getInstance($t, $c, $u, $r): self
   {
-    $this->table = $table;
-    $this->userroletable = $userrole;
-    $this->roletable = $role;
-    $this->clienttable = $client;
-    //$this->setCookie($_COOKIE, ['name', 'email', 'client_id'], false);
+      if (self::$instance === null) {
+          self::$instance = new self($t, $c, $u, $r);
+      }
+      return self::$instance;
   }
+*/
 
   protected function setClientEmail($cid, $data, $record)
   {
@@ -72,7 +58,6 @@ class User extends Entity
     $cb = composer(partial('equals', 'Client Admin'), curry2('getter')('roleid'));
     return !empty($roles) ? safeFilter($roles, $cb) : $roles;
   }
-
 
   protected function fetchAllRoles(array $keys = [], array $selectedRoles = []): array
   {
