@@ -119,6 +119,8 @@ class User extends Entity
     $postdom = "$dom.$com";
     $relocate = '';
     $key = '';
+
+    dump($_COOKIE);
     if ($client) {
       $details = $this->getDetails();
       $key = isApproved($details['role'], 'ADMIN') ? '_denied' : $key;
