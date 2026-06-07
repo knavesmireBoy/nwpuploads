@@ -3,6 +3,7 @@
 namespace NorthWolds\Controllers;
 
 use \Ninja\DatabaseTable;
+use \NorthWolds\Entity;
 
 class User extends Presenter
 {
@@ -225,6 +226,11 @@ class User extends Presenter
         return $this->load($key, $res);
     }
 
+    public function update()
+    {
+        reLocate('/user/loadbridge');
+    }
+
     public function load(string $key = '', array $vars = [])
     {
         $details = $this->getPrivilege();
@@ -241,6 +247,8 @@ class User extends Presenter
         $this->setCookie($_COOKIE, ['flash'], false);
         $user = $this->fetch('table', 'email', $_SESSION['username']);
         $user = $this->getSubUser($user);
+
+        $user->attach($this);
 
         if ($user->preEdit(empty($customVars))) {
             $args = $error ? ['message' => $error] : [];

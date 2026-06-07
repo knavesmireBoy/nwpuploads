@@ -63,13 +63,15 @@ class ClientAdmin extends User
             if (isset($dbrecord['email'])) { //existing
                 if(!$cid || $dbrecord['client_id'] != $cid){
                     $this->setCookie(['flash'=>"key=_cadmin"], ['flash'], true);
-                    reLocate("/user/loadbridge");
+                    $this->notify();
+                    //reLocate("/user/loadbridge");
                 }
                 $data = $this->validateDom($cid, $dbrecord, $postdata);
                
                 if (!$data) {
                     $this->setCookie(['flash'=>"key=domain"], ['flash'], true);
-                    reLocate("/user/loadbridge");
+                    $this->notify();
+                    //reLocate("/user/loadbridge");
                 }
                 return $data;
             } else { //new
