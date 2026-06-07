@@ -8,8 +8,14 @@ class Client extends Entity
     public $name;
     public $domain;
     public $tel;
+    protected $table;
+    protected $usertable;
 
-    public function __construct(protected \Ninja\DatabaseTable $table, protected \Ninja\DatabaseTable $usertable) {}
+    public function __construct(\Ninja\DatabaseTable $table, \Ninja\DatabaseTable $usertable) {
+
+        $this->table = $table;
+        $this->usertable = $usertable;
+    }
 
     public function getDetails($arg)
     {
