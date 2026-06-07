@@ -2,7 +2,7 @@
 
 namespace NorthWolds\Entity;
 
-class User extends Entity
+class User extends Entity implements \SplSubject
 {
   protected $roles = ['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'];
   protected $self;
@@ -13,6 +13,10 @@ class User extends Entity
   public $email;
   public $client_id;
 
+  protected \SplObjectStorage $observers;
+  protected array $users = [];
+  protected static $instance;
+
   /*
   public static function getInstance($t, $c, $u, $r): self
   {
@@ -22,6 +26,36 @@ class User extends Entity
       return self::$instance;
   }
 */
+
+  public function __construct(\Ninja\DatabaseTable $table, \Ninja\DatabaseTable $client, \Ninja\DatabaseTable $userrole, \Ninja\DatabaseTable $role)
+  {
+    $this->table = $table;
+    $this->userroletable = $userrole;
+    $this->roletable = $role;
+    $this->clienttable = $client;
+    $this->observers = new \SplObjectStorage;
+  }
+
+  private function __clone() {}
+  public function createUser(User $user): void
+  {
+    $this->users[] = $user;
+    $this->notify();
+  }
+  public function attach(\SplObserver $observer): void
+  {
+    $this->observers->attach($observer);
+  }
+  public function detach(\SplObserver $observer): void
+  {
+    $this->observers->detach($observer);
+  }
+  public function notify(): void
+  {
+    foreach ($this->observers as $observer) {
+      $observer->update($this);
+    }
+  }
 
   protected function setClientEmail($cid, $data, $record)
   {
