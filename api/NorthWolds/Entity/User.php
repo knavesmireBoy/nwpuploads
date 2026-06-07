@@ -120,7 +120,7 @@ class User extends Entity
     $relocate = '';
     $key = '';
 
-    dump($_COOKIE);
+
     if ($client) {
       $details = $this->getDetails();
       $key = isApproved($details['role'], 'ADMIN') ? '_denied' : $key;
@@ -141,8 +141,8 @@ class User extends Entity
       }
     }
     if ($key) {
-      $this->setCookie(['msg' => $key], ['msg'], true);
-      reLocate('/user/load/');
+      $this->setCookie(['flash' => "key=$key"], ['flash'], true);
+      reLocate('/user/loadbridge/');
     }
     return $data;
   }

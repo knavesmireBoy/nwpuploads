@@ -7,6 +7,9 @@ include_once ACCESS;
 
 //$unsetcookie = doSetCookie(false);
 
+$c = doSetCookie(false);
+$c('msg', '');
+
 $layout = 'pagelayout.html.php';
 $route = fixUri();
 
