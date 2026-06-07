@@ -40,7 +40,7 @@ class ClientAdmin extends User
         list($name, $dom, $com) = $this->parseEmail($record['email']);
         list($ename, $edom, $ecom) = $this->parseEmail($postdata['email']);
         if ("$edom.$ecom" === "$dom.$com") {
-            $postdata['email'] = "$ename@$edom";
+            $postdata['email'] = "$ename@$dom.$com";
             $postdata['client_id'] = $cid;
             return $postdata;
         }
