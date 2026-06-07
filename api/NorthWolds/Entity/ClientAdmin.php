@@ -65,6 +65,8 @@ class ClientAdmin extends User
                     reLocate("/user/load/_cadmin");
                 }
                 $data = $this->validateDom($cid, $dbrecord, $postdata);
+
+                dump($data);
                 if (!$data) {
                     reLocate("/user/load/domain");
                 }
