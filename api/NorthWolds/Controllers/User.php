@@ -222,8 +222,6 @@ class User extends Presenter
     {
         parse_str($_COOKIE['flash'], $res);
         $key = array_shift($res);
-
-        dump([$key, $res]);
         return $this->load($key, $res);
     }
 

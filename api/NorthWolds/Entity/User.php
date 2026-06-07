@@ -121,7 +121,7 @@ class User extends Entity
     $key = '';
     if ($client) {
       $details = $this->getDetails();
-      $key = isApproved($details['role'], 'admin') ? '_denied' : $key;
+      $key = isApproved($details['role'], 'ADMIN') ? '_denied' : $key;
       $data = $this->setClientEmail($cid, $postdata, $dbrecord);
     } else {
       $client = $this->clienttable->getEntity();
