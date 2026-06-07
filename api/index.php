@@ -5,7 +5,7 @@ include_once ACCESS;
 
 //phpinfo();
 
-dump($_COOKIE);
+//$unsetcookie = doSetCookie(false);
 
 $layout = 'pagelayout.html.php';
 $route = fixUri();
