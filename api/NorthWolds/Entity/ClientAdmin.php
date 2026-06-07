@@ -65,10 +65,10 @@ class ClientAdmin extends User
                     reLocate("/user/load/_cadmin");
                 }
                 $data = $this->validateDom($cid, $dbrecord, $postdata);
-
-                dump($data);
+               
                 if (!$data) {
-                    reLocate("/user/load/domain");
+                    $this->setCookie([...$data, 'flash'=>"key=domain"], ['flash'], true);
+                    reLocate("/user/load");
                 }
                 return $data;
             } else { //new
