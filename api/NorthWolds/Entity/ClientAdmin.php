@@ -68,7 +68,7 @@ class ClientAdmin extends User
                
                 if (!$data) {
                     $this->setCookie(['flash'=>"key=domain"], ['flash'], true);
-                    reLocate("/user/load");
+                    reLocate("/user/loadbridge");
                 }
                 return $data;
             } else { //new
