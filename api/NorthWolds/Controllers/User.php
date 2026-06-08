@@ -258,6 +258,9 @@ class User extends Presenter implements \SplObserver
         $user->setSelf(isset($vars['id']) && $vars['id'] == $details['id']);
 
         unset($vars['id']);
+
+        $vars = array_values($vars);
+
         $error = $this->query($key, ...$vars);
         $this->setCookie($_COOKIE, ['flash'], false);
 
