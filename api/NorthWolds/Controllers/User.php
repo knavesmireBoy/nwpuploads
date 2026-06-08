@@ -234,7 +234,7 @@ class User extends Presenter implements \SplObserver
     public function update(\SplSubject $subject): void
     {
         if (isset($subject->note)) {
-            $this->loadbridge($subject->note);
+            reLocate('/user/load/' . $subject->note);
         } else {
             reLocate('/user/loadbridge');
         }
