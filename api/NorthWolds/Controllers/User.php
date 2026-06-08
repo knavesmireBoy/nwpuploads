@@ -233,7 +233,6 @@ class User extends Presenter implements \SplObserver
 
     public function update(\SplSubject $subject): void
     {
-        dump($subject->note);
         if (isset($subject->note)) {
             $this->loadbridge($subject->note);
         } else {
