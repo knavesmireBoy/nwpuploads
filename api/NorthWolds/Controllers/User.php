@@ -52,7 +52,7 @@ class User extends Presenter implements \SplObserver
             '_admin' => "You cannot delete an administrator.",
             "lasteditor" => "There must be at least one administrator role, please assign another user before removing credentials from the database.",
     
-            '_lastadminrole' => "To demote the admin status of this user you must first add another use for this client and promoting it to the admin role.",
+            '_lastadminrole' => "To demote the admin status of this user you must first add another use for this client promoting it to the admin role.",
 
             'lastadminrole' => "There must be at least one administrator role, please add another user and assign the admin role if you wish to demote your status.",
 
@@ -64,9 +64,13 @@ class User extends Presenter implements \SplObserver
             '_sync' => "Email domain and client domain do not match!",
             '_domain' => 'Set the drop down menu to empty when changing the domain. Change the domain of the client to update the domain for all members.',
 
-            '_nondom' => 'Change the domain of the client to not a member.',
+            '_nondom' => 'Change the domain of the client not a team member.',
 
             '_cadmin' => 'Cannot change the domain of a user with an admin role',
+
+            '_unassign' => 'Cannot unassign a user with an admin role',
+
+            '_assign' => 'Cannot assign a user with an admin role to another client',
             'traitor' => 'That domain is not available.',
             '_traitor' => 'To assign to another client use the drop down menu.',
             '_move' => 'Cannot move a user with an admin role',
@@ -99,7 +103,7 @@ class User extends Presenter implements \SplObserver
             'join' => [...$prompt, 'action' => '/user/change/', 'prompt' => "Are you sure you want to associate this user with this client?", 'cookie' => $cid],
 
             //note pos set but not neg and call not required; the logic being if just pos the dialog need not include radio buttons but simply supply a button for further editing
-            'success' => ['pagehead' => 'Edit User', 'template' => 'prompt.html.php', 'action' => "/user/editbridge/$id", 'prompt' => "Details succesfully updated", 'pos' => 'Yes', 'submit' => 'edit again']
+            'success' => ['pagehead' => 'Edit User', 'template' => 'prompt.html.php', 'action' => "/user/editbridge/$id/", 'prompt' => "Details succesfully updated", 'pos' => 'Yes', 'submit' => 'edit again']
         ];
 
         if ($key && isset($lib[$key])) {
@@ -223,7 +227,7 @@ class User extends Presenter implements \SplObserver
         ];
     }
 
-    public function loadbridge($key = '')
+    public function exit($key = '')
     {
         $res = [];
         if (isset($_COOKIE['flash'])) {
@@ -238,7 +242,7 @@ class User extends Presenter implements \SplObserver
         if (isset($subject->note)) {
             reLocate('/user/load/' . $subject->note, ['id' => $subject->id]);
         } else {
-            reLocate('/user/loadbridge');
+            reLocate('/user/exit/');
         }
     }
 
@@ -308,7 +312,7 @@ class User extends Presenter implements \SplObserver
         }
     }
 
-    public function editbridge($id, $str)
+    public function editbridge($id, $str = '')
     {
         parse_str($str, $args);
         return $this->edit($id, $args);

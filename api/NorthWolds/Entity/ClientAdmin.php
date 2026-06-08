@@ -15,25 +15,6 @@ class ClientAdmin extends User
     {
       return '';
     }
-  
-    /*
-    public function getUserIds($roles = null)
-    {
-      $details = $this->getDetails();
-      $res = [];
-      if ($details['client_id']) {
-        $users = $this->table->find('client_id', $this->client_id);
-        $res = array_map(fn($o) => $o->id, $users);
-      } else {
-        return [];
-      }
-      if (is_bool($roles)) {
-        $ret = $this->getAllRoles($res);
-        return $roles ? $ret : $this->getAdminRoles($ret);
-      }
-      return $res;
-    }
-      */
 
     protected function validateDom($cid, $record, $postdata, $insertId = 0)
     {
@@ -62,15 +43,15 @@ class ClientAdmin extends User
             $dbrecord = $this->fetch('TABLE', 'id', $this->id);
             if (isset($dbrecord['email'])) { //existing
                 if(!$cid || $dbrecord['client_id'] != $cid){
-                    $this->setCookie(['flash'=>"key=_cadmin&id=$uid"], ['flash'], true);
-                   // $this->notify();
-                    reLocate("/user/loadbridge");
+                    $msg = $cid ? '_assign' : '_unassign';
+                    $this->setCookie(['flash'=>"key=$msg&id=$uid"], ['flash'], true);
+                    reLocate($this->exit);
                 }
                 $data = $this->validateDom($cid, $dbrecord, $postdata);
                 if (!$data) {
                     $msg = $this->self ? 'domain' : '_nondom';
                     $this->setCookie(['flash'=>"key=$msg&id=$uid"], ['flash'], true);
-                    reLocate("/user/loadbridge");
+                    reLocate($this->exit);
                 }
                 return $data;
             } else { //new

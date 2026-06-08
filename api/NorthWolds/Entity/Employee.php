@@ -66,23 +66,24 @@ class Employee extends User
                     $postdata = $this->setClientEmail($cid, $postdata, $dbrecord);
                     //can only be admin moving an employee; admin users cannot be moved
                     if ($cid && $cid != $dbrecord['client_id']) {
-                        $relocate = "/user/loadbridge/move/$uid/client_id=$cid";
+                        $this->setCookie(['flash' => "key=move&id=$uid&client_id=$cid"], ['flash'], true);
+                        $relocate = true;
                     } else { //admin releasing an employee OR updating name 
-                        $relocate = !$cid ? "/user/loadbridge/leave/$uid/client_id=$cid" : $relocate;
+                        $this->setCookie(['flash' => "key=leave&id=$uid&client_id=$cid"], ['flash'], true);
+                        $relocate = !$cid ? true : $relocate;
                         $fail = $this->traitorCheck($cid, $dbrecord, $postdata);
                         if ($fail) {
                             $cookiearg = false;
                             if (!$relocate) {
                                 $key = $this->self ? 'traitor' : '_traitor';
                                 $this->setCookie(['flash' => "key=$key"], ['flash'], true);
-                                reLocate("/user/loadbridge");
                             }
                         }
                     }
                     if ($relocate) {
                         $data = $cookiearg ? $postdata : $_COOKIE;
                         $this->setCookie($data, ['name', 'email', 'client_id'], $cookiearg);
-                        reLocate($relocate);
+                        reLocate($this->exit);
                     }
                     return $postdata;
                 } else { //new
@@ -95,12 +96,14 @@ class Employee extends User
             $fail = $this->traitorCheck($cid, $dbrecord, $postdata);
             if ($fail) {
                 $cookiearg = false;
-                $relocate = $this->self ? '/user/load/traitor' : '/user/load/_traitor';
+                $key = $this->self ? 'traitor' : '_traitor';
+                $this->setCookie(['flash' => "key=$key"], ['flash'], true);
+                $relocate = true;
             }
             if ($relocate) {
                 $data = $cookiearg ? $postdata : $_COOKIE;
                 $this->setCookie($data, ['name', 'email', 'client_id'], $cookiearg);
-                reLocate($relocate);
+                reLocate($this->exit);
             }
             return $postdata;
         };

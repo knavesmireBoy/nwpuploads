@@ -6,7 +6,7 @@ class User extends Entity implements \SplSubject
 {
   protected $roles = ['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'];
   protected $self;
-  protected $home;
+  protected $exit;
   public $password;
   public $id;
   public $name;
@@ -27,13 +27,14 @@ class User extends Entity implements \SplSubject
   }
 */
 
-  public function __construct(\Ninja\DatabaseTable $table, \Ninja\DatabaseTable $client, \Ninja\DatabaseTable $userrole, \Ninja\DatabaseTable $role)
+  public function __construct(\Ninja\DatabaseTable $table, \Ninja\DatabaseTable $client, \Ninja\DatabaseTable $userrole, \Ninja\DatabaseTable $role, string $exit)
   {
     $this->table = $table;
     $this->userroletable = $userrole;
     $this->roletable = $role;
     $this->clienttable = $client;
     $this->observers = new \SplObjectStorage;
+    $this->exit = $exit;
   }
 
   private function __clone() {}
@@ -161,7 +162,7 @@ class User extends Entity implements \SplSubject
     }
     if ($key) {
       $this->setCookie(['flash' => "key=$key"], ['flash'], true);
-      reLocate('/user/loadbridge/');
+      reLocate($this->exit);
     }
     return $data;
   }
@@ -255,7 +256,7 @@ class User extends Entity implements \SplSubject
 
         if ($cid && !$domain) {
           $this->setCookie([...$data, 'flash' => "key=join&id=$uid&client_id=$cid"], ['flash', 'name', 'email', 'client_id'], true);
-          reLocate("/user/loadbridge/");
+          reLocate($this->exit);
         }
         return $data;
       };
@@ -321,7 +322,7 @@ class User extends Entity implements \SplSubject
         } else {
           $id = $this->id;
           $this->setCookie(['flash' => "key=undef&id=$id&arg=$prop"], ['flash'], true);
-          reLocate("/user/loadbridge/");
+          reLocate($this->exit);
         }
       }
       if ($this->client_id) {
