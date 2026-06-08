@@ -425,7 +425,6 @@ class User extends Presenter implements \SplObserver
 
         if ($editor && $change !== [] && empty($_POST['override'])) {
             $this->setCookie($data, [...$change, ...$optional], true);
-            //reLocate("/user/loadbridge/change/$id");
             return $this->load('change', ['id' => $id]);
         }
         $user->updatePassword($required['password'] ?? '');
@@ -443,8 +442,6 @@ class User extends Presenter implements \SplObserver
             if ($key) {
                 $key = strtolower($key);
                 return $this->load($key, ['id' => $id]);
-              //  $this->setCookie(['flash' => "key=$key&id=$id"], ['flash'], true);
-               // reLocate('/user/loadbridge/');
             }
         }
         $key = strtolower($key);
