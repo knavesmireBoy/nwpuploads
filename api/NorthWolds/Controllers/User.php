@@ -250,7 +250,11 @@ class User extends Presenter implements \SplObserver
         //the occasional error may require ONE argument which is not an id
         //  $key = $_COOKIE['flash'] ?? '';
 
+  
+
         $error = $this->query($key, ...$vars);
+
+        if($error) dump($error);
         $this->setCookie($_COOKIE, ['flash'], false);
         $user = $this->fetch('table', 'email', $_SESSION['username']);
         $user = $this->getSubUser($user);
