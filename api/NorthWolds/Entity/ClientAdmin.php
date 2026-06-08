@@ -70,7 +70,7 @@ class ClientAdmin extends User
                
                 if (!$data) {
                     //$this->setCookie(['flash'=>"key=domain"], ['flash'], true);
-                    $this->note = 'bolt';
+                    $this->note = 'domain';
                     $this->notify();
                     return [];
                     //reLocate("/user/loadbridge");

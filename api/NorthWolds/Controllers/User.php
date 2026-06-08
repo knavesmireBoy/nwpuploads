@@ -58,8 +58,6 @@ class User extends Presenter implements \SplObserver
             "_denied" => "Cannot assign this user to a client!",
             '_last' => "To remove this final user, please delete the client instead.",
 
-            'bolt' => "woof!",
-
             'domain' => 'Only the database administrator can change the domain of an email address.',
             '_sync' => "Email domain and client domain do not match!",
             '_domain' => 'Set the drop down menu to empty when changing the domain. Change the domain of the client to update the domain for all members.',
@@ -179,12 +177,11 @@ class User extends Presenter implements \SplObserver
 
     protected function displayer($details, $customVars = [], $owner = [], $error = '')
     {
-        //  $error = query();
-        $message = $error ?? '';
+        
         // $pagehead_role = $nwproleplay && !obtainUserRole(true);
-        $predicates = [partial('preg_match', '/^nwp/')];
+        //$predicates = [partial('preg_match', '/^nwp/')];
         // $clients = isApproved($priv, 'ADMIN') ? $this->presentClientList($priv, 'domain') : [];
-        $cadmin = isApproved($_SESSION['role'], 'admin');
+        //$cadmin = isApproved($_SESSION['role'], 'admin');
         $details = $this->getPrivilege();
 
         $user = $this->fetch('table', 'id', $details['id']);
@@ -234,7 +231,7 @@ class User extends Presenter implements \SplObserver
     public function update(\SplSubject $subject): void
     {
         if (isset($subject->note)) {
-            reLocate('/user/load/' . $subject->note);
+            reLocate('/user/load/' . $subject->note, ['id' => $subject->id]);
         } else {
             reLocate('/user/loadbridge');
         }
@@ -246,18 +243,18 @@ class User extends Presenter implements \SplObserver
         $customVars = $this->getCustomVars($key, $vars);
         $error = '';
         $owner = []; //prompt.html.php expects this from Uploader Controller
-        unset($vars['id']);
+        
         //the occasional error may require ONE argument which is not an id
         //  $key = $_COOKIE['flash'] ?? '';
 
-  
-
-        $error = $this->query($key, ...$vars);
-
-        if($error) dump($error);
+    
         $this->setCookie($_COOKIE, ['flash'], false);
+
         $user = $this->fetch('table', 'email', $_SESSION['username']);
         $user = $this->getSubUser($user);
+        $user->setSelf($vars['id'] === $details['id']);
+        unset($vars['id']);
+        $error = $this->query($key, ...$vars);
 
         if ($user->preEdit(empty($customVars))) {
             $args = $error ? ['message' => $error] : [];
