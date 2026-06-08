@@ -58,6 +58,8 @@ class User extends Presenter implements \SplObserver
             "_denied" => "Cannot assign this user to a client!",
             '_last' => "To remove this final user, please delete the client instead.",
 
+            'bolt' => "woof!",
+
             'domain' => 'Only the database administrator can change the domain of an email address.',
             '_sync' => "Email domain and client domain do not match!",
             '_domain' => 'Set the drop down menu to empty when changing the domain. Change the domain of the client to update the domain for all members.',
@@ -229,7 +231,8 @@ class User extends Presenter implements \SplObserver
     public function update(\SplSubject $subject): void
     {
        // dump($subject);
-        reLocate('/user/loadbridge');
+       $this->load($subject->note);
+       reLocate('/user/loadbridge');
     }
 
     public function load(string $key = '', array $vars = [])

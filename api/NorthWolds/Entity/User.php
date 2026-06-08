@@ -12,6 +12,7 @@ class User extends Entity implements \SplSubject
   public $name;
   public $email;
   public $client_id;
+  public $note;
 
   protected \SplObjectStorage $observers;
   protected array $users = [];
