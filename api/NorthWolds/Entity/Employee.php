@@ -72,7 +72,6 @@ class Employee extends User
                         $this->setCookie(['flash' => "key=leave&id=$uid&client_id=$cid"], ['flash'], true);
                         $relocate = !$cid ? true : $relocate;
                         $fail = $this->traitorCheck($cid, $dbrecord, $postdata);
-                        dump([$postdata, $cookiearg, $cid, $fail]);
                         if ($fail) {
                             $cookiearg = false;
                             if (!$relocate) {
