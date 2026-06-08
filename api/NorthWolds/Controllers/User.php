@@ -51,7 +51,7 @@ class User extends Presenter implements \SplObserver
             'undef' => "Missing property: $arg",
             '_admin' => "You cannot delete an administrator.",
             "lasteditor" => "There must be at least one administrator role, please assign another user before removing credentials from the database.",
-    
+
             '_lastadminrole' => "To demote the admin status of this user you must first add another use for this client promoting it to the admin role.",
 
             'lastadminrole' => "There must be at least one administrator role, please add another user and assign the admin role if you wish to demote your status.",
@@ -451,11 +451,11 @@ class User extends Presenter implements \SplObserver
                 return $this->load($key, ['id' => $id]);
             }
         }
-        if($key){
+        if ($key) {
             $key = strtolower($key);
             return $this->load($key, ['id' => $id]);
         }
-
+        reLocate('/user/load/');
     }
 
     public function delete($id = '')
