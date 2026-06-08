@@ -63,7 +63,7 @@ class Employee extends User
             return function (?int $cid, array $postdata, int $id = 0) use ($uid, $relocate, $cookiearg, $dbrecord) {
 
                 if (isset($dbrecord['email'])) { //existing
-                    $postdata = $this->setClientEmail($cid, $postdata, $dbrecord);
+                  //  $postdata = $this->setClientEmail($cid, $postdata, $dbrecord);
                     //can only be admin moving an employee; admin users cannot be moved
                     if ($cid && $cid != $dbrecord['client_id']) {
                         $this->setCookie(['flash' => "key=move&id=$uid&client_id=$cid"], ['flash'], true);

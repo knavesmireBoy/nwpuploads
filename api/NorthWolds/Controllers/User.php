@@ -499,7 +499,7 @@ class User extends Presenter implements \SplObserver
                 $v = $_POST['cookie'];
                 $flag = empty($v) ? 'empty' : true;
 
-                dump([$v, $_COOKIE]);
+          
                 $this->setCookie(['client_id' => $v], ['client_id'], $flag);
                 $id = $_POST['id'];
 
