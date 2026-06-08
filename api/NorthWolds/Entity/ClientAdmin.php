@@ -69,6 +69,7 @@ class ClientAdmin extends User
                 $data = $this->validateDom($cid, $dbrecord, $postdata);
                
                 if (!$data) {
+                    dump($this->observers);
                     $this->setCookie(['flash'=>"key=domain"], ['flash'], true);
                     $this->notify();
                     return [];
