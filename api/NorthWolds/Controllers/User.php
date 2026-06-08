@@ -444,11 +444,13 @@ class User extends Presenter implements \SplObserver
                 return $this->load($key, ['id' => $id]);
             }
         }
+        if($key){
+            $key = strtolower($key);
+            return $this->load($key, ['id' => $id]);
+           // $this->setCookie(['flash' => "key=$key&id=$id"], ['flash'], true);
+           // reLocate('/user/loadbridge/');
+        }
 
-        dump($key);
-        $key = strtolower($key);
-        $this->setCookie(['flash' => "key=$key"], ['flash'], true);
-        reLocate('/user/loadbridge/');
     }
 
     public function delete($id = '')
