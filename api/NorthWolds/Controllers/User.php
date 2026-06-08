@@ -351,6 +351,10 @@ class User extends Presenter implements \SplObserver
         list($_, $clients) = $member->presentList($id, 'client_id');
         $roles = $member->getRoles($user->id ?? '');
 
+        if(isset($_COOKIE['client_id'])){
+            dump($_COOKIE['client_id']);
+        }
+
         $id = $user->id ?? null;
         $vars = [
             'button' => 'Edit User',
@@ -358,8 +362,8 @@ class User extends Presenter implements \SplObserver
             'action' => '/user/edit/',
             'id' => $id,
             'name' => $_COOKIE['name'] ?? $user->name ?? '',
-            'email' => $this->syncDomain($user->email ?? ''),
-            //'email' => $_COOKIE['email'] ?? $user->email ?? '',
+            //'email' => $this->syncDomain($user->email ?? ''),
+            'email' => $_COOKIE['email'] ?? $user->email ?? '',
             'password' => $_COOKIE['password'] ?? '',
             'employer' => $_COOKIE['client_id'] ?? $user->client_id ?? '',
             'editor' => $editor,
@@ -430,7 +434,7 @@ class User extends Presenter implements \SplObserver
         //exclude password from update unless requested...
         list($change, $optional) = $this->hasChanged($record, $required, ['email', 'password'], ['name']);
 
-        if ($editor && $change !== [] && empty($_POST['override'])) {
+        if (/*$editor && */$change !== [] && empty($_POST['override'])) {
             $this->setCookie($data, [...$change, ...$optional], true);
             return $this->load('change', ['id' => $id]);
         }
