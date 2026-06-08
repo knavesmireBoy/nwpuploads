@@ -444,6 +444,8 @@ class User extends Presenter implements \SplObserver
                 return $this->load($key, ['id' => $id]);
             }
         }
+
+        dump($key);
         $key = strtolower($key);
         $this->setCookie(['flash' => "key=$key"], ['flash'], true);
         reLocate('/user/loadbridge/');
