@@ -24,6 +24,8 @@ class Solo extends ClientAdmin
     {
         $i = array_search($role, $this->roles);
         $j = array_search($this->roleid, $this->roles);
+
+        dump([$i,$j]);
         if ($i < $j) { //demotion
             return $this->self ? 'lastadminrole' : '_lastadminrole';
         }
