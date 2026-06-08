@@ -1,10 +1,9 @@
 <?php
 $pagetitle = isset($pagetitle) ? $pagetitle :  "Log In";
-$e = $loginerror ?? $_GET['loginerror'] ?? '';
+$e = $loginerror ?? $_GET['loginerror'] ?? 'Please log in to upload or download files';
 ?>
 <h1>Log In</h1>
-<h2>Please log in to upload or download files</h2>
-<h3><?= $e; ?></h3>
+<h2><?= $e; ?></h2>
 <form action="<?= $action; ?>" method="post" name="loginform" class="details">
 	<label for="email">Email</label>
 	<input id="email" type="email" name="email" autocomplete="off" required/>

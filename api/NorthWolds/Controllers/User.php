@@ -303,15 +303,10 @@ class User extends Presenter implements \SplObserver
         }
     }
 
-    public function editparse($id, $str)
+    public function editbridge($id, $str)
     {
         parse_str($str, $args);
         return $this->edit($id, $args);
-    }
-
-    public function editbridge($id, ...$args)
-    {
-        return $this->edit($id, [...$args]);
     }
 
     protected function syncDomain($email)
@@ -447,8 +442,6 @@ class User extends Presenter implements \SplObserver
         if($key){
             $key = strtolower($key);
             return $this->load($key, ['id' => $id]);
-           // $this->setCookie(['flash' => "key=$key&id=$id"], ['flash'], true);
-           // reLocate('/user/loadbridge/');
         }
 
     }
@@ -490,7 +483,7 @@ class User extends Presenter implements \SplObserver
                 $id = $_POST['id'];
                 $str = urlencode('you may now proceed with your edits');
                 $str = "class=details%20override&override=override&legend=$str";
-                reLocate("/user/editparse/$id/$str");
+                reLocate("/user/editbridge/$id/$str");
             } else {
                 return $this->edit($_POST['id'], ['class' => 'details override', 'override' => 'override', 'legend' => 'You may now proceed with your edits']);
             }
