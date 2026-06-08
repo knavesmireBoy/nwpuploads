@@ -262,7 +262,7 @@ class User extends Presenter implements \SplObserver
         $vars = array_values($vars);
 
         $error = $this->query($key, ...$vars);
-        $this->setCookie($_COOKIE, ['flash'], false);
+       // $this->setCookie($_COOKIE, ['flash'], false);
 
         if ($user->preEdit(empty($customVars))) {
             $args = $error ? ['message' => $error] : [];
@@ -436,7 +436,9 @@ class User extends Presenter implements \SplObserver
 
         if (/*$editor && */$change !== [] && empty($_POST['override'])) {
             $this->setCookie($data, [...$change, ...$optional], true);
-            return $this->load('change', ['id' => $id]);
+            $this->setCookie(['flash' => "key=change&id=$uid&client_id=$clientID"], ['flash'], true);
+            reLocate('/user/exit/');
+          //  return $this->load('change', ['id' => $id]);
         }
         $user->updatePassword($required['password'] ?? '');
         unset($data['password']);
@@ -497,8 +499,12 @@ class User extends Presenter implements \SplObserver
                 $flag = empty($v) ? 'empty' : true;
                 $this->setCookie(['client_id' => $v], ['client_id'], $flag);
                 $id = $_POST['id'];
+
+
+
                 $str = urlencode('you may now proceed with your edits');
                 $str = "class=details%20override&override=override&legend=$str";
+
                 reLocate("/user/editbridge/$id/$str");
             } else {
                 return $this->edit($_POST['id'], ['class' => 'details override', 'override' => 'override', 'legend' => 'You may now proceed with your edits']);
