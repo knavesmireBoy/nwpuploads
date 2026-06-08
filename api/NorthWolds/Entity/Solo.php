@@ -23,11 +23,7 @@ class Solo extends ClientAdmin
     protected function validateRole($role)
     {
         $i = array_search($role, $this->roles);
-
-        dump([$this->roleid, $this->getRole($this->id)]);
-        $j = array_search($this->roleid, $this->roles);
-
-        dump([$i,$j]);
+        $j = array_search($this->getRole($this->id), $this->roles);
         if ($i < $j) { //demotion
             return $this->self ? 'lastadminrole' : '_lastadminrole';
         }
