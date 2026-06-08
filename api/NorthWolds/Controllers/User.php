@@ -436,7 +436,7 @@ class User extends Presenter implements \SplObserver
 
         if (/*$editor && */$change !== [] && empty($_POST['override'])) {
             $this->setCookie($data, [...$change, ...$optional], true);
-            $this->setCookie(['flash' => "key=change&id=$uid&client_id=$clientID"], ['flash'], true);
+            $this->setCookie(['flash' => "key=change&id=$id&client_id=$clientID"], ['flash'], true);
             reLocate('/user/exit/');
           //  return $this->load('change', ['id' => $id]);
         }
