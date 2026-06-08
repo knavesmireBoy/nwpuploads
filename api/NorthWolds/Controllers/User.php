@@ -233,7 +233,7 @@ class User extends Presenter implements \SplObserver
     {
        // dump($subject);
        $this->load($subject->note);
-       reLocate('/user/loadbridge');
+       //reLocate('/user/loadbridge');
     }
 
     public function load(string $key = '', array $vars = [])
