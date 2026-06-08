@@ -226,8 +226,10 @@ class User extends Presenter implements \SplObserver
         return $this->load($key, $res);
     }
 
-    public function update(\SplSubject $subject) :void
+    public function update(\SplSubject $subject): void
     {
+
+        dump($subject);
         reLocate('/user/loadbridge');
     }
 
@@ -240,8 +242,6 @@ class User extends Presenter implements \SplObserver
         unset($vars['id']);
         //the occasional error may require ONE argument which is not an id
         //  $key = $_COOKIE['flash'] ?? '';
-
-
 
         $error = $this->query($key, ...$vars);
         $this->setCookie($_COOKIE, ['flash'], false);
@@ -411,40 +411,43 @@ class User extends Presenter implements \SplObserver
 
         $updateDomain = $user->updateDomain($admin ? '_domain' : 'domain', $id, $default);
         $dom = $updateDomain(nullify($clientID), $data);
-        $record = get_object_vars($user);
-        $required = array_filter($data, fn($item) => $item);
 
-        //will exit here if domain doesn't validate
-        $data = [...$record, ...$required, ...$dom];
-        //exclude password from update unless requested...
-        list($change, $optional) = $this->hasChanged($record, $required, ['email', 'password'], ['name']);
+        if (!empty($dom)) {
+            $record = get_object_vars($user);
+            $required = array_filter($data, fn($item) => $item);
 
-        if ($editor && $change !== [] && empty($_POST['override'])) {
-            $this->setCookie($data, [...$change, ...$optional], true);
-            //reLocate("/user/loadbridge/change/$id");
-            return $this->load('change', ['id' => $id]);
-        }
-        $user->updatePassword($required['password'] ?? '');
-        unset($data['password']);
-        $user = $this->table->save($data);
-        $user =  $this->getSubUser($user);
-        $user->setSelf($editor);
-        $key = $user->setRole($role, $admin ? '_last' : 'lastadmin'); //UPDATE role here; it may trigger an error message
-        if (!$key) {
-            $updated = get_object_vars($user);
-            $result = array_diff_assoc($record, $updated);
-            if (!empty($result)) {
-                $key = $user->postEdit();
+            //will exit here if domain doesn't validate
+            $data = [...$record, ...$required, ...$dom];
+            //exclude password from update unless requested...
+            list($change, $optional) = $this->hasChanged($record, $required, ['email', 'password'], ['name']);
+
+            if ($editor && $change !== [] && empty($_POST['override'])) {
+                $this->setCookie($data, [...$change, ...$optional], true);
+                //reLocate("/user/loadbridge/change/$id");
+                return $this->load('change', ['id' => $id]);
             }
-            if ($key) {
-                $key = strtolower($key);
-                $this->setCookie(['flash' => "key=$key&id=$id"], ['flash'], true);
-                reLocate('/user/loadbridge/');
+            $user->updatePassword($required['password'] ?? '');
+            unset($data['password']);
+            $user = $this->table->save($data);
+            $user =  $this->getSubUser($user);
+            $user->setSelf($editor);
+            $key = $user->setRole($role, $admin ? '_last' : 'lastadmin'); //UPDATE role here; it may trigger an error message
+            if (!$key) {
+                $updated = get_object_vars($user);
+                $result = array_diff_assoc($record, $updated);
+                if (!empty($result)) {
+                    $key = $user->postEdit();
+                }
+                if ($key) {
+                    $key = strtolower($key);
+                    $this->setCookie(['flash' => "key=$key&id=$id"], ['flash'], true);
+                    reLocate('/user/loadbridge/');
+                }
             }
+            $key = strtolower($key);
+            $this->setCookie(['flash' => "key=$key"], ['flash'], true);
+            reLocate('/user/loadbridge/');
         }
-        $key = strtolower($key);
-        $this->setCookie(['flash' => "key=$key"], ['flash'], true);
-        reLocate('/user/loadbridge/');
     }
 
     public function delete($id = '')
