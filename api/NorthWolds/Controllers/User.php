@@ -243,18 +243,14 @@ class User extends Presenter implements \SplObserver
         $customVars = $this->getCustomVars($key, $vars);
         $error = '';
         $owner = []; //prompt.html.php expects this from Uploader Controller
-        
-        //the occasional error may require ONE argument which is not an id
-        //  $key = $_COOKIE['flash'] ?? '';
-
-    
-        $this->setCookie($_COOKIE, ['flash'], false);
-
+       
         $user = $this->fetch('table', 'email', $_SESSION['username']);
         $user = $this->getSubUser($user);
-        $user->setSelf($vars['id'] === $details['id']);
+        $user->setSelf(isset($vars['id']) && $vars['id'] == $details['id']);
+
         unset($vars['id']);
         $error = $this->query($key, ...$vars);
+        $this->setCookie($_COOKIE, ['flash'], false);
 
         if ($user->preEdit(empty($customVars))) {
             $args = $error ? ['message' => $error] : [];
