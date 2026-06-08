@@ -228,8 +228,7 @@ class User extends Presenter implements \SplObserver
 
     public function update(\SplSubject $subject): void
     {
-
-        dump($subject);
+       // dump($subject);
         reLocate('/user/loadbridge');
     }
 
