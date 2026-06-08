@@ -352,7 +352,7 @@ class User extends Presenter implements \SplObserver
         $roles = $member->getRoles($user->id ?? '');
 
         if(isset($_COOKIE['client_id'])){
-            dump($_COOKIE['client_id']);
+          //  dump($_COOKIE['client_id']);
         }
 
         $id = $user->id ?? null;
@@ -434,6 +434,7 @@ class User extends Presenter implements \SplObserver
         //exclude password from update unless requested...
         list($change, $optional) = $this->hasChanged($record, $required, ['email', 'password'], ['name']);
 
+        dump([$change, $data, $_POST['override']]);
         if (/*$editor && */$change !== [] && empty($_POST['override'])) {
             $this->setCookie($data, [...$change, ...$optional], true);
             $this->setCookie(['flash' => "key=change&id=$id&client_id=$clientID"], ['flash'], true);
