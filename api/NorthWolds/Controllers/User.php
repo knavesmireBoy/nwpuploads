@@ -177,7 +177,7 @@ class User extends Presenter implements \SplObserver
 
     protected function displayer($details, $customVars = [], $owner = [], $error = '')
     {
-        
+
         // $pagehead_role = $nwproleplay && !obtainUserRole(true);
         //$predicates = [partial('preg_match', '/^nwp/')];
         // $clients = isApproved($priv, 'ADMIN') ? $this->presentClientList($priv, 'domain') : [];
@@ -243,7 +243,7 @@ class User extends Presenter implements \SplObserver
         $customVars = $this->getCustomVars($key, $vars);
         $error = '';
         $owner = []; //prompt.html.php expects this from Uploader Controller
-       
+
         $user = $this->fetch('table', 'email', $_SESSION['username']);
         $user = $this->getSubUser($user);
         $user->setSelf(isset($vars['id']) && $vars['id'] == $details['id']);
@@ -410,48 +410,46 @@ class User extends Presenter implements \SplObserver
         $user = $this->getSubUser($user);
         $editor = $id == $this->getPrivilege('id');
         $user->setSelf($editor);
-
         $user->attach($this);
 
         $updateDomain = $user->updateDomain($admin ? '_domain' : 'domain', $id, $default);
         $dom = $updateDomain(nullify($clientID), $data);
 
-        if (!empty($dom)) {
-            $record = get_object_vars($user);
-            $required = array_filter($data, fn($item) => $item);
+        $record = get_object_vars($user);
+        $required = array_filter($data, fn($item) => $item);
 
-            //will exit here if domain doesn't validate
-            $data = [...$record, ...$required, ...$dom];
-            //exclude password from update unless requested...
-            list($change, $optional) = $this->hasChanged($record, $required, ['email', 'password'], ['name']);
+        //will exit here if domain doesn't validate
+        $data = [...$record, ...$required, ...$dom];
+        //exclude password from update unless requested...
+        list($change, $optional) = $this->hasChanged($record, $required, ['email', 'password'], ['name']);
 
-            if ($editor && $change !== [] && empty($_POST['override'])) {
-                $this->setCookie($data, [...$change, ...$optional], true);
-                //reLocate("/user/loadbridge/change/$id");
-                return $this->load('change', ['id' => $id]);
-            }
-            $user->updatePassword($required['password'] ?? '');
-            unset($data['password']);
-            $user = $this->table->save($data);
-            $user =  $this->getSubUser($user);
-            $user->setSelf($editor);
-            $key = $user->setRole($role, $admin ? '_last' : 'lastadmin'); //UPDATE role here; it may trigger an error message
-            if (!$key) {
-                $updated = get_object_vars($user);
-                $result = array_diff_assoc($record, $updated);
-                if (!empty($result)) {
-                    $key = $user->postEdit();
-                }
-                if ($key) {
-                    $key = strtolower($key);
-                    $this->setCookie(['flash' => "key=$key&id=$id"], ['flash'], true);
-                    reLocate('/user/loadbridge/');
-                }
-            }
-            $key = strtolower($key);
-            $this->setCookie(['flash' => "key=$key"], ['flash'], true);
-            reLocate('/user/loadbridge/');
+        if ($editor && $change !== [] && empty($_POST['override'])) {
+            $this->setCookie($data, [...$change, ...$optional], true);
+            //reLocate("/user/loadbridge/change/$id");
+            return $this->load('change', ['id' => $id]);
         }
+        $user->updatePassword($required['password'] ?? '');
+        unset($data['password']);
+        $user = $this->table->save($data);
+        $user =  $this->getSubUser($user);
+        $user->setSelf($editor);
+        $key = $user->setRole($role, $admin ? '_last' : 'lastadmin'); //UPDATE role here; it may trigger an error message
+        if (!$key) {
+            $updated = get_object_vars($user);
+            $result = array_diff_assoc($record, $updated);
+            if (!empty($result)) {
+                $key = $user->postEdit();
+            }
+            if ($key) {
+                $key = strtolower($key);
+                return $this->load($key, ['id' => $id]);
+              //  $this->setCookie(['flash' => "key=$key&id=$id"], ['flash'], true);
+               // reLocate('/user/loadbridge/');
+            }
+        }
+        $key = strtolower($key);
+        $this->setCookie(['flash' => "key=$key"], ['flash'], true);
+        reLocate('/user/loadbridge/');
     }
 
     public function delete($id = '')
