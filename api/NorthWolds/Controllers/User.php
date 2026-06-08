@@ -221,19 +221,24 @@ class User extends Presenter implements \SplObserver
         ];
     }
 
-    public function loadbridge()
+    public function loadbridge($key = '')
     {
-        $msg = $_COOKIE['flash'] ?? '';
-        parse_str($msg, $res);
-        $key = array_shift($res) ?? '';
+        $res = [];
+        if (isset($_COOKIE['flash'])) {
+            parse_str($_COOKIE['flash'], $res);
+            $key = array_shift($res) ?? '';
+        }
         return $this->load($key, $res);
     }
 
     public function update(\SplSubject $subject): void
     {
-       // dump($subject);
-       $this->load($subject->note);
-       //reLocate('/user/loadbridge');
+        dump($subject->note);
+        if (isset($subject->note)) {
+            $this->loadbridge($subject->note);
+        } else {
+            reLocate('/user/loadbridge');
+        }
     }
 
     public function load(string $key = '', array $vars = [])
