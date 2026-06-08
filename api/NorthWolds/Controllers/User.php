@@ -248,8 +248,6 @@ class User extends Presenter implements \SplObserver
         $user = $this->fetch('table', 'email', $_SESSION['username']);
         $user = $this->getSubUser($user);
 
-        $user->attach($this);
-
         if ($user->preEdit(empty($customVars))) {
             $args = $error ? ['message' => $error] : [];
             $id = $details['id'];
@@ -408,6 +406,8 @@ class User extends Presenter implements \SplObserver
         $user = $this->getSubUser($user);
         $editor = $id == $this->getPrivilege('id');
         $user->setSelf($editor);
+
+        $user->attach($this);
 
         $updateDomain = $user->updateDomain($admin ? '_domain' : 'domain', $id, $default);
         $dom = $updateDomain(nullify($clientID), $data);
