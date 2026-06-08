@@ -5,7 +5,7 @@ namespace NorthWolds\Controllers;
 use \Ninja\DatabaseTable;
 use \NorthWolds\Entity;
 
-class User extends Presenter
+class User extends Presenter implements \SplObserver
 {
 
     private $punter;
@@ -226,7 +226,7 @@ class User extends Presenter
         return $this->load($key, $res);
     }
 
-    public function update()
+    public function update(\SplSubject $subject) :void
     {
         reLocate('/user/loadbridge');
     }
