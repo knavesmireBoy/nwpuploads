@@ -68,10 +68,8 @@ class ClientAdmin extends User
                 }
                 $data = $this->validateDom($cid, $dbrecord, $postdata);
                 if (!$data) {
-                    $this->setCookie(['flash'=>"key=domain&id=$uid"], ['flash'], true);
-                   // $this->note = 'domain';
-                   // $this->notify();
-                    //return [];
+                    $msg = $this->self ? 'domain' : '_nondom';
+                    $this->setCookie(['flash'=>"key=$msg&id=$uid"], ['flash'], true);
                     reLocate("/user/loadbridge");
                 }
                 return $data;

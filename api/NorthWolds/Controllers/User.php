@@ -51,8 +51,10 @@ class User extends Presenter implements \SplObserver
             'undef' => "Missing property: $arg",
             '_admin' => "You cannot delete an administrator.",
             "lasteditor" => "There must be at least one administrator role, please assign another user before removing credentials from the database.",
-            "lastadminrole" => "There must be at least one administrator role, please promote another user to the admin role before demoting your status.",
-            '_lastadminrole' => "To demote the admin status of this user you must promote another user to the admin role.",
+    
+            '_lastadminrole' => "To demote the admin status of this user you must first add another use for this client and promoting it to the admin role.",
+
+            'lastadminrole' => "There must be at least one administrator role, please add another user and assign the admin role if you wish to demote your status.",
 
             'last' => "Only the database administrator can delete this user.",
             "_denied" => "Cannot assign this user to a client!",
@@ -61,6 +63,9 @@ class User extends Presenter implements \SplObserver
             'domain' => 'Only the database administrator can change the domain of an email address.',
             '_sync' => "Email domain and client domain do not match!",
             '_domain' => 'Set the drop down menu to empty when changing the domain. Change the domain of the client to update the domain for all members.',
+
+            '_nondom' => 'Change the domain of the client to not a member.',
+
             '_cadmin' => 'Cannot change the domain of a user with an admin role',
             'traitor' => 'That domain is not available.',
             '_traitor' => 'To assign to another client use the drop down menu.',
