@@ -223,7 +223,8 @@ class User extends Presenter implements \SplObserver
 
     public function loadbridge()
     {
-        parse_str($_COOKIE['flash'], $res);
+        $msg = $_COOKIE['flash'] ?? '';
+        parse_str($msg, $res);
         $key = array_shift($res);
         return $this->load($key, $res);
     }
