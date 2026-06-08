@@ -70,11 +70,12 @@ class Employee extends User
                         $relocate = true;
                     } else { //admin releasing an employee OR updating name 
 
-                        dump($postdata);
-                        $this->setCookie($postdata, ['name', 'email'], true);
+                        
+                        $this->setCookie($postdata, ['name', 'email', 'client_id'], true);
                         $this->setCookie(['flash' => "key=leave&id=$uid&client_id=$cid"], ['flash'], true);
                         $relocate = !$cid ? true : $relocate;
                         $fail = $this->traitorCheck($cid, $dbrecord, $postdata);
+                        dump([$postdata, $cookiearg, $cid, $fail]);
                         if ($fail) {
                             $cookiearg = false;
                             if (!$relocate) {
@@ -85,6 +86,8 @@ class Employee extends User
                     }
                     if ($relocate) {
                         $data = $cookiearg ? $postdata : $_COOKIE;
+
+                        
                         $this->setCookie($data, ['name', 'email', 'client_id'], $cookiearg);
                         reLocate($this->exit);
                     }
