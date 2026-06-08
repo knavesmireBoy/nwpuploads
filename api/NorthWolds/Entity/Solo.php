@@ -20,11 +20,6 @@ class Solo extends ClientAdmin
         return 'last';
     }
 
-    public function setRole(string $role, mixed $flag)
-    {
-        return $this->self ? 'lastadminrole' : '_lastadminrole';
-    }
-
     protected function validateRole($role)
     {
         $i = array_search($role, $this->roles);
