@@ -71,23 +71,24 @@ class Employee extends User
                         $this->setCookie(['flash' => "key=leave&id=$uid&client_id=$cid"], ['flash'], true);
                         $relocate = !$cid ? true : $relocate;
                         $fail = $this->traitorCheck($cid, $dbrecord, $postdata);
+                        
                         if ($fail) {
-                            $cookiearg = false;
+                           // $cookiearg = false;
                             if (!$relocate) {
                                 $key = $this->self ? 'traitor' : '_traitor';
+                                $relocate = true;
                                 $this->setCookie(['flash' => "key=$key"], ['flash'], true);
                             }
                         }
                     }
                     if ($relocate) {
-                        $data = $cookiearg ? $postdata : $_COOKIE;
-                        $this->setCookie([...$data, 'client_id' => $cid ?? 0], ['name', 'email', 'client_id'], $cookiearg);
+                       // $data = $cookiearg ? $postdata : $_COOKIE;
+                        $this->setCookie([...$postdata, 'client_id' => $cid ?? 0], ['name', 'email', 'client_id'], $cookiearg);
                         reLocate($this->exit);
                     }
                     else {
-                       return $this->setClientEmail($cid, $postdata, $dbrecord);
+                       return [...$postdata, ...$this->setClientEmail($cid, $postdata, $dbrecord)];
                     }
-                  //  return $postdata;
                 } else { //new
                     return $this->setClientEmail($cid, $postdata, []);
                 }

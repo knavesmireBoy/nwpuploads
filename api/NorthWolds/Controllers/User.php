@@ -502,8 +502,6 @@ class User extends Presenter implements \SplObserver
                 $this->setCookie(['client_id' => $v], ['client_id'], $flag);
                 $id = $_POST['id'];
 
-
-
                 $str = urlencode('you may now proceed with your edits');
                 $str = "class=details%20override&override=override&legend=$str";
 
