@@ -182,7 +182,13 @@ rather than calling an update method of the observer, but keeping this as an exa
 
   public function getUserIds($roles = null)
   {
-    return [];
+    $users = $this->table->find('client_id', $this->client_id);
+    $res = array_map(fn($o) => $o->id, $users);
+    if (is_bool($roles)) {
+      $ret = $this->getAllRoles($res);
+      return $roles ? $ret : $this->getAdminRoles($ret);
+    }
+    return $res;
   }
 
   public function findDomain($postdom)

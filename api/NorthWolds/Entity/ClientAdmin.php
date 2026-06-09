@@ -76,16 +76,6 @@ class ClientAdmin extends User
         return $role;
     }
 
-    public function getUserIds($roles = null)
-    {
-        $users = $this->table->find('client_id', $this->client_id);
-        $res = array_map(fn($o) => $o->id, $users);
-        if (is_bool($roles)) {
-            $ret = $this->getAllRoles($res);
-            return $roles ? $ret : $this->getAdminRoles($ret);
-        }
-        return $res;
-    }
 
     public function editPayload($id = '')
     {
@@ -120,7 +110,7 @@ class ClientAdmin extends User
         $user = $user[0] ?? null;
         if (isset($user)) {
             $users = $user->getUserIds();
-            dump($users);
+           
             if (isset($users[1])) {
                 foreach ($users as $k => $v) {
                     $u = $this->table->find('id', $v)[0];
