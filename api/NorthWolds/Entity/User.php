@@ -261,18 +261,10 @@ class User extends Entity implements \SplSubject
       };
     }
     return function (?int $cid, array $postdata, int $id = 0) use ($uid) {
-      $cookiearg = true;
-      $relocate = false;
       $client = $this->fetch('clienttable', 'id', $cid);
       $clientdata = $cid ? $client->validateDomain($postdata['email'], 'client_id') : [];
+      $relocate = !empty($clientdata) && !$clientdata['client_id'] ? true : false;
 
-
-      if (!empty($clientdata) && !$clientdata['client_id']) {
-        $relocate = true;
-        $cookiearg = false;
-        dump(9);
-      }
-      dump(!$clientdata['client_id']);
       $postdata = [...$postdata, ...$clientdata];
       if ($relocate) {
         $this->setCookie([...$postdata, 'flash' => "key=_sync&id=$uid"], ['name', 'email', 'client_id', 'flash'], $cookiearg);
