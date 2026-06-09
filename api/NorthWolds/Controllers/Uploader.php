@@ -202,7 +202,7 @@ class Uploader extends Presenter
             if ($record === []) {
                 reLocate('/uploader/load/');
             }
-            $record['userid'] = $data['user'] === '' ? $owner : $data['user'];
+            $record['userid'] = $data['user'] ?? $owner;
             unset($data['user']);
             $this->table->save([...$record, ...$data]);
         } else {
