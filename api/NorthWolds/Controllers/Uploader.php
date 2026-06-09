@@ -237,9 +237,9 @@ class Uploader extends Presenter
             $ids = $user->getUserIds();
             foreach ($ids as $id) {
                 $u = $this->usertable->find('id', $id)[0];
-                if ($id !== $user->id) {
+              //  if ($id !== $user->id) {
                     $group[$id] = $u->name;
-                }
+              //  }
             }
         }
         $swap = $data['answer'] ?? 'No';
