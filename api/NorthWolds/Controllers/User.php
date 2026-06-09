@@ -496,10 +496,9 @@ class User extends Presenter implements \SplObserver
     {
         if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
             if (isset($_POST['cookie'])) {
-                $v = $_POST['cookie'];
-                $flag = empty($v) ? 'empty' : true;
-
-                $this->setCookie(['client_id' => $v], ['client_id'], $flag);
+                //$v = $_POST['cookie'];
+               // $flag = empty($v) ? 'empty' : true;
+                //$this->setCookie(['client_id' => $v], ['client_id'], $flag);
                 $id = $_POST['id'];
 
                 $str = urlencode('you may now proceed with your edits');

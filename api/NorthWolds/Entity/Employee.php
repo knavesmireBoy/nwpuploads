@@ -87,7 +87,7 @@ class Employee extends User
                         reLocate($this->exit);
                     }
                     else {
-                       return [...$postdata, ...$this->setClientEmail($cid, $postdata, $dbrecord)];
+                       return $this->setClientEmail($cid, $postdata, $dbrecord);
                     }
                 } else { //new
                     return $this->setClientEmail($cid, $postdata, []);
