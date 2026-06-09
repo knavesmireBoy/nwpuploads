@@ -120,13 +120,14 @@ class ClientAdmin extends User
         $user = $user[0] ?? null;
         if (isset($user)) {
             $users = $user->getUserIds();
+            dump($users);
             if (isset($users[1])) {
                 foreach ($users as $k => $v) {
                     $u = $this->table->find('id', $v)[0];
                     $usr[$u->id] = $u->name;
                 }
             }
-            return [$usr, []];
+            return [$usr ?? [], []];
         }
     }
 }
