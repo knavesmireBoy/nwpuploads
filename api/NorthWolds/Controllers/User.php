@@ -351,10 +351,6 @@ class User extends Presenter implements \SplObserver
         list($_, $clients) = $member->presentList($id, 'client_id');
         $roles = $member->getRoles($user->id ?? '');
 
-        if(isset($_COOKIE['client_id'])){
-          //  dump($_COOKIE['client_id']);
-        }
-
         $id = $user->id ?? null;
         $vars = [
             'button' => 'Edit User',
@@ -441,9 +437,8 @@ class User extends Presenter implements \SplObserver
         if (/*$editor && */$change !== [] && empty($_POST['override'])) {
             $this->setCookie($data, [...$change, ...$optional], true);
             $this->setCookie(['flash' => "key=change&id=$id&client_id=$clientID"], ['flash'], true);
-
-            return $this->load('change', ['id' => $id, 'client_id' => $clientID]);
-         //   reLocate('/user/exit/');
+            //return $this->load('change', ['id' => $id, 'client_id' => $clientID]);
+            reLocate('/user/exit/');
         }
         $user->updatePassword($required['password'] ?? '');
         unset($data['password']);
