@@ -140,7 +140,6 @@ class User extends Entity implements \SplSubject
     $relocate = '';
     $key = '';
 
-
     if ($client) {
       $details = $this->getDetails();
       $key = isApproved($details['role'], 'ADMIN') ? '_denied' : $key;
@@ -156,7 +155,7 @@ class User extends Entity implements \SplSubject
           $key = '_impostor';
         } else { //or existing user (freelancer) attempting to swap clients
           $key = $this->self ? 'traitor' : '_traitor';
-          $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'name' => $dbrecord['name'], 'client_id' => nullify($client->id)];
+          $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'name' => $dbrecord['name'], 'client_id' => null];
         }
       }
     }
