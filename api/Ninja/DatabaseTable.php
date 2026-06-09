@@ -118,6 +118,10 @@ class DatabaseTable
     public function findAll(?string $orderBy = null, int $limit = 0, int $offset = 0, $mode = \PDO::FETCH_CLASS)
     {
         $query = 'SELECT * FROM ' . $this->table;
+
+        $query .= orderByLastName2(DBSYSTEM);
+
+
         if ($orderBy) {
             $query .= ' ORDER BY ' . $orderBy;
         } else {

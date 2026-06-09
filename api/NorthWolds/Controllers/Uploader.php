@@ -237,6 +237,7 @@ class Uploader extends Presenter
             $ids = $user->getUserIds();
             foreach ($ids as $id) {
                 $u = $this->usertable->find('id', $id)[0];
+                //would filter current user; but then no undo possibility
               //  if ($id !== $user->id) {
                     $group[$id] = $u->name;
               //  }
