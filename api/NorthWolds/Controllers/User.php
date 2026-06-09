@@ -240,7 +240,7 @@ class User extends Presenter implements \SplObserver
     public function update(\SplSubject $subject): void
     {
         if (isset($subject->note)) {
-            reLocate('/user/load/' . $subject->note, ['id' => $subject->id]);
+            reLocate($this->home . $subject->note, ['id' => $subject->id]);
         } else {
             reLocate('/user/exit/');
         }
@@ -460,7 +460,7 @@ class User extends Presenter implements \SplObserver
             $key = strtolower($key);
             return $this->load($key, ['id' => $id]);
         }
-        reLocate('/user/load/');
+        reLocate($this->home);
     }
 
     public function delete($id = '')
@@ -494,20 +494,15 @@ class User extends Presenter implements \SplObserver
     {
         if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
             if (isset($_POST['cookie'])) {
-                //$v = $_POST['cookie'];
-               // $flag = empty($v) ? 'empty' : true;
-                //$this->setCookie(['client_id' => $v], ['client_id'], $flag);
                 $id = $_POST['id'];
-
                 $str = urlencode('you may now proceed with your edits');
                 $str = "class=details%20override&override=override&legend=$str";
-
                 reLocate("/user/editbridge/$id/$str");
             } else {
                 return $this->edit($_POST['id'], ['class' => 'details override', 'override' => 'override', 'legend' => 'You may now proceed with your edits']);
             }
         } else {
-            $this->setCookie($_COOKIE, ['name', 'email', 'password', 'client_id'], false);
+            $this->setCookie($_COOKIE, ['name', 'email', 'password', 'client_id', 'flash'], false);
         }
         reLocate($this->home);
     }

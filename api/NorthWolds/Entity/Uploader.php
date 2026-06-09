@@ -14,7 +14,14 @@ class Uploader extends Entity
     public $userid;
     public $time;
 
-    public function __construct(protected \Ninja\DatabaseTable $table, protected \Ninja\DatabaseTable $usertable) {}
+    protected $table;
+    protected $usertable;
+
+    public function __construct(\Ninja\DatabaseTable $table, \Ninja\DatabaseTable $usertable)
+    {
+        $this->table = $table;
+        $this->usertable = $usertable;
+    }
 
 
     public function getClientFiles($arg)
@@ -55,9 +62,9 @@ class Uploader extends Entity
         if (!empty($res)) {
             if ($prop === 'owner') {
                 $key = 'ownerid';
-              } else if ($prop) {
+            } else if ($prop) {
                 return isset($this->{$prop}) ? $this->{$prop} : [];
-              }
+            }
             return [$key => $res->id, 'name' => $res->name, 'email' => $res->email, 'client_id' => $res->client_id, 'editor' => $_SESSION['username'] == $res->email, 'multi' => $multi];
         }
     }

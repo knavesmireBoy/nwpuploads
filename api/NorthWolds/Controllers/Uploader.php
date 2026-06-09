@@ -7,18 +7,7 @@ use \Ninja\DatabaseTable;
 class Uploader extends Presenter
 {
     private $sort = 'tt';
-    public function __construct(protected DatabaseTable $table, private DatabaseTable $usertable, private int $display, private int $start, private int $pages, private string $home)
-    {
-        // $setcookie = doSetCookie(true);
-        // $setcookie('sort', 'tt');
-    }
-
-    private function remove($path)
-    {
-        if (file_exists($path)) {
-            unlink($path);
-        }
-    }
+    public function __construct(protected DatabaseTable $table, private DatabaseTable $usertable, private int $display, private int $start, private int $pages, private string $home) {}
 
     private function fooey($group, $prop)
     {
@@ -32,6 +21,132 @@ class Uploader extends Presenter
             $group[$k]['uniq'] = $k; //assign same key to the `uniq` property
         }
         return [$first, $last, $group];
+    }
+
+    private function findUser($arg)
+    {
+        if (is_numeric($arg)) {
+            $user = $this->usertable->find('id', $arg)[0];
+            return $user->getDetails();
+        } else {
+            $user = $this->usertable->getEntity();
+            return $user->fromDomain($arg, \PDO::FETCH_ASSOC);
+        }
+    }
+
+    private function found($user_id, $text, $ext)
+    {
+        if (!isset($_SESSION['username'])) {
+            reLocate(REG);
+        }
+        $setcookie = doSetCookie(true);
+        $srch = 0;
+        $user = $this->usertable->find('email', $_SESSION['username'])[0];
+        $details = $user->getDetails();
+        $priv = $details['role'];
+        $file = $this->table->getEntity();
+        $pos = curry2('strpos');
+
+        $cb = $this->validateFile($priv, $details['client_id'], $user->id);
+        $files = [];
+        $getExt = composer('strtolower', curry2('substr')(1), curry2('strrchr')('.'));
+        $records = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
+        $count = count($records);
+        if ($user_id) {
+            $details = $this->findUser($user_id);
+            if ($priv == 'Admin') {
+                if (!empty($details['client_id']) || !empty($details['domain'])) {
+                    $records = toObject($file->getClientFiles($user_id), true);
+                } else {
+                    $records = $this->table->find('userid', $user_id, null, 0, 0, \PDO::FETCH_ASSOC);
+                    $records = $records ?? [];
+                }
+            } else { //multi client
+                $records = toObject($file->getClientFiles($user_id), true);
+                if (empty($records)) {
+                    $records = $this->table->find('userid', $user_id, null, 0, 0, \PDO::FETCH_ASSOC);
+                }
+            }
+        }
+
+        if ($text) { // Some search text was specified 
+            $byText = composer('is_numeric', $pos($text), curry2('getter')('filename'));
+            $records = safeFilter($records, $byText);
+        }
+
+        if ($ext) {
+            $sub = curry2('substr')(1);
+            $pos = curry2('strrchr')('.');
+            $contains = curry2('in_array')(['pdf', 'zip', 'jpg']);
+            $find = composer(negate('identity'), $contains, $getExt, curry2('getter')('filename'));
+            if ($ext === 'owt') {
+                $records = safeFilter($records, $find);
+            } else {
+                $eq = partial('equals', $ext);
+                $byExt = composer($eq, $sub, $pos, curry2('getter')('filename'));
+                $records = safeFilter($records, $byExt);
+            }
+        }
+        //reset sort to default if filtering by any criteria
+        if (count($records) !== $count) {
+            $setcookie('sort', 'tt');
+            $this->sort = 'tt';
+        }
+        //do we allow for filtering by user type
+        $files = $this->prepFileForDisplay($records, $cb);
+        if ($user_id) {
+            $srch += 1;
+        }
+        if ($text) {
+            $srch += 2;
+        }
+        if ($ext) {
+            $srch += 4;
+        }
+        $srch += 8; //sort
+        $setcookie('searched', $srch);
+        $this->pages = $this->setPages(count($files));
+        $displayFiles = array_slice(toObject($files, true), $this->start, $this->display);
+        return $this->displayer($user->id, $priv, $displayFiles, 'Clear Search Results', [], ['user_id' => $user_id, 'text' => $text, 'ext' => $ext]);
+    }
+
+    private function setPages($records)
+    {
+        $pages = 1;
+        if ($records > $this->display) {
+            $pages = ceil($records / $this->display);
+        }
+        $this->pages = $pages;
+        return $pages;
+    }
+
+    private function remove($path)
+    {
+        if (file_exists($path)) {
+            unlink($path);
+        }
+    }
+
+    private function sorter()
+    {
+        $lib = array('f' => 'filename ASC', 'ff' => 'filename DESC', 'u' => 'name ASC', 'uu' => 'name DESC', 'uf' => 'name ASC, filename ASC', 'uuf' => 'name DESC, filename ASC',  'uff' => 'name ASC, filename DESC',  'uuff' => 'name DESC, filename DESC', 'ut' => 'name ASC, time ASC', 'utt' => 'name ASC, time DESC', 'uut' => 'name DESC, time ASC', 'uutt' => 'name DESC, time DESC', 't' => 'time ASC', 'tt' => 'time DESC');
+        foreach ($lib as $k => $v) {
+            if ($k == $this->sort) break;
+        }
+        return $lib[$k] ?? 'time DESC';
+    }
+
+    private function validateFile($priv, $cid, $userid)
+    {
+        if (isApproved($priv, 'ADMIN')) {
+            return 'identity';
+        } else if ($cid) {
+            $users = $this->usertable->find('client_id', $cid);
+            $userids = array_map(fn($o) => $o->id, $users);
+            return curry2('in_array')($userids);
+        } else {
+            return curry2('equals')($userid);
+        }
     }
 
     private function displayer($userId, $priv, $displayfiles, $searchText, $owner = [], $customVars = [], $error = '')
@@ -232,19 +347,6 @@ class Uploader extends Presenter
         return $ret;
     }
 
-    private function validateFile($priv, $cid, $userid)
-    {
-        if (isApproved($priv, 'ADMIN')) {
-            return 'identity';
-        } else if ($cid) {
-            $users = $this->usertable->find('client_id', $cid);
-            $userids = array_map(fn($o) => $o->id, $users);
-            return curry2('in_array')($userids);
-        } else {
-            return curry2('equals')($userid);
-        }
-    }
-
     public function read($id = '')
     {
         $disposition = $id ? 'inline' : 'attachment';
@@ -287,15 +389,6 @@ class Uploader extends Presenter
         $uhead =  $ufn($state);
         $thead =  $tfn($state);
         return $this->load('sort', ['fhead' => $fhead, 'uhead' => $uhead, 'thead' => $thead]);
-    }
-
-    private function sorter()
-    {
-        $lib = array('f' => 'filename ASC', 'ff' => 'filename DESC', 'u' => 'name ASC', 'uu' => 'name DESC', 'uf' => 'name ASC, filename ASC', 'uuf' => 'name DESC, filename ASC',  'uff' => 'name ASC, filename DESC',  'uuff' => 'name DESC, filename DESC', 'ut' => 'name ASC, time ASC', 'utt' => 'name ASC, time DESC', 'uut' => 'name DESC, time ASC', 'uutt' => 'name DESC, time DESC', 't' => 'time ASC', 'tt' => 'time DESC');
-        foreach ($lib as $k => $v) {
-            if ($k == $this->sort) break;
-        }
-        return $lib[$k] ?? 'time DESC';
     }
 
     public function load(string $key = '', array $vars = [])
@@ -441,16 +534,6 @@ class Uploader extends Presenter
         }
     }
 
-    private function setPages($records)
-    {
-        $pages = 1;
-        if ($records > $this->display) {
-            $pages = ceil($records / $this->display);
-        }
-        $this->pages = $pages;
-        return $pages;
-    }
-
     public function delete()
     {
         return $this->load('delete', $_POST);
@@ -553,92 +636,5 @@ class Uploader extends Presenter
     public function finder()
     {
         return $this->found($_GET['user'], $_GET['text'], $_GET['ext']);
-    }
-
-    private function findUser($arg)
-    {
-        if (is_numeric($arg)) {
-            $user = $this->usertable->find('id', $arg)[0];
-            return $user->getDetails();
-        } else {
-            $user = $this->usertable->getEntity();
-            return $user->fromDomain($arg, \PDO::FETCH_ASSOC);
-        }
-    }
-
-    private function found($user_id, $text, $ext)
-    {
-        if (!isset($_SESSION['username'])) {
-            reLocate(REG);
-        }
-        $setcookie = doSetCookie(true);
-        $srch = 0;
-        $user = $this->usertable->find('email', $_SESSION['username'])[0];
-        $details = $user->getDetails();
-        $priv = $details['role'];
-        $file = $this->table->getEntity();
-        $pos = curry2('strpos');
-
-        $cb = $this->validateFile($priv, $details['client_id'], $user->id);
-        $files = [];
-        $getExt = composer('strtolower', curry2('substr')(1), curry2('strrchr')('.'));
-        $records = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
-        $count = count($records);
-        if ($user_id) {
-            $details = $this->findUser($user_id);
-            if ($priv == 'Admin') {
-                if (!empty($details['client_id']) || !empty($details['domain'])) {
-                    $records = toObject($file->getClientFiles($user_id), true);
-                } else {
-                    $records = $this->table->find('userid', $user_id, null, 0, 0, \PDO::FETCH_ASSOC);
-                    $records = $records ?? [];
-                }
-            } else { //multi client
-                $records = toObject($file->getClientFiles($user_id), true);
-                if (empty($records)) {
-                    $records = $this->table->find('userid', $user_id, null, 0, 0, \PDO::FETCH_ASSOC);
-                }
-            }
-        }
-
-        if ($text) { // Some search text was specified 
-            $byText = composer('is_numeric', $pos($text), curry2('getter')('filename'));
-            $records = safeFilter($records, $byText);
-        }
-
-        if ($ext) {
-            $sub = curry2('substr')(1);
-            $pos = curry2('strrchr')('.');
-            $contains = curry2('in_array')(['pdf', 'zip', 'jpg']);
-            $find = composer(negate('identity'), $contains, $getExt, curry2('getter')('filename'));
-            if ($ext === 'owt') {
-                $records = safeFilter($records, $find);
-            } else {
-                $eq = partial('equals', $ext);
-                $byExt = composer($eq, $sub, $pos, curry2('getter')('filename'));
-                $records = safeFilter($records, $byExt);
-            }
-        }
-        //reset sort to default if filtering by any criteria
-        if (count($records) !== $count) {
-            $setcookie('sort', 'tt');
-            $this->sort = 'tt';
-        }
-        //do we allow for filtering by user type
-        $files = $this->prepFileForDisplay($records, $cb);
-        if ($user_id) {
-            $srch += 1;
-        }
-        if ($text) {
-            $srch += 2;
-        }
-        if ($ext) {
-            $srch += 4;
-        }
-        $srch += 8; //sort
-        $setcookie('searched', $srch);
-        $this->pages = $this->setPages(count($files));
-        $displayFiles = array_slice(toObject($files, true), $this->start, $this->display);
-        return $this->displayer($user->id, $priv, $displayFiles, 'Clear Search Results', [], ['user_id' => $user_id, 'text' => $text, 'ext' => $ext]);
     }
 }

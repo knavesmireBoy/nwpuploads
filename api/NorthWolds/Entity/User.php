@@ -13,20 +13,31 @@ class User extends Entity implements \SplSubject
   public $email;
   public $client_id;
 
+  /*
+Not actually using the observer pattern as we're using cookies for "flash" messaging
+rather than calling an update method of the observer, but keeping this as an example of extending the \Spl Library
+  */
+
   protected \SplObjectStorage $observers;
   protected array $users = [];
   protected static $instance;
 
   /*
+  https://medium.com/codex/observer-pattern-in-php-8-569c71dd7837
   public static function getInstance($t, $c, $u, $r): self
   {
-      if (self::$instance === null) {
-          self::$instance = new self($t, $c, $u, $r);
-      }
-      return self::$instance;
+    if (self::$instance === null) {
+      self::$instance = new self($t, $c, $u, $r);
+    }
+    return self::$instance;
+  }
+  private function __clone() {}
+  public function createUser(User $user): void
+  {
+    $this->users[] = $user;
+    $this->notify();
   }
 */
-
   public function __construct(\Ninja\DatabaseTable $table, \Ninja\DatabaseTable $client, \Ninja\DatabaseTable $userrole, \Ninja\DatabaseTable $role, string $exit)
   {
     $this->table = $table;
@@ -37,12 +48,6 @@ class User extends Entity implements \SplSubject
     $this->exit = $exit;
   }
 
-  private function __clone() {}
-  public function createUser(User $user): void
-  {
-    $this->users[] = $user;
-    $this->notify();
-  }
   public function attach(\SplObserver $observer): void
   {
     $this->observers->attach($observer);
@@ -137,7 +142,6 @@ class User extends Entity implements \SplSubject
     $client = $this->fetch('clienttable', 'id', $cid);
     list($ename, $dom, $com) = $this->parseEmail($postdata['email']);
     $postdom = "$dom.$com";
-    $relocate = '';
     $key = '';
 
     if ($client) {
@@ -249,7 +253,7 @@ class User extends Entity implements \SplSubject
 
         $dbrecord = $this->fetch('TABLE', 'id', $uid);
         $data = $this->validateDom($cid, $dbrecord, $postdata, $id);
-      
+
         $details = $this->getDetails();
         $domain = $details['domain'] ?? '';
 
@@ -336,17 +340,4 @@ class User extends Entity implements \SplSubject
   {
     return '';
   }
-
-  public function join($new, $old){
-    return false;
-  }
-  public function leave($new, $old){
-    return false;
-  }
-
-  public function move($new, $old){
-    return false;
-
-  }
-
 }
