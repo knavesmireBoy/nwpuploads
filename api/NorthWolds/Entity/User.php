@@ -266,6 +266,8 @@ class User extends Entity implements \SplSubject
       $client = $this->fetch('clienttable', 'id', $cid);
       $clientdata = $cid ? $client->validateDomain($postdata['email'], 'client_id') : [];
 
+
+      dump($clientdata);
       if (!empty($clientdata) && !$clientdata['client_id']) {
         $relocate = true;
         $cookiearg = false;
