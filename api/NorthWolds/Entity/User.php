@@ -336,4 +336,17 @@ class User extends Entity implements \SplSubject
   {
     return '';
   }
+
+  public function join($new, $old){
+    return false;
+  }
+  public function leave($new, $old){
+    return false;
+  }
+
+  public function move($new, $old){
+    return false;
+
+  }
+
 }
