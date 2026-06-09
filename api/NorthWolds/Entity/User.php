@@ -268,7 +268,7 @@ class User extends Entity implements \SplSubject
       $postdata = [...$postdata, ...$clientdata];
       if ($relocate) {
         $this->setCookie([...$postdata, 'flash' => "key=_sync&id=$uid"], ['name', 'email', 'client_id', 'flash'], true);
-        reLocate($relocate);
+        reLocate($this->exit);
       }
       return $postdata;
     };
