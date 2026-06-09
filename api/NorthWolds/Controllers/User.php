@@ -423,10 +423,9 @@ class User extends Presenter implements \SplObserver
 
         $editor = $id == $this->getPrivilege('id');
         $user->setSelf($editor);
-        
+
         $user->attach($this);
 
-        dump(get_class($user));
 
         $updateDomain = $user->updateDomain($admin ? '_domain' : 'domain', $id, $default);
         $dom = $updateDomain(nullify($clientID), $data);
