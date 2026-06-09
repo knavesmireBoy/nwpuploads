@@ -249,7 +249,7 @@ class User extends Entity implements \SplSubject
 
         $dbrecord = $this->fetch('TABLE', 'id', $uid);
         $data = $this->validateDom($cid, $dbrecord, $postdata, $id);
-        dump($data);
+      
         $details = $this->getDetails();
         $domain = $details['domain'] ?? '';
 

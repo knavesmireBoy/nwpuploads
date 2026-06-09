@@ -234,6 +234,7 @@ class User extends Presenter implements \SplObserver
             parse_str($_COOKIE['flash'], $res);
             $key = array_shift($res) ?? '';
         }
+        dump([$key, $res]);
         return $this->load($key, $res);
     }
 
