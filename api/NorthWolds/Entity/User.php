@@ -275,8 +275,7 @@ class User extends Entity implements \SplSubject
       dump(!$clientdata['client_id']);
       $postdata = [...$postdata, ...$clientdata];
       if ($relocate) {
-        $data = $cookiearg ? $postdata : $_COOKIE;
-        $this->setCookie([...$data, 'flash' => "key=_sync&id=$uid"], ['name', 'email', 'client_id', 'flash'], $cookiearg);
+        $this->setCookie([...$postdata, 'flash' => "key=_sync&id=$uid"], ['name', 'email', 'client_id', 'flash'], $cookiearg);
         reLocate($relocate);
       }
       return $postdata;
