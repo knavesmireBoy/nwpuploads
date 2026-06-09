@@ -397,7 +397,7 @@ class User extends Presenter implements \SplObserver
         $user = $this->fetch('table', 'id', $userId);
 
         $user->updatePassword($data['password']);
-        $updateDomain = $user->updateDomain($key, $_POST['id'], empty($_POST['override']));
+        $updateDomain = $user->updateDomain($_POST['id'], empty($_POST['override']));
         /*role must be set BEFORE "updateDomain"
         no user can navigate the site without an assigned role*/
         $user->setRole($role, isset($userId));
@@ -426,8 +426,7 @@ class User extends Presenter implements \SplObserver
 
         $user->attach($this);
 
-
-        $updateDomain = $user->updateDomain($admin ? '_domain' : 'domain', $id, $default);
+        $updateDomain = $user->updateDomain($id, $default);
         $dom = $updateDomain(nullify($clientID), $data);
 
         $record = get_object_vars($user);
@@ -443,7 +442,6 @@ class User extends Presenter implements \SplObserver
             $this->setCookie($data, [...$change, ...$optional], true);
             $this->setCookie(['flash' => "key=change&id=$id&client_id=$clientID"], ['flash'], true);
             reLocate('/user/exit/');
-          //  return $this->load('change', ['id' => $id]);
         }
         $user->updatePassword($required['password'] ?? '');
         unset($data['password']);

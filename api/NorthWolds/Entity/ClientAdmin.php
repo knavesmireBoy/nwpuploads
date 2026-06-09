@@ -36,9 +36,9 @@ class ClientAdmin extends User
         return $data;
     }
 
-    public function updateDomain($key, $uid, $default)
+    public function updateDomain($uid, $default)
     {
-        return function (?int $cid, array $postdata, int $id = 0) use ($key, $uid, $default) {
+        return function (?int $cid, array $postdata, int $id = 0) use ($uid, $default) {
             list($name, $dom, $com) = $this->parseEmail($postdata['email']);
             $dbrecord = $this->fetch('TABLE', 'id', $this->id);
             if (isset($dbrecord['email'])) { //existing

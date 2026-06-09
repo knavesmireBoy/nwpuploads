@@ -242,10 +242,10 @@ class User extends Entity implements \SplSubject
     return [$name, $dom, $com];
   }
 
-  public function updateDomain($key, $uid, $default)
+  public function updateDomain($uid, $default)
   {
     if ($default) {
-      return function (?int $cid, array $postdata, int $id = 0) use ($key, $uid) {
+      return function (?int $cid, array $postdata, int $id = 0) use ($uid) {
 
         $dbrecord = $this->fetch('TABLE', 'id', $uid);
         $data = $this->validateDom($cid, $dbrecord, $postdata, $id);
@@ -267,7 +267,7 @@ class User extends Entity implements \SplSubject
       $postdata = [...$postdata, ...$clientdata];
       if ($relocate) {
         $this->setCookie($_COOKIE, ['name', 'email', 'client_id'], false);
-        $this->setCookie(['flash' => "key=_sync&id=$uid"], ['name', 'email', 'client_id', 'flash'], true);
+        $this->setCookie(['flash' => "key=_sync&id=$uid"], ['flash'], true);
         reLocate($this->exit);
       }
       return $postdata;

@@ -54,14 +54,13 @@ class Employee extends User
         return $traitorCheck('domain');
     }
 
-    public function updateDomain($key, $uid, $default)
+    public function updateDomain($uid, $default)
     {
         $relocate = null;
         $cookiearg = true;
         $dbrecord = $this->fetch('TABLE', 'id', $this->id);
         if ($default) {
             return function (?int $cid, array $postdata, int $id = 0) use ($uid, $relocate, $cookiearg, $dbrecord) {
-
                 if (isset($dbrecord['email'])) { //existing
                     //can only be admin moving an employee; admin users cannot be moved
                     if ($cid && $cid != $dbrecord['client_id']) {
@@ -71,9 +70,8 @@ class Employee extends User
                         $this->setCookie(['flash' => "key=leaver&id=$uid&client_id=$cid"], ['flash'], true);
                         $relocate = !$cid ? true : $relocate;
                         $fail = $this->traitorCheck($cid, $dbrecord, $postdata);
-                        
+
                         if ($fail) {
-                           // $cookiearg = false;
                             if (!$relocate) {
                                 $key = $this->self ? 'traitor' : '_traitor';
                                 $relocate = true;
@@ -82,12 +80,10 @@ class Employee extends User
                         }
                     }
                     if ($relocate) {
-                       // $data = $cookiearg ? $postdata : $_COOKIE;
                         $this->setCookie([...$postdata, 'client_id' => $cid ?? 0], ['name', 'email', 'client_id'], $cookiearg);
                         reLocate($this->exit);
-                    }
-                    else {
-                       return $this->setClientEmail($cid, $postdata, $dbrecord);
+                    } else {
+                        return $this->setClientEmail($cid, $postdata, $dbrecord);
                     }
                 } else { //new
                     return $this->setClientEmail($cid, $postdata, []);
