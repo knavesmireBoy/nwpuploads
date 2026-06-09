@@ -119,7 +119,10 @@ class DatabaseTable
     {
         $query = 'SELECT * FROM ' . $this->table;
 
-        //$query .= orderByLastName2(DBSYSTEM);
+        if ($this->table === 'usr') {
+            $query .= orderByLastName2(DBSYSTEM);
+            dump($query);
+        }
 
 
         if ($orderBy) {
