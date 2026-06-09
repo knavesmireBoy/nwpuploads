@@ -264,10 +264,10 @@ class User extends Entity implements \SplSubject
       $client = $this->fetch('clienttable', 'id', $cid);
       $clientdata = $cid ? $client->validateDomain($postdata['email'], 'client_id') : [];
       $relocate = !empty($clientdata) && !$clientdata['client_id'] ? true : false;
-
       $postdata = [...$postdata, ...$clientdata];
       if ($relocate) {
-        $this->setCookie([...$postdata, 'flash' => "key=_sync&id=$uid"], ['name', 'email', 'client_id', 'flash'], true);
+        $this->setCookie($_COOKIE, ['name', 'email', 'client_id'], false);
+        $this->setCookie(['flash' => "key=_sync&id=$uid"], ['name', 'email', 'client_id', 'flash'], true);
         reLocate($this->exit);
       }
       return $postdata;
