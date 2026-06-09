@@ -555,10 +555,10 @@ function orderByLastName($db = 'mysql')
     return ", COALESCE(NULLIF(SUBSTRING('usr.name' FROM POSITION(' ' IN 'usr.name') +1), ''), 'usr.name') AS user";
 }
 
-function orderByLastName2($db = 'mysql')
+function orderByLastName2($tbl, $db = 'mysql')
 {
     if ($db === 'postgres') {
-        return ", COALESCE(NULLIF(SUBSTRING(name FROM POSITION(' ' IN name) +1), ''), name) FROM usr ";
+        return " COALESCE(NULLIF(SUBSTRING(name FROM POSITION(' ' IN name) +1), ''), name) FROM $tbl ";
     } else {
         return ", COALESCE(NULLIF(SUBSTR(usr.name, LOCATE(' ', usr.name) +1), ''), usr.name) ";
         return ", COALESCE(NULLIF(SUBSTR(usr.name, LENGTH(usr.name) - LOCATE(' ', REVERSE(usr.name)) +2), ''), usr.name)";

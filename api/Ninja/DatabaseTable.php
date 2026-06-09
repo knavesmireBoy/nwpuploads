@@ -121,7 +121,7 @@ class DatabaseTable
 
         if ($this->table === 'usr') {
             $query = 'SELECT * FROM ';
-            $query .= orderByLastName2(DBSYSTEM);
+            $query .= orderByLastName2($this->table, DBSYSTEM);
         }
 
 
