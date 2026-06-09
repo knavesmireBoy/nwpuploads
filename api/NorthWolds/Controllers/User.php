@@ -417,11 +417,16 @@ class User extends Presenter implements \SplObserver
         //list of roles (radio buttons) may not be present
         $role = isset($_POST['roles']) ? $_POST['roles'][0] : $user->getDetails('roleid');
         $clientID = $_POST['employer'] ?? $_POST['employed'] ?? null;
-        dump($user->getDetails());
+
         $user = $this->getSubUser($user);
+
+
         $editor = $id == $this->getPrivilege('id');
         $user->setSelf($editor);
+        
         $user->attach($this);
+
+        dump(get_class($user));
 
         $updateDomain = $user->updateDomain($admin ? '_domain' : 'domain', $id, $default);
         $dom = $updateDomain(nullify($clientID), $data);
