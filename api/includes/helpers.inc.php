@@ -282,7 +282,7 @@ function doSetCookie($flag, $time = -1)
             }
         }
 */
-        if (!isset($_COOKIE[$k]) && $flag) {
+        if (/*!isset($_COOKIE[$k]) && */$flag) {
             $v = is_bool($flag) ? $v : '';
             setcookie($k, $v, $time, '/');
             $_COOKIE[$k] = $v;

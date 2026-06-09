@@ -254,7 +254,6 @@ class User extends Entity implements \SplSubject
         $domain = $details['domain'] ?? '';
 
         if ($cid && !$domain) {
-          dump($data);
           $this->setCookie([...$data, 'flash' => "key=join&id=$uid&client_id=$cid&dog=bolt"], ['flash', 'name', 'email', 'client_id'], true);
           reLocate($this->exit);
         }
