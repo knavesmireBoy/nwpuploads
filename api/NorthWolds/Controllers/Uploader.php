@@ -366,7 +366,6 @@ class Uploader extends Presenter
         $filepath .= $uploadfile;
         if (!file_exists($filepath)) {
             reLocate('/uploader/load/missing');
-            // reLocate(BBC);
         }
         $filedata = file_get_contents($filepath);
         header("Content-type: $mimetype");
@@ -518,7 +517,7 @@ class Uploader extends Presenter
             exit();
         } else {
             $userid = $_POST['key'];
-            if ($_POST['user']) {
+            if (isset($_POST['user'])) {
                 $userid = $this->idFromDomain($this->usertable, $_POST['user'], 0, 0);
             }
             $description = isset($_POST['desc']) ? $_POST['desc'] : '';

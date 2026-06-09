@@ -23,7 +23,6 @@ class Uploader extends Entity
         $this->usertable = $usertable;
     }
 
-
     public function getClientFiles($arg)
     {
         $files = [];
