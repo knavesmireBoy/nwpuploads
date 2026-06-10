@@ -846,3 +846,42 @@ function vercelCookies($current)
     $cookies = ["__vercel_toolbar" =>  "1", "resolution" =>  "1280", "searched" => "8", "_vercel_session" =>  "25087941d8881d86824f48b851", "sort" => "tt", "PHPSESSID" => $sesh];
     return array_diff_assoc($current, $cookies);
 }
+
+
+function byLastName($initial, $i = 0)
+{
+    $lib = ['ASC' => SORT_ASC, 'DESC' => SORT_DESC];
+    $sorted = [];
+    //!!assume associative array (id,name) pair
+    // $initial = [11 => 'Connery', 12 => 'Brosnan'];
+
+    foreach ($initial as $k => $v) {
+        $u = explode(' ', $v);
+        $uk = randomID();
+        $a = current($u);
+        $b = end($u);
+        $first[$uk] = $a;
+        $last[$uk] = ($b === $a) ? '' : $b;
+        $sorted[$k]['user'] = $u[1];
+        $sorted[$k]['uniq'] = $uk;
+        $sorted[$k]['id'] = $k;
+    }
+
+    preg_match('/[A-Z]+/', $lib[$i], $matches);
+    array_multisort($last, $lib[$matches[0]], $sorted);
+
+    foreach ($sorted as $k => $v) {
+        $uk = $sorted[$k]['uniq'];
+        $f = $first[$uk];
+        $l = $last[$uk];
+        $sorted[$k]['user'] = "$f $l";
+        unset($sorted[$k]['uniq']);
+    }
+
+    $ret = [];
+
+    foreach ($sorted as $v) {
+        $ret[$v['id']] = $v['user'];
+    }
+    return $ret;
+}

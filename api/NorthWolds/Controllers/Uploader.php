@@ -230,9 +230,12 @@ class Uploader extends Presenter
         $group = [];
         if (isApproved($priv, 'ADMIN')) {
             $users = $this->usertable->findAll();
+
             foreach ($users as $u) {
                 $group[$u->id] = $u->name;
             }
+            $group = byLastName($group);
+
         } else if (isApproved($priv, 'admin')) {
             $ids = $user->getUserIds();
             foreach ($ids as $id) {
