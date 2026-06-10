@@ -134,8 +134,9 @@ class Client
         } else {
             $values = $_POST['data'];
         }
-        $clientId = $this->table->save($values, $add);
+        $this->table->save($values, $add);
         if ($add) {
+            $clientId = $this->getLastInsertId(true);
             $client = $this->table->find('id', $clientId)[0];
             $users = $client->syncWithUsers();
             if (isset($users[0])) {
@@ -143,15 +144,15 @@ class Client
                 return $this->load('associate', ['id' => $client->id, 'name' => $client->name, 'domain' => $client->domain]);
             }
         } else {
-            $users = $this->usertable->find('client_id', $values['id'], null, 0, 0, \PDO::FETCH_ASSOC);
+            $e = $this->table->save([...$values, ...$_POST['data']]);
+            $users = $this->usertable->find('client_id', $_POST['id'], null, 0, 0, \PDO::FETCH_ASSOC);
             $users = $users ?? [];
-            $dom = $values['domain'];
+            $dom = $e->domain;
             foreach ($users as $user) {
                 $user['email'] = preg_replace('/(.+@).+/', "$1$dom", $user['email']);
                 $this->usertable->save($user);
             }
         }
-
         if ($relocate) {
             reLocate($this->home);
         }
