@@ -160,12 +160,12 @@ class Client
         } else {
             $users = $this->usertable->find('client_id', $clientId, null, 0, 0, \PDO::FETCH_ASSOC);
             $users = $users ?? [];
-            $dom = $client->domain;
-            foreach ($users as $user) {
-
-                dump(preg_replace('/(.+@).+/', "$1$dom", $user['email']));
-                $user['email'] = preg_replace('/(.+@).+/', "$1$dom", $user['email']);
-                $this->table->save($user);
+            $dom = $values['domain'] !== $client->domain ? $values['domain'] : null;
+            if ($dom) {
+                foreach ($users as $user) {
+                    $user['email'] = preg_replace('/(.+@).+/', "$1$dom", $user['email']);
+                    $this->table->save($user);
+                }
             }
         }
 
