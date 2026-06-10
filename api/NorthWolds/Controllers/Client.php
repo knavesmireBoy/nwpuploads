@@ -158,49 +158,6 @@ class Client
         }
     }
 
-    public function editSubmit2()
-    {
-        $relocate = true;
-        $add = empty($_POST['id']);
-        if ($add) {
-            $res = $this->table->find('id', $_POST['id'], null, 0, 0, \PDO::FETCH_ASSOC);
-            $values = $res[0] ? $res[0] : [];
-            $this->table->save($values, $add);
-        } else {
-            $values = $_POST['data'];
-            $this->table->save([...$values, 'id' => $_POST['id']]);
-        }
-        $clientId = $add ? $this->getLastInsertId(true) : $values['id'];
-
-        $client = $this->table->find('id', $clientId)[0];
-
-        if ($add) {
-            $users = $client->syncWithUsers();
-            if (isset($users[0])) {
-                $relocate = false;
-                return $this->load('associate', ['id' => $client->id, 'name' => $client->name, 'domain' => $client->domain]);
-            }
-        } else {
-            $users = $this->usertable->find('client_id', $clientId, null, 0, 0, \PDO::FETCH_ASSOC);
-            $users = $users ?? [];
-
-            // $values = [...$values, ...$_POST['data']];
-            $dom = $values['domain'] !== $client->domain ? $values['domain'] : null;
-
-            // $this->table->save($values);
-            if ($dom) {
-                foreach ($users as $user) {
-                    $user['email'] = preg_replace('/(.+@).+/', "$1$dom", $user['email']);
-                    $this->usertable->save($user);
-                }
-            }
-        }
-
-        if ($relocate) {
-            reLocate($this->home);
-        }
-    }
-
     public function edit()
     {
         reLocate('/client/load/');

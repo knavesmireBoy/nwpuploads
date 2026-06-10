@@ -5,8 +5,6 @@ namespace NorthWolds;
 use \Ninja\Website;
 use \Ninja\DatabaseTable;
 use \Ninja\Authentication;
-use \NorthWolds\Controllers\Pages;
-use stdClass;
 
 class NorthWoldsWebsite implements Website
 {
@@ -88,7 +86,7 @@ class NorthWoldsWebsite implements Website
         include CONNECT;
         $this->pdo = $pdo;
 
-        $schema = function($t, $s = '') {
+        $schema = function ($t, $s = '') {
             return $s ? "$s.$t" : $t;
         };
         $this->roleTable = new DatabaseTable($this->pdo, 'role', 'id');
@@ -134,29 +132,9 @@ class NorthWoldsWebsite implements Website
 
     public function getLayoutVariables($key): array
     {
-        /*
-       $user = $this->authentication->isLoggedIn();
-        if ($key === 'login') {
-            return ['title' => 'Admin', 'loggedIn' => $user, 'user' => $user->name ?? ''];
-        }
-            */
+
         $page = explode('/', $key);
-        $gal = 'gallery';
-        $defs = ['klas' => '', 'user' => $user->name ?? '', 'adminpage' => ''];
-        $pp = ['adminpage' => true];
-        $lookup = [
-            /*
-            'user/register' => ['title' => 'Admin', ...$defs],
-            'article/list' => ['title' => 'Admin', ...$defs, ...$pp],
-            'pages/list' => ['title' => 'Admin', ...$defs, ...$pp],
-            'gallery/display' => ['title' => 'photos', ...$defs, 'klas' => 'public'],
-            'gallery/nextpage' => ['title' => 'photos', ...$defs],
-            'gallery/prevpage' => ['title' => 'photos', ...$defs],
-            'gallery/loadpic' => ['title' => 'photos', 'klas' => 'showtime'],
-            'gallery/next' => ['title' => 'photos', 'klas' => 'showtime'],
-            'gallery/prev' => ['title' => 'photos', 'klas' => 'showtime'],
-            'contact/process' => ['title' => 'Enquiries',  ...$defs, 'klas' => 'public']
-            */];
+        $lookup = [];
         $klas = 'Admin';
         $title = $klas ? $page[0] : 'Admin';
         return isset($lookup[$key]) ? $lookup[$key] : ['title' => $title, 'klas' => $klas, 'user' => $user->name ?? '', 'adminpage' => !$klas];
@@ -174,84 +152,34 @@ class NorthWoldsWebsite implements Website
         reLocate("/$route", '../');
     }
 
-        //needs to be public method because use of partial 1st line of checkLogin which uses call_user_func_array
-        public function reroute($uri, int $acceslevel, string $flag = '')
-        {
-            $route = explode('/', $uri);
-            $name = $flag ? $flag : $route[0];
-            $action = $route[1];
-            //$acceslevel will determine the feedback message supplied to acccessdenied.html.php
-            $args = "$action/$acceslevel";
-            //CRUCIAL set $route to lowercase otherwise it falls foul of EntryPoint::checkUri
-            $route = strtolower($name . '/message/' . $args);
-            reLocate("/$route", '../');
-        }
-    
+    //needs to be public method because use of partial 1st line of checkLogin which uses call_user_func_array
+    public function reroute($uri, int $acceslevel, string $flag = '')
+    {
+        $route = explode('/', $uri);
+        $name = $flag ? $flag : $route[0];
+        $action = $route[1];
+        //$acceslevel will determine the feedback message supplied to acccessdenied.html.php
+        $args = "$action/$acceslevel";
+        //CRUCIAL set $route to lowercase otherwise it falls foul of EntryPoint::checkUri
+        $route = strtolower($name . '/message/' . $args);
+        reLocate("/$route", '../');
+    }
+
 
     public function checkLogin(string $uri): array
     {
-        /*
-       $files = scandir(isDir(ASSETS));
-        $fs = preg_grep("/^\w+\.w+$/", $files);
-        $dirs = arrayDiff($files, $fs);
-        $dirs = array_values(preg_grep("/^[^\.]/", $dirs));
 
-        function foo($root, &$ret)
-        {
-            $files = safeScanDir($root);
-            $drive = function ($dirname, $i) use ($root, $files, $ret, &$drive) {
-                if (!isset($root[$i])) {
-                    return $ret;
-                }
-                if (!$dirname) {
-                    $sub = isDir($root . $files[$i]);
-                    if ($sub) {
-                        return $drive($files[$i], $i);
-                    } else {
-                        $ret[] = $files[$i];
-                    }
-                } else {
-                    $sub = isDir($root . $dirname);
-                    $subfiles = safeScanDir($sub);
-                    // var_dump($sub);
-                    $j = 0;
-                    while ($subfiles[$j]) {
-                        $ret[] = $subfiles[$j];
-                        $j++;
-                    }
-                }
-                return $drive('', $i += 1);
-            };
-            return $drive;
-        }
-       */
-         $reroute = partial([$this, 'reroute'], $uri);
+        $reroute = partial([$this, 'reroute'], $uri);
         $key = '';
-        /*
-        $browser = \NorthWolds\Entity\User::BROWSER;
-        $content = \NorthWolds\Entity\User::CONTENT_EDITOR;
-        $chief = \NorthWolds\Entity\User::CHIEF_EDITOR;
-        $account = \NorthWolds\Entity\User::ACCOUNT_EDITOR;
-        $super = \NorthWolds\Entity\User::SUPERADMIN;
-        */
-        // $user = $this->authentication->isLoggedIn();
-        //$permit = $user ? intval($user->permissions) : 0;
         $permit = 0;
-        //$user = new \stdClass;
+
         $user = $this->authentication->isLoggedIn();
-        /*
-        $tmp = ['user/edit' => $account,  'user/list' => $account, 'user/edit' => $account];
-        $post_access = ['user/success' => $browser, 'user/haspermission' => $browser];
-        //'user/register' => $browser,
-        $actions = [
-        
-        ];
-        */
-        function set($i = 0){
+
+        function set($i = 0)
+        {
             return array_slice(['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'], $i);
         }
-       //$default = ['Admin', 'Client Admin', 'Client', 'Manager', 'Browser'];
-        $actions = ['uploader/load' => set(), 'uploader/upload' => set(), 'uploader/update' => set(1), 'uploader/nav' => set(), 'uploader/delete' => set(1), 'uploader/confirm' => set(1), 'uploader/destroy' => set(1), 'client/load' => set(4), 'user/load'  => set(2),  'user/edit'  => set(2), 'user/add'  => set(2), 'user/delete'  => set(2)];
+        $actions = ['uploader/load' => set(), 'uploader/upload' => set(), 'uploader/update' => set(1), 'uploader/nav' => set(), 'uploader/delete' => set(1), 'uploader/confirm' => set(1), 'uploader/destroy' => set(1), 'client/load' => set(4), 'client/destroy' => set(4), 'user/load'  => set(2),  'user/edit'  => set(2), 'user/add'  => set(2), 'user/delete'  => set(2)];
 
         if (!$user) { //not logged in
             if ($this->baseAccess($uri) || isset($actions[$uri])) {
