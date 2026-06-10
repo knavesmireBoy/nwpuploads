@@ -522,7 +522,7 @@ class Uploader extends Presenter
         } else {
             $userid = $_POST['key'];
             if (isset($_POST['user'])) {
-                $userid = $this->idFromDomain($this->usertable, $_POST['user'], 0, 0);
+                $userid = $this->idFromDomain($this->usertable, $_POST['user'], 0, 0) ?? $userid;
             }
             $description = isset($_POST['desc']) ? $_POST['desc'] : '';
             $dofile = function ($arg) {

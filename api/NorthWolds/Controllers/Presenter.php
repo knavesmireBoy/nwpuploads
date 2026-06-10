@@ -65,7 +65,7 @@ class Presenter
             $users = safeFilter($usrs, fn($usr) => $usr->checkPermission($permission));
         }
         $users = empty($users) ? $usrs : $users;
-        return is_int($index) ? $users[$index]->id : $users;
+        return is_int($index) && !empty($users) ? $users[$index]->id : null;
     }
 
     public function getRoute($role) {}

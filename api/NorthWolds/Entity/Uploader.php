@@ -34,7 +34,7 @@ class Uploader extends Entity
         } else {
             $user = $this->usertable->getEntity();
             $client = $user->fromDomain($arg);
-            $users = $this->usertable->find('client_id', $client->id);
+            $users = $this->usertable->find('client_id', $client->id ?? 0);
         }
         if (isset($client)) {
             $userids = array_map(fn($o) => $o->id, $users);
