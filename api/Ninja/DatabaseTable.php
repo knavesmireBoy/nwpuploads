@@ -179,6 +179,7 @@ class DatabaseTable
     {
         $query = 'SELECT * FROM ' . $this->table . ' WHERE ' . $column . $op;
         $parameters = [];
+        $value = $value ? $value : 1;
         if (!is_null($value)) {
             $parameters = [
                 'value' => $value

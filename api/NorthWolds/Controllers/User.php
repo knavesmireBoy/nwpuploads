@@ -261,6 +261,7 @@ class User extends Presenter implements \SplObserver
         if ($user->preEdit(empty($customVars))) {
             $args = $error ? ['message' => $error] : [];
             $id = $details['id'];
+            
             return $this->edit($id, [...$customVars, ...$args]);
         }
         return $this->displayer($details, $customVars, $owner, $error);
