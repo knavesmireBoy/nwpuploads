@@ -160,6 +160,11 @@ class Client
         } else {
             $users = $this->usertable->find('client_id', $clientId, null, 0, 0, \PDO::FETCH_ASSOC);
             $users = $users ?? [];
+
+            $values = [...$values, ...$_POST['id']];
+
+            dump($values);
+
             $dom = $values['domain'] !== $client->domain ? $values['domain'] : null;
             if ($dom) {
                 foreach ($users as $user) {
