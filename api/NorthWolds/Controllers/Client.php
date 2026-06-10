@@ -153,11 +153,14 @@ class Client
 
         if ($add) {
             $users = $client->syncWithUsers();
-
             if (isset($users[0])) {
                 $relocate = false;
                 return $this->load('associate', ['id' => $client->id, 'name' => $client->name, 'domain' => $client->domain]);
             }
+        }
+
+        else {
+
         }
 
         if ($relocate) {
