@@ -159,7 +159,7 @@ class Client
             }
         } else {
             $users = $this->usertable->find('client_id', $clientId, null, 0, 0, \PDO::FETCH_ASSOC);
-            $users = $users[0] ?? [];
+            $users = $users ?? [];
             $dom = $client->domain;
             foreach ($users as $user) {
 
