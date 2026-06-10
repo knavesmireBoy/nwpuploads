@@ -123,28 +123,17 @@ class Client
         reLocate($this->home);
     }
 
+
     public function editSubmit()
     {
-        $edit = false;
         $relocate = true;
         $add = empty($_POST['id']);
-        if ($_POST['id']) {
+        if ($add) {
             $res = $this->table->find('id', $_POST['id'], null, 0, 0, \PDO::FETCH_ASSOC);
             $values = $res[0] ? $res[0] : [];
-            $edit = true;
         } else {
             $values = $_POST['data'];
         }
-
-        /*
-        if ($edit) {
-            foreach ($_POST['data'] as $k => $v) {
-                if ($v && isset($values[$k])) {
-                    $values[$k] = $v;
-                }
-            }
-        }
-        */
 
         $this->table->save($values, $add);
         $clientId = $add ? $this->getLastInsertId(true) : $values['id'];
@@ -161,11 +150,10 @@ class Client
             $users = $this->usertable->find('client_id', $clientId, null, 0, 0, \PDO::FETCH_ASSOC);
             $users = $users ?? [];
 
-            $values = [...$values, ...$_POST['data']];
+           // $values = [...$values, ...$_POST['data']];
+            $dom = $values['domain'] !== $client->domain ? $values['domain'] : null;
 
             $this->table->save($values);
-
-            $dom = $values['domain'] !== $client->domain ? $values['domain'] : null;
             if ($dom) {
                 foreach ($users as $user) {
                     $user['email'] = preg_replace('/(.+@).+/', "$1$dom", $user['email']);
@@ -177,5 +165,10 @@ class Client
         if ($relocate) {
             reLocate($this->home);
         }
+    }
+
+    public function edit()
+    {
+        reLocate('/client/load/');
     }
 }
