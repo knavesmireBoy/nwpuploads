@@ -157,10 +157,16 @@ class Client
                 $relocate = false;
                 return $this->load('associate', ['id' => $client->id, 'name' => $client->name, 'domain' => $client->domain]);
             }
-        }
+        } else {
+            $users = $this->usertable->find('client_id', $clientId, null, 0, 0, \PDO::FETCH_ASSOC);
+            $users = $users[0] ?? [];
+            $dom = $client->domain;
+            foreach ($users as $user) {
 
-        else {
-
+                dump(preg_replace('/(.+@).+/', "$1$dom", $user['email']));
+                $user['email'] = preg_replace('/(.+@).+/', "$1$dom", $user['email']);
+                $this->table->save($user);
+            }
         }
 
         if ($relocate) {
