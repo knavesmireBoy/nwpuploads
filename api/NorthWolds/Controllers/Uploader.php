@@ -463,6 +463,8 @@ class Uploader extends Presenter
         $this->pages = isApproved($priv, 'ADMIN') ? $this->pages : $this->setPages(count($contenders));
         //do this last; paginate
         $displayfiles = array_slice($contenders, $this->start, $this->display);
+
+        dump(467);
         return $this->displayer($user->id, $priv, $displayfiles, '', $owner, $customVars);
     }
 
