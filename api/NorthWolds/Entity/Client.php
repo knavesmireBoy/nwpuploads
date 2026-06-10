@@ -57,7 +57,6 @@ class Client extends Entity
         };
         $users = safeFilter($users, $cb);
 
-        dump($users);
         if ($flag) {
             foreach ($users as $user) {
                 $this->associate($user->id);

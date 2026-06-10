@@ -148,12 +148,16 @@ class Client
 
         $this->table->save($values, $add);
         $clientId = $add ? $this->getLastInsertId(true) : $values['id'];
-        
+
         $client = $this->table->find('id', $clientId)[0];
-        $users = $client->syncWithUsers();
-        if (isset($users[0])) {
-            $relocate = false;
-            return $this->load('associate', ['id' => $client->id, 'name' => $client->name, 'domain' => $client->domain]);
+
+        if ($add) {
+            $users = $client->syncWithUsers();
+
+            if (isset($users[0])) {
+                $relocate = false;
+                return $this->load('associate', ['id' => $client->id, 'name' => $client->name, 'domain' => $client->domain]);
+            }
         }
 
         if ($relocate) {
