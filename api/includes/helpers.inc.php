@@ -858,14 +858,12 @@ function byLastName($initial, $i = 0)
   
     foreach ($initial as $k => $v) {
         $u = explode(' ', $v);
-
-        dump([$k, $v, $u]);
         $uk = randomID();
         $a = current($u);
         $b = end($u);
         $first[$uk] = $a;
         $last[$uk] = ($b === $a) ? '' : $b;
-        $sorted[$k]['user'] = $u[1];
+        $sorted[$k]['user'] = $u[1] ?? $u[0];
         $sorted[$k]['uniq'] = $uk;
         $sorted[$k]['id'] = $k;
     }
