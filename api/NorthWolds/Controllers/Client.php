@@ -161,7 +161,7 @@ class Client
             $users = $this->usertable->find('client_id', $clientId, null, 0, 0, \PDO::FETCH_ASSOC);
             $users = $users ?? [];
 
-            $values = [...$values, ...$_POST['id']];
+            $values = [...$values, ...$_POST['data']];
 
             dump($values);
 
