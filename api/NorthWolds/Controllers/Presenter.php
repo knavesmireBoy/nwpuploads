@@ -59,7 +59,8 @@ class Presenter
     {
         $user = $table->getEntity();
         $client = $user->fromDomain($domain);
-        $usrs = $table->find('client_id', $client->id, 'id');
+
+        $usrs = $client ? $table->find('client_id', $client->id, 'id') : [];
         if ($permission) {
             $users = safeFilter($usrs, fn($usr) => $usr->checkPermission($permission));
         }

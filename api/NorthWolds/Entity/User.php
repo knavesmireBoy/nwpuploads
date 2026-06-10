@@ -199,7 +199,8 @@ rather than calling an update method of the observer, but keeping this as an exa
 
   public function fromDomain($domain, $mode = \PDO::FETCH_CLASS)
   {
-    return $this->clienttable->find('domain', $domain, 'name', 0, 0, $mode)[0];
+    $client = $this->clienttable->find('domain', $domain, 'name', 0, 0, $mode);
+    return $client[0] ?? null;
   }
 
   public function setSelf(bool $bool)
