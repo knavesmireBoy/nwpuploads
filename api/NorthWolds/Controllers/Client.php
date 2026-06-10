@@ -169,7 +169,7 @@ class Client
             if ($dom) {
                 foreach ($users as $user) {
                     $user['email'] = preg_replace('/(.+@).+/', "$1$dom", $user['email']);
-                    $this->table->save($user);
+                    $this->usertable->save($user);
                 }
             }
         }
