@@ -848,14 +848,13 @@ function vercelCookies($current)
 }
 
 
-function byLastName($initial, $i = 0)
+function byLastName($initial, $i = 'ASC')
 {
     $lib = ['ASC' => SORT_ASC, 'DESC' => SORT_DESC];
     $sorted = [];
     //!!assume associative array (id,name) pair
     // $initial = [11 => 'Connery', 12 => 'Brosnan'];
 
-  
     foreach ($initial as $k => $v) {
         $u = explode(' ', $v);
         $uk = randomID();
