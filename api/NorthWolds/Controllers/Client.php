@@ -132,7 +132,7 @@ class Client
             }
         }
         $clientId = $this->table->save($values, $add);
-        if ($add) {
+        if (1) {
             $client = $this->table->find('id', $clientId)[0];
             $users = $client->syncWithUsers();
             if (isset($users[0])) {

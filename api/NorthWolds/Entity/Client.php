@@ -56,6 +56,8 @@ class Client extends Entity
             return !$o->client_id && $dom === $domain;
         };
         $users = safeFilter($users, $cb);
+
+        dump($users);
         if ($flag) {
             foreach ($users as $user) {
                 $this->associate($user->id);
