@@ -855,9 +855,11 @@ function byLastName($initial, $i = 0)
     //!!assume associative array (id,name) pair
     // $initial = [11 => 'Connery', 12 => 'Brosnan'];
 
-    dump($initial);
+  
     foreach ($initial as $k => $v) {
         $u = explode(' ', $v);
+
+        dump([$k, $v, $u]);
         $uk = randomID();
         $a = current($u);
         $b = end($u);
