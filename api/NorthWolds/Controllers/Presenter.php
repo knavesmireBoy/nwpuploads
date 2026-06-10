@@ -35,6 +35,7 @@ class Presenter
             array_multisort(array_column($usr, 'name'), SORT_ASC, $usr);
             array_multisort(array_column($clients, 'name'), SORT_ASC, $clients);
             $users = toKeyValue($usr, 'id', 'name');
+            $users = byLastName($users);
             $client = toKeyValue($clients, $prop, 'name');
             return [$users, $client];
         } else {
