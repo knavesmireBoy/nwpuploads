@@ -868,7 +868,8 @@ function byLastName($initial, $i = 'ASC')
     }
 
     preg_match('/[A-Z]+/', $lib[$i], $matches);
-    array_multisort($last, $lib[$matches[0]], $sorted);
+    //array_multisort($last, $lib[$matches[0]], $sorted);
+    array_multisort($last, SORT_ASC, $sorted);
 
     foreach ($sorted as $k => $v) {
         $uk = $sorted[$k]['uniq'];
