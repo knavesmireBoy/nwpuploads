@@ -15,13 +15,6 @@ class User extends Presenter implements \SplObserver
         parent::__construct($table);
     }
 
-    protected function getSubUser(\NorthWolds\Entity\User $user)
-    {
-        $details = $user->getDetails();
-        $entity = $this->getEntity($details);
-        $this->table->setEntity($entity);
-        return $this->fetch('table', 'id', $user->id);
-    }
 
     private function destroy($id)
     {
@@ -129,24 +122,7 @@ class User extends Presenter implements \SplObserver
         return [$ret, $opt];
     }
 
-    protected function getEntity($details)
-    {
-        if (isset($details['role'])) {
-            $role = str_replace(' ', '', $details['role']);
-            if (preg_match('/client/i', $role)) {
-                if (isset($details['colleagues'])) {
-                    $role = $details['colleagues'] ? $role : 'Solo';
-                    $role = $details['administrator'] ? 'ClientAdminSolo' : $role;
-                    $role = ($role === 'Client') ? 'Employee' : $role;
-                } else {
-                    $role = preg_match('/admin/', $role) ? 'Admin' : 'Freelancer';
-                }
-            }
-            return "NorthWolds\\Entity\\$role";
-        } else {
-            return null;
-        }
-    }
+
 
     protected function getPrivilege($prop = '')
     {
@@ -261,7 +237,7 @@ class User extends Presenter implements \SplObserver
         if ($user->preEdit(empty($customVars))) {
             $args = $error ? ['message' => $error] : [];
             $id = $details['id'];
-            
+
             return $this->edit($id, [...$customVars, ...$args]);
         }
         return $this->displayer($details, $customVars, $owner, $error);
