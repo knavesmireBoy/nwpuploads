@@ -186,13 +186,7 @@ class User extends Presenter implements \SplObserver
 
     protected function displayer($details, $customVars = [], $owner = [], $error = '')
     {
-
-        // $pagehead_role = $nwproleplay && !obtainUserRole(true);
-        //$predicates = [partial('preg_match', '/^nwp/')];
-        // $clients = isApproved($priv, 'ADMIN') ? $this->presentClientList($priv, 'domain') : [];
-        //$cadmin = isApproved($_SESSION['role'], 'admin');
         $details = $this->getPrivilege();
-
         $user = $this->fetch('table', 'id', $details['id']);
         $user = $this->getSubUser($user);
         $user->setSelf(!empty($customVars));
@@ -416,7 +410,6 @@ class User extends Presenter implements \SplObserver
 
         $user = $this->getSubUser($user);
 
-
         $editor = $id == $this->getPrivilege('id');
         $user->setSelf($editor);
 
@@ -434,7 +427,7 @@ class User extends Presenter implements \SplObserver
         list($change, $optional) = $this->hasChanged($record, $required, ['email', 'password'], ['name']);
 
      
-        if (/*$editor && */$change !== [] && empty($_POST['override'])) {
+        if ($editor && $change !== [] && $default) {
             $this->setCookie($data, [...$change, ...$optional], true);
             $this->setCookie(['flash' => "key=change&id=$id&client_id=$clientID"], ['flash'], true);
             reLocate('/user/exit/');
