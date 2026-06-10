@@ -163,7 +163,7 @@ class Client
 
             $values = [...$values, ...$_POST['data']];
 
-            dump($values);
+            $this->table->save($values);
 
             $dom = $values['domain'] !== $client->domain ? $values['domain'] : null;
             if ($dom) {
