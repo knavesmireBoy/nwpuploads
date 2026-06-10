@@ -14,5 +14,9 @@ class Freelancer extends User
         ];
     }
 
- 
+
+    public function getUserIds($roles = null)
+    {
+        return [];
+    }
 }

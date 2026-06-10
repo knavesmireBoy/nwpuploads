@@ -49,7 +49,7 @@ class Presenter
                         $usr[$u->id] = $u->name;
                     }
                 }
-                return [$usr, []];
+                return [$usr , []];
             }
         }
         return [[], []];
