@@ -10,7 +10,7 @@ class Client
 
     private function displayer($priv, $customVars = [], $owner = [])
     {
-        $rows = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
+        $rows = $this->table->findAll('name', 0, 0, \PDO::FETCH_ASSOC);
         foreach ($rows as $row) {
             $clients[] = array(
                 'id' => $row['id'],
