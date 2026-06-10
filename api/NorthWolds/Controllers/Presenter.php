@@ -13,32 +13,6 @@ class Presenter
     {
     }
 
-    protected function getEntity($details)
-    {
-        if (isset($details['role'])) {
-            $role = str_replace(' ', '', $details['role']);
-            if (preg_match('/client/i', $role)) {
-                if (isset($details['colleagues'])) {
-                    $role = $details['colleagues'] ? $role : 'Solo';
-                    $role = $details['administrator'] ? 'ClientAdminSolo' : $role;
-                    $role = ($role === 'Client') ? 'Employee' : $role;
-                } else {
-                    $role = preg_match('/admin/', $role) ? 'Admin' : 'Freelancer';
-                }
-            }
-            return "NorthWolds\\Entity\\$role";
-        } else {
-            return null;
-        }
-    }
-
-    protected function getSubUser(\NorthWolds\Entity\User $user)
-    {
-        $details = $user->getDetails();
-        $entity = $this->getEntity($details);
-        $this->table->setEntity($entity);
-        return $this->fetch('table', 'id', $user->id);
-    }
 
 
     protected function presentList(string $role, mixed $userId, DatabaseTable $table, $prop = 'domain')
@@ -69,8 +43,8 @@ class Presenter
         } else {
             $user = $table->find('id', $userId);
             $user = $user[0] ?? null;
-            $user = $this->getSubUser($user);
-            if (isset($user)) {
+            //$user = $this->getSubUser($user);
+            if (isset($user) && $user->client_id) {
                // $users = [];
                 $users = $user->getUserIds();
                 if (isset($users[1])) {
