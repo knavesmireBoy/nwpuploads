@@ -5,8 +5,19 @@ namespace NorthWolds\Controllers;
 use \Ninja\DatabaseTable;
 
 class Client
+
 {
     public function __construct(private DatabaseTable $table, private DatabaseTable $usertable, private string $home) {}
+
+
+    protected function getLastInsertId($id)
+    {
+        if (!is_int($id)) {
+            $all = array_map(fn($o) => $o->id, $this->table->findAll());
+            return max($all);
+        }
+        return $id;
+    }
 
     private function displayer($priv, $customVars = [], $owner = [])
     {
@@ -125,7 +136,7 @@ class Client
             $values = $_POST['data'];
         }
 
-            /*
+        /*
         if ($edit) {
             foreach ($_POST['data'] as $k => $v) {
                 if ($v && isset($values[$k])) {
@@ -133,19 +144,16 @@ class Client
                 }
             }
         }
-
         */
-            
 
-        $clientId = $this->table->save($values, $add);
-        dump([$clientId, $add]);
-        if (1) {
-            $client = $this->table->find('id', $clientId)[0];
-            $users = $client->syncWithUsers();
-            if (isset($users[0])) {
-                $relocate = false;
-                return $this->load('associate', ['id' => $client->id, 'name' => $client->name, 'domain' => $client->domain]);
-            }
+        $this->table->save($values, $add);
+        $clientId = $add ? $this->getLastInsertId(true) : $values['id'];
+        
+        $client = $this->table->find('id', $clientId)[0];
+        $users = $client->syncWithUsers();
+        if (isset($users[0])) {
+            $relocate = false;
+            return $this->load('associate', ['id' => $client->id, 'name' => $client->name, 'domain' => $client->domain]);
         }
 
         if ($relocate) {
