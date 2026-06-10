@@ -119,11 +119,14 @@ class Client
         $add = empty($_POST['id']);
         if ($_POST['id']) {
             $res = $this->table->find('id', $_POST['id'], null, 0, 0, \PDO::FETCH_ASSOC);
+            dump($res);
             $values = $res[0] ? $res[0] : [];
             $edit = true;
         } else {
             $values = $_POST['data'];
         }
+
+      
         if ($edit) {
             foreach ($_POST['data'] as $k => $v) {
                 if ($v && isset($values[$k])) {
@@ -131,6 +134,7 @@ class Client
                 }
             }
         }
+
         $clientId = $this->table->save($values, $add);
         if (1) {
             $client = $this->table->find('id', $clientId)[0];
