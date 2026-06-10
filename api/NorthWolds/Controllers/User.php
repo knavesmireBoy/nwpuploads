@@ -426,7 +426,6 @@ class User extends Presenter implements \SplObserver
         //exclude password from update unless requested...
         list($change, $optional) = $this->hasChanged($record, $required, ['email', 'password'], ['name']);
 
-     
         if ($editor && $change !== [] && $default) {
             $this->setCookie($data, [...$change, ...$optional], true);
             $this->setCookie(['flash' => "key=change&id=$id&client_id=$clientID"], ['flash'], true);
@@ -434,6 +433,7 @@ class User extends Presenter implements \SplObserver
         }
         $user->updatePassword($required['password'] ?? '');
         unset($data['password']);
+
         $user = $this->table->save($data);
         $user =  $this->getSubUser($user);
         $user->setSelf($editor);
@@ -453,7 +453,8 @@ class User extends Presenter implements \SplObserver
             $key = strtolower($key);
             return $this->load($key, ['id' => $id]);
         }
-        reLocate($this->home);
+        return $this->load('', ['id' => $id]);
+        //reLocate($this->home);
     }
 
     public function delete($id = '')
