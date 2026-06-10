@@ -42,8 +42,8 @@ class Presenter
             $user = $table->find('id', $userId);
             $user = $user[0] ?? null;
             if (isset($user)) {
-                $users = [];
-               // $users = $user->getUserIds();
+               // $users = [];
+                $users = $user->getUserIds();
                 if (isset($users[1])) {
                     foreach ($users as $k => $v) {
                         $u = $table->find('id', $v)[0];

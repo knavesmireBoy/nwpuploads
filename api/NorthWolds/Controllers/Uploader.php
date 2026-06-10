@@ -139,6 +139,9 @@ class Uploader extends Presenter
     {
         list($users, $clients) = $this->presentList($priv, $userId, $this->usertable);
 
+      //  $users = [];
+      //  $clients = [];
+
         $defaultVars = [
             'files' => $displayfiles,
             'priv' => $priv,
