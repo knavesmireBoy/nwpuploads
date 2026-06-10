@@ -5,8 +5,6 @@ include_once ACCESS;
 
 //phpinfo();
 
-//$unsetcookie = doSetCookie(false);
-
 $c = doSetCookie(false);
 $c('msg', '');
 

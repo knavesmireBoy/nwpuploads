@@ -9,20 +9,6 @@ class Uploader extends Presenter
     private $sort = 'tt';
     public function __construct(protected DatabaseTable $table, private DatabaseTable $usertable, private int $display, private int $start, private int $pages, private string $home) {}
 
-    private function fooey($group, $prop)
-    {
-        $first = [];
-        $last = [];
-        foreach ($group as $k => $v) {
-            $u = explode(' ', $v[$prop]);
-            $first[$k] = current($u);
-            $last[$k] = end($u) || '';
-            $group[$k][$prop] = $u[1];
-            $group[$k]['uniq'] = $k; //assign same key to the `uniq` property
-        }
-        return [$first, $last, $group];
-    }
-
     private function findUser($arg)
     {
         if (is_numeric($arg)) {
