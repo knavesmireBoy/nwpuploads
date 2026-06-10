@@ -21,6 +21,15 @@ class Authentication
         }
     }
 
+    protected function setCookie(array $data, array $mandatory, mixed $flag)
+    {
+        $setcookie = doSetCookie($flag);
+        foreach ($mandatory as $prop) {
+            $arg = isset($data[$prop]) && $flag ? $data[$prop] : '';
+            $setcookie($prop, $arg);
+        }
+    }
+
     public function __construct(DatabaseTable $users, string $usr, string $pwd)
     {
         if (!isset($_SESSION)) {
@@ -76,7 +85,7 @@ class Authentication
     }
     public function logout()
     {
-        dump($_COOKIE);
+        $this->setCookie($_COOKIE, ['flash', 'email', 'name', 'client_id'], false);
         unset($_SESSION['username']);
         unset($_SESSION['password']);
         unset($_SESSION['role']);
