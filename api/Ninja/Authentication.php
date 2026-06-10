@@ -76,6 +76,7 @@ class Authentication
     }
     public function logout()
     {
+        dump($_COOKIE);
         unset($_SESSION['username']);
         unset($_SESSION['password']);
         unset($_SESSION['role']);
