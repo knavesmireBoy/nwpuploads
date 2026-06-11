@@ -3,7 +3,7 @@
         <label for="uploadfiles">Upload File</label><input id="uploadfiles" type="file" name="upload" <?= $disabled; ?> />
         <label for="desc">Description</label><input id="desc" type="text" name="desc" />
         <?php
-        if ($priv == 'Admin') : ?>
+        if ($listuser) : ?>
                <label for="user">User</label><select id="user" name="user">
                                 <option value="">Select One</option>
                                 <?php
