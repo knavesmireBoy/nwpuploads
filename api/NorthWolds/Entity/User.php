@@ -327,7 +327,7 @@ rather than calling an update method of the observer, but keeping this as an exa
       }
       if ($this->client_id) {
         $client = $this->fetch('clienttable', 'id', $this->client_id);
-        
+
         $users = $this->table->find('client_id', $this->client_id, null, 0, 0, \PDO::FETCH_ASSOC);
 
         $bool = $this->countRoles($users, $this->id) && count($users) > 1;
@@ -341,6 +341,9 @@ rather than calling an update method of the observer, but keeping this as an exa
   //sort of validate delete; if it returns anything other than a empty string you cannot delete
   public function delete($id)
   {
+    if ($id != $this->id /* && $this->self*/) {
+      reLocate('/user/load/hack');
+    }
     return '';
   }
 }
