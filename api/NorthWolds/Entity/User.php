@@ -97,15 +97,11 @@ rather than calling an update method of the observer, but keeping this as an exa
     list($ename, $dom, $com) = $this->parseEmail($record['email']);
     $domain = $client->domain ?? null;
 
-    if (!$domain /*&& $this->findDomain("$dom.$com")*/) { //leaving? or never a client
-      // $domain = "$dom.$com";
-      $data['client_id'] = null;
+    if ($domain) {
+      $domain = "$dom.$com"; //joining
+      $data['email'] = "$ename@$domain";
     }
-
-    list($ename, $dom, $com) = $this->parseEmail($data['email']);
-    $domain = "$dom.$com";
-    $data['email'] = "$ename@$domain";
-    return [...$data, 'client_id' => $cid];
+    return [...$data, 'client_id' => nullify($cid)];
   }
 
 
@@ -169,7 +165,7 @@ rather than calling an update method of the observer, but keeping this as an exa
     return count($ret);
   }
 
-  protected function validateDom($cid, $dbrecord, $postdata, $insertID)
+  protected function validateDomField($cid, $dbrecord, $postdata, $insertID)
   {
     $client = $this->fetch('clienttable', 'id', $cid);
     list($ename, $dom, $com) = $this->parseEmail($postdata['email']);
@@ -292,7 +288,7 @@ rather than calling an update method of the observer, but keeping this as an exa
       return function (?int $cid, array $postdata, int $id = 0) use ($uid) {
 
         $dbrecord = $this->fetch('TABLE', 'id', $uid);
-        $data = $this->validateDom($cid, $dbrecord, $postdata, $id);
+        $data = $this->validateDomField($cid, $dbrecord, $postdata, $id);
 
         $details = $this->getDetails();
         $domain = $details['domain'] ?? '';

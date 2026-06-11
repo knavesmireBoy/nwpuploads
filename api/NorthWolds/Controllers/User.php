@@ -38,7 +38,7 @@ class User extends Presenter implements \SplObserver
             'nousers' => "Unable to find any users",
             "addnotice" => "Please fill required fields",
             "selectuser" => "Please select a user for editing",
-            "domainflag" => "Cannot assign this user to a new client, innit",
+            "domainflag" => "Cannot assign this user to a new client",
 
             "denied" => "You do not have the privileges to delete this user",
             "deniedbyclient" => "There must be at least one administrator role, please assign another user before removing your credentials from the database",
@@ -69,12 +69,15 @@ class User extends Presenter implements \SplObserver
             '_nondom' => 'Change the domain of the client not a team member.',
 
             '_cadmin' => 'Cannot change the domain of a user with an admin role',
-
             '_unassign' => 'Cannot unassign a user with an admin role',
+
+            'domainchange' => 'You cannot change the email domain',
+            '_domainchange' => 'You cannot change the email domain',
 
             '_assign' => 'Cannot assign a user with an admin role to another client',
             'traitor' => 'That domain is not available.',
             '_traitor' => 'To assign to another client use the drop down menu.',
+            '_leave' => 'Set the drop down menu to empty to release a user from a client.',
             '_move' => 'Cannot move a user with an admin role',
             '_impostor' => 'That domain is in use, use the client list drop down to assign a user.'
         ];

@@ -17,12 +17,12 @@ class Employee extends User
     }
 
     //validate activity on the email field
-    protected function validateDom($cid, $record, $postdata, $insertId = 0)
+    protected function validateDomField($cid, $record, $postdata, $insertId = 0)
     {
         list($name, $dom, $com) = $this->parseEmail($record['email']);
         list($ename, $edom, $ecom) = $this->parseEmail($postdata['email']);
 
-        $postdata = $this->setClientEmail($cid, $postdata, $record);
+       // $postdata = $this->setClientEmail($cid, $postdata, $record);
 
         /*
         admin can change the domain provided there is no selection in the drop down menu
@@ -63,25 +63,19 @@ class Employee extends User
         $dbrecord = $this->fetch('TABLE', 'id', $this->id);
         if ($default) {
             return function (?int $cid, array $postdata, int $id = 0) use ($uid, $relocate, $cookiearg, $dbrecord) {
+                $relocate = false;
+                $postdata = $this->validateDomField($cid, $dbrecord, $postdata);
+                $traitor = $this->traitorCheck($cid, $dbrecord, $postdata);
 
-                $postdata = $this->validateDom($cid, $dbrecord, $postdata);
-
-                if (!$postdata) {
-                } else {
-                    if (!$cid) {
-                        $client = $this->clienttable->getEntity();
-                        list($ename, $edom, $ecom) = $this->parseEmail($postdata['email']);
-                        if ($client->domainAvailable("$edom.$ecom")) {
-                            dump(99);
-                        }
-                        else {
-                            $fail = $this->traitorCheck($cid, $dbrecord, $postdata);
-                            dump($fail);
-                        }
-                    }
+                if($traitor){
+                    $arg = $this->self ? 'domainchange' :  '_traitor';
+                    reLocate("/user/load/$arg");
                 }
 
-                $fail = $this->traitorCheck($cid, $dbrecord, $postdata);
+                if (!$postdata) {
+                   $arg = $this->self ? 'domainchange' :  '_leave';
+                   reLocate("/user/load/$arg");
+                } 
 
                 if (isset($dbrecord['email'])) { //existing
                     //can only be admin moving an employee; admin users cannot be moved
@@ -89,34 +83,20 @@ class Employee extends User
                         if ($cid != $dbrecord['client_id']) {
                             $this->setCookie(['flash' => "key=move&id=$uid&client_id=$cid"], ['flash'], true);
                             $relocate = true;
-                        } else {
-                            $postdata = $this->setClientEmail($cid, $postdata, $dbrecord);
                         }
                     } else { //admin releasing an employee OR updating name 
-
-
                         $this->setCookie(['flash' => "key=leave&id=$uid&client_id=$cid"], ['flash'], true);
-
-                        $relocate = !$cid ? true : $relocate;
-
-
-
-                        if ($fail) {
-                            if (!$relocate) {
-                                $key = $this->self ? 'traitor' : '_traitor';
-                                $relocate = true;
-                                $this->setCookie(['flash' => "key=$key"], ['flash'], true);
-                            }
-                        }
+                        $relocate = true;
                     }
                     if ($relocate) {
+                        $postdata = $this->setClientEmail2($cid, $postdata, $dbrecord);
                         $this->setCookie([...$postdata, 'client_id' => $cid ?? 0], ['name', 'email', 'client_id'], $cookiearg);
                         reLocate($this->exit);
                     } else {
-                        return $this->setClientEmail($cid, $postdata, $dbrecord);
+                        return $this->setClientEmail2($cid, $postdata, $dbrecord);
                     }
                 } else { //new
-                    return $this->setClientEmail($cid, $postdata, []);
+                    return $this->setClientEmail2($cid, $postdata, []);
                 }
             }; //default function
         }

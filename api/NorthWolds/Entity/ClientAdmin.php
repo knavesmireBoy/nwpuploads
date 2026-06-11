@@ -16,7 +16,7 @@ class ClientAdmin extends User
       return '';
     }
 
-    protected function validateDom($cid, $record, $postdata, $insertId = 0)
+    protected function validateDomField($cid, $record, $postdata, $insertId = 0)
     {
         list($name, $dom, $com) = $this->parseEmail($record['email']);
         list($ename, $edom, $ecom) = $this->parseEmail($postdata['email']);
@@ -47,7 +47,7 @@ class ClientAdmin extends User
                     $this->setCookie(['flash'=>"key=$msg&id=$uid"], ['flash'], true);
                     reLocate($this->exit);
                 }
-                $data = $this->validateDom($cid, $dbrecord, $postdata);
+                $data = $this->validateDomField($cid, $dbrecord, $postdata);
                 if (!$data) {
                     $msg = $this->self ? 'domain' : '_nondom';
                     $this->setCookie(['flash'=>"key=$msg&id=$uid"], ['flash'], true);
