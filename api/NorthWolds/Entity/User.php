@@ -94,11 +94,11 @@ rather than calling an update method of the observer, but keeping this as an exa
   protected function setClientEmail2($cid, $data, $record)
   {
     $client = $this->fetch('clienttable', 'id', $cid);
-    list($ename, $dom, $com) = $this->parseEmail($record['email']);
+    list($ename) = $this->parseEmail($record['email']);
     $domain = $client->domain ?? null;
 
     if ($domain) {
-      $domain = "$dom.$com"; //joining
+      //$domain = "$dom.$com"; //joining
       $data['email'] = "$ename@$domain";
     }
     return [...$data, 'client_id' => nullify($cid)];
