@@ -89,23 +89,22 @@ class Employee extends User
                         $relocate = true;
                     }
                     if ($relocate) {
-                        $postdata = $this->setClientEmail2($cid, $postdata, $dbrecord);
-                        //dump($postdata);
-                        //$postdata = [...$postdata, 'client_id' => $cid ?? 0];
-                        $this->setCookie($postdata, ['name', 'email', 'client_id'], true);
-
+                        $postdata = $this->setClientEmail($cid, $postdata, $dbrecord);
+                        //not we need a falsy but non null value for the cookie to work
+                        //otherwise client_id should be an int OR null
+                        $this->setCookie([...$postdata, 'client_id' => $cid ?? 0],['name', 'email', 'client_id'], true);
                         reLocate($this->exit);
                     } else {
-                        return $this->setClientEmail2($cid, $postdata, $dbrecord);
+                        return $this->setClientEmail($cid, $postdata, $dbrecord);
                     }
                 } else { //new
-                    return $this->setClientEmail2($cid, $postdata, []);
+                    return $this->setClientEmail($cid, $postdata, []);
                 }
             }; //default function
         }
         return function (?int $cid, array $postdata, int $id = 0) use ($uid, $relocate, $cookiearg, $dbrecord) {
 
-            $postdata = $this->setClientEmail2($cid, $postdata, $dbrecord);
+            $postdata = $this->setClientEmail($cid, $postdata, $dbrecord);
 
             $fail = $this->traitorCheck($cid, $dbrecord, $postdata);
             if ($fail) {

@@ -65,43 +65,42 @@ rather than calling an update method of the observer, but keeping this as an exa
   /*
 
 */
-  protected function setClientEmail($cid, $data, $record)
-  {
-    $client = $this->fetch('clienttable', 'id', $cid);
-    list($name, $dom, $com) = $this->parseEmail($record['email']);
-    $recorddom = "$dom.$com";
-    list($ename, $dom, $com) = $this->parseEmail($data['email']);
-    $edom = "$dom.$com";
-    $domain = $client->domain ?? null;
 
-    if (!$domain /*&& $this->findDomain("$dom.$com")*/) { //leaving? or never a client
-      // $domain = "$dom.$com";
-      $data['client_id'] = null;
-    }
-    else {
-      $client = $this->findDomain("$dom.$com");
-      $domain = isset($client) && $client->id == $cid;
-      //reset email
-    }
+protected function setClientEmail1($cid, $data, $record)
+{
+  $client = $this->fetch('clienttable', 'id', $cid);
+  list($name, $dom, $com) = $this->parseEmail($record['email']);
+  $recorddom = "$dom.$com";
+  list($ename, $dom, $com) = $this->parseEmail($data['email']);
+  $edom = "$dom.$com";
+  $domain = $client->domain ?? null;
 
-    list($ename, $dom, $com) = $this->parseEmail($data['email']);
-    $domain = "$dom.$com";
-    $data['email'] = "$ename@$domain";
-
-    return [...$data, 'client_id' => $cid];
+  if (!$domain /*&& $this->findDomain("$dom.$com")*/) { //leaving? or never a client
+    // $domain = "$dom.$com";
+    $data['client_id'] = null;
+  } else {
+    $client = $this->findDomain("$dom.$com");
+    $domain = isset($client) && $client->id == $cid;
+    //reset email
   }
 
-  protected function setClientEmail2($cid, $data, $record)
+  list($ename, $dom, $com) = $this->parseEmail($data['email']);
+  $domain = "$dom.$com";
+  $data['email'] = "$ename@$domain";
+
+  return [...$data, 'client_id' => $cid];
+}
+
+  protected function setClientEmail($cid, $data, $record)
   {
     $client = $this->fetch('clienttable', 'id', $cid);
     list($ename) = $this->parseEmail($record['email']);
     $domain = $client->domain ?? null;
 
     if ($domain) {
-      //$domain = "$dom.$com"; //joining
       $data['email'] = "$ename@$domain";
     }
-    return [...$data, 'client_id' => $cid ?? 0];
+    return [...$data, 'client_id' => nullify($cid)];
   }
 
 
@@ -174,7 +173,7 @@ rather than calling an update method of the observer, but keeping this as an exa
     if ($client) {
       $details = $this->getDetails();
       $key = isApproved($details['role'], 'ADMIN') ? '_denied' : $key;
-      $data = $this->setClientEmail2($cid, $postdata, $dbrecord);
+      $data = $this->setClientEmail($cid, $postdata, $dbrecord);
     } else {
       $client = $this->clienttable->getEntity();
       if ($client->domainAvailable($postdom)) {
