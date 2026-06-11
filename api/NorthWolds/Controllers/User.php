@@ -41,6 +41,9 @@ class User extends Presenter implements \SplObserver
             'editno' => 'You do not have the required privilges to edit this user details.',
             'read' => 'You may view but not edit this user details.',
 
+
+            'hack' => 'You do not have the privileges to perform this operation',
+
             'undef' => "Missing property: $arg",
             '_admin' => "You cannot delete an administrator.",
             "lasteditor" => "There must be at least one administrator role, please assign another user before removing credentials from the database.",

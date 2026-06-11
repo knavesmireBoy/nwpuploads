@@ -17,6 +17,9 @@ class Solo extends ClientAdmin
 
     public function delete($id)
     {
+        if ($id != $this->id /* && $this->self*/) {
+            reLocate('/user/load/hack');
+        }
         return 'last';
     }
 
