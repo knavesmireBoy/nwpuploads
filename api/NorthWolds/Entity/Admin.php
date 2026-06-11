@@ -23,7 +23,7 @@ class Admin extends User
         return $this->roleid;
     }
 
-    public function delete($id)
+    public function delete($id, $details)
     {
         return '_admin';
     }
