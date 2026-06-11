@@ -163,8 +163,8 @@ class Uploader extends Presenter
             'thead' => 't',
             'sort' => $this->sort,
             'listuser' => $priv === 'Admin' ? true : false,
-            'disabled' => $priv === 'Browser' ? 'disabled' : '',
-            '_colspan' => $priv === 'Browser'  ? '1' : '2'
+            'disabled' => $priv !== 'Browser' ? 'disabled' : '',
+            '_colspan' => $priv !== 'Browser'  ? '1' : '2'
         ];
         $vars = array_merge($defaultVars, $customVars);
         if ($vars['searchtext'] || count($displayfiles) <= $this->display) {

@@ -1,6 +1,6 @@
 <?php
 
-$uhead = $listuser ? $uhead : '/uploader/load';
+//$uhead = $listuser ? $uhead : '/uploader/load/';
 ?>
 <div id="upload">
 <table>
