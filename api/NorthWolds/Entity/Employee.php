@@ -73,6 +73,7 @@ class Employee extends User
                 }
 
                 if (!$postdata) {
+                    dump($_SESSION);
                     $arg = $this->self ? 'domainchange' :  '_leave';
                     reLocate("/user/load/$arg");
                 }
