@@ -64,8 +64,8 @@ class Employee extends User
         if ($default) {
             return function (?int $cid, array $postdata, int $id = 0) use ($uid, $relocate, $cookiearg, $dbrecord) {
                 $relocate = false;
-                $postdata = $this->validateDomField($cid, $dbrecord, $postdata);
                 $traitor = $this->traitorCheck($cid, $dbrecord, $postdata);
+                $postdata = $this->validateDomField($cid, $dbrecord, $postdata);
 
                 if ($traitor) {
                     $arg = $this->self ? 'domainchange' :  '_traitor';
