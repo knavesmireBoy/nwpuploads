@@ -22,7 +22,7 @@ class Employee extends User
         list($name, $dom, $com) = $this->parseEmail($record['email']);
         list($ename, $edom, $ecom) = $this->parseEmail($postdata['email']);
 
-       // $postdata = $this->setClientEmail($cid, $postdata, $record);
+        // $postdata = $this->setClientEmail($cid, $postdata, $record);
 
         /*
         admin can change the domain provided there is no selection in the drop down menu
@@ -67,15 +67,15 @@ class Employee extends User
                 $postdata = $this->validateDomField($cid, $dbrecord, $postdata);
                 $traitor = $this->traitorCheck($cid, $dbrecord, $postdata);
 
-                if($traitor){
+                if ($traitor) {
                     $arg = $this->self ? 'domainchange' :  '_traitor';
                     reLocate("/user/load/$arg");
                 }
 
                 if (!$postdata) {
-                   $arg = $this->self ? 'domainchange' :  '_leave';
-                   reLocate("/user/load/$arg");
-                } 
+                    $arg = $this->self ? 'domainchange' :  '_leave';
+                    reLocate("/user/load/$arg");
+                }
 
                 if (isset($dbrecord['email'])) { //existing
                     //can only be admin moving an employee; admin users cannot be moved
@@ -90,7 +90,9 @@ class Employee extends User
                     }
                     if ($relocate) {
                         $postdata = $this->setClientEmail2($cid, $postdata, $dbrecord);
-                        $this->setCookie([...$postdata, 'client_id' => $cid ?? 0], ['name', 'email', 'client_id'], $cookiearg);
+                        //[...$postdata, 'client_id' => $cid ?? 0]
+                        $this->setCookie($postdata, ['name', 'email', 'client_id'], true);
+
                         reLocate($this->exit);
                     } else {
                         return $this->setClientEmail2($cid, $postdata, $dbrecord);
