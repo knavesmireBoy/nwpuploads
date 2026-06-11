@@ -79,7 +79,7 @@ class Uploader extends Entity
         $ret = $count > 1 ? 1 : 0;
         $res = $this->fetch('USERTABLE', 'id', $this->userid);
         if ($res['client_id']) {
-            $users = $this->table->find('client_id', $res->client_id);
+            $users = $this->table->find('client_id', $res['client_id']);
             $tmp = count($this->getClientFiles($this->userid)) > $count ? 2 : 0;
             $ret += $tmp;
         }
