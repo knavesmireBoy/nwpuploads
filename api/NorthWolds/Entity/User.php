@@ -174,7 +174,7 @@ rather than calling an update method of the observer, but keeping this as an exa
     if ($client) {
       $details = $this->getDetails();
       $key = isApproved($details['role'], 'ADMIN') ? '_denied' : $key;
-      $data = $this->setClientEmail($cid, $postdata, $dbrecord);
+      $data = $this->setClientEmail2($cid, $postdata, $dbrecord);
     } else {
       $client = $this->clienttable->getEntity();
       if ($client->domainAvailable($postdom)) {
@@ -186,9 +186,6 @@ rather than calling an update method of the observer, but keeping this as an exa
           $key = '_impostor';
         } else { //or existing user (freelancer) attempting to swap clients
           $key = $this->self ? 'traitor' : '_traitor';
-          /*
-          $data = ['id' => $this->id, 'email' => "$ename@$postdom", 'name' => $dbrecord['name'], 'client_id' => null];
-          */
         }
       }
     }
