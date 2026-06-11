@@ -81,12 +81,13 @@ class User extends Presenter implements \SplObserver
         $ret = [];
         $id = $data['id'] ?? '';
         $cid = $data['client_id'] ?? '';
+        $msg = $data['msg'] ?? '';
         $users = $key === 'selected' ? $data : [];
         $prompt = ['pagehead' => 'Edit User', 'id' => $id, 'template' => 'prompt.html.php', 'title' => 'Prompt', 'call' => 'confirm', 'pos' => 'Yes', 'neg' => 'No'];
 
         $lib = [
             'edit' => ['calltext' => 'Delete User', 'callroute' => "/user/delete/$id"],
-            'delete' => [...$prompt, 'prompt' => "Are you sure you want to delete this user?", 'action' => '/user/confirm/'],
+            'delete' => [...$prompt, 'prompt' => $msg ? $msg : "Are you sure you want to delete this user?", 'action' => '/user/confirm/'],
             'confirm' => ['id' => $id],
             'selected' => ['pagehead' => 'Select User', 'selected' => true, 'clients' => [], 'users' => $users],
 
@@ -450,7 +451,11 @@ class User extends Presenter implements \SplObserver
             if ($msg) {
                 return reLocate($this->home . $msg);
             }
-            return $this->load('delete', ['id' => $id]);
+
+            $data = ['id' => $id];
+            $xtra = $user->getSelf() ? ['msg' => 'Are you sure you want to remove your credentials from the database?'] : [];
+
+            return $this->load('delete', [...$data, ...$xtra]);
         } else {
             return reLocate($this->home . 'nouser');
         }
