@@ -163,7 +163,8 @@ class Uploader extends Presenter
             'thead' => 't',
             'sort' => $this->sort,
             'listuser' => $priv === 'Admin' ? true : false,
-            'disabled' => $priv === 'Browser' ? 'disabled' : ''
+            'disabled' => $priv === 'Browser' ? 'disabled' : '',
+            '_colspan' => $priv === 'Browser'  ? '1' : '2'
         ];
         $vars = array_merge($defaultVars, $customVars);
         if ($vars['searchtext'] || count($displayfiles) <= $this->display) {
@@ -609,9 +610,9 @@ class Uploader extends Presenter
 
     public function find()
     {
-        
-        
-        
+
+
+
         return $this->load('search');
     }
 
@@ -623,6 +624,4 @@ class Uploader extends Presenter
     {
         reLocate("/uploader/load/");
     }
-
-
 }
