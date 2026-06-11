@@ -51,7 +51,7 @@ class Employee extends User
         $filter = curry2('array_filter')($f);
         $clients = $this->clienttable->findAll();
 
-        dump(["$dom.$com", $cid]);
+        dump([$dom, $edom, $cid]);
 
         $traitorCheck = composer(partial('in_array', $edom), $filter, partial('array_values'), partial('array_map', curry2('getter')(0)), partial('array_map', 'parseEmail'), partial('array_column', $clients));
 
