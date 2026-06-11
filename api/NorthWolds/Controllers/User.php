@@ -239,7 +239,7 @@ class User extends Presenter implements \SplObserver
         $vars = array_values($vars);
 
         $error = $this->query($key, ...$vars);
-       // $this->setCookie($_COOKIE, ['flash'], false);
+        // $this->setCookie($_COOKIE, ['flash'], false);
 
         if ($user->preEdit(empty($customVars))) {
             $args = $error ? ['message' => $error] : [];
@@ -446,6 +446,8 @@ class User extends Presenter implements \SplObserver
         $msg = '';
         $details = $this->getPrivilege();
         $user = $this->fetch('table', 'id', $id);
+
+
         if ($user) {
             $user = $this->getSubUser($user);
             $user->setSelf($id == $details['id']);
@@ -456,7 +458,14 @@ class User extends Presenter implements \SplObserver
             }
 
             $data = ['id' => $id];
-            $xtra = $user->getSelf() ? ['msg' => 'Are you sure you want to remove your credentials from the database?'] : [];
+            $self = $user->getSelf();
+
+
+            $xtra = $self ? ['msg' => 'Are you sure you want to remove your credentials from the database?'] : [];
+
+            if ($details['role'] !== 'Admin' || !$self) {
+                reLocate('/user/load/hack');
+            }
 
             return $this->load('delete', [...$data, ...$xtra]);
         } else {
