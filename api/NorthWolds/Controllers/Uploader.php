@@ -139,9 +139,6 @@ class Uploader extends Presenter
     {
         list($users, $clients) = $this->presentList($priv, $userId, $this->usertable);
 
-      //  $users = [];
-      //  $clients = [];
-
         $defaultVars = [
             'files' => $displayfiles,
             'priv' => $priv,
@@ -224,15 +221,11 @@ class Uploader extends Presenter
                 $group[$u->id] = $u->name;
             }
             $group = byLastName($group);
-
         } else if (isApproved($priv, 'admin')) {
             $ids = $user->getUserIds();
             foreach ($ids as $id) {
                 $u = $this->usertable->find('id', $id)[0];
-                //would filter current user; but then no undo possibility
-              //  if ($id !== $user->id) {
-                    $group[$id] = $u->name;
-              //  }
+                $group[$id] = $u->name;
             }
         }
         $swap = $data['answer'] ?? 'No';
@@ -466,7 +459,6 @@ class Uploader extends Presenter
         $this->pages = isApproved($priv, 'ADMIN') ? $this->pages : $this->setPages(count($contenders));
         //do this last; paginate
         $displayfiles = array_slice($contenders, $this->start, $this->display);
-    
         return $this->displayer($user->id, $priv, $displayfiles, '', $owner, $customVars);
     }
 
@@ -478,11 +470,6 @@ class Uploader extends Presenter
     public function updateSubmit()
     {
         return $this->doUpdate($_POST);
-    }
-
-    public function swap()
-    {
-        reLocate('/uploader/load');
     }
 
     public function swapSubmit()
@@ -539,11 +526,6 @@ class Uploader extends Presenter
         } else {
             return $this->load('edit', $_POST);
         }
-    }
-
-    public function destroy()
-    {
-        reLocate("/uploader/load/");
     }
 
     public function destroySubmit()
@@ -625,9 +607,15 @@ class Uploader extends Presenter
     {
         return $this->load('search');
     }
-    //form submission
-    public function finder()
+
+    public function swap()
     {
-        return $this->found($_GET['user'], $_GET['text'], $_GET['ext']);
+        reLocate('/uploader/load');
     }
+    public function destroy()
+    {
+        reLocate("/uploader/load/");
+    }
+
+
 }
