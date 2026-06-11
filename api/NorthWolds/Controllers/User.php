@@ -16,15 +16,6 @@ class User extends Presenter implements \SplObserver
     }
 
 
-    protected function getSubUser(\NorthWolds\Entity\User $user)
-    {
-        $details = $user->getDetails();
-        $entity = $this->getEntity($details);
-        $this->table->setEntity($entity);
-        return $this->fetch('table', 'id', $user->id);
-    }
-
-
     private function destroy($id)
     {
         $this->table->delete('id', $id);

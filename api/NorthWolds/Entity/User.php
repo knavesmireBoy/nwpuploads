@@ -327,7 +327,9 @@ rather than calling an update method of the observer, but keeping this as an exa
       }
       if ($this->client_id) {
         $client = $this->fetch('clienttable', 'id', $this->client_id);
+        
         $users = $this->table->find('client_id', $this->client_id, null, 0, 0, \PDO::FETCH_ASSOC);
+
         $bool = $this->countRoles($users, $this->id) && count($users) > 1;
         $clientdetails = ['client_id' => $this->client_id, 'clientname' => $client->name, 'tel' => $client->tel, 'domain' => $client->domain, 'colleagues' => count($users) > 1, 'administrator' => $bool];
       }

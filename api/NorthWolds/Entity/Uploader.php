@@ -58,6 +58,8 @@ class Uploader extends Entity
         $res = $this->fetch('usertable', 'id', $this->userid);
         $key = 'id';
 
+        $users = $this->table->find('client_id', $res->client_id, null, 0, 0, \PDO::FETCH_ASSOC);
+        $multi = $multi && count($users) > 1;
         if (!empty($res)) {
             if ($prop === 'owner') {
                 $key = 'ownerid';

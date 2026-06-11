@@ -33,6 +33,16 @@ class Presenter
     }
 
 
+    protected function getSubUser(\NorthWolds\Entity\User $user, $table = 'table')
+    {
+        $details = $user->getDetails();
+        $entity = $this->getEntity($details);
+        $this->{$table}->setEntity($entity);
+        return $this->fetch('table', 'id', $user->id);
+    }
+
+
+
     protected function presentList(string $role, mixed $userId, DatabaseTable $table, $prop = 'domain')
     {
         $clients = [];
