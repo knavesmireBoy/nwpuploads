@@ -451,7 +451,7 @@ class User extends Presenter implements \SplObserver
         if ($user) {
             $user = $this->getSubUser($user);
             $user->setSelf($id == $details['id']);
-            $msg = $user->delete($id);
+            $msg = $user->delete($id, $details);
 
             if ($msg) {
                 return reLocate($this->home . $msg);
