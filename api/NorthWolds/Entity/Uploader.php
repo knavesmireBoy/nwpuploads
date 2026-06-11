@@ -58,7 +58,7 @@ class Uploader extends Entity
         $res = $this->fetch('usertable', 'id', $this->userid);
         $key = 'id';
 
-        $users = $this->table->find('client_id', $res->client_id, null, 0, 0, \PDO::FETCH_ASSOC);
+        $users = $res->client_id ? $this->table->find('client_id', $res->client_id, null, 0, 0, \PDO::FETCH_ASSOC) : [];
         $multi = $multi && count($users) > 1;
         if (!empty($res)) {
             if ($prop === 'owner') {
@@ -75,13 +75,15 @@ class Uploader extends Entity
         $res = $this->table->find('userid', $this->userid);
         $tmp = 0;
         $count = count($res);
+        $users = [];
         $ret = $count > 1 ? 1 : 0;
         $res = $this->fetch('USERTABLE', 'id', $this->userid);
         if ($res['client_id']) {
+            $users = $this->table->find('client_id', $res->client_id);
             $tmp = count($this->getClientFiles($this->userid)) > $count ? 2 : 0;
             $ret += $tmp;
         }
-        $multi = ['multi' => $ret && ($res['client_id'] || $_SESSION['role'] === 'Admin')];
+        $multi = ['multi' => $ret && (count($users) > 1 || $_SESSION['role'] === 'Admin')];
         $multi['editor'] = $res['email'] === $loggedin;
         return [...$res, ...$multi];
     }
