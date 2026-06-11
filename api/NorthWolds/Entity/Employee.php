@@ -68,13 +68,12 @@ class Employee extends User
                 $postdata = $this->validateDomField($cid, $dbrecord, $postdata);
 
                 if ($traitor) {
-                    $arg = $this->self ? 'domainchange' :  '_traitor';
+                    $arg = $_SESSION['role'] === 'Admin' ? '_traitor' : 'domainchange';
                     reLocate("/user/load/$arg");
                 }
 
                 if (!$postdata) {
-                    dump($_SESSION);
-                    $arg = $this->self ? 'domainchange' :  '_leave';
+                    $arg = $_SESSION['role'] === 'Admin' ? '_leave' : 'domainchange';
                     reLocate("/user/load/$arg");
                 }
 
@@ -93,7 +92,7 @@ class Employee extends User
                         $postdata = $this->setClientEmail($cid, $postdata, $dbrecord);
                         //not we need a falsy but non null value for the cookie to work
                         //otherwise client_id should be an int OR null
-                        $this->setCookie([...$postdata, 'client_id' => $cid ?? 0],['name', 'email', 'client_id'], true);
+                        $this->setCookie([...$postdata, 'client_id' => $cid ?? 0], ['name', 'email', 'client_id'], true);
                         reLocate($this->exit);
                     } else {
                         return $this->setClientEmail($cid, $postdata, $dbrecord);
