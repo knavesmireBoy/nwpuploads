@@ -72,9 +72,11 @@ class Employee extends User
                         $client = $this->clienttable->getEntity();
                         list($ename, $edom, $ecom) = $this->parseEmail($postdata['email']);
                         if ($client->domainAvailable("$edom.$ecom")) {
+                            dump(99);
                         }
                         else {
                             $fail = $this->traitorCheck($cid, $dbrecord, $postdata);
+                            dump($fail);
                         }
                     }
                 }
