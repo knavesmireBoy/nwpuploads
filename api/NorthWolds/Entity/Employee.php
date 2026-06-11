@@ -91,7 +91,7 @@ class Employee extends User
                     if ($relocate) {
                         $postdata = $this->setClientEmail2($cid, $postdata, $dbrecord);
                         //dump($postdata);
-                        $postdata = [...$postdata, 'client_id' => $cid ?? 0];
+                        //$postdata = [...$postdata, 'client_id' => $cid ?? 0];
                         $this->setCookie($postdata, ['name', 'email', 'client_id'], true);
 
                         reLocate($this->exit);
