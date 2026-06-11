@@ -67,11 +67,13 @@ rather than calling an update method of the observer, but keeping this as an exa
   {
     $client = $this->fetch('clienttable', 'id', $cid);
     $domain = $client->domain ?? null;
+
     if (!$domain) {
       list($ename, $dom, $com) = $this->parseEmail($record['email']);
       $domain = "$dom.$com";
       $data['client_id'] = null;
     }
+    
     list($ename, $dom, $com) = $this->parseEmail($data['email']);
     $data['email'] = "$ename@$domain";
     return [...$data, 'client_id' => $cid];
@@ -282,7 +284,6 @@ rather than calling an update method of the observer, but keeping this as an exa
         $this->setCookie(['flash' => "key=_sync&id=$uid"], ['flash'], true);
         reLocate($this->exit);
       }
-      dump([$cid, $postdata]);
       return $postdata;
     };
   }
