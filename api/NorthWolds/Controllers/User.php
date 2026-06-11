@@ -463,9 +463,12 @@ class User extends Presenter implements \SplObserver
 
             $xtra = $self ? ['msg' => 'Are you sure you want to remove your credentials from the database?'] : [];
 
-            if ($details['role'] !== 'Admin' || !$self) {
+            if (!preg_match('/admin/', $details['role']) || !$self) {
                 reLocate('/user/load/hack');
             }
+            if (!preg_match('/client/', $details['role'])) {
+            }
+
 
             return $this->load('delete', [...$data, ...$xtra]);
         } else {

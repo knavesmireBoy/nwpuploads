@@ -26,7 +26,7 @@ class ClientAdminSolo extends ClientAdmin
         return $role;
     }
 
-    public function delete($id)
+    public function delete($id, $details)
     {
         $msg = '';
         $ids = $this->getUserIds();

@@ -5,7 +5,6 @@ namespace NorthWolds\Entity;
 class Employee extends User
 {
 
-
     public function postEdit()
     {
         return $this->self ? 'success' : '';
@@ -121,11 +120,11 @@ class Employee extends User
         };
     }
 
-    public function delete($id)
+    public function delete($id, $details)
     {
-      if ($id != $this->id /* && $this->self*/) {
-        reLocate('/user/load/hack');
-      }
-      return '';
+        if ($details['client_id'] !== $this->client_id || $details['role'] !== 'Admin') {
+            reLocate('/user/load/hack');
+        }
+        return '';
     }
 }

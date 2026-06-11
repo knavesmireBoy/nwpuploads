@@ -339,9 +339,9 @@ rather than calling an update method of the observer, but keeping this as an exa
   }
 
   //sort of validate delete; if it returns anything other than a empty string you cannot delete
-  public function delete($id)
+  public function delete($id, $details)
   {
-    if ($id != $this->id /* && $this->self*/) {
+    if ($details['id'] != $id || $details['role'] !== 'Admin') {
       reLocate('/user/load/hack');
     }
     return '';
