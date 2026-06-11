@@ -46,11 +46,13 @@ class Employee extends User
     {
         list($name, $dom, $com) = $this->parseEmail($record['email']);
         $f = negate(curry2('equals')("$dom.$com"));
-        list($name, $dom, $com) = $this->parseEmail($postdata['email']);
+        list($name, $edom, $ecom) = $this->parseEmail($postdata['email']);
         $f = $cid ? $f : 'identity';
         $filter = curry2('array_filter')($f);
         $clients = $this->clienttable->findAll();
-        $traitorCheck = composer(partial('in_array', "$dom.$com"), $filter, partial('array_values'), partial('array_map', curry2('getter')(0)), partial('array_map', 'parseEmail'), partial('array_column', $clients));
+
+        $traitorCheck = composer(partial('in_array', "$edom.$ecom"), 'dump', $filter, partial('array_values'), partial('array_map', curry2('getter')(0)), partial('array_map', 'parseEmail'), partial('array_column', $clients));
+
         return $traitorCheck('domain');
     }
 
@@ -62,10 +64,23 @@ class Employee extends User
         if ($default) {
             return function (?int $cid, array $postdata, int $id = 0) use ($uid, $relocate, $cookiearg, $dbrecord) {
 
+                $postdata = $this->validateDom($cid, $dbrecord, $postdata);
+
+                if (!$postdata) {
+                } else {
+                    if (!$cid) {
+                        $client = $this->clienttable->getEntity();
+                        list($ename, $edom, $ecom) = $this->parseEmail($postdata['email']);
+                        if ($client->domainAvailable("$edom.$ecom")) {
+                        }
+                        else {
+                            $fail = $this->traitorCheck($cid, $dbrecord, $postdata);
+                        }
+                    }
+                }
 
                 $fail = $this->traitorCheck($cid, $dbrecord, $postdata);
 
-                    dump($fail);
                 if (isset($dbrecord['email'])) { //existing
                     //can only be admin moving an employee; admin users cannot be moved
                     if ($cid) {
@@ -82,7 +97,7 @@ class Employee extends User
 
                         $relocate = !$cid ? true : $relocate;
 
-                       
+
 
                         if ($fail) {
                             if (!$relocate) {
