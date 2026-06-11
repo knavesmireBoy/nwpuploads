@@ -101,7 +101,7 @@ rather than calling an update method of the observer, but keeping this as an exa
       //$domain = "$dom.$com"; //joining
       $data['email'] = "$ename@$domain";
     }
-    return [...$data, 'client_id' => $cid];
+    return [...$data, 'client_id' => $cid ?? 0];
   }
 
 
