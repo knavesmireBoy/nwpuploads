@@ -94,14 +94,15 @@ if (count($files) > 0): ?>
                 ?>
                 <td><a title="<?= $fsize; ?>" href="/uploader/read/<?= $id; ?>">
                         <?= $f['filename']; ?></a></td>
-                <?php if ($priv != 'Admin') : ?>
-                    <td><?= $f['description']; ?></td>
-                <?php endif;
-                if ($priv == 'Admin') : ?>
+
+                <?php
+                if ($listuser) : ?>
                     <td title="<?= $description; ?>">
                         <?= $f['user']; ?></td>
-                <?php endif;
-                ?>
+                <?php else : ?>
+                    <td><?= $description; ?></td>
+                <?php endif; ?>
+
                 <td title="<?= $tel; ?>">
                     <?php
                     $dateformat = "g:ia F j";

@@ -141,13 +141,11 @@ class Uploader extends Presenter
 
         $defaultVars = [
             'files' => $displayfiles,
-            'priv' => $priv,
             'pages' => $this->pages,
             'error' => $error,
             'start' => $this->start,
             'display' => $this->display,
             'upload' => ASSET_UPLOAD,
-            'disabled' => $priv === 'Browser' ? 'disabled' : '',
             'users' => $users,
             'clients' => $clients,
             'predicates' => [partial('preg_match', '/^nwp/')],
@@ -163,17 +161,20 @@ class Uploader extends Presenter
             'fhead' => 'f',
             'uhead' => 'u',
             'thead' => 't',
-            'sort' => $this->sort
+            'sort' => $this->sort,
+            'listuser' => $priv === 'Admin' ? true : false,
+            'disabled' => $priv === 'Browser' ? 'disabled' : ''
         ];
         $vars = array_merge($defaultVars, $customVars);
-        if ($vars['searchtext']) {
+        if ($vars['searchtext'] || count($displayfiles) <= $this->display) {
             $vars['searchform'] = true;
         }
-        return [
+        $ret = [
             'template' => 'files.html.php',
             'title' => 'File Uploads',
             'variables' => $vars
         ];
+        return $ret;
     }
 
     private function doUpdate($data)
@@ -312,7 +313,8 @@ class Uploader extends Presenter
     private function prepFileForDisplay($records, $cb)
     {
         $ret = [];
-        $callback = function (array $file, \NorthWolds\Entity\User $user) {
+
+        $prepData = function (array $file, \NorthWolds\Entity\User $user) {
             $details = $user->getDetails();
             $name = $details['name'];
             unset($details['id']);
@@ -327,7 +329,7 @@ class Uploader extends Presenter
         foreach ($records as $file) {
             $o = $this->usertable->find('id', $file['userid'])[0];
             if ($cb($file['userid'])) {
-                $ret[] = $callback($file, $o);
+                $ret[] = $prepData($file, $o);
             }
         }
         return $ret;
@@ -392,8 +394,10 @@ class Uploader extends Presenter
         $error = $this->getErrors($key);
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
+
         $priv = $details['role'];
         $cid = $details['client_id'];
+
         $cb = $this->validateFile($priv, $cid, $user->id);
         $all = $this->table->findAll(null, 0, 0, \PDO::FETCH_ASSOC);
         $this->pages = $this->setPages(count($all)); //assume $priv is Admin
@@ -605,6 +609,9 @@ class Uploader extends Presenter
 
     public function find()
     {
+        
+        
+        
         return $this->load('search');
     }
 
