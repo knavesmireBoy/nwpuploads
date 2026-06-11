@@ -45,13 +45,11 @@ class Employee extends User
     protected function traitorCheck($cid, $record, $postdata)
     {
         list($name, $dom, $com) = $this->parseEmail($record['email']);
-        $f = negate(curry2('equals')("$dom.$com"));
+        $f = negate(curry2('equals')("$dom"));
         list($name, $edom, $ecom) = $this->parseEmail($postdata['email']);
         $f = $cid ? $f : 'identity';
         $filter = curry2('array_filter')($f);
         $clients = $this->clienttable->findAll();
-
-        dump([$dom, $edom, $cid]);
 
         $traitorCheck = composer(partial('in_array', $edom), $filter, partial('array_values'), partial('array_map', curry2('getter')(0)), partial('array_map', 'parseEmail'), partial('array_column', $clients));
 
