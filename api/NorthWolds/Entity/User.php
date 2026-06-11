@@ -282,7 +282,7 @@ rather than calling an update method of the observer, but keeping this as an exa
         $this->setCookie(['flash' => "key=_sync&id=$uid"], ['flash'], true);
         reLocate($this->exit);
       }
-      dump($postdata);
+      dump([$cid, $postdata]);
       return $postdata;
     };
   }
