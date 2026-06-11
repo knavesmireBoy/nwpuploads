@@ -61,17 +61,28 @@ class Employee extends User
         $dbrecord = $this->fetch('TABLE', 'id', $this->id);
         if ($default) {
             return function (?int $cid, array $postdata, int $id = 0) use ($uid, $relocate, $cookiearg, $dbrecord) {
+
+
+                $fail = $this->traitorCheck($cid, $dbrecord, $postdata);
+
+                    dump($fail);
                 if (isset($dbrecord['email'])) { //existing
                     //can only be admin moving an employee; admin users cannot be moved
-                    if ($cid && $cid != $dbrecord['client_id']) {
-                        $this->setCookie(['flash' => "key=move&id=$uid&client_id=$cid"], ['flash'], true);
-                        $relocate = true;
+                    if ($cid) {
+                        if ($cid != $dbrecord['client_id']) {
+                            $this->setCookie(['flash' => "key=move&id=$uid&client_id=$cid"], ['flash'], true);
+                            $relocate = true;
+                        } else {
+                            $postdata = $this->setClientEmail($cid, $postdata, $dbrecord);
+                        }
                     } else { //admin releasing an employee OR updating name 
+
 
                         $this->setCookie(['flash' => "key=leave&id=$uid&client_id=$cid"], ['flash'], true);
 
                         $relocate = !$cid ? true : $relocate;
-                        $fail = $this->traitorCheck($cid, $dbrecord, $postdata);
+
+                       
 
                         if ($fail) {
                             if (!$relocate) {
@@ -93,8 +104,8 @@ class Employee extends User
             }; //default function
         }
         return function (?int $cid, array $postdata, int $id = 0) use ($uid, $relocate, $cookiearg, $dbrecord) {
-           
-           $postdata = $this->setClientEmail2($cid, $postdata, $dbrecord);
+
+            $postdata = $this->setClientEmail2($cid, $postdata, $dbrecord);
 
             $fail = $this->traitorCheck($cid, $dbrecord, $postdata);
             if ($fail) {

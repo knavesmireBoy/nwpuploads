@@ -68,12 +68,20 @@ rather than calling an update method of the observer, but keeping this as an exa
   protected function setClientEmail($cid, $data, $record)
   {
     $client = $this->fetch('clienttable', 'id', $cid);
-    list($ename, $dom, $com) = $this->parseEmail($record['email']);
+    list($name, $dom, $com) = $this->parseEmail($record['email']);
+    $recorddom = "$dom.$com";
+    list($ename, $dom, $com) = $this->parseEmail($data['email']);
+    $edom = "$dom.$com";
     $domain = $client->domain ?? null;
 
     if (!$domain /*&& $this->findDomain("$dom.$com")*/) { //leaving? or never a client
       // $domain = "$dom.$com";
       $data['client_id'] = null;
+    }
+    else {
+      $client = $this->findDomain("$dom.$com");
+      $domain = isset($client) && $client->id == $cid;
+      //reset email
     }
 
     list($ename, $dom, $com) = $this->parseEmail($data['email']);
@@ -97,7 +105,6 @@ rather than calling an update method of the observer, but keeping this as an exa
     list($ename, $dom, $com) = $this->parseEmail($data['email']);
     $domain = "$dom.$com";
     $data['email'] = "$ename@$domain";
-    dump([...$data, 'client_id' => $cid]);
     return [...$data, 'client_id' => $cid];
   }
 
