@@ -412,7 +412,9 @@ class Uploader extends Presenter
             $file = !empty($file) ? $file[0] : null;
             if ($file) {
                 $user = $this->usertable->find('id', $file->userid)[0];
+
                 $data = $file->getData($_SESSION['username']);
+                
                 if ($user->client_id) {
                     $owner = [...$data, ...$user->getDetails('owner')];
                 } else {

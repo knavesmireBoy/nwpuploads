@@ -79,7 +79,7 @@ class Uploader extends Entity
             $tmp = count($this->getClientFiles($this->userid)) > $count ? 2 : 0;
             $ret += $tmp;
         }
-        $multi = ['multi' => $ret];
+        $multi = ['multi' => $ret && ($res['client_id'] || $_SESSION['role'] === 'Admin')];
         $multi['editor'] = $res['email'] === $loggedin;
         return [...$res, ...$multi];
     }
