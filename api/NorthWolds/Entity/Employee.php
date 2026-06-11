@@ -67,6 +67,8 @@ class Employee extends User
                 $traitor = $this->traitorCheck($cid, $dbrecord, $postdata);
                 $postdata = $this->validateDomField($cid, $dbrecord, $postdata);
 
+                dump([$traitor, $postdata]);
+
                 if ($traitor) {
                     $arg = $_SESSION['role'] === 'Admin' ? '_traitor' : 'domainchange';
                     reLocate("/user/load/$arg");
