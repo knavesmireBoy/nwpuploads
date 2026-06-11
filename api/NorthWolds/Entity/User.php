@@ -94,7 +94,7 @@ protected function setClientEmail1($cid, $data, $record)
   protected function setClientEmail($cid, $data, $record)
   {
     $client = $this->fetch('clienttable', 'id', $cid);
-    list($ename) = $this->parseEmail($record['email']);
+    list($ename) = $this->parseEmail($data['email']);
     $domain = $client->domain ?? null;
 
     if ($domain) {
