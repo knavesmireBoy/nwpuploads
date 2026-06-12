@@ -444,15 +444,15 @@ class User extends Presenter implements \SplObserver
     public function delete($id = '')
     {
         $msg = '';
-        $details = $this->getPrivilege();
-        $punter = $this->fetch('table', 'id', $id);
+        $user = $this->fetch('table', 'id', $id);
+        $punter = $this->fetch('table', 'id', $this->getPrivilege('id'));
 
 
-        if ($punter) {
-            $punter = $this->getSubUser($punter);
-            $punter->setSelf($id == $details['id']);
+        if ($user) {
+            $user = $this->getSubUser($user);
+            $user->setSelf($id == $punter->id);
             $delete = $punter->deleteFactory();
-            //$msg = $punter->delete($id, $details);
+            //$msg = $user->delete($id, $details);
             $msg = $delete($id);
 
             if ($msg) {
@@ -460,7 +460,7 @@ class User extends Presenter implements \SplObserver
             }
 
             $data = ['id' => $id];
-            $self = $punter->getSelf();
+            $self = $user->getSelf();
 
             $xtra = $self ? ['msg' => 'Are you sure you want to remove your credentials from the database?'] : [];
 
