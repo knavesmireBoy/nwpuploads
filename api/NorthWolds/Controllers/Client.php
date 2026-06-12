@@ -9,7 +9,6 @@ class Client
 {
     public function __construct(private DatabaseTable $table, private DatabaseTable $usertable, private string $home) {}
 
-
     protected function getLastInsertId($id)
     {
         if (!is_int($id)) {
@@ -17,6 +16,12 @@ class Client
             return max($all);
         }
         return $id;
+    }
+
+    private function destroy($id)
+    {
+        $this->table->delete('id', $id);
+        reLocate($this->home);
     }
 
     private function displayer($priv, $customVars = [], $owner = [])
@@ -108,13 +113,7 @@ class Client
         reLocate($this->home);
     }
 
-    public function destroy($id)
-    {
-        $this->table->delete('id', $id);
-        reLocate($this->home);
-    }
-
-    public function associate()
+    public function associateSubmit()
     {
         if (isset($_POST['confirm']) && $_POST['confirm'] === 'Yes') {
             $client = $this->table->find('id', $_POST['id'])[0];

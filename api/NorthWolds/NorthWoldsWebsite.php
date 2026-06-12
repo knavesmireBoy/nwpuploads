@@ -178,7 +178,7 @@ class NorthWoldsWebsite implements Website
         {
             return array_slice(['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'], $i);
         }
-        $actions = ['uploader/load' => set(), 'uploader/upload' => set(), 'uploader/update' => set(1), 'uploader/nav' => set(), 'uploader/delete' => set(1), 'uploader/confirm' => set(1), 'uploader/destroy' => set(1), 'client/load' => set(4), 'client/destroy' => set(4), 'user/load'  => set(2),  'user/edit'  => set(2), 'user/add'  => set(3), 'user/delete'  => set(2)];
+        $actions = ['uploader/load' => set(), 'uploader/upload' => set(), 'uploader/update' => set(1), 'uploader/nav' => set(), 'uploader/delete' => set(1), 'uploader/confirm' => set(1), 'uploader/destroy' => set(1), 'client/load' => set(4), 'client/add' => set(4), 'client/edit' => set(4), 'client/delete' => set(4), 'user/load' => set(2), 'user/edit' => set(2), 'user/add' => set(3), 'user/delete' => set(2), 'user/exit' => set(2)];
 
         if (!$user) { //not logged in
             if ($this->baseAccess($uri) || isset($actions[$uri])) {

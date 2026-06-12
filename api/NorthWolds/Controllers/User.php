@@ -15,7 +15,6 @@ class User extends Presenter implements \SplObserver
         parent::__construct($table);
     }
 
-
     private function destroy($id)
     {
         $this->table->delete('id', $id);
@@ -313,15 +312,13 @@ class User extends Presenter implements \SplObserver
 
     public function edit($id, $args = [])
     {
-        
-        
         $details = $this->getPrivilege();
         $punter = $this->fetch('table', 'id', $details['id']);
         $punter = $this->getSubUser($punter);
+        $punter->edit($id); //will relocate on fail
+
         $editor = ($id == $details['id']);
         $user = $this->fetch('table', 'id', $id);
-
-        $punter->edit($id);
 
         if ($user) {
             $user = $this->getSubUser($user);
@@ -444,7 +441,6 @@ class User extends Presenter implements \SplObserver
             return $this->load($key, ['id' => $id]);
         }
         return $this->load('', ['id' => $id]);
-        //reLocate($this->home);
     }
 
     public function delete($id = '')
@@ -462,13 +458,17 @@ class User extends Presenter implements \SplObserver
             $delete = $punter->deleteFactory($user);
             $msg = $delete($id);
             if ($msg) {
-                return reLocate($this->home . $msg);
+                $this->setCookie(['flash' => "key=$msg"], ['flash'], true);
+                return reLocate('/user/exit');
             }
             $data = ['id' => $id];
             $xtra = $user->getSelf() ? ['msg' => 'Are you sure you want to remove your credentials from the database?'] : [];
             return $this->load('delete', [...$data, ...$xtra]);
         } else {
-            return reLocate($this->home . 'nouser');
+            $this->setCookie(['flash' => "key=nouser"], ['flash'], true);
+            //$this->exit;
+            reLocate('/user/exit');
+           // return reLocate($this->home . 'nouser');
         }
     }
 
