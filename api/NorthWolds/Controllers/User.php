@@ -446,7 +446,8 @@ class User extends Presenter implements \SplObserver
     {
         $msg = '';
         $user = $this->fetch('table', 'id', $id);
-        $punter = $this->fetch('table', 'id', $this->getPrivilege('id'));
+        $details = $this->getPrivilege();
+        $punter = $this->fetch('table', 'id', $details['id']);
         $punter = $this->getSubUser($punter);
         $punter->setSelf($id == $punter->id);
 
@@ -454,8 +455,7 @@ class User extends Presenter implements \SplObserver
             $user = $this->getSubUser($user);
             $user->setSelf($id == $punter->id);
             $delete = $punter->deleteFactory();
-            //$msg = $user->delete($id, $details);
-            $msg = $delete($id);
+            $msg = $delete($id, $details);
 
             if ($msg) {
                 return reLocate($this->home . $msg);
