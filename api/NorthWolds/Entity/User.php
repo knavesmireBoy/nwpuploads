@@ -341,14 +341,6 @@ rather than calling an update method of the observer, but keeping this as an exa
   //sort of validate delete; if it returns anything other than a empty string you cannot delete
   public function delete($id)
   {
-    /*
-    $admin = $details['role'] === 'Admin';
-    if ($details['id'] != $id && !$admin) {
-      $this->setCookie(['flash' => "key=hack"], ['flash'], true);
-      reLocate($this->exit);
-    }
-      */
-
     return '';
   }
 
@@ -357,6 +349,9 @@ rather than calling an update method of the observer, but keeping this as an exa
     return function ($id) use ($user) {
       if ($id == $user->id) {
         return $user->delete($id);
+      } else {
+        $this->setCookie(['flash' => "key=hack"], ['flash'], true);
+        reLocate($this->exit);
       }
     };
   }
