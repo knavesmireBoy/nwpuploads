@@ -126,6 +126,7 @@ class ClientAdmin extends User
         $ids = $this->getUserIds();
         return function ($id, $details) use ($ids) {
             if (in_array($id, $ids)) {
+                dump($this->name);
                 return $this->delete($id, $details);
             } else {
                 $this->setCookie(['flash' => "key=hack"], ['flash'], true);

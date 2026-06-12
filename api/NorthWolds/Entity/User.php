@@ -351,4 +351,12 @@ rather than calling an update method of the observer, but keeping this as an exa
 
     return '';
   }
+
+  public function deleteFactory()
+  {
+    return function ($id, $details) {
+      dump($this);
+      return $this->delete($id, $details);
+    };
+  }
 }
