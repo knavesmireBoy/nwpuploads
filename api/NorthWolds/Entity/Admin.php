@@ -28,7 +28,6 @@ class Admin extends User
         return '_admin';
     }
 
-
     public function preEdit($flag = true)
     {
         return false;
