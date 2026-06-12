@@ -26,11 +26,8 @@ class ClientAdminSolo extends ClientAdmin
         return $role;
     }
 
-    public function delete($id, $details)
+    public function delete($id)
     {
-        if ($details['role'] === 'Admin') {
-            return '';
-        }
         $ids = $this->getUserIds();
         $roles = $this->getAllRoles($ids);
         $adminroles = $this->getAdminRoles($roles);

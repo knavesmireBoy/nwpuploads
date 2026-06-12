@@ -128,7 +128,9 @@ class Admin extends User
     public function deleteFactory($user)
     {
         return function ($id) use ($user) {
-            return $user->delete($id);
+            return isApproved($user->getRole(), 'admin') ? $user->delete($id) : '';
         };
     }
+
+    public function edit($id) {}
 }

@@ -313,11 +313,15 @@ class User extends Presenter implements \SplObserver
 
     public function edit($id, $args = [])
     {
+        
+        
         $details = $this->getPrivilege();
         $punter = $this->fetch('table', 'id', $details['id']);
         $punter = $this->getSubUser($punter);
         $editor = ($id == $details['id']);
         $user = $this->fetch('table', 'id', $id);
+
+        $punter->edit($id);
 
         if ($user) {
             $user = $this->getSubUser($user);
@@ -457,16 +461,11 @@ class User extends Presenter implements \SplObserver
             $user->setSelf($id == $punter->id);
             $delete = $punter->deleteFactory($user);
             $msg = $delete($id);
-
             if ($msg) {
                 return reLocate($this->home . $msg);
             }
-
             $data = ['id' => $id];
-            $self = $user->getSelf();
-
-            $xtra = $self ? ['msg' => 'Are you sure you want to remove your credentials from the database?'] : [];
-
+            $xtra = $user->getSelf() ? ['msg' => 'Are you sure you want to remove your credentials from the database?'] : [];
             return $this->load('delete', [...$data, ...$xtra]);
         } else {
             return reLocate($this->home . 'nouser');

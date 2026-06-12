@@ -348,11 +348,19 @@ rather than calling an update method of the observer, but keeping this as an exa
   {
     return function ($id) use ($user) {
       if ($id == $this->id) {
-        return $user->delete($id);
+        return $this->delete($id);
       } else {
         $this->setCookie(['flash' => "key=hack"], ['flash'], true);
         reLocate($this->exit);
       }
     };
+  }
+
+  public function edit($id)
+  {
+    if ($id != $this->id) {
+      $this->setCookie(['flash' => "key=hack"], ['flash'], true);
+      reLocate($this->exit);
+    }
   }
 }
