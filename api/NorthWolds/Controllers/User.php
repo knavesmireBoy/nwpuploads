@@ -210,6 +210,7 @@ class User extends Presenter implements \SplObserver
         if (isset($_COOKIE['flash'])) {
             parse_str($_COOKIE['flash'], $res);
             $key = array_shift($res) ?? '';
+            $this->setCookie($_COOKIE, ['flash'], false);
         }
         return $this->load($key, $res);
     }

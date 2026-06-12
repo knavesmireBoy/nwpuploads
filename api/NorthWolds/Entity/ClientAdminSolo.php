@@ -31,13 +31,10 @@ class ClientAdminSolo extends ClientAdmin
         if ($details['role'] === 'Admin') {
             return '';
         }
-        $msg = '';
         $ids = $this->getUserIds();
         $roles = $this->getAllRoles($ids);
         $adminroles = $this->getAdminRoles($roles);
         $ids = array_column($adminroles, 'userid');
-        $key = in_array($this->id, $ids) ? 'lasteditor' : '';
-        $msg = $key;
-        return $msg;
+        return in_array($this->id, $ids) ? 'lasteditor' : '';
     }
 }
