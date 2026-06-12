@@ -24,55 +24,42 @@ class User extends Presenter implements \SplObserver
     private function query($key, $arg = '')
     {
         $lib = [
-            'nouser' => "No user found",
             'nousers' => "Unable to find any users",
             "addnotice" => "Please fill required fields",
             "selectuser" => "Please select a user for editing",
             "domainflag" => "Cannot assign this user to a new client",
-
             "denied" => "You do not have the privileges to delete this user",
             "deniedbyclient" => "There must be at least one administrator role, please assign another user before removing your credentials from the database",
             "access" => "You do not have the privileges to add a user",
-
             "self" => "Only a peer can perform this deletion.",
             "freelancer" => "Cannot assign this domain.",
             'addno' => 'You do not have the required privilges to add a user.',
             'editno' => 'You do not have the required privilges to edit this user details.',
             'read' => 'You may view but not edit this user details.',
+            '_cadmin' => 'Cannot change the domain of a user with an admin role',
 
+
+            'nouser' => "No user found",
             'employee' => "Only your administrator can perform that operation",
-
             'hack' => 'You do not have the privileges to perform this operation',
-
             'undef' => "Missing property: $arg",
             '_admin' => "You cannot delete an administrator.",
             "lasteditor" => "There must be at least one administrator role, please assign another user before removing credentials from the database.",
-
             '_lastadminrole' => "To demote the admin status of this user you must first add another use for this client promoting it to the admin role.",
-
             'lastadminrole' => "There must be at least one administrator role, please add another user and assign the admin role if you wish to demote your status.",
-
             'last' => "Only the database administrator can delete this user.",
             "_denied" => "Cannot assign this user to a client!",
             '_last' => "To remove this final user, please delete the client instead.",
-
-            'domain' => 'Only the database administrator can change the domain of an email address.',
+            'domain' => 'Only the database administrator can change the domain of an email address',
             '_sync' => "Email domain and client domain do not match!",
             '_domain' => 'Set the drop down menu to empty when changing the domain. Change the domain of the client to update the domain for all members.',
-
             '_nondom' => 'Change the domain of the client not a team member.',
-
-            '_cadmin' => 'Cannot change the domain of a user with an admin role',
             '_unassign' => 'Cannot unassign a user with an admin role',
-
             'domainchange' => 'You cannot change the email domain',
-            '_domainchange' => 'You cannot change the email domain',
-
             '_assign' => 'Cannot assign a user with an admin role to another client',
             'traitor' => 'That domain is not available.',
             '_traitor' => 'To assign to another client use the drop down menu.',
             '_leave' => 'Set the drop down menu to empty to release a user from a client.',
-            '_move' => 'Cannot move a user with an admin role',
             '_impostor' => 'That domain is in use, use the client list drop down to assign a user.'
         ];
 
@@ -180,19 +167,11 @@ class User extends Presenter implements \SplObserver
             'prompt' => null,
             'users' => $users,
             'clients' => $clients,
-            'usercount' => 0,
-            'denied' => false,
-            //'nwpagency' => null,
             'pagehead' => 'Edit Details',
             'pageid' => 'admin_user',
-            //'nwproleplay' => 'Admin',
-            //'nwp_id' => null,
             'pagehead_role' => 'Admin',
             'error' => $error,
-            //'nwproleorder' => ['Browser', 'Manager', 'Client', 'Client Admin', 'Admin'],
             'owner' => $owner,
-            //'redirects' => ['pwd', 'domainflag', 'domainassoc', 'namechange'],
-            //'predicates' => [partial('preg_match', '/^nwp/')],
             'pages' => 1
         ];
 
@@ -466,9 +445,7 @@ class User extends Presenter implements \SplObserver
             return $this->load('delete', [...$data, ...$xtra]);
         } else {
             $this->setCookie(['flash' => "key=nouser"], ['flash'], true);
-            //$this->exit;
             reLocate('/user/exit');
-           // return reLocate($this->home . 'nouser');
         }
     }
 
