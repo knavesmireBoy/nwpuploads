@@ -124,7 +124,6 @@ class ClientAdmin extends User
     public function deleteFactory()
     {
         $ids = $this->getUserIds();
-        dump($ids);
         return function ($id) use ($ids) {
             if (in_array($id, $ids)) {
                 dump($this->name);
