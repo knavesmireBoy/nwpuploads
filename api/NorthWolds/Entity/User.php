@@ -339,7 +339,7 @@ rather than calling an update method of the observer, but keeping this as an exa
   }
 
   //sort of validate delete; if it returns anything other than a empty string you cannot delete
-  public function delete($id, $details)
+  public function delete($id)
   {
     /*
     $admin = $details['role'] === 'Admin';
@@ -352,11 +352,12 @@ rather than calling an update method of the observer, but keeping this as an exa
     return '';
   }
 
-  public function deleteFactory()
+  public function deleteFactory($user)
   {
-    return function ($id, $details) {
-      dump($this);
-      return $this->delete($id, $details);
+    return function ($id) use ($user) {
+      if ($id == $user->id) {
+        return $user->delete($id);
+      }
     };
   }
 }

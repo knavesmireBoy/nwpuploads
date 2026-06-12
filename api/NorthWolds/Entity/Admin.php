@@ -23,18 +23,9 @@ class Admin extends User
         return $this->roleid;
     }
 
-    public function delete($id, $details)
+    public function delete($id)
     {
         return '_admin';
-    }
-
-    public function deleteFactory()
-    {
-        // $admin = isApproved($punter['role'], 'ADMIN');
-        //$cadmin = isApproved($punter['role'], 'admin');
-        return function ($id, $details) {
-            dump($this->id, $id, $details);
-        };
     }
 
 

@@ -15,7 +15,7 @@ class Solo extends ClientAdmin
         return $this->self ? 'success' : '';
     }
 
-    public function delete($id, $details)
+    public function delete($id)
     {
         return 'last';
     }

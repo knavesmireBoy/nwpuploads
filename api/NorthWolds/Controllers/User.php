@@ -41,6 +41,7 @@ class User extends Presenter implements \SplObserver
             'editno' => 'You do not have the required privilges to edit this user details.',
             'read' => 'You may view but not edit this user details.',
 
+            'employee' => "Only your administrator can perform that operation",
 
             'hack' => 'You do not have the privileges to perform this operation',
 
@@ -454,8 +455,8 @@ class User extends Presenter implements \SplObserver
         if ($user) {
             $user = $this->getSubUser($user);
             $user->setSelf($id == $punter->id);
-            $delete = $punter->deleteFactory();
-            $msg = $delete($id, $details);
+            $delete = $punter->deleteFactory($user);
+            $msg = $delete($id);
 
             if ($msg) {
                 return reLocate($this->home . $msg);

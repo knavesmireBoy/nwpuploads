@@ -120,11 +120,8 @@ class Employee extends User
         };
     }
 
-    public function delete($id, $details)
+    public function delete($id)
     {
-        if ($details['client_id'] !== $this->client_id || $details['role'] !== 'Admin') {
-            reLocate('/user/load/hack');
-        }
-        return '';
+        return 'employee';
     }
 }
