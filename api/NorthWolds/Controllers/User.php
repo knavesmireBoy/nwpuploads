@@ -446,7 +446,8 @@ class User extends Presenter implements \SplObserver
         $msg = '';
         $user = $this->fetch('table', 'id', $id);
         $punter = $this->fetch('table', 'id', $this->getPrivilege('id'));
-
+        $punter = $this->getSubUser($punter);
+        $punter->setSelf($id == $punter->id);
 
         if ($user) {
             $user = $this->getSubUser($user);
