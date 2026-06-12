@@ -28,6 +28,17 @@ class Admin extends User
         return '_admin';
     }
 
+    public function deleteFactory($user)
+    {
+        return function ($id) use ($user) {
+            if ($id != $user->id) {
+                $this->setCookie(['flash' => "key=hack"], ['flash'], true);
+                reLocate('/user/load/');
+            }
+            return $user->delete($id);
+        };
+    }
+
     public function preEdit($flag = true)
     {
         return false;
