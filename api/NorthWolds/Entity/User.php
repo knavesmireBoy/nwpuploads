@@ -343,7 +343,6 @@ rather than calling an update method of the observer, but keeping this as an exa
   {
     $admin = $details['role'] === 'Admin';
     if ($details['id'] != $id && !$admin) {
-
       $this->setCookie(['flash' => "key=hack"], ['flash'], true);
       reLocate($this->exit);
     }

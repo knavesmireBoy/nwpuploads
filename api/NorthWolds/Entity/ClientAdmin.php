@@ -13,7 +13,7 @@ class ClientAdmin extends User
 
     public function postEdit()
     {
-      return '';
+        return '';
     }
 
     protected function validateDomField($cid, $record, $postdata, $insertId = 0)
@@ -42,15 +42,15 @@ class ClientAdmin extends User
             list($name, $dom, $com) = $this->parseEmail($postdata['email']);
             $dbrecord = $this->fetch('TABLE', 'id', $this->id);
             if (isset($dbrecord['email'])) { //existing
-                if(!$cid || $dbrecord['client_id'] != $cid){
+                if (!$cid || $dbrecord['client_id'] != $cid) {
                     $msg = $cid ? '_assign' : '_unassign';
-                    $this->setCookie(['flash'=>"key=$msg&id=$uid"], ['flash'], true);
+                    $this->setCookie(['flash' => "key=$msg&id=$uid"], ['flash'], true);
                     reLocate($this->exit);
                 }
                 $data = $this->validateDomField($cid, $dbrecord, $postdata);
                 if (!$data) {
                     $msg = $this->self ? 'domain' : '_nondom';
-                    $this->setCookie(['flash'=>"key=$msg&id=$uid"], ['flash'], true);
+                    $this->setCookie(['flash' => "key=$msg&id=$uid"], ['flash'], true);
                     reLocate($this->exit);
                 }
                 return $data;
@@ -110,7 +110,7 @@ class ClientAdmin extends User
         $user = $user[0] ?? null;
         if (isset($user)) {
             $users = $user->getUserIds();
-           
+
             if (isset($users[1])) {
                 foreach ($users as $k => $v) {
                     $u = $this->table->find('id', $v)[0];
@@ -119,5 +119,15 @@ class ClientAdmin extends User
             }
             return [$usr ?? [], []];
         }
+    }
+
+    public function deleteFactory()
+    {
+        $ids = $this->getUserIds();
+        return function ($id) use ($ids) {
+            if (in_array($id, $ids)) {
+                dump($this->name);
+            }
+        };
     }
 }

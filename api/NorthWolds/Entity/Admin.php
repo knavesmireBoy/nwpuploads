@@ -28,14 +28,23 @@ class Admin extends User
         return '_admin';
     }
 
-    public function deleteFactory($user)
+    public function deleteFactory($punter)
     {
-        return function ($id) use ($user) {
-            if ($id != $user->id) {
-                $this->setCookie(['flash' => "key=hack"], ['flash'], true);
-                reLocate('/user/load/');
+        $admin = isApproved($punter['role'], 'ADMIN');
+        $cadmin = isApproved($punter['role'], 'admin');
+        return function ($id, $details) use ($punter, $admin, $cadmin) {
+
+            if ($admin) {
+                return $punter->delete($id);
             }
-            return $user->delete($id);
+            if($cadmin){
+
+            }
+            if ($id != $punter->id) {
+                $this->setCookie(['flash' => "key=hack"], ['flash'], true);
+                reLocate($this->exit);
+            }
+            return $punter->delete($id);
         };
     }
 

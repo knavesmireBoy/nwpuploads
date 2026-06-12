@@ -445,20 +445,22 @@ class User extends Presenter implements \SplObserver
     {
         $msg = '';
         $details = $this->getPrivilege();
-        $user = $this->fetch('table', 'id', $id);
+        $punter = $this->fetch('table', 'id', $id);
 
 
-        if ($user) {
-            $user = $this->getSubUser($user);
-            $user->setSelf($id == $details['id']);
-            $msg = $user->delete($id, $details);
+        if ($punter) {
+            $punter = $this->getSubUser($punter);
+            $punter->setSelf($id == $details['id']);
+            $delete = $punter->deleteFactory();
+            //$msg = $punter->delete($id, $details);
+            $msg = $delete($id);
 
             if ($msg) {
                 return reLocate($this->home . $msg);
             }
 
             $data = ['id' => $id];
-            $self = $user->getSelf();
+            $self = $punter->getSelf();
 
             $xtra = $self ? ['msg' => 'Are you sure you want to remove your credentials from the database?'] : [];
 
