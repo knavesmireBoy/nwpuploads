@@ -157,7 +157,6 @@ h1 + p {
 
 h2 {
   color: var(--head);
-  color: red;
   font-size: 1.5em;
   margin: 1em 0;
 }

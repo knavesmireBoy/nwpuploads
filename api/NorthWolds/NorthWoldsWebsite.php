@@ -167,7 +167,6 @@ class NorthWoldsWebsite implements Website
 
     public function checkLogin(string $uri): array
     {
-
         $reroute = partial([$this, 'reroute'], $uri);
         $key = '';
         $permit = 0;
