@@ -124,4 +124,11 @@ class Admin extends User
         $client = toKeyValue($clients, $prop, 'name');
         return [$users, $client];
     }
+
+    public function deleteFactory($user)
+    {
+        return function ($id) use ($user) {
+            return $user->delete($id);
+        };
+    }
 }

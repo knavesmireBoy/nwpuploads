@@ -347,7 +347,7 @@ rather than calling an update method of the observer, but keeping this as an exa
   public function deleteFactory($user)
   {
     return function ($id) use ($user) {
-      if ($id == $user->id) {
+      if ($id == $this->id) {
         return $user->delete($id);
       } else {
         $this->setCookie(['flash' => "key=hack"], ['flash'], true);
