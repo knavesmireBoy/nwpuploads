@@ -11,7 +11,7 @@ try {
             throw new Exception('Unable to connect to the database server');
         }
         //note cannot get postgres drivers to work in home environment
-        $params = ['host' => '127.0.0.1', 'port' => 5432, 'database' => 'uploads', 'user' => 'andrewjsykes', 'password' => 'covid19krauq'];
+       // $params = ['host' => '127.0.0.1', 'port' => 5432, 'database' => 'uploads', 'user' => 'andrewjsykes', 'password' => 'covid19krauq'];
         $params = ['host' => $connect, 'port' => 5432, 'database' => 'uploads', 'user' => 'neondb_owner', 'password' => $pwd, 'sslmode' => 'require'];
         $db = sprintf(
             "pgsql:host=%s;port=%d;dbname=%s;user=%s;password=%s",
