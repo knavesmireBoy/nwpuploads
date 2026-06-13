@@ -282,6 +282,7 @@ form.details {
   border-radius: var(--button);
   padding: 3em 1em 1em;
   width: clamp(318px, 98vw, 768px);
+  margin: 1.5em auto 0;
 }
 form.details input {
   padding: 1em 0.2em;
@@ -329,7 +330,7 @@ main > p a:hover {
   color: white;
 }
 main > p.call {
-  margin: 1em auto;
+  margin: 1em auto 0;
 }
 
 footer {
@@ -374,6 +375,9 @@ footer span.current {
 footer input[type=submit] {
   background-color: var(--main-color);
 }
+footer > a, footer span {
+  margin: 1em 0.25em 0;
+}
 
 p a,
 p .log input[type=submit] {
@@ -400,6 +404,7 @@ form[name=uploadform] {
 
 form.choose {
   border: solid 1px;
+  margin: 1em auto 0;
   background-color: var(--prompt);
   border-radius: var(--button);
   padding: 1em;
@@ -839,6 +844,7 @@ form[name=uploadform] {
   border: solid 1px black;
   animation-duration: 1.5s;
   animation-name: grow;
+  margin: 1em auto;
 }
 
 /*# sourceMappingURL=main.css.map */
