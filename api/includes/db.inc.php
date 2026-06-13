@@ -7,6 +7,8 @@ try {
         $pwd = $matches[1] ?? null;
         $connect = $matches[2] ?? null;
 
+       // dump([$pwd, $connect]);
+
         if (!$pwd) {
             throw new Exception('Unable to connect to the database server');
         }
