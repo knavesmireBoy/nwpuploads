@@ -1,5 +1,8 @@
 <?php
 
+dump(DBSYSTEM);
+
+
 try {
     if (DBSYSTEM === 'postgres') {
         $env = getenv();

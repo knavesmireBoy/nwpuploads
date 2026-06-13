@@ -8,8 +8,7 @@ class Uploader extends Presenter
 {
     private $sort = 'tt';
     private $currentuser = null;
-    public function __construct(protected DatabaseTable $table, private DatabaseTable $usertable, private int $display, private int $start, private int $pages, private string $home) {
-    }
+    public function __construct(protected DatabaseTable $table, private DatabaseTable $usertable, private int $display, private int $start, private int $pages, private string $home) {}
 
     private function findUser($arg)
     {
@@ -169,7 +168,7 @@ class Uploader extends Presenter
             '_colspan' => $priv === 'Browser'  ? '1' : '2'
         ];
         $vars = array_merge($defaultVars, $customVars);
-        if ($vars['searchtext'] || count($displayfiles) <= $this->display) {
+        if ($vars['searchtext']) {
             $vars['searchform'] = true;
         }
         $ret = [
@@ -409,6 +408,7 @@ class Uploader extends Presenter
             $customVars = $this->getCustomVars($key, $vars);
         }
 
+
         if (isset($vars['id'])) {
             $file = $this->table->find('id', $vars['id']);
             $file = !empty($file) ? $file[0] : null;
@@ -429,6 +429,12 @@ class Uploader extends Presenter
         //sub sort by time or file only involves one table `upload`
         $all = $this->table->findAll($order, 0, 0, \PDO::FETCH_ASSOC);
         $contenders = $this->prepFileForDisplay($all, $cb);
+
+
+        if (count($contenders) <= $this->display) {
+            $customVars['searchform'] = true;
+        }
+
         //but sub sort by `user` can only be achieved with a JOIN which we are not supporting in this ORM version
         //https://stackoverflow.com/questions/1532218/life-without-joins-understanding-and-common-practices
         if (!$order) {

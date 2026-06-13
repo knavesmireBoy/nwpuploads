@@ -230,6 +230,7 @@ form.details {
   border-radius: var(--button);
   padding: 3em 1em 1em;
   width: clamp(318px, 98vw, 768px);
+  margin: 1.5em auto 0;
   //  font: var(--default);
   input {
     padding: 1em 0.2em;
@@ -278,7 +279,7 @@ main {
       }
     }
     &.call {
-      margin: 1em auto;
+      margin: 1em auto 0;
     }
   }
 }
@@ -324,6 +325,9 @@ footer {
   input[type="submit"] {
     background-color: var(--main-color);
   }
+  > a, span {
+    margin: 1em .25em 0;
+  }
 } ///footer
 
 p {
@@ -353,6 +357,7 @@ form[name="uploadform"] {
 
 form.choose {
   border: solid 1px;
+  margin: 1em auto 0;
   background-color: var(--prompt);
   border-radius: var(--button);
   padding: 1em;
