@@ -3,7 +3,7 @@
 namespace Ninja;
 
 include_once __DIR__ . '/../config.php';
-include_once FUNCTIONS;
+include_once HELPERS;
 
 class Authentication
 {
@@ -35,21 +35,9 @@ class Authentication
         if (!isset($_SESSION)) {
             session_start();
         }
-
         $this->users = $users;
         $this->usernameColumn = $usr;
         $this->passwordColumn = $pwd;
-    }
-
-    private function databaseContainsUser($email, $password)
-    {
-        include CONNECT;
-        $sql = "SELECT password FROM usr INNER JOIN userrole ON usr.id=userrole.userid WHERE email=:email AND password=:pwd";
-        $st = $pdo->prepare($sql);
-        $st->bindValue(":email", $email);
-        $st->bindValue(":pwd", $password);
-        doPreparedQuery($st, "Error retrieving user:");
-        return $st->fetch(\PDO::FETCH_ASSOC);
     }
 
     public function login(string $username, string $password): bool
@@ -85,7 +73,7 @@ class Authentication
     }
     public function logout()
     {
-        $this->setCookie($_COOKIE, ['flash', 'email', 'name', 'client_id'], false);
+        $this->setCookie($_COOKIE, ['flash', 'email', 'name', 'client_id', 'readit'], false);
         unset($_SESSION['username']);
         unset($_SESSION['password']);
         unset($_SESSION['role']);
