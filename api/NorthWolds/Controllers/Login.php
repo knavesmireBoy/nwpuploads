@@ -13,6 +13,20 @@ class Login
 
     public function reg($key)
     {
+        $lib = [112 => "jeff.tracy@tbsrgo.co.uk", 113 => "penny@fab1.co.uk"];
+        $setcookie = doSetCookie(true);
+        $unsetcookie = doSetCookie(false);
+
+        if (isset($lib[$key])) {
+            $email = $lib[$key];
+            $unsetcookie('readit');
+            $key = null;
+        } else if ($key && $key == 'readit') {
+            $setcookie('readit');
+            $key = null;
+            // reLocate("/logger/reg/$key");
+        }
+
         $user = $this->authentication->isLoggedIn();
         if (!$user) {
             return [
@@ -20,57 +34,29 @@ class Login
                 'title' => 'Admin',
                 'variables' => [
                     'action' => '/logger/login/',
+                    'email' => $email ?? null,
                     'loginerror' => $key ? 'Unable to login, please check password and email address:' : ''
                 ]
             ];
         } else {
-            // reLocate(BADMINTON, '../'); //
+            reLocate("/uploader/load");
         }
     }
 
-    public function login($errors = [], $msg = '')
+    public function login(...$args)
     {
-        /*
-        there is nothing to prevent people guessing a path to logging in
-        logger/login/3/5/6 is_numeric check would at least suppress that kind of malarkey
-        */
         $user = $this->authentication->isLoggedIn();
         if (!$user) {
-            return $this->reg($errors, $msg);
+            return $this->reg(...$args);
         } else {
-            retour();
-        }
-    }
-
-    public function login1($errors = [], $msg = '')
-    {
-        /*
-        there is nothing to prevent people guessing a path to logging in
-        logger/login/3/5/6 is_numeric check would at least suppress that kind of malarkey
-        */
-        $user = $this->authentication->isLoggedIn();
-        if (!$user) {
-            return [
-                'template' => 'register.html.php',
-                'title' => 'Admin',
-                'variables' => [
-                    'errors' => is_numeric($errors) ? [] : $errors,
-                    'route' => 'login',
-                    'submit' => 'Log In',
-                    'action' => LOGIN,
-                    'userid' => '',
-                    'owner' => '',
-                    'msg' => is_numeric($msg) ? '' : $msg
-                ]
-            ];
-        } else {
-            retour();
+            // retour();
         }
     }
 
     public function logout()
     {
         $this->authentication->logout();
+        reLocate("/uploader/load/");
     }
 
     public function loginSubmit()

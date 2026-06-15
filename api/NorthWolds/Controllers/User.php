@@ -426,16 +426,19 @@ class User extends Presenter implements \SplObserver
     {
         $msg = '';
         $user = $this->fetch('table', 'id', $id);
+
+
         $details = $this->getPrivilege();
         $punter = $this->fetch('table', 'id', $details['id']);
         $punter = $this->getSubUser($punter);
         $punter->setSelf($id == $punter->id);
-
+       
         if ($user) {
             $user = $this->getSubUser($user);
             $user->setSelf($id == $punter->id);
             $delete = $punter->deleteFactory($user);
             $msg = $delete($id);
+
             if ($msg) {
                 $this->setCookie(['flash' => "key=$msg"], ['flash'], true);
                 return reLocate('/user/exit');

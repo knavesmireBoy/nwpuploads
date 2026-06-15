@@ -205,6 +205,7 @@ class Uploader extends Presenter
                 }
             }
         }
+        reLocate('/uploader/load');
     }
 
     private function prepUpdate($data)
@@ -278,8 +279,8 @@ class Uploader extends Presenter
         $time = time();
         //$uploadname = $time . getRemoteAddr() . $ext;
         $uploadname = $time . $ext;
-        //$filename = FILESTORE . $uploadname;
-        $filename =  "/tmp/$uploadname";
+        $filename = FILESTORE . $uploadname;
+        //$filename =  "/tmp/$uploadname";
         return [$uploadfile, $uploadname, $filename, $realname];
     }
 
@@ -396,6 +397,11 @@ class Uploader extends Presenter
         $setcookie = doSetCookie(true);
         $setcookie('searched', $srch);
 
+        if ($key === 'readit') {
+            $setcookie('readit', true);
+            reLocate('/uploader/load/');
+        }
+
         $error = $this->getErrors($key);
         $user = $this->usertable->find('email', $_SESSION['username'])[0];
         $details = $user->getDetails();
@@ -507,9 +513,10 @@ class Uploader extends Presenter
 
         list($uploadfile, $uploadname, $filename, $realname) = $this->getUploadedFile();
         // Copy the file (if it is deemed safe)
+
         if (!copy($uploadfile, $filename)) {
             $error = "Could not save file as $filename!";
-            include TEMPLATE . 'error.html.php';
+            include ERROR;
             exit();
         } else {
             $userid = $_POST['key'];
@@ -622,11 +629,13 @@ class Uploader extends Presenter
     {
         return $this->load('search');
     }
+
     //form submission
     public function finder()
     {
         return $this->found($_GET['user'], $_GET['text'], $_GET['ext']);
     }
+
 
     public function swap()
     {
