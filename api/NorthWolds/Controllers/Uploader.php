@@ -620,10 +620,12 @@ class Uploader extends Presenter
 
     public function find()
     {
-
-
-
         return $this->load('search');
+    }
+    //form submission
+    public function finder()
+    {
+        return $this->found($_GET['user'], $_GET['text'], $_GET['ext']);
     }
 
     public function swap()
