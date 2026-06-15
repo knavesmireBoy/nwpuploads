@@ -228,9 +228,12 @@ form {
 form.details {
   background-color: var(--prompt);
   border-radius: var(--button);
-  padding: 3em 1em 1em;
+  padding: 1em;
   width: clamp(318px, 98vw, 768px);
   margin: 1.5em auto 0;
+  &[name="search"] {
+    padding: 2em 0.2em;
+  }
   //  font: var(--default);
   input {
     padding: 1em 0.2em;
@@ -325,8 +328,9 @@ footer {
   input[type="submit"] {
     background-color: var(--main-color);
   }
-  > a, span {
-    margin: 1em .25em 0;
+  > a,
+  span {
+    margin: 1em 0.25em 0;
   }
 } ///footer
 
@@ -342,6 +346,47 @@ p {
   }
 }
 
+.disclaimer {
+  position: relative;
+  font-size: 0.9em;
+  //width: clamp(300px, 80vw, 1000px);
+  padding: 2em 10vw 0;
+  margin: auto;
+  overflow: hidden;
+  background-color: hsl(80, 70%, 85%);;
+  p {
+    margin: 0 0 1em;
+    a {
+      color: var(--bg);
+      padding: 0;
+      border-width: 0;
+      font: inherit;
+      background-color: transparent;
+      font-weight: bold;
+      &:hover {
+        color: var(--head);
+      }
+    }
+    a.cancel {
+      display: block;
+      position: absolute;
+      right: 0;
+      top: 0;
+      margin: 1em;
+      font: 1.75em Arial, sans-serif;
+      color: var(--head);
+      transition-timing-function: ease-in-out;
+      transition-duration: 3s;
+      transition-property: transform, color;
+      transform: translateY(0);
+      &:hover {
+        color: rgb(242, 141, 157);
+       transform: scale(1.1);
+      }
+    }
+  }
+}
+
 input[type="submit"] {
   border: 1px solid rgb(255, 255, 200);
   color: white;
@@ -351,8 +396,9 @@ input[type="submit"] {
   margin: 1em 0 0;
 }
 
-form[name="uploadform"] {
+form[name="uploadform"], form[name="updatefileinfo"], form[name="search"]:first-of-type {
   width: clamp(300px, 98vw, 800px);
+  padding: 1.75em;
 }
 
 form.choose {
@@ -392,7 +438,7 @@ form.choose {
   border-radius: var(--button);
   line-height: 2;
   font-weight: bold;
-  margin: 0 auto 1em;
+  margin: 1em auto;
   width: clamp(300px, 30vw, 600px);
   font: bold 1.2em/1.8 Georgia, serif;
   text-align: left;
@@ -459,7 +505,6 @@ form[name="usersform"] {
         vertical-align: middle;
       }
       span {
-        //display: table-cell;
         text-align: left;
         width: 100%;
         display: block;
@@ -471,8 +516,8 @@ form[name="usersform"] {
         color: black;
         font-style: normal;
         white-space: nowrap;
-        // display: table-cell;
-        min-width: 7em;
+        display: inline-block;
+        //min-width: 7em;
         padding: 0;
         text-align: left;
       }
@@ -613,6 +658,10 @@ form[name="downloads"] div input {
   &:hover {
     background-color: var(--bg);
   }
+}
+
+#upload table th:nth-child(3) {
+  //display: none;
 }
 
 #yesno {

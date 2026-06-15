@@ -61,7 +61,10 @@ $query = preg_match("/error/", $query) ? decode($query) : ($query ? $failedsearc
 <h1>File Uploads</h1>
 <h2><?= date($dateformat); ?></h2>
 
+
+
 <?php
+
 if (isset($template)) {
     ob_start();
 }

@@ -1,9 +1,12 @@
 <?php
-$pagetitle = isset($pagetitle) ? $pagetitle :  "Log In";
+$pagetitle = isset($pagetitle) ? $pagetitle :  "Login";
 $e = $loginerror ?? $_GET['loginerror'] ?? '';
 ?>
-<h1>Log In</h1>
+<h1>Log In.</h1>
 <?php
+
+include "_disclaimer.html.php";
+
 if (!empty($e)) { ?>
 	<h3><?= $e; ?></h3>
 <?php } else { ?>
@@ -11,9 +14,9 @@ if (!empty($e)) { ?>
 <?php } ?>
 <form action="<?= $action; ?>" method="post" name="loginform" class="details">
 	<label for="email">Email</label>
-	<input id="email" type="email" name="email" autocomplete="off" required />
+	<input id="email" type="email" name="email" autocomplete="off" required value="<?= $email ?? '';?>"/>
 	<label for="password">Password</label>
-	<input id="password" type="password" name="password" autocomplete="off" required />
+	<input id="password" type="password" name="password" autocomplete="off" required minlength="3" maxlength="16"/>
 	<input type="hidden" name="action" value="login" /><input type="submit" value="Log in" />
 </form>
 

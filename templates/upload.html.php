@@ -1,7 +1,12 @@
+<?php
+//'accept="image/*, video/*,application/pdf"'
+//accept="image/*, application/*"
+?>
+
 <form action="/uploader/upload/" method="post" name="uploadform" enctype="multipart/form-data" class="details">
         <a href="<?= $home; ?>"class="cancel">X</a>
         <label for="uploadfiles">Upload File</label><input id="uploadfiles" type="file" name="upload" <?= $disabled; ?> />
-        <label for="desc">Description</label><input id="desc" type="text" name="desc" />
+        <label for="desc">Description</label><input id="desc" type="text" name="desc" maxlength="80"/>
         <?php
         if ($listuser) : ?>
                <label for="user">User</label><select id="user" name="user">
