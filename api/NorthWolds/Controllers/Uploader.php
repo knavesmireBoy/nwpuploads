@@ -168,9 +168,11 @@ class Uploader extends Presenter
             '_colspan' => $priv === 'Browser'  ? '1' : '2'
         ];
         $vars = array_merge($defaultVars, $customVars);
-        if ($vars['searchtext']) {
+        /*
+        if ($vars['searchtext'] || count($displayfiles) <= $this->display) {
             $vars['searchform'] = true;
         }
+            */
         $ret = [
             'template' => 'files.html.php',
             'title' => 'File Uploads',
@@ -269,13 +271,14 @@ class Uploader extends Presenter
         $uploaded = function ($arg) {
             return $_FILES['upload'][$arg];
         };
+
         $uploadfile = $uploaded('tmp_name');
         $realname = $uploaded('name');
         $ext = preg_replace('/(.*)(\.[^0-9.]+$)/i', '$2', $realname);
         $time = time();
         //$uploadname = $time . getRemoteAddr() . $ext;
         $uploadname = $time . $ext;
-        $filename =  FILESTORE . $uploadname;
+        //$filename = FILESTORE . $uploadname;
         $filename =  "/tmp/$uploadname";
         return [$uploadfile, $uploadname, $filename, $realname];
     }
@@ -408,7 +411,6 @@ class Uploader extends Presenter
             $customVars = $this->getCustomVars($key, $vars);
         }
 
-
         if (isset($vars['id'])) {
             $file = $this->table->find('id', $vars['id']);
             $file = !empty($file) ? $file[0] : null;
@@ -429,8 +431,6 @@ class Uploader extends Presenter
         //sub sort by time or file only involves one table `upload`
         $all = $this->table->findAll($order, 0, 0, \PDO::FETCH_ASSOC);
         $contenders = $this->prepFileForDisplay($all, $cb);
-
-
         if (count($contenders) <= $this->display) {
             $customVars['searchform'] = true;
         }
@@ -504,6 +504,7 @@ class Uploader extends Presenter
 
     public function uploadSubmit()
     {
+
         list($uploadfile, $uploadname, $filename, $realname) = $this->getUploadedFile();
         // Copy the file (if it is deemed safe)
         if (!copy($uploadfile, $filename)) {
@@ -512,7 +513,7 @@ class Uploader extends Presenter
             exit();
         } else {
             $userid = $_POST['key'];
-            if (isset($_POST['user'])) {
+            if (!empty($_POST['user'])) {
                 $userid = $this->idFromDomain($this->usertable, $_POST['user'], 0, 0) ?? $_POST['user'];
             }
             $description = isset($_POST['desc']) ? $_POST['desc'] : '';
