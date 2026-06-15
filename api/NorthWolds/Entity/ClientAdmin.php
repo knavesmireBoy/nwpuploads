@@ -124,20 +124,20 @@ class ClientAdmin extends User
     public function deleteFactory($user)
     {
         $ids = $this->getUserIds();
-        return function ($id, $details) use ($ids) {
+        return function ($id) use ($ids, $user) {
             if (in_array($id, $ids)) {
-                return $this->delete($id);
+                return $id == $this->id ? $this->delete($id) : '';
             } else {
                 $this->setCookie(['flash' => "key=hack"], ['flash'], true);
                 reLocate($this->exit);
             }
         };
     }
-
-    public function edit($id)
+    //$id could be redirected from add
+    public function edit($id = '')
     {
         $ids = $this->getUserIds();
-        if (!in_array($id, $ids)) {
+        if ($id && !in_array($id, $ids)) {
             $this->setCookie(['flash' => "key=hack"], ['flash'], true);
             reLocate($this->exit);
         }
