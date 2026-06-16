@@ -15,13 +15,16 @@ class Presenter
 
     protected function getEntity($details)
     {
+        
+        $lib = ['Client', 'Manager', 'Browser'];
+        
         if (isset($details['role'])) {
             $role = str_replace(' ', '', $details['role']);
             if (preg_match('/client/i', $role)) {
                 if (isset($details['colleagues'])) {
                     $role = $details['colleagues'] ? $role : 'Solo';
                     $role = $details['administrator'] ? 'ClientAdminSolo' : $role;
-                    $role = ($role === 'Client') ? 'Employee' : $role;
+                    $role = in_array($role, $lib) ? 'Employee' : $role;
                 } else {
                     $role = preg_match('/admin/', $role) ? 'Admin' : 'Freelancer';
                 }

@@ -4,7 +4,6 @@ namespace NorthWolds\Entity;
 
 class Employee extends User
 {
-
     public function postEdit()
     {
         return $this->self ? 'success' : '';
@@ -22,7 +21,6 @@ class Employee extends User
         list($ename, $edom, $ecom) = $this->parseEmail($postdata['email']);
 
         // $postdata = $this->setClientEmail($cid, $postdata, $record);
-
         /*
         admin can change the domain provided there is no selection in the drop down menu
         so therefore no $cid ($client->id) allows a employee to become a freelancer
@@ -65,6 +63,7 @@ class Employee extends User
                 $traitor = $this->traitorCheck($cid, $dbrecord, $postdata);
                 $postdata = $this->validateDomField($cid, $dbrecord, $postdata);
 
+             //   dump([$traitor, $postdata]);
                 if ($traitor) {
                     $arg = $_SESSION['role'] === 'Admin' ? '_traitor' : 'domainchange';
                     reLocate("/user/load/$arg");

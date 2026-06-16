@@ -347,7 +347,6 @@ rather than calling an update method of the observer, but keeping this as an exa
   public function deleteFactory($user)
   {
     return function ($id) use ($user) {
-
       if ($id == $this->id) {
         return $this->delete($id);
       } else {

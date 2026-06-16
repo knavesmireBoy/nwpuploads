@@ -294,14 +294,19 @@ class User extends Presenter implements \SplObserver
         $details = $this->getPrivilege();
         $punter = $this->fetch('table', 'id', $details['id']);
         $punter = $this->getSubUser($punter);
-        $punter->edit($id); //will relocate on fail
+
+
 
         $editor = ($id == $details['id']);
+        $punter->edit($id); //will relocate on fail
+
+
         $user = $this->fetch('table', 'id', $id);
 
         if ($user) {
             $user = $this->getSubUser($user);
             $user->setSelf($editor);
+            $user->edit($id);
         }
 
         $member = $editor && $user ? $user : $punter;
@@ -354,7 +359,8 @@ class User extends Presenter implements \SplObserver
 
         $user->updatePassword($data['password']);
         $updateDomain = $user->updateDomain($_POST['id'], empty($_POST['override']));
-        /*role must be set BEFORE "updateDomain"
+        /*
+        role must be set BEFORE "updateDomain"
         no user can navigate the site without an assigned role*/
         $user->setRole($role, isset($userId));
         $data = $updateDomain(nullify($client_id), get_object_vars($user), $userId);
@@ -432,7 +438,7 @@ class User extends Presenter implements \SplObserver
         $punter = $this->fetch('table', 'id', $details['id']);
         $punter = $this->getSubUser($punter);
         $punter->setSelf($id == $punter->id);
-       
+
         if ($user) {
             $user = $this->getSubUser($user);
             $user->setSelf($id == $punter->id);
