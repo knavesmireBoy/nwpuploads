@@ -13,7 +13,7 @@ class Login
 
     public function reg($key)
     {
-        $lib = [112 => "jeff.tracy@tbsrgo.co.uk", 113 => "penny@fab1.co.uk"];
+        $lib = [112 => "jeff.tracy@tbsrgo.com", 113 => "penny@fab1.co.uk"];
         $setcookie = doSetCookie(true);
         $unsetcookie = doSetCookie(false);
 
